@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ==================== ROOT MENU ==================== -->
+        <menuitem
+            id="menu_educare_root"
+            name="Educare"
+            sequence="50"
+            web_icon="educare_base,static/description/icon.png"/>
+
+        <!-- ==================== MASTER DATA SUB-MENU ==================== -->
+        <menuitem
+            id="menu_educare_master_data"
+            name="Master Data"
+            parent="menu_educare_root"
+            sequence="10"/>
+
+        <!-- Centers -->
+        <menuitem
+            id="menu_educare_center"
+            name="Centers"
+            parent="menu_educare_master_data"
+            action="action_educare_center"
+            sequence="10"/>
+
+        <!-- Diagnoses -->
+        <menuitem
+            id="menu_educare_diagnosis"
+            name="Diagnoses"
+            parent="menu_educare_master_data"
+            action="action_educare_diagnosis"
+            sequence="20"/>
+
+        <!-- Development Domains -->
+        <menuitem
+            id="menu_educare_domain"
+            name="Development Domains"
+            parent="menu_educare_master_data"
+            action="action_educare_domain"
+            sequence="30"/>
+
+        <!-- Lesson Templates -->
+        <menuitem
+            id="menu_educare_lesson_template"
+            name="Lesson Templates"
+            parent="menu_educare_master_data"
+            action="action_educare_lesson_template"
+            sequence="40"/>
+
+    </data>
+</odoo>

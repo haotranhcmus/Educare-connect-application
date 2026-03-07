@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_educare_center_admin,educare.center.admin,model_educare_center,base.group_system,1,1,1,1
+access_educare_diagnosis_admin,educare.diagnosis.admin,model_educare_diagnosis,base.group_system,1,1,1,1
+access_educare_domain_admin,educare.domain.admin,model_educare_domain,base.group_system,1,1,1,1
+access_educare_lesson_template_admin,educare.lesson.template.admin,model_educare_lesson_template,base.group_system,1,1,1,1
+access_educare_lesson_template_activity_admin,educare.lesson.template.activity.admin,model_educare_lesson_template_activity,base.group_system,1,1,1,1

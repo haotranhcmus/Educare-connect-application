@@ -1,0 +1,22 @@
+{
+    'name': 'Educare Base',
+    'version': '17.0.1.0.0',
+    'category': 'Education',
+    'summary': 'Foundation module — Master data for Educare IEP System',
+    'description': 'Center, Diagnosis, Domain, Lesson Template management',
+    'author': 'Hao Tran',
+    'depends': ['base', 'mail'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/center_views.xml',
+        'views/diagnosis_views.xml',
+        'views/domain_views.xml',
+        'views/template_views.xml',
+        'views/menu.xml',
+        # 'data/domain_data.xml',
+        # 'data/diagnosis_data.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

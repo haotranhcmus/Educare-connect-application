@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="educare_domain_form_view" model="ir.ui.view">
+            <field name="name">Educare Domain Form</field>
+            <field name="model">educare.domain</field>
+            <field name="arch" type="xml">
+                <form string="Development Domain">
+                    <sheet>
+                        <group>
+                            <group string="Domain Information">
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="icon"/>
+                            </group>
+                            <group string="Details">
+                                <field name="color" widget="color_picker"/>
+                                <field name="sequence"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description" colspan="2" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form> 
+            </field>
+        </record>
+
+        <record id="educare_domain_tree_view" model="ir.ui.view">
+            <field name="name">Educare Domain Tree</field>
+            <field name="model">educare.domain</field>
+            <field name="arch" type="xml">
+                <tree string="Development Domains" decoration-muted="active == False">
+                    <field name="active" column_invisible="1"/>
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="icon"/>
+                    <field name="color" widget="color"/>
+                </tree>
+            </field>    
+        </record>
+
+        <!-- ==================== ACTION ==================== -->
+        <record id="action_educare_domain" model="ir.actions.act_window">
+            <field name="name">Development Domains</field>
+            <field name="res_model">educare.domain</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No domains found. Click to create your first domain.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
