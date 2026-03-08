@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- 1. ASD — Rối Loạn Phổ Tự Kỷ -->
+        <record id="diagnosis_asd" model="educare.diagnosis">
+            <field name="name">Rối Loạn Phổ Tự Kỷ</field>
+            <field name="code">ASD</field>
+            <field name="category">autism</field>
+            <field name="icd10_code">F84.0</field>
+            <field name="dsm5_code">299.00</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- 2. ADHD — Rối Loạn Tăng Động Giảm Chú Ý -->
+        <record id="diagnosis_adhd" model="educare.diagnosis">
+            <field name="name">Rối Loạn Tăng Động Giảm Chú Ý</field>
+            <field name="code">ADHD</field>
+            <field name="category">behavioral</field>
+            <field name="icd10_code">F90.0</field>
+            <field name="dsm5_code">314.01</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- 3. GDD — Chậm Phát Triển Toàn Diện -->
+        <record id="diagnosis_gdd" model="educare.diagnosis">
+            <field name="name">Chậm Phát Triển Toàn Diện</field>
+            <field name="code">GDD</field>
+            <field name="category">developmental</field>
+            <field name="icd10_code">F88</field>
+            <field name="dsm5_code">315.8</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- 4. SLI — Rối Loạn Ngôn Ngữ Đặc Hiệu -->
+        <record id="diagnosis_sli" model="educare.diagnosis">
+            <field name="name">Rối Loạn Ngôn Ngữ Đặc Hiệu</field>
+            <field name="code">SLI</field>
+            <field name="category">speech</field>
+            <field name="icd10_code">F80.1</field>
+            <field name="dsm5_code">315.32</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- 5. SPD — Rối Loạn Xử Lý Giác Quan -->
+        <!-- Không có DSM-5 code chính thức — bỏ field -->
+        <record id="diagnosis_spd" model="educare.diagnosis">
+            <field name="name">Rối Loạn Xử Lý Giác Quan</field>
+            <field name="code">SPD</field>
+            <field name="category">sensory</field>
+            <field name="icd10_code">F88</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- 6. DS — Hội Chứng Down -->
+        <record id="diagnosis_ds" model="educare.diagnosis">
+            <field name="name">Hội Chứng Down</field>
+            <field name="code">DS</field>
+            <field name="category">genetic</field>
+            <field name="icd10_code">Q90</field>
+            <field name="dsm5_code">319</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <!-- 7. CP — Bại Não (Cerebral Palsy) -->
+        <!-- Không có DSM-5 code — bỏ field -->
+        <record id="diagnosis_cp" model="educare.diagnosis">
+            <field name="name">Bại Não (Cerebral Palsy)</field>
+            <field name="code">CP</field>
+            <field name="category">neurological</field>
+            <field name="icd10_code">G80</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <!-- 8. ID_MILD — Khuyết Tật Trí Tuệ Nhẹ -->
+        <record id="diagnosis_id_mild" model="educare.diagnosis">
+            <field name="name">Khuyết Tật Trí Tuệ — Nhẹ</field>
+            <field name="code">ID_MILD</field>
+            <field name="category">developmental</field>
+            <field name="icd10_code">F70</field>
+            <field name="dsm5_code">317</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <!-- 9. ID_MOD — Khuyết Tật Trí Tuệ Trung Bình -->
+        <record id="diagnosis_id_mod" model="educare.diagnosis">
+            <field name="name">Khuyết Tật Trí Tuệ — Trung Bình</field>
+            <field name="code">ID_MOD</field>
+            <field name="category">developmental</field>
+            <field name="icd10_code">F71</field>
+            <field name="dsm5_code">318.0</field>
+            <field name="sequence">90</field>
+        </record>
+
+        <!-- 10. EXPRESSIVE — Rối Loạn Ngôn Ngữ Diễn Đạt -->
+        <record id="diagnosis_expressive" model="educare.diagnosis">
+            <field name="name">Rối Loạn Ngôn Ngữ Diễn Đạt</field>
+            <field name="code">EXPRESSIVE</field>
+            <field name="category">speech</field>
+            <field name="icd10_code">F80.1</field>
+            <field name="dsm5_code">315.31</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- 11. RECEPTIVE — Rối Loạn Ngôn Ngữ Tiếp Nhận -->
+        <record id="diagnosis_receptive" model="educare.diagnosis">
+            <field name="name">Rối Loạn Ngôn Ngữ Tiếp Nhận</field>
+            <field name="code">RECEPTIVE</field>
+            <field name="category">speech</field>
+            <field name="icd10_code">F80.2</field>
+            <field name="dsm5_code">315.32</field>
+            <field name="sequence">110</field>
+        </record>
+
+        <!-- 12. OTHER — Chẩn Đoán Khác -->
+        <!-- Không có ICD-10 hay DSM-5 code — bỏ cả 2 field -->
+        <record id="diagnosis_other" model="educare.diagnosis">
+            <field name="name">Chẩn Đoán Khác</field>
+            <field name="code">OTHER</field>
+            <field name="category">other</field>
+            <field name="sequence">999</field>
+        </record>
+
+    </data>
+</odoo>

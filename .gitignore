@@ -16,3 +16,6 @@ venv/
 *.mo
 *.pot
 *.manifest
+
+# Tam thoi bo qua cac file markdown, neu can thi moi them vao sau
+*.md

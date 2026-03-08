@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================
+             COMMUNICATION DOMAIN TEMPLATES
+             ============================================================ -->
+
+        <!-- T-COMM-01: Yêu Cầu Bằng Lời Nói (Manding) -->
+        <record id="template_manding_basic" model="educare.lesson.template">
+            <field name="name">Yêu Cầu Bằng Lời Nói — Cơ Bản (Manding)</field>
+            <field name="code">T-COMM-01</field>
+            <field name="domain_id" ref="domain_communication" />
+            <field name="difficulty_level">beginner</field>
+            <field name="target_age_min">24</field>
+            <field name="target_age_max">60</field>
+            <field name="session_duration_mins">30</field>
+            <field name="source">vbmapp</field>
+            <field name="objectives_text">Trẻ sẽ có thể yêu cầu đồ vật hoặc hoạt động mong muốn bằng
+                lời nói đơn hoặc cụm từ 2 từ trong 8/10 cơ hội.</field>
+            <field name="materials_needed">Đồ vật ưa thích của trẻ (đồ chơi, thức ăn), bảng chọn lựa
+                hình ảnh, token board.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="activity_manding_1" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_manding_basic" />
+            <field name="sequence">10</field>
+            <field name="name">Khởi Động — Điểm Danh &amp; Check-In</field>
+            <field name="activity_type">transition</field>
+            <field name="duration_mins">5</field>
+            <field name="prompt_level_suggested">verbal</field>
+            <field name="reinforcement_type">Verbal praise + token</field>
+            <field name="description">Trẻ chào hỏi nhà trị liệu, ngồi vào vị trí. Điểm danh bằng
+                tên.</field>
+        </record>
+
+        <record id="activity_manding_2" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_manding_basic" />
+            <field name="sequence">20</field>
+            <field name="name">DTT — Yêu Cầu Đồ Vật Ưa Thích</field>
+            <field name="activity_type">dtt</field>
+            <field name="duration_mins">10</field>
+            <field name="prompt_level_suggested">gestural</field>
+            <field name="reinforcement_type">Đồ vật được yêu cầu + verbal praise</field>
+            <field name="description">Đặt 2-3 đồ vật trước mặt trẻ. Tạo động lực (giữ đồ vật). Chờ
+                yêu cầu tự nhiên. Nếu không có phản ứng sau 3 giây, dùng gợi ý lời nói.</field>
+            <field name="data_collection_note">Ghi lại: Tự phát / Gợi ý lời nói / Gợi ý cử chỉ /
+                Không phản ứng</field>
+        </record>
+
+        <record id="activity_manding_3" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_manding_basic" />
+            <field name="sequence">30</field>
+            <field name="name">NET — Yêu Cầu Trong Hoạt Động Tự Nhiên</field>
+            <field name="activity_type">net</field>
+            <field name="duration_mins">10</field>
+            <field name="prompt_level_suggested">verbal</field>
+            <field name="reinforcement_type">Tiếp cận hoạt động được yêu cầu</field>
+            <field name="description">Trong hoạt động vui chơi tự do, tạo tình huống tự nhiên để trẻ
+                cần yêu cầu (đặt đồ chơi ngoài tầm với, giữ mảnh ghép hình, v.v.).</field>
+        </record>
+
+        <!-- T-COMM-02: Đặt Tên Đồ Vật (Tacting) -->
+        <record id="template_tacting_objects" model="educare.lesson.template">
+            <field name="name">Đặt Tên Đồ Vật Quen Thuộc (Tacting)</field>
+            <field name="code">T-COMM-02</field>
+            <field name="domain_id" ref="domain_communication" />
+            <field name="difficulty_level">beginner</field>
+            <field name="target_age_min">30</field>
+            <field name="target_age_max">72</field>
+            <field name="session_duration_mins">30</field>
+            <field name="source">ablls_r</field>
+            <field name="objectives_text">Trẻ sẽ có thể gọi tên ít nhất 20 đồ vật quen thuộc khi
+                được trình bày hình ảnh hoặc đồ vật thật trong 4/5 lần thử.</field>
+            <field name="materials_needed">Flashcards đồ vật thường ngày, đồ vật thật (cốc, bút,
+                giày...), bảng ghi nhận.</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="activity_tacting_1" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_tacting_objects" />
+            <field name="sequence">10</field>
+            <field name="name">Ôn Tập — Đặt Tên Vốn Từ Cũ</field>
+            <field name="activity_type">dtt</field>
+            <field name="duration_mins">8</field>
+            <field name="prompt_level_suggested">independent</field>
+            <field name="reinforcement_type">Token economy</field>
+            <field name="description">Ôn lại 10 thẻ đã học. Mỗi thẻ đặt tên đúng nhận 1 token. 5
+                token đổi reinforcer ưa thích.</field>
+        </record>
+
+        <record id="activity_tacting_2" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_tacting_objects" />
+            <field name="sequence">20</field>
+            <field name="name">Học Mới — 3 Đồ Vật Mới</field>
+            <field name="activity_type">dtt</field>
+            <field name="duration_mins">12</field>
+            <field name="prompt_level_suggested">full_physical</field>
+            <field name="reinforcement_type">Praise + token ngay sau phản ứng đúng</field>
+            <field name="description">Giới thiệu 3 thẻ mới. Dùng errorless learning: trình bày thẻ +
+                nói tên ngay. Sau 3 lần, bắt đầu delay 1-2 giây trước khi gợi ý.</field>
+        </record>
+
+        <!-- ============================================================
+             SOCIAL DOMAIN TEMPLATES
+             ============================================================ -->
+
+        <!-- T-SOCIAL-01: Luân Phiên Trong Trò Chơi -->
+        <record id="template_turn_taking" model="educare.lesson.template">
+            <field name="name">Luân Phiên Trong Trò Chơi (Turn Taking)</field>
+            <field name="code">T-SOCIAL-01</field>
+            <field name="domain_id" ref="domain_social" />
+            <field name="difficulty_level">beginner</field>
+            <field name="target_age_min">36</field>
+            <field name="target_age_max">84</field>
+            <field name="session_duration_mins">45</field>
+            <field name="source">original</field>
+            <field name="objectives_text">Trẻ sẽ luân phiên với người khác trong trò chơi có cấu
+                trúc mà không có hành vi thách thức trong 8/10 lần thử.</field>
+            <field name="materials_needed">Trò chơi board game đơn giản (Bingo, xúc xắc), đồng hồ
+                cát, thẻ "Đến lượt tôi / Đến lượt bạn".</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="activity_turn_1" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_turn_taking" />
+            <field name="sequence">10</field>
+            <field name="name">Giới Thiệu Khái Niệm Luân Phiên</field>
+            <field name="activity_type">social</field>
+            <field name="duration_mins">10</field>
+            <field name="prompt_level_suggested">verbal</field>
+            <field name="reinforcement_type">High-five + verbal praise</field>
+            <field name="description">Dùng thẻ hình minh họa giải thích "Đến lượt tôi" và "Đến lượt
+                bạn". Thực hành với nhà trị liệu trước khi vào trò chơi.</field>
+        </record>
+
+        <record id="activity_turn_2" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_turn_taking" />
+            <field name="sequence">20</field>
+            <field name="name">Trò Chơi Luân Phiên Có Cấu Trúc</field>
+            <field name="activity_type">play</field>
+            <field name="duration_mins">20</field>
+            <field name="prompt_level_suggested">gestural</field>
+            <field name="reinforcement_type">Token mỗi lần luân phiên thành công</field>
+            <field name="description">Chơi trò chơi board đơn giản. Dùng đồng hồ cát để chỉ "lượt"
+                rõ ràng. Khi trẻ chờ đúng → khen ngợi ngay lập tức.</field>
+            <field name="data_collection_note">Đếm số lần luân phiên thành công / tổng số cơ hội.
+                Ghi chú hành vi thách thức nếu có.</field>
+        </record>
+
+        <record id="activity_turn_3" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_turn_taking" />
+            <field name="sequence">30</field>
+            <field name="name">Thư Giãn &amp; Tổng Kết</field>
+            <field name="activity_type">transition</field>
+            <field name="duration_mins">5</field>
+            <field name="prompt_level_suggested">verbal</field>
+            <field name="reinforcement_type">Preferred activity 5 phút</field>
+            <field name="description">Đếm token kiếm được. Đổi reinforcer. Tóm tắt những gì trẻ đã
+                làm tốt.</field>
+        </record>
+
+        <!-- ============================================================
+             COGNITIVE DOMAIN TEMPLATES
+             ============================================================ -->
+
+        <!-- T-COG-01: Phân Loại Màu Sắc & Hình Dạng -->
+        <record id="template_sorting_colors" model="educare.lesson.template">
+            <field name="name">Phân Loại Màu Sắc và Hình Dạng Cơ Bản</field>
+            <field name="code">T-COG-01</field>
+            <field name="domain_id" ref="domain_cognitive" />
+            <field name="difficulty_level">beginner</field>
+            <field name="target_age_min">24</field>
+            <field name="target_age_max">60</field>
+            <field name="session_duration_mins">30</field>
+            <field name="source">twinkl</field>
+            <field name="objectives_text">Trẻ sẽ phân loại đúng đồ vật theo màu sắc (đỏ, xanh, vàng)
+                và hình dạng (tròn, vuông, tam giác) trong 9/10 lần thử.</field>
+            <field name="materials_needed">Khối hình học nhiều màu, hộp phân loại 3 ngăn, thẻ màu,
+                đồ vật thật nhiều màu.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="activity_sorting_1" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_sorting_colors" />
+            <field name="sequence">10</field>
+            <field name="name">DTT — Phân Loại Màu (Matching)</field>
+            <field name="activity_type">dtt</field>
+            <field name="duration_mins">12</field>
+            <field name="prompt_level_suggested">partial_physical</field>
+            <field name="reinforcement_type">Token mỗi 3 phân loại đúng</field>
+            <field name="description">Đặt 3 hộp màu (đỏ/xanh/vàng) và đồ vật hỗn hợp. Hướng dẫn trẻ
+                đặt từng đồ vật vào đúng hộp màu. Bắt đầu với 1 màu, tăng dần.</field>
+            <field name="data_collection_note">% đúng không có gợi ý / với gợi ý cơ thể nhẹ / với
+                gợi ý cơ thể đầy đủ</field>
+        </record>
+
+        <record id="activity_sorting_2" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_sorting_colors" />
+            <field name="sequence">20</field>
+            <field name="name">NET — Phân Loại Trong Hoạt Động Thực Tế</field>
+            <field name="activity_type">net</field>
+            <field name="duration_mins">10</field>
+            <field name="prompt_level_suggested">gestural</field>
+            <field name="reinforcement_type">Verbal praise + access to activity</field>
+            <field name="description">Trong lúc dọn đồ chơi, khuyến khích trẻ để đồ chơi theo màu
+                vào đúng hộp. Áp dụng tự nhiên không có trial structure rõ ràng.</field>
+        </record>
+
+        <!-- ============================================================
+             BEHAVIOR DOMAIN TEMPLATES
+             ============================================================ -->
+
+        <!-- T-BEH-01: Tuân Theo Hướng Dẫn 1 Bước -->
+        <record id="template_following_instructions" model="educare.lesson.template">
+            <field name="name">Tuân Theo Hướng Dẫn 1 Bước Đơn Giản</field>
+            <field name="code">T-BEH-01</field>
+            <field name="domain_id" ref="domain_behavior" />
+            <field name="difficulty_level">beginner</field>
+            <field name="target_age_min">18</field>
+            <field name="target_age_max">48</field>
+            <field name="session_duration_mins">30</field>
+            <field name="source">ablls_r</field>
+            <field name="objectives_text">Trẻ sẽ thực hiện hướng dẫn 1 bước (ngồi xuống, đứng lên,
+                đưa tay, v.v.) trong vòng 5 giây sau khi được yêu cầu, 9/10 lần thử.</field>
+            <field name="materials_needed">Token board, danh sách hướng dẫn 10 lệnh cơ bản,
+                reinforcer ưa thích.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="activity_instructions_1" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_following_instructions" />
+            <field name="sequence">10</field>
+            <field name="name">Ôn Tập — Các Lệnh Đã Học</field>
+            <field name="activity_type">dtt</field>
+            <field name="duration_mins">10</field>
+            <field name="prompt_level_suggested">independent</field>
+            <field name="reinforcement_type">Token economy (5 token → reinforcer)</field>
+            <field name="description">Sử dụng 5 lệnh đã mastered. Đan xen với lệnh mới theo tỷ lệ
+                3:1 (cũ:mới). Giữ nhịp độ nhanh để duy trì chú ý.</field>
+            <field name="data_collection_note">Ghi % phản ứng đúng trong 3 giây với mỗi lệnh cụ thể</field>
+        </record>
+
+        <record id="activity_instructions_2" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_following_instructions" />
+            <field name="sequence">20</field>
+            <field name="name">Học Lệnh Mới — Errorless Teaching</field>
+            <field name="activity_type">dtt</field>
+            <field name="duration_mins">15</field>
+            <field name="prompt_level_suggested">full_physical</field>
+            <field name="reinforcement_type">Reinforcer trực tiếp sau mỗi phản ứng đúng</field>
+            <field name="description">Giới thiệu 1-2 lệnh mới. Nói lệnh → đợi 0 giây → hỗ trợ cơ thể
+                đầy đủ. Fade gợi ý theo Most-to-Least. Mastery: 3 lần đúng liên tiếp không gợi ý.</field>
+        </record>
+
+        <!-- ============================================================
+             SELF-CARE DOMAIN TEMPLATES
+             ============================================================ -->
+
+        <!-- T-SELF-01: Rửa Tay Đúng Quy Trình -->
+        <record id="template_handwashing" model="educare.lesson.template">
+            <field name="name">Rửa Tay Đúng Quy Trình 6 Bước</field>
+            <field name="code">T-SELF-01</field>
+            <field name="domain_id" ref="domain_self_care" />
+            <field name="difficulty_level">intermediate</field>
+            <field name="target_age_min">36</field>
+            <field name="target_age_max">96</field>
+            <field name="session_duration_mins">20</field>
+            <field name="source">original</field>
+            <field name="objectives_text">Trẻ sẽ hoàn thành chuỗi rửa tay 6 bước độc lập (không cần
+                gợi ý) trong 3 lần liên tiếp.</field>
+            <field name="materials_needed">Task analysis card 6 bước có hình ảnh, xà phòng, khăn
+                lau, sticker chart.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="activity_handwashing_1" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_handwashing" />
+            <field name="sequence">10</field>
+            <field name="name">Giới Thiệu Task Analysis Rửa Tay</field>
+            <field name="activity_type">academic</field>
+            <field name="duration_mins">5</field>
+            <field name="prompt_level_suggested">verbal</field>
+            <field name="reinforcement_type">Verbal praise cho từng bước đúng</field>
+            <field name="description">Xem qua card 6 bước cùng trẻ: (1) Mở nước, (2) Làm ướt tay,
+                (3) Lấy xà phòng, (4) Chà tay 20 giây, (5) Rửa sạch, (6) Lau khô. Trẻ chỉ vào từng
+                bước.</field>
+        </record>
+
+        <record id="activity_handwashing_2" model="educare.lesson.template.activity">
+            <field name="template_id" ref="template_handwashing" />
+            <field name="sequence">20</field>
+            <field name="name">Thực Hành Rửa Tay — Backward Chaining</field>
+            <field name="activity_type">motor</field>
+            <field name="duration_mins">10</field>
+            <field name="prompt_level_suggested">partial_physical</field>
+            <field name="reinforcement_type">Sticker sau khi hoàn thành chuỗi</field>
+            <field name="description">Dùng backward chaining: Nhà trị liệu làm bước 1-5, trẻ tự làm
+                bước 6 (lau khô). Khi mastered bước 6 → thêm bước 5, v.v.</field>
+            <field name="data_collection_note">Ghi chú bước nào cần gợi ý, mức độ gợi ý
+                (I/V/G/PP/FP)</field>
+        </record>
+
+    </data>
+</odoo>
