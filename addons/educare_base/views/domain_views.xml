@@ -9,20 +9,20 @@
                     <sheet>
                         <group>
                             <group string="Domain Information">
-                                <field name="name"/>
-                                <field name="code"/>
-                                <field name="icon"/>
+                                <field name="name" />
+                                <field name="code" />
+                                <field name="icon" />
                             </group>
                             <group string="Details">
-                                <field name="color" widget="color_picker"/>
-                                <field name="sequence"/>
+                                <field name="color" widget="color_picker" />
+                                <field name="sequence" />
                             </group>
                         </group>
                         <group>
-                            <field name="description" colspan="2" nolabel="1"/>
+                            <field name="description" colspan="2" nolabel="1" />
                         </group>
                     </sheet>
-                </form> 
+                </form>
             </field>
         </record>
 
@@ -31,14 +31,37 @@
             <field name="model">educare.domain</field>
             <field name="arch" type="xml">
                 <tree string="Development Domains" decoration-muted="active == False">
-                    <field name="active" column_invisible="1"/>
-                    <field name="sequence" widget="handle"/>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="icon"/>
-                    <field name="color" widget="color"/>
+                    <field name="active" column_invisible="1" />
+                    <field name="sequence" widget="handle" />
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="icon" />
+                    <field name="color" widget="color" />
                 </tree>
-            </field>    
+            </field>
+        </record>
+
+        <record id="educare_domain_search_view" model="ir.ui.view">
+            <field name="name">Educare Domain Search</field>
+            <field name="model">educare.domain</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                    <field name="code" />
+                    <separator />
+                    <filter string="Đang Hoạt Động"
+                        name="filter_active"
+                        domain="[('active', '=', True)]" />
+                    <filter string="Đã Lưu Trữ"
+                        name="filter_inactive"
+                        domain="[('active', '=', False)]" />
+                    <group string="Group By">
+                        <filter string="Sequence"
+                            name="group_by_sequence"
+                            context="{'group_by': 'sequence'}" />
+                    </group>
+                </search>
+            </field>
         </record>
 
         <!-- ==================== ACTION ==================== -->
@@ -46,6 +69,7 @@
             <field name="name">Development Domains</field>
             <field name="res_model">educare.domain</field>
             <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="educare_domain_search_view" />
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No domains found. Click to create your first domain.

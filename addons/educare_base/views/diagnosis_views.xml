@@ -9,40 +9,40 @@
                     <sheet>
                         <group>
                             <group string="Diagnosis Information">
-                                <field name="name"/>
-                                <field name="code"/>
-                                <field name="category"/>
+                                <field name="name" />
+                                <field name="code" />
+                                <field name="category" />
                             </group>
                             <group string="Details">
-                                <field name="icd10_code"/>
-                                <field name="dsm5_code"/>
-                                <field name="sequence"/>
+                                <field name="icd10_code" />
+                                <field name="dsm5_code" />
+                                <field name="sequence" />
                             </group>
                         </group>
                         <group>
-                            <field name="description" widget="html"/>
+                            <field name="description" widget="html" />
                         </group>
                     </sheet>
                     <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="message_ids" widget="mail_thread" />
                     </div>
                 </form>
             </field>
         </record>
 
-         <record id="educare_diagnosis_tree_view" model="ir.ui.view">
+        <record id="educare_diagnosis_tree_view" model="ir.ui.view">
             <field name="name">Educare Diagnosis Tree</field>
             <field name="model">educare.diagnosis</field>
             <field name="arch" type="xml">
                 <tree string="Diagnosis" decoration-muted="active == False">
-                    <field name="active" column_invisible="1"/>
-                    <field name="sequence" widget="handle"/>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="category"/>
-                    <field name="icd10_code"/>
-                    <field name="dsm5_code"/>
+                    <field name="active" column_invisible="1" />
+                    <field name="sequence" widget="handle" />
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="category" />
+                    <field name="icd10_code" />
+                    <field name="dsm5_code" />
                 </tree>
             </field>
         </record>
@@ -52,54 +52,54 @@
             <field name="model">educare.diagnosis</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="category" operator="ilike"/>
-                    <field name="icd10_code"/>
-                    <field name="dsm5_code"/>
-                    <separator/>
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="category" />
+                    <field name="icd10_code" />
+                    <field name="dsm5_code" />
+                    <separator />
 
                     <!-- 8 Filter theo category -->
                     <filter string="Autism Spectrum"
-                            name="filter_autism"
-                            domain="[('category', '=', 'autism')]"/>
+                        name="filter_autism"
+                        domain="[('category', '=', 'autism')]" />
                     <filter string="Developmental Delay"
-                            name="filter_developmental"
-                            domain="[('category', '=', 'developmental')]"/>
+                        name="filter_developmental"
+                        domain="[('category', '=', 'developmental')]" />
                     <filter string="Speech/Language"
-                            name="filter_speech"
-                            domain="[('category', '=', 'speech')]"/>
+                        name="filter_speech"
+                        domain="[('category', '=', 'speech')]" />
                     <filter string="Sensory Processing"
-                            name="filter_sensory"
-                            domain="[('category', '=', 'sensory')]"/>
+                        name="filter_sensory"
+                        domain="[('category', '=', 'sensory')]" />
                     <filter string="Behavioral"
-                            name="filter_behavioral"
-                            domain="[('category', '=', 'behavioral')]"/>
+                        name="filter_behavioral"
+                        domain="[('category', '=', 'behavioral')]" />
                     <filter string="Genetic"
-                            name="filter_genetic"
-                            domain="[('category', '=', 'genetic')]"/>
+                        name="filter_genetic"
+                        domain="[('category', '=', 'genetic')]" />
                     <filter string="Neurological"
-                            name="filter_neurological"
-                            domain="[('category', '=', 'neurological')]"/>
+                        name="filter_neurological"
+                        domain="[('category', '=', 'neurological')]" />
                     <filter string="Other"
-                            name="filter_other"
-                            domain="[('category', '=', 'other')]"/>
-                    <separator/>
+                        name="filter_other"
+                        domain="[('category', '=', 'other')]" />
+                    <separator />
 
                     <!-- Filter Active/Inactive -->
                     <filter string="Đang Hoạt Động"
-                            name="filter_active"
-                            domain="[('active', '=', True)]"/>
+                        name="filter_active"
+                        domain="[('active', '=', True)]" />
 
                     <filter string="Đã Lưu Trữ"
-                            name="filter_inactive"
-                            domain="[('active', '=', False)]"/>
-                    
+                        name="filter_inactive"
+                        domain="[('active', '=', False)]" />
+
                     <!-- Group By-->
                     <group string="Group By">
                         <filter string="Category"
-                                name="group_by_category"
-                                context="{'group_by': 'category'}"/>
+                            name="group_by_category"
+                            context="{'group_by': 'category'}" />
                     </group>
                 </search>
             </field>
@@ -110,7 +110,7 @@
             <field name="name">Diagnoses</field>
             <field name="res_model">educare.diagnosis</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="educare_diagnosis_search_view"/>
+            <field name="search_view_id" ref="educare_diagnosis_search_view" />
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No diagnoses found. Click to create your first diagnosis.

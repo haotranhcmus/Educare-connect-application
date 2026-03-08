@@ -7,71 +7,76 @@
             <field name="arch" type="xml">
                 <form string="Lesson Template">
                     <sheet>
-                        <field name="active" invisible="1"/>
+                        <field name="active" invisible="1" />
                         <widget name="web_ribbon" text="Archived"
-                                bg_color="text-bg-danger"
-                                invisible="active"/>
-                        <div class="oe_button_box" name="button_box"/>
+                            bg_color="text-bg-danger"
+                            invisible="active" />
+                        <div class="oe_button_box" name="button_box" />
                         <div class="oe_title">
-                            <h1><field name="name" placeholder="Template Name"/></h1>
-                            <h2><field name="code" placeholder="Code"/></h2>
+                            <h1>
+                                <field name="name" placeholder="Template Name" />
+                            </h1>
+                            <h2>
+                                <field name="code" placeholder="Code" />
+                            </h2>
                         </div>
                         <group>
                             <group string="Basic Information">
-                                <field name="domain_id"/>
-                                <field name="difficulty_level"/>
-                                <field name="session_duration_mins"/>
+                                <field name="domain_id" />
+                                <field name="difficulty_level" />
+                                <field name="session_duration_mins" />
                             </group>
                             <group string="Source Information">
-                                <field name="source"/>
-                                <field name="source_url" widget="url"/>
-                                <field name="source_reference"/>
+                                <field name="source" />
+                                <field name="source_url" widget="url" />
+                                <field name="source_reference" />
                             </group>
                         </group>
 
                         <group>
                             <group string="Độ Tuổi Mục Tiêu (tháng)">
-                                <field name="target_age_min" string="Từ (tháng)"/>
-                                <field name="target_age_max" string="Đến (tháng)"/>
+                                <field name="target_age_min" string="Từ (tháng)" />
+                                <field name="target_age_max" string="Đến (tháng)" />
                             </group>
                             <!-- Cột phải để trống hoặc thêm field khác nếu cần -->
-                            <group/>
+                            <group />
                         </group>
-                        
+
                         <notebook>
                             <page string="Activities" name="activities_tab">
                                 <field name="activity_line_ids">
 
                                     <!-- INLINE TREE: hiển thị các cột quan trọng -->
                                     <tree editable="bottom">
-                                        <field name="sequence" widget="handle" />   
-                                        <field name="name"/>
-                                        <field name="activity_type"/>
-                                        <field name="duration_mins"/>
-                                        <field name="prompt_level_suggested"/>
-                                        <field name="reinforcement_type"/>
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                        <field name="activity_type" />
+                                        <field name="duration_mins" />
+                                        <field name="prompt_level_suggested" />
+                                        <field name="reinforcement_type" />
                                     </tree>
 
                                     <!-- FORM POPUP: hiển thị khi click vào dòng (để edit chi tiết) -->
-                                     <form string="Activity Details">
+                                    <form string="Activity Details">
                                         <sheet>
                                             <group>
                                                 <group string="Activity Details">
                                                     <field name="sequence" />
-                                                    <field name="name"/>
-                                                    <field name="activity_type"/>
-                                                    <field name="duration_mins"/>
+                                                    <field name="name" />
+                                                    <field name="activity_type" />
+                                                    <field name="duration_mins" />
                                                 </group>
 
                                                 <group string="Suggested Prompts and Reinforcement">
-                                                    <field name="prompt_level_suggested"/>
-                                                    <field name="reinforcement_type"/>
-                                                    <field name="data_collection_note" />   
+                                                    <field name="prompt_level_suggested" />
+                                                    <field name="reinforcement_type" />
+                                                    <field name="data_collection_note" />
                                                 </group>
                                             </group>
 
                                             <group>
-                                                <field name="description" string="Description" widget="html"/>
+                                                <field name="description" string="Description"
+                                                    widget="html" />
                                             </group>
                                             <group>
                                                 <field name="materials" string="Materials Needed" />
@@ -84,23 +89,23 @@
 
                             <page string="Materials" name="materials_tab">
                                 <group>
-                                    <field name="objectives_text" colspan="2" string="Objectives"/>
+                                    <field name="objectives_text" colspan="2" string="Objectives" />
                                 </group>
                                 <group>
-                                    <field name="materials_needed" colspan="2" string="Materials"/>
+                                    <field name="materials_needed" colspan="2" string="Materials" />
                                 </group>
                             </page>
 
                             <page string="Notes" name="notes_tab">
                                 <group>
-                                    <field name="notes" colspan="2" nolabel="1"/>
+                                    <field name="notes" colspan="2" nolabel="1" />
                                 </group>
                             </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="message_ids" widget="mail_thread" />
                     </div>
                 </form>
             </field>
@@ -111,15 +116,15 @@
             <field name="model">educare.lesson.template</field>
             <field name="arch" type="xml">
                 <tree string="Lesson Templates" decoration-muted="active == False">
-                    <field name="active" column_invisible="1"/>
-                    <field name="sequence" widget="handle"/>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="domain_id"/>
-                    <field name="difficulty_level"/>
-                    <field name="session_duration_mins"/>
-                    <field name="source"/>
-                    <field name="activity_count" string="Activities" optional="show"/>
+                    <field name="active" column_invisible="1" />
+                    <field name="sequence" widget="handle" />
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="domain_id" />
+                    <field name="difficulty_level" />
+                    <field name="session_duration_mins" />
+                    <field name="source" />
+                    <field name="activity_count" string="Activities" optional="show" />
                 </tree>
             </field>
         </record>
@@ -129,51 +134,51 @@
             <field name="model">educare.lesson.template</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="domain_id" operator="ilike"/>
-                    <field name="difficulty_level"/>
-                    <field name="source"/>
-                    <separator/>
-                    
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="domain_id" operator="ilike" />
+                    <field name="difficulty_level" />
+                    <field name="source" />
+                    <separator />
+
                     <!-- Filter by Difficulty Level -->
                     <filter string="Beginner"
-                            name="filter_beginner"
-                            domain="[('difficulty_level', '=', 'beginner')]"/>
+                        name="filter_beginner"
+                        domain="[('difficulty_level', '=', 'beginner')]" />
                     <filter string="Intermediate"
-                            name="filter_intermediate"
-                            domain="[('difficulty_level', '=', 'intermediate')]"/>
+                        name="filter_intermediate"
+                        domain="[('difficulty_level', '=', 'intermediate')]" />
                     <filter string="Advanced"
-                            name="filter_advanced"
-                            domain="[('difficulty_level', '=', 'advanced')]"/>
-                    
+                        name="filter_advanced"
+                        domain="[('difficulty_level', '=', 'advanced')]" />
+
                     <!-- Filter by Source -->
-                     <filter string="Original" name="filter_original"
-                            domain="[('source', '=', 'original')]"/>
+                    <filter string="Original" name="filter_original"
+                        domain="[('source', '=', 'original')]" />
                     <filter string="Twinkl" name="filter_twinkl"
-                            domain="[('source', '=', 'twinkl')]"/>
+                        domain="[('source', '=', 'twinkl')]" />
                     <filter string="VB-MAPP" name="filter_vbmapp"
-                            domain="[('source', '=', 'vbmapp')]"/>
+                        domain="[('source', '=', 'vbmapp')]" />
                     <filter string="ABLLS-R" name="filter_ablls_r"
-                            domain="[('source', '=', 'ablls_r')]"/>
+                        domain="[('source', '=', 'ablls_r')]" />
                     <filter string="Autism Helper" name="filter_autism_helper"
-                            domain="[('source', '=', 'autism_helper')]"/>
+                        domain="[('source', '=', 'autism_helper')]" />
                     <filter string="Attainment Company" name="filter_attainment"
-                            domain="[('source', '=', 'attainment')]"/>
+                        domain="[('source', '=', 'attainment')]" />
                     <filter string="Other" name="filter_other_source"
-                            domain="[('source', '=', 'other')]"/>
+                        domain="[('source', '=', 'other')]" />
 
                     <!-- Group By -->
                     <group string="Group By">
                         <filter string="Domain"
-                                name="group_by_domain"
-                                context="{'group_by': 'domain_id'}"/>
+                            name="group_by_domain"
+                            context="{'group_by': 'domain_id'}" />
                         <filter string="Difficulty Level"
-                                name="group_by_difficulty"
-                                context="{'group_by': 'difficulty_level'}"/>
+                            name="group_by_difficulty"
+                            context="{'group_by': 'difficulty_level'}" />
                         <filter string="Source"
-                                name="group_by_source"
-                                context="{'group_by': 'source'}"/>
+                            name="group_by_source"
+                            context="{'group_by': 'source'}" />
                     </group>
                 </search>
             </field>
@@ -184,7 +189,7 @@
             <field name="name">Lesson Templates</field>
             <field name="res_model">educare.lesson.template</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="educare_lesson_template_search_view"/>
+            <field name="search_view_id" ref="educare_lesson_template_search_view" />
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No lesson templates found. Click to create your first template.
