@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_user_profile_admin,user.profile.admin,model_educare_user_profile,educare_security.group_admin,1,1,1,1
+access_audit_log_admin,audit.log.admin,model_educare_audit_log,educare_security.group_admin,1,0,0,0
