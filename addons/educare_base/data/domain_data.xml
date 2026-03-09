@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- 1. Giao Tiếp (Communication) -->
+        <record id="domain_communication" model="educare.domain">
+            <field name="name">Giao Tiếp (Communication)</field>
+            <field name="code">COMM</field>
+            <field name="icon">fa-comments</field>
+            <field name="color">1</field>
+            <field name="sequence">10</field>
+            <field name="description">Kỹ năng ngôn ngữ tiếp nhận và diễn đạt, giao tiếp không lời,
+                và sử dụng ngôn ngữ trong các tình huống xã hội.</field>
+        </record>
+
+        <!-- 2. Xã Hội (Social) -->
+        <record id="domain_social" model="educare.domain">
+            <field name="name">Xã Hội (Social)</field>
+            <field name="code">SOCIAL</field>
+            <field name="icon">fa-users</field>
+            <field name="color">2</field>
+            <field name="sequence">20</field>
+            <field name="description">Kỹ năng tương tác với người khác, xây dựng mối quan hệ, nhận
+                biết cảm xúc và phát triển tình bạn.</field>
+        </record>
+
+        <!-- 3. Nhận Thức (Cognitive) -->
+        <record id="domain_cognitive" model="educare.domain">
+            <field name="name">Nhận Thức (Cognitive)</field>
+            <field name="code">COGNITIVE</field>
+            <field name="icon">fa-brain</field>
+            <field name="color">3</field>
+            <field name="sequence">30</field>
+            <field name="description">Khả năng tư duy, giải quyết vấn đề, ghi nhớ, chú ý và xử lý
+                thông tin nhận thức.</field>
+        </record>
+
+        <!-- 4. Vận Động Thô (Gross Motor) -->
+        <record id="domain_motor_gross" model="educare.domain">
+            <field name="name">Vận Động Thô (Gross Motor)</field>
+            <field name="code">MOTOR_GROSS</field>
+            <field name="icon">fa-running</field>
+            <field name="color">4</field>
+            <field name="sequence">40</field>
+            <field name="description">Phát triển các nhóm cơ lớn: đi, chạy, nhảy, leo trèo, giữ
+                thăng bằng và phối hợp cơ thể.</field>
+        </record>
+
+        <!-- 5. Vận Động Tinh (Fine Motor) -->
+        <record id="domain_motor_fine" model="educare.domain">
+            <field name="name">Vận Động Tinh (Fine Motor)</field>
+            <field name="code">MOTOR_FINE</field>
+            <field name="icon">fa-hand-paper</field>
+            <field name="color">5</field>
+            <field name="sequence">50</field>
+            <field name="description">Phát triển cơ nhỏ ở bàn tay và ngón tay: cầm nắm, vẽ, cắt, xếp
+                hình và viết.</field>
+        </record>
+
+        <!-- 6. Tự Chăm Sóc (Self-Care) -->
+        <record id="domain_self_care" model="educare.domain">
+            <field name="name">Tự Chăm Sóc (Self-Care)</field>
+            <field name="code">SELF_CARE</field>
+            <field name="icon">fa-heart</field>
+            <field name="color">6</field>
+            <field name="sequence">60</field>
+            <field name="description">Kỹ năng độc lập trong sinh hoạt hàng ngày: ăn uống, vệ sinh cá
+                nhân, mặc đồ và tự phục vụ.</field>
+        </record>
+
+        <!-- 7. Hành Vi (Behavior) -->
+        <record id="domain_behavior" model="educare.domain">
+            <field name="name">Hành Vi (Behavior)</field>
+            <field name="code">BEHAVIOR</field>
+            <field name="icon">fa-chart-line</field>
+            <field name="color">7</field>
+            <field name="sequence">70</field>
+            <field name="description">Điều chỉnh hành vi, kiểm soát cảm xúc, giảm hành vi thách thức
+                và xây dựng hành vi tích cực.</field>
+        </record>
+
+        <!-- 8. Học Thuật (Academic) -->
+        <record id="domain_academic" model="educare.domain">
+            <field name="name">Học Thuật (Academic)</field>
+            <field name="code">ACADEMIC</field>
+            <field name="icon">fa-graduation-cap</field>
+            <field name="color">8</field>
+            <field name="sequence">80</field>
+            <field name="description">Kỹ năng học tập tiền học đường và học đường: đọc, viết, toán
+                và các khái niệm học thuật cơ bản.</field>
+        </record>
+
+        <!-- 9. Thích Ứng (Adaptive) -->
+        <record id="domain_adaptive" model="educare.domain">
+            <field name="name">Thích Ứng (Adaptive)</field>
+            <field name="code">ADAPTIVE</field>
+            <field name="icon">fa-sync</field>
+            <field name="color">9</field>
+            <field name="sequence">90</field>
+            <field name="description">Khả năng thích nghi với môi trường mới, chuyển đổi giữa các
+                hoạt động và linh hoạt trong thói quen.</field>
+        </record>
+
+    </data>
+</odoo>
