@@ -7,42 +7,45 @@
             <field name="arch" type="xml">
                 <form string="Center">
                     <sheet>
-                        <field name="active" invisible="1"/>
+                        <field name="active" invisible="1" />
                         <widget name="web_ribbon" text="Archived"
-                                bg_color="text-bg-danger"
-                                invisible="active"/>
-                        <div class="oe_button_box" name="button_box"/>
+                            bg_color="text-bg-danger"
+                            invisible="active" />
+                        <div class="oe_button_box" name="button_box" />
                         <div class="d-flex align-items-center mb-3">
                             <field name="logo" widget="image" class="oe_avatar me-3"
-                                    options="{'preview_image': 'logo', 'size': [90, 90]}"/>
+                                options="{'preview_image': 'logo', 'size': [90, 90]}" />
                             <div class="flex-grow-1">
-                                <h1><field name="name" placeholder="Center Name"/></h1>
+                                <h1>
+                                    <field name="name" placeholder="Center Name" />
+                                </h1>
                             </div>
                         </div>
                         <group>
                             <group string="Basic Information">
-                                <field name="code"/>
+                                <field name="code" />
                             </group>
                             <group string="Contact Information">
                                 <field name="phone" widget="phone" />
-                                <field name="email" widget="email"/>
+                                <field name="email" widget="email" />
                                 <field name="manager_id" />
-                            </group> 
+                            </group>
                         </group>
                         <group>
-                            <field name="address" placeholder="Street Address"/>
+                            <field name="address" placeholder="Street Address" />
                         </group>
                         <notebook>
                             <page string="Description" name="description">
-                                <field name="description" widget="html" placeholder="Add a description about the center..." nolabel="1"/>
+                                <field name="description" widget="html"
+                                    placeholder="Add a description about the center..." nolabel="1" />
                             </page>
                         </notebook>
                     </sheet>
 
                     <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/>
-                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="activity_ids" widget="mail_activity" />
+                        <field name="message_ids" widget="mail_thread" />
                     </div>
                 </form>
             </field>
@@ -53,12 +56,12 @@
             <field name="model">educare.center</field>
             <field name="arch" type="xml">
                 <tree string="List of Centers" decoration-muted="active == False">
-                    <field name="active" column_invisible="1"/>
-                    <field name="code"/>
-                    <field name="name"/>
-                    <field name="phone"/>
-                    <field name="email"/>
-                    <field name="manager_id"/>
+                    <field name="active" column_invisible="1" />
+                    <field name="code" />
+                    <field name="name" />
+                    <field name="phone" />
+                    <field name="email" />
+                    <field name="manager_id" />
                 </tree>
             </field>
         </record>
@@ -68,17 +71,19 @@
             <field name="model">educare.center</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="phone"/>
-                    <field name="email"/>
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="phone" />
+                    <field name="email" />
 
-                    <separator/>
-                    <filter string="Active" name="filter_active" domain="[('active', '=', True)]"/>
-                    <filter string="Inactive" name="filter_inactive" domain="[('active', '=', False)]"/>
+                    <separator />
+                    <filter string="Active" name="filter_active" domain="[('active', '=', True)]" />
+                    <filter string="Inactive" name="filter_inactive"
+                        domain="[('active', '=', False)]" />
 
                     <group string="Manager">
-                        <filter string="Quản lý" name="group_by_manager" context="{'group_by': 'manager_id'}"/>
+                        <filter string="Manager" name="group_by_manager"
+                            context="{'group_by': 'manager_id'}" />
                     </group>
                 </search>
             </field>
@@ -88,7 +93,7 @@
             <field name="name">Centers</field>
             <field name="res_model">educare.center</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="educare_center_search_view"/>
+            <field name="search_view_id" ref="educare_center_search_view" />
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No centers found. Click to create your first center.

@@ -49,10 +49,10 @@
                     <field name="name" />
                     <field name="code" />
                     <separator />
-                    <filter string="Đang Hoạt Động"
+                    <filter string="Active"
                         name="filter_active"
                         domain="[('active', '=', True)]" />
-                    <filter string="Đã Lưu Trữ"
+                    <filter string="Inactive"
                         name="filter_inactive"
                         domain="[('active', '=', False)]" />
                     <group string="Group By">

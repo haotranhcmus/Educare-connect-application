@@ -1,0 +1,1487 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* educare_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-09 01:46+0000\n"
+"PO-Revision-Date: 2026-03-09 01:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,data_collection_note:educare_base.activity_sorting_1
+msgid ""
+"% đúng không có gợi ý / với gợi ý cơ thể nhẹ / với\n"
+"                gợi ý cơ thể đầy đủ"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__ablls_r
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "ABLLS-R"
+msgstr "ABLLS-R"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__academic
+msgid "Academic"
+msgstr "Học Tập"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_needaction
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_needaction
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__active
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__active
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__active
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__active
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_center_search_view
+msgid "Active"
+msgstr "Đang Hoạt Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__activity_line_ids
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_tree_view
+msgid "Activities"
+msgstr "Các Hoạt Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__description
+msgid "Activity Description"
+msgstr "Mô Tả Hoạt Động"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Activity Details"
+msgstr "Chi Tiết Hoạt Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__name
+msgid "Activity Name"
+msgstr "Tên Hoạt Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__activity_type
+msgid "Activity Type"
+msgstr "Loại Hoạt Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Add a description about the center..."
+msgstr "Thêm mô tả về trung tâm..."
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__notes
+msgid "Additional Notes"
+msgstr "Ghi Chú Thêm"
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__source_reference
+msgid "Additional reference information about the source"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__address
+msgid "Address"
+msgstr "Địa Chỉ"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__difficulty_level__advanced
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Advanced"
+msgstr "Nâng Cao"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_attachment_count
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_attachment_count
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__attainment
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Attainment Company"
+msgstr "Attainment Company"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__autism_helper
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Autism Helper"
+msgstr "Autism Helper"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__autism
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Autism Spectrum"
+msgstr "Rối Loạn Phổ Tự Kỷ"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Basic Information"
+msgstr "Thông Tin Cơ Bản"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__difficulty_level__beginner
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Beginner"
+msgstr "Cơ Bản"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__behavioral
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Behavioral"
+msgstr "Hành Vi"
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_cp
+msgid "Bại Não (Cerebral Palsy)"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__category
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Category"
+msgstr "Phân Loại"
+
+#. module: educare_base
+#: model:ir.ui.menu,name:educare_base.menu_educare_center
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Center"
+msgstr "Trung Tâm"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__code
+msgid "Center Code"
+msgstr "Mã Trung Tâm"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__name
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Center Name"
+msgstr "Tên Trung Tâm"
+
+#. module: educare_base
+#: model:ir.actions.act_window,name:educare_base.action_educare_center
+msgid "Centers"
+msgstr "Trung Tâm"
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_turn_2
+msgid ""
+"Chơi trò chơi board đơn giản. Dùng đồng hồ cát để chỉ \"lượt\"\n"
+"                rõ ràng. Khi trẻ chờ đúng → khen ngợi ngay lập tức."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_other
+msgid "Chẩn Đoán Khác"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_gdd
+msgid "Chậm Phát Triển Toàn Diện"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Code"
+msgstr "Mã"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__color
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__color
+msgid "Color Index"
+msgstr "Màu Sắc"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__communication
+msgid "Communication"
+msgstr "Giao Tiếp"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__company_id
+msgid "Company"
+msgstr "Công Ty"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Contact Information"
+msgstr "Thông Tin Liên Hệ"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__create_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__create_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__create_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__create_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__create_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__create_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__create_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__create_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__dsm5_code
+msgid "DSM-5 Code"
+msgstr "Mã DSM-5"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__dtt
+msgid "DTT"
+msgstr "DTT (Dạy Riêng Rẽ)"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_sorting_1
+msgid "DTT — Phân Loại Màu (Matching)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_manding_2
+msgid "DTT — Yêu Cầu Đồ Vật Ưa Thích"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__data_collection_note
+msgid "Data Collection Note"
+msgstr "Ghi Chú Thu Thập Dữ Liệu"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__description
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__description
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__description
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__description
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Description"
+msgstr "Mô Tả"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_form_view
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_domain_form_view
+msgid "Details"
+msgstr "Chi Tiết"
+
+#. module: educare_base
+#: model:ir.model,name:educare_base.model_educare_domain
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__domain_id
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_domain_form_view
+msgid "Development Domain"
+msgstr "Lĩnh Vực Phát Triển"
+
+#. module: educare_base
+#: model:ir.actions.act_window,name:educare_base.action_educare_domain
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_domain_tree_view
+msgid "Development Domains"
+msgstr "Lĩnh Vực Phát Triển"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__developmental
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Developmental Delay"
+msgstr "Chậm Phát Triển"
+
+#. module: educare_base
+#: model:ir.actions.act_window,name:educare_base.action_educare_diagnosis
+msgid "Diagnoses"
+msgstr "Chẩn Đoán"
+
+#. module: educare_base
+#: model:ir.ui.menu,name:educare_base.menu_educare_diagnosis
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_form_view
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_tree_view
+msgid "Diagnosis"
+msgstr "Chẩn Đoán"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__code
+msgid "Diagnosis Code"
+msgstr "Mã Chẩn Đoán"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_form_view
+msgid "Diagnosis Information"
+msgstr "Thông Tin Chẩn Đoán"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__name
+msgid "Diagnosis Name"
+msgstr "Tên Chẩn Đoán"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__difficulty_level
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Difficulty Level"
+msgstr "Mức Độ Khó"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__display_name
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__display_name
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__display_name
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__display_name
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.ui.menu,name:educare_base.menu_educare_domain
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Domain"
+msgstr "Lĩnh Vực"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__code
+msgid "Domain Code"
+msgstr "Mã Lĩnh Vực"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_domain_form_view
+msgid "Domain Information"
+msgstr "Thông Tin Lĩnh Vực"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__name
+msgid "Domain Name"
+msgstr "Tên Lĩnh Vực"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__duration_mins
+msgid "Duration (minutes)"
+msgstr "Thời Lượng (phút)"
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_handwashing_2
+msgid ""
+"Dùng backward chaining: Nhà trị liệu làm bước 1-5, trẻ tự làm\n"
+"                bước 6 (lau khô). Khi mastered bước 6 → thêm bước 5, v.v."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_turn_1
+msgid ""
+"Dùng thẻ hình minh họa giải thích \"Đến lượt tôi\" và \"Đến lượt\n"
+"                bạn\". Thực hành với nhà trị liệu trước khi vào trò chơi."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.ui.menu,name:educare_base.menu_educare_root
+msgid "Educare"
+msgstr "Educare"
+
+#. module: educare_base
+#: model:educare.center,name:educare_base.center_binhduong
+msgid "Educare Bình Dương"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model,name:educare_base.model_educare_center
+msgid "Educare Center"
+msgstr "Trung Tâm Educare"
+
+#. module: educare_base
+#: model:educare.center,name:educare_base.center_cantho
+msgid "Educare Cần Thơ"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model,name:educare_base.model_educare_diagnosis
+msgid "Educare Diagnosis Catalog"
+msgstr "Danh Mục Chẩn Đoán"
+
+#. module: educare_base
+#: model:educare.center,name:educare_base.center_hanoi
+msgid "Educare Hà Nội"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.center,name:educare_base.center_hcm
+msgid "Educare Hồ Chí Minh"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model,name:educare_base.model_educare_lesson_template
+msgid "Educare Lesson Template"
+msgstr "Mẫu Bài Học"
+
+#. module: educare_base
+#: model:ir.model,name:educare_base.model_educare_lesson_template_activity
+msgid "Educare Lesson Template Activity"
+msgstr "Hoạt Động Trong Mẫu Bài Học"
+
+#. module: educare_base
+#: model:educare.center,name:educare_base.center_danang
+msgid "Educare Đà Nẵng"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__email
+msgid "Email"
+msgstr "Email"
+
+#. module: educare_base
+#: model:educare.lesson.template,materials_needed:educare_base.template_tacting_objects
+msgid ""
+"Flashcards đồ vật thường ngày, đồ vật thật (cốc, bút,\n"
+"                giày...), bảng ghi nhận."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_follower_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_follower_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_partner_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_partner_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__icon
+msgid "Font Awesome Icon"
+msgstr "Icon"
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_domain__icon
+msgid "Font Awesome icon class (e.g., 'fa-solid fa-school')"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__prompt_level_suggested__full_physical
+msgid "Full Physical"
+msgstr "Hỗ Trợ Cơ Thể Đầy Đủ"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__genetic
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Genetic"
+msgstr "Di Truyền"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__prompt_level_suggested__gestural
+msgid "Gestural"
+msgstr "Gợi Ý Cử Chỉ"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,data_collection_note:educare_base.activity_instructions_1
+msgid "Ghi % phản ứng đúng trong 3 giây với mỗi lệnh cụ thể"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,data_collection_note:educare_base.activity_handwashing_2
+msgid ""
+"Ghi chú bước nào cần gợi ý, mức độ gợi ý\n"
+"                (I/V/G/PP/FP)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,data_collection_note:educare_base.activity_manding_2
+msgid ""
+"Ghi lại: Tự phát / Gợi ý lời nói / Gợi ý cử chỉ /\n"
+"                Không phản ứng"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_communication
+msgid "Giao Tiếp (Communication)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_turn_1
+msgid "Giới Thiệu Khái Niệm Luân Phiên"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_handwashing_1
+msgid "Giới Thiệu Task Analysis Rửa Tay"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_instructions_2
+msgid ""
+"Giới thiệu 1-2 lệnh mới. Nói lệnh → đợi 0 giây → hỗ trợ cơ thể\n"
+"                đầy đủ. Fade gợi ý theo Most-to-Least. Mastery: 3 lần đúng liên tiếp không gợi ý."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_tacting_2
+msgid ""
+"Giới thiệu 3 thẻ mới. Dùng errorless learning: trình bày thẻ +\n"
+"                nói tên ngay. Sau 3 lần, bắt đầu delay 1-2 giây trước khi gợi ý."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__group
+msgid "Group"
+msgstr "Nhóm"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_domain_search_view
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Group By"
+msgstr "Nhóm Theo"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__has_message
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__has_message
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_turn_1
+msgid "High-five + verbal praise"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_behavior
+msgid "Hành Vi (Behavior)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_instructions_2
+msgid "Học Lệnh Mới — Errorless Teaching"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_tacting_2
+msgid "Học Mới — 3 Đồ Vật Mới"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_academic
+msgid "Học Thuật (Academic)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_ds
+msgid "Hội Chứng Down"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__icd10_code
+msgid "ICD-10 Code"
+msgstr "Mã ICD-10"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__id
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__id
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__id
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__id
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__id
+msgid "ID"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__message_needaction
+#: model:ir.model.fields,help:educare_base.field_educare_diagnosis__message_needaction
+#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__message_has_error
+#: model:ir.model.fields,help:educare_base.field_educare_diagnosis__message_has_error
+#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_center_search_view
+msgid "Inactive"
+msgstr "Đã Lưu Trữ"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__prompt_level_suggested__independent
+msgid "Independent"
+msgstr "Độc Lập"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__difficulty_level__intermediate
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Intermediate"
+msgstr "Trung Cấp"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_is_follower
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_is_follower
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_id_mild
+msgid "Khuyết Tật Trí Tuệ — Nhẹ"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_id_mod
+msgid "Khuyết Tật Trí Tuệ — Trung Bình"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_adaptive
+msgid ""
+"Khả năng thích nghi với môi trường mới, chuyển đổi giữa các\n"
+"                hoạt động và linh hoạt trong thói quen."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_cognitive
+msgid ""
+"Khả năng tư duy, giải quyết vấn đề, ghi nhớ, chú ý và xử lý\n"
+"                thông tin nhận thức."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,materials_needed:educare_base.template_sorting_colors
+msgid ""
+"Khối hình học nhiều màu, hộp phân loại 3 ngăn, thẻ màu,\n"
+"                đồ vật thật nhiều màu."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_manding_1
+msgid "Khởi Động — Điểm Danh & Check-In"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_academic
+msgid ""
+"Kỹ năng học tập tiền học đường và học đường: đọc, viết, toán\n"
+"                và các khái niệm học thuật cơ bản."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_communication
+msgid ""
+"Kỹ năng ngôn ngữ tiếp nhận và diễn đạt, giao tiếp không lời,\n"
+"                và sử dụng ngôn ngữ trong các tình huống xã hội."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_social
+msgid ""
+"Kỹ năng tương tác với người khác, xây dựng mối quan hệ, nhận\n"
+"                biết cảm xúc và phát triển tình bạn."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_self_care
+msgid ""
+"Kỹ năng độc lập trong sinh hoạt hàng ngày: ăn uống, vệ sinh cá\n"
+"                nhân, mặc đồ và tự phục vụ."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__write_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__write_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__write_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__write_uid
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__write_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__write_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__write_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__write_date
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__template_id
+#: model:ir.ui.menu,name:educare_base.menu_educare_lesson_template
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Lesson Template"
+msgstr "Mẫu Bài Học"
+
+#. module: educare_base
+#: model:ir.actions.act_window,name:educare_base.action_educare_lesson_template
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_tree_view
+msgid "Lesson Templates"
+msgstr "Danh Sách Mẫu Bài Học"
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__source_url
+msgid "Link to the original lesson plan or resource"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_center_tree_view
+msgid "List of Centers"
+msgstr "Danh Sách Trung Tâm"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__logo
+msgid "Logo"
+msgstr "Logo"
+
+#. module: educare_base
+#: model:educare.lesson.template,name:educare_base.template_turn_taking
+msgid "Luân Phiên Trong Trò Chơi (Turn Taking)"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__manager_id
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_center_search_view
+msgid "Manager"
+msgstr "Quản Lý"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Materials"
+msgstr "Vật Liệu"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__materials_needed
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__materials
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Materials Needed"
+msgstr "Vật Liệu Cần Thiết"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_has_error
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_has_error
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_ids
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__motor
+msgid "Motor"
+msgstr "Vận Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__net
+msgid "NET"
+msgstr "NET (Dạy Trong Tình Huống Tự Nhiên)"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_sorting_2
+msgid "NET — Phân Loại Trong Hoạt Động Thực Tế"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_manding_3
+msgid "NET — Yêu Cầu Trong Hoạt Động Tự Nhiên"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__neurological
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Neurological"
+msgstr "Thần Kinh"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_cognitive
+msgid "Nhận Thức (Cognitive)"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.actions.act_window,help:educare_base.action_educare_center
+msgid "No centers found. Click to create your first center."
+msgstr "Chưa có trung tâm nào. Nhấn để tạo trung tâm đầu tiên."
+
+#. module: educare_base
+#: model_terms:ir.actions.act_window,help:educare_base.action_educare_diagnosis
+msgid "No diagnoses found. Click to create your first diagnosis."
+msgstr "Chưa có chẩn đoán nào. Nhấn để tạo chẩn đoán đầu tiên."
+
+#. module: educare_base
+#: model_terms:ir.actions.act_window,help:educare_base.action_educare_domain
+msgid "No domains found. Click to create your first domain."
+msgstr "Chưa có lĩnh vực nào. Nhấn để tạo lĩnh vực đầu tiên."
+
+#. module: educare_base
+#: model_terms:ir.actions.act_window,help:educare_base.action_educare_lesson_template
+msgid "No lesson templates found. Click to create your first template."
+msgstr "Chưa có mẫu bài học nào. Nhấn để tạo mẫu bài học đầu tiên."
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Notes"
+msgstr "Ghi Chú"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_needaction_counter
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_needaction_counter
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__activity_count
+msgid "Number of Activities"
+msgstr "Số Hoạt Động"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__message_has_error_counter
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__message_has_error_counter
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__message_needaction_counter
+#: model:ir.model.fields,help:educare_base.field_educare_diagnosis__message_needaction_counter
+#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__message_has_error_counter
+#: model:ir.model.fields,help:educare_base.field_educare_diagnosis__message_has_error_counter
+#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Objectives"
+msgstr "Mục Tiêu"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__original
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Original"
+msgstr "Tài Liệu Gốc"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__other
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__other
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Other"
+msgstr "Khác"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__prompt_level_suggested__partial_physical
+msgid "Partial Physical"
+msgstr "Hỗ Trợ Cơ Thể Nhẹ"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__phone
+msgid "Phone"
+msgstr "Số Điện Thoại"
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_motor_gross
+msgid ""
+"Phát triển các nhóm cơ lớn: đi, chạy, nhảy, leo trèo, giữ\n"
+"                thăng bằng và phối hợp cơ thể."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_motor_fine
+msgid ""
+"Phát triển cơ nhỏ ở bàn tay và ngón tay: cầm nắm, vẽ, cắt, xếp\n"
+"                hình và viết."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,name:educare_base.template_sorting_colors
+msgid "Phân Loại Màu Sắc và Hình Dạng Cơ Bản"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__play
+msgid "Play"
+msgstr "Vui Chơi"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_tacting_2
+msgid "Praise + token ngay sau phản ứng đúng"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_turn_3
+msgid "Preferred activity 5 phút"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__prompt_level_suggested
+msgid "Prompt Level Suggested"
+msgstr "Mức Độ Gợi Ý Đề Xuất"
+
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__reinforcement_type
+msgid "Reinforcement Type"
+msgstr "Loại Củng Cố"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_instructions_2
+msgid "Reinforcer trực tiếp sau mỗi phản ứng đúng"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_center__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_expressive
+msgid "Rối Loạn Ngôn Ngữ Diễn Đạt"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_receptive
+msgid "Rối Loạn Ngôn Ngữ Tiếp Nhận"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_sli
+msgid "Rối Loạn Ngôn Ngữ Đặc Hiệu"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_asd
+msgid "Rối Loạn Phổ Tự Kỷ"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_adhd
+msgid "Rối Loạn Tăng Động Giảm Chú Ý"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.diagnosis,name:educare_base.diagnosis_spd
+msgid "Rối Loạn Xử Lý Giác Quan"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,name:educare_base.template_handwashing
+msgid "Rửa Tay Đúng Quy Trình 6 Bước"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__sensory
+msgid "Sensory"
+msgstr "Cảm Giác"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__sensory
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Sensory Processing"
+msgstr "Xử Lý Cảm Giác"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_diagnosis__sequence
+#: model:ir.model.fields,field_description:educare_base.field_educare_domain__sequence
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__sequence
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template_activity__sequence
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_domain_search_view
+msgid "Sequence"
+msgstr "Thứ Tự"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__session_duration_mins
+msgid "Session Duration (minutes)"
+msgstr "Thời Lượng Buổi Học (phút)"
+
+#. module: educare_base
+#: model:ir.ui.menu,name:educare_base.menu_educare_config
+msgid "Setting"
+msgstr "Cài Đặt"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__social
+msgid "Social"
+msgstr "Xã Hội"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__source
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Source Information"
+msgstr "Thông Tin Nguồn"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__source_reference
+msgid "Source Reference"
+msgstr "Tham Khảo Nguồn"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__source_url
+msgid "Source URL"
+msgstr "Đường Dẫn Nguồn"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_diagnosis__category__speech
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_diagnosis_search_view
+msgid "Speech/Language"
+msgstr "Ngôn Ngữ / Lời Nói"
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_handwashing_2
+msgid "Sticker sau khi hoàn thành chuỗi"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.view_center_form
+msgid "Street Address"
+msgstr "Địa Chỉ"
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Suggested Prompts and Reinforcement"
+msgstr "Gợi Ý & Củng Cố"
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_instructions_1
+msgid ""
+"Sử dụng 5 lệnh đã mastered. Đan xen với lệnh mới theo tỷ lệ\n"
+"                3:1 (cũ:mới). Giữ nhịp độ nhanh để duy trì chú ý."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__target_age_max
+msgid "Target Age Max (months)"
+msgstr "Độ Tuổi Tối Đa (tháng)"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__target_age_min
+msgid "Target Age Min (months)"
+msgstr "Độ Tuổi Tối Thiểu (tháng)"
+
+#. module: educare_base
+#. odoo-python
+#: code:addons/educare_base/models/educare_lesson_template.py:0
+#, python-format
+msgid ""
+"Target age max (%s months) must be greater than or equal to target age min "
+"(%s months)."
+msgstr "Độ tuổi tối đa (%s tháng) phải lớn hơn hoặc bằng độ tuổi tối thiểu (%s tháng)."
+
+#. module: educare_base
+#: model:ir.model.constraint,message:educare_base.constraint_educare_lesson_template_target_age_check
+msgid "Target ages must be non-negative."
+msgstr "Độ tuổi mục tiêu phải không âm."
+
+#. module: educare_base
+#: model:educare.lesson.template,materials_needed:educare_base.template_handwashing
+msgid ""
+"Task analysis card 6 bước có hình ảnh, xà phòng, khăn\n"
+"                lau, sticker chart."
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__code
+msgid "Template Code"
+msgstr "Mã Mẫu Bài Học"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__name
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Template Name"
+msgstr "Tên Mẫu Bài Học"
+
+#. module: educare_base
+#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__objectives_text
+msgid "Template Objectives"
+msgstr "Mục Tiêu Bài Học"
+
+#. module: educare_base
+#: model:ir.model.constraint,message:educare_base.constraint_educare_center_code_unique
+msgid "The center code must be unique."
+msgstr "Mã trung tâm phải là duy nhất."
+
+#. module: educare_base
+#: model:ir.model.constraint,message:educare_base.constraint_educare_diagnosis_code_unique
+msgid "The diagnosis code must be unique."
+msgstr "Mã chẩn đoán phải là duy nhất."
+
+#. module: educare_base
+#: model:ir.model.constraint,message:educare_base.constraint_educare_domain_code_unique
+msgid "The domain code must be unique."
+msgstr "Mã lĩnh vực phải là duy nhất."
+
+#. module: educare_base
+#: model:ir.model.constraint,message:educare_base.constraint_educare_lesson_template_code_unique
+msgid "The template code must be unique."
+msgstr "Mã mẫu bài học phải là duy nhất."
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_adaptive
+msgid "Thích Ứng (Adaptive)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_turn_3
+msgid "Thư Giãn & Tổng Kết"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_handwashing_2
+msgid "Thực Hành Rửa Tay — Backward Chaining"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_manding_3
+msgid "Tiếp cận hoạt động được yêu cầu"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,materials_needed:educare_base.template_following_instructions
+msgid ""
+"Token board, danh sách hướng dẫn 10 lệnh cơ bản,\n"
+"                reinforcer ưa thích."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_tacting_1
+msgid "Token economy"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_instructions_1
+msgid "Token economy (5 token → reinforcer)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_sorting_1
+msgid "Token mỗi 3 phân loại đúng"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_turn_2
+msgid "Token mỗi lần luân phiên thành công"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__activity_type__transition
+msgid "Transition"
+msgstr "Chuyển Tiếp"
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_manding_3
+msgid ""
+"Trong hoạt động vui chơi tự do, tạo tình huống tự nhiên để trẻ\n"
+"                cần yêu cầu (đặt đồ chơi ngoài tầm với, giữ mảnh ghép hình, v.v.)."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_sorting_2
+msgid ""
+"Trong lúc dọn đồ chơi, khuyến khích trẻ để đồ chơi theo màu\n"
+"                vào đúng hộp. Áp dụng tự nhiên không có trial structure rõ ràng."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_turn_2
+msgid "Trò Chơi Luân Phiên Có Cấu Trúc"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,materials_needed:educare_base.template_turn_taking
+msgid ""
+"Trò chơi board game đơn giản (Bingo, xúc xắc), đồng hồ\n"
+"                cát, thẻ \"Đến lượt tôi / Đến lượt bạn\"."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_manding_1
+msgid ""
+"Trẻ chào hỏi nhà trị liệu, ngồi vào vị trí. Điểm danh bằng\n"
+"                tên."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,objectives_text:educare_base.template_tacting_objects
+msgid ""
+"Trẻ sẽ có thể gọi tên ít nhất 20 đồ vật quen thuộc khi\n"
+"                được trình bày hình ảnh hoặc đồ vật thật trong 4/5 lần thử."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,objectives_text:educare_base.template_manding_basic
+msgid ""
+"Trẻ sẽ có thể yêu cầu đồ vật hoặc hoạt động mong muốn bằng\n"
+"                lời nói đơn hoặc cụm từ 2 từ trong 8/10 cơ hội."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,objectives_text:educare_base.template_handwashing
+msgid ""
+"Trẻ sẽ hoàn thành chuỗi rửa tay 6 bước độc lập (không cần\n"
+"                gợi ý) trong 3 lần liên tiếp."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,objectives_text:educare_base.template_turn_taking
+msgid ""
+"Trẻ sẽ luân phiên với người khác trong trò chơi có cấu\n"
+"                trúc mà không có hành vi thách thức trong 8/10 lần thử."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,objectives_text:educare_base.template_sorting_colors
+msgid ""
+"Trẻ sẽ phân loại đúng đồ vật theo màu sắc (đỏ, xanh, vàng)\n"
+"                và hình dạng (tròn, vuông, tam giác) trong 9/10 lần thử."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,objectives_text:educare_base.template_following_instructions
+msgid ""
+"Trẻ sẽ thực hiện hướng dẫn 1 bước (ngồi xuống, đứng lên,\n"
+"                đưa tay, v.v.) trong vòng 5 giây sau khi được yêu cầu, 9/10 lần thử."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,name:educare_base.template_following_instructions
+msgid "Tuân Theo Hướng Dẫn 1 Bước Đơn Giản"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__twinkl
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "Twinkl"
+msgstr "Twinkl"
+
+#. module: educare_base
+#: model:ir.model.fields,help:educare_base.field_educare_center__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "From (months)"
+msgstr "Từ (tháng)"
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_self_care
+msgid "Tự Chăm Sóc (Self-Care)"
+msgstr ""
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template__source__vbmapp
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_search_view
+msgid "VB-MAPP"
+msgstr "VB-MAPP"
+
+#. module: educare_base
+#: model:ir.model.fields.selection,name:educare_base.selection__educare_lesson_template_activity__prompt_level_suggested__verbal
+msgid "Verbal"
+msgstr "Gợi Ý Lời Nói"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_sorting_2
+msgid "Verbal praise + access to activity"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_manding_1
+msgid "Verbal praise + token"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_handwashing_1
+msgid "Verbal praise cho từng bước đúng"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_motor_gross
+msgid "Vận Động Thô (Gross Motor)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_motor_fine
+msgid "Vận Động Tinh (Fine Motor)"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_handwashing_1
+msgid ""
+"Xem qua card 6 bước cùng trẻ: (1) Mở nước, (2) Làm ướt tay,\n"
+"                (3) Lấy xà phòng, (4) Chà tay 20 giây, (5) Rửa sạch, (6) Lau khô. Trẻ chỉ vào từng\n"
+"                bước."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.domain,name:educare_base.domain_social
+msgid "Xã Hội (Social)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,name:educare_base.template_manding_basic
+msgid "Yêu Cầu Bằng Lời Nói — Cơ Bản (Manding)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_instructions_1
+msgid "Ôn Tập — Các Lệnh Đã Học"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,name:educare_base.activity_tacting_1
+msgid "Ôn Tập — Đặt Tên Vốn Từ Cũ"
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_tacting_1
+msgid ""
+"Ôn lại 10 thẻ đã học. Mỗi thẻ đặt tên đúng nhận 1 token. 5\n"
+"                token đổi reinforcer ưa thích."
+msgstr ""
+
+
+#. module: educare_base
+#: model:educare.domain,description:educare_base.domain_behavior
+msgid ""
+"Điều chỉnh hành vi, kiểm soát cảm xúc, giảm hành vi thách thức\n"
+"                và xây dựng hành vi tích cực."
+msgstr ""
+
+
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_manding_2
+msgid ""
+"Đặt 2-3 đồ vật trước mặt trẻ. Tạo động lực (giữ đồ vật). Chờ\n"
+"                yêu cầu tự nhiên. Nếu không có phản ứng sau 3 giây, dùng gợi ý lời nói."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_sorting_1
+msgid ""
+"Đặt 3 hộp màu (đỏ/xanh/vàng) và đồ vật hỗn hợp. Hướng dẫn trẻ\n"
+"                đặt từng đồ vật vào đúng hộp màu. Bắt đầu với 1 màu, tăng dần."
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,name:educare_base.template_tacting_objects
+msgid "Đặt Tên Đồ Vật Quen Thuộc (Tacting)"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,data_collection_note:educare_base.activity_turn_2
+msgid ""
+"Đếm số lần luân phiên thành công / tổng số cơ hội.\n"
+"                Ghi chú hành vi thách thức nếu có."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:educare.lesson.template.activity,description:educare_base.activity_turn_3
+msgid ""
+"Đếm token kiếm được. Đổi reinforcer. Tóm tắt những gì trẻ đã\n"
+"                làm tốt."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "To (months)"
+msgstr "Đến (tháng)"
+
+#. module: educare_base
+#: model:educare.lesson.template.activity,reinforcement_type:educare_base.activity_manding_2
+msgid "Đồ vật được yêu cầu + verbal praise"
+msgstr ""
+
+#. module: educare_base
+#: model:educare.lesson.template,materials_needed:educare_base.template_manding_basic
+msgid ""
+"Đồ vật ưa thích của trẻ (đồ chơi, thức ăn), bảng chọn lựa\n"
+"                hình ảnh, token board."
+msgstr ""
+
+#. module: educare_base
+#: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
+msgid "Target Age (months)"
+msgstr "Độ Tuổi Mục Tiêu (tháng)"
