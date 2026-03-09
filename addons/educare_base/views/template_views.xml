@@ -34,9 +34,9 @@
                         </group>
 
                         <group>
-                            <group string="Độ Tuổi Mục Tiêu (tháng)">
-                                <field name="target_age_min" string="Từ (tháng)" />
-                                <field name="target_age_max" string="Đến (tháng)" />
+                            <group string="Target Age (months)">
+                                <field name="target_age_min" string="From (months)" />
+                                <field name="target_age_max" string="To (months)" />
                             </group>
                             <!-- Cột phải để trống hoặc thêm field khác nếu cần -->
                             <group />
