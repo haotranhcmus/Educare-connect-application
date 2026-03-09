@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <data>
+
+                <!-- Root Application Menu -->
+                <menuitem id="menu_educare_root"
+                        name="Educare"
+                        web_icon="educare_base,static/description/icon.png"
+                        sequence="100" />
+
+                <!-- Configuration Sub-menu -->
+                <menuitem id="menu_educare_config"
+                        name="Setting"
+                        parent="menu_educare_root"
+                        sequence="90" />
+
+                <!-- Center -->
+                <menuitem id="menu_educare_center"
+                        name="Center"
+                        parent="menu_educare_config"
+                        action="action_educare_center"
+                        sequence="10" />
+
+                <!-- Diagnosis -->
+                <menuitem id="menu_educare_diagnosis"
+                        name="Diagnosis"
+                        parent="menu_educare_config"
+                        action="action_educare_diagnosis"
+                        sequence="20" />
+
+                <!-- Domain -->
+                <menuitem id="menu_educare_domain"
+                        name="Domain"
+                        parent="menu_educare_config"
+                        action="action_educare_domain"
+                        sequence="30" />
+
+                <!-- Lesson Template -->
+                <menuitem id="menu_educare_lesson_template"
+                        name="Lesson Template"
+                        parent="menu_educare_config"
+                        action="action_educare_lesson_template"
+                        sequence="40" />
+
+        </data>
+</odoo>
