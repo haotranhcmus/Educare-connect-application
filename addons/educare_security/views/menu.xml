@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- User Management Sub-menu -->
+        <menuitem id="menu_educare_user_management"
+            name="User Management"
+            parent="educare_base.menu_educare_root"
+            sequence="80"
+            groups="educare_security.group_admin" />
+
+        <menuitem id="menu_educare_user_profile"
+            name="User Profile"
+            parent="menu_educare_user_management"
+            action="action_educare_user_profile"
+            sequence="10" />
+
+        <menuitem id="menu_educare_audit_log"
+            name="System Log"
+            parent="menu_educare_user_management"
+            action="action_educare_audit_log"
+            sequence="20"
+            groups="educare_security.group_admin" />
+    </data>
+</odoo>
