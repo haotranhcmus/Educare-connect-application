@@ -4,7 +4,7 @@ from odoo import models, fields, api
 class EducareUserProfile(models.Model):
     _name = 'educare.user.profile'
     _description = 'Educare User Profile'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'educare.audit.mixin']
     _rec_name = 'display_name'
 
     # ── Nhóm 1: Liên kết User ────────────────────────────────────────────────
@@ -93,15 +93,14 @@ class EducareUserProfile(models.Model):
 
     # ── Nhóm 5: Phụ huynh (Parent role) ──────────────────────────────────────
     parent_relation = fields.Selection([
-        ('father', 'Cha'),
-        ('mother', 'Mẹ'),
-        ('guardian', 'Người Giám Hộ'),
-        ('other', 'Khác'),
+        ('father', 'Father'),
+        ('mother', 'Mother'),
+        ('guardian', 'Guardian'),
+        ('other', 'Other'),
     ], string='Relationship')
 
-    student_ids = fields.One2many(
-        'res.partner',          # placeholder — đổi khi có educare.student
-        'id',
+    student_ids = fields.Many2many(
+        'res.partner',
         string='Students',
         compute='_compute_student_ids',
     )
@@ -118,9 +117,9 @@ class EducareUserProfile(models.Model):
     # ── SQL Constraints ───────────────────────────────────────────────────────
     _sql_constraints = [
         ('unique_user', 'UNIQUE(user_id)',
-         'Mỗi user chỉ có 1 profile!'),
+         'Each user can only have one profile!'),
         ('unique_employee_code', 'UNIQUE(employee_code)',
-         'Mã nhân viên phải là duy nhất!'),
+         'Employee code must be unique!'),
     ]
 
     # ── Computed Methods ──────────────────────────────────────────────────────
@@ -141,9 +140,9 @@ class EducareUserProfile(models.Model):
             rec.current_student_count = 0
 
     def _compute_student_ids(self):
-        # Placeholder
+        # Placeholder — will be wired when educare_student is ready
         for rec in self:
-            rec.student_ids = False
+            rec.student_ids = self.env['res.partner']
 
     # ── Action Methods ────────────────────────────────────────────────────────
     def action_sync_security_group(self):
@@ -165,8 +164,24 @@ class EducareUserProfile(models.Model):
                 rec.user_id.groups_id += group_map[rec.role] # Thêm đúng group
 
     # ── ORM Overrides ─────────────────────────────────────────────────────────
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records.filtered('role').action_sync_security_group()
+        return records
+
     def write(self, vals):
         res = super().write(vals)
         if 'role' in vals:
             self.action_sync_security_group()
         return res
+    
+
+class ResUsers(models.Model):
+    _inherit = 'res.users'
+
+    educare_profile_ids = fields.One2many(
+        'educare.user.profile',
+        'user_id',
+        string='Educare Profiles',
+    )

@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data noupdate="0">
-
-        <!-- Module Category: hiển thị trong Settings → Users → Access Rights -->
+        <!-- Educare Module Category -->
         <record id="module_category_educare" model="ir.module.category">
             <field name="name">Educare</field>
             <field name="description">Educare IEP Management System</field>
             <field name="sequence">200</field>
         </record>
 
-        <!-- Group 1: Parent — base level, không implied gì -->
+        <!-- Educare Parent Groups -->
         <record id="group_parent" model="res.groups">
             <field name="name">Parent</field>
             <field name="category_id" ref="module_category_educare" />
-            <field name="comment">Phụ huynh — chỉ đọc thông tin con mình</field>
+            <field name="comment">Parent — read-only access to own child's information</field>
         </record>
 
-        <!-- Group 2: Teacher — kế thừa Parent -->
+        <!-- Educare Teacher Groups-->
         <record id="group_teacher" model="res.groups">
             <field name="name">Teacher</field>
             <field name="category_id" ref="module_category_educare" />
             <field name="implied_ids" eval="[(4, ref('group_parent'))]" />
-            <field name="comment">Giáo viên — quản lý hồ sơ HS phân công</field>
+            <field name="comment">Teacher — manages assigned student records</field>
         </record>
 
-        <!-- Group 3: Supervisor — kế thừa Teacher (và qua đó kế thừa Parent) -->
+        <!-- Educare Supervisor Groups-->
         <record id="group_supervisor" model="res.groups">
             <field name="name">Supervisor</field>
             <field name="category_id" ref="module_category_educare" />
             <field name="implied_ids" eval="[(4, ref('group_teacher'))]" />
-            <field name="comment">BCBA/Supervisor — giám sát toàn center</field>
+            <field name="comment">Supervisor (BCBA) — oversees all operations within a center</field>
         </record>
 
-        <!-- Group 4: Admin — kế thừa tất cả qua chain -->
+
+        <!-- Educare Admin Groups-->
         <record id="group_admin" model="res.groups">
             <field name="name">Admin</field>
             <field name="category_id" ref="module_category_educare" />
             <field name="implied_ids" eval="[(4, ref('group_supervisor'))]" />
-            <field name="comment">Admin — toàn quyền hệ thống</field>
+            <field name="users" eval="[(4, ref('base.user_admin'))]" />
+            <field name="comment">Admin — full system access across all centers</field>
         </record>
-
     </data>
 </odoo>

@@ -31,7 +31,7 @@ class EducareAuditLog(models.Model):
         'res.users',
         string='User',
         required=True,
-        ondelete='set null',
+        ondelete='restrict',
         readonly=True,
         index=True,
     )
@@ -73,9 +73,9 @@ class EducareAuditLog(models.Model):
     @api.depends('model_name', 'record_name', 'action')
     def _compute_display_name(self):
         action_labels = {
-            'create': 'Tạo',
-            'write': 'Sửa',
-            'unlink': 'Xóa',
+            'create': 'Create',
+            'write': 'Update',
+            'unlink': 'Delete',
         }
         for rec in self:
             label = action_labels.get(rec.action, '')
