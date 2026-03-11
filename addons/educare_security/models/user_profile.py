@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class EducareUserProfile(models.Model):
@@ -11,9 +12,17 @@ class EducareUserProfile(models.Model):
     user_id = fields.Many2one(
         'res.users',
         string='User',
-        required=True,
         ondelete='cascade',
         index=True,
+    )
+    # Dùng khi tạo mới profile (chưa có user_id) — auto tạo res.users
+    full_name = fields.Char(
+        string='Full Name',
+        help='Nhập tên người dùng. Hệ thống sẽ tự tạo tài khoản khi lưu.',
+    )
+    login = fields.Char(
+        string='Login (Email)',
+        help='Nhập email/login cho tài khoản mới.',
     )
     display_name = fields.Char(
         string='Display Name',
@@ -123,16 +132,17 @@ class EducareUserProfile(models.Model):
     ]
 
     # ── Computed Methods ──────────────────────────────────────────────────────
-    @api.depends('user_id', 'user_id.name', 'role')
+    @api.depends('user_id', 'user_id.name', 'role', 'full_name')
     def _compute_display_name(self):
         for rec in self:
             role_label = dict(
                 rec._fields['role'].selection
             ).get(rec.role, '')
-            if rec.user_id:
-                rec.display_name = f"{rec.user_id.name} ({role_label})"
+            name = rec.user_id.name if rec.user_id else (rec.full_name or '')
+            if name and role_label:
+                rec.display_name = f"{name} ({role_label})"
             else:
-                rec.display_name = ''
+                rec.display_name = name or ''
 
     def _compute_student_count(self):
         # Placeholder — wire khi educare_student sẵn sàng
@@ -145,35 +155,53 @@ class EducareUserProfile(models.Model):
             rec.student_ids = self.env['res.partner']
 
     # ── Action Methods ────────────────────────────────────────────────────────
-    def action_sync_security_group(self):
-        """Đồng bộ Odoo security group theo role selection"""
+    def _sync_security_group(self):
+        """Tự động gán Odoo security group theo role selection (internal use)."""
         group_map = {
             'admin': self.env.ref('educare_security.group_admin'),
             'supervisor': self.env.ref('educare_security.group_supervisor'),
             'teacher': self.env.ref('educare_security.group_teacher'),
             'parent': self.env.ref('educare_security.group_parent'),
         }
-        # Gộp tất cả groups thành 1 recordset để xóa cùng lúc
         all_groups = sum(
             group_map.values(),
             self.env['res.groups']
         )
         for rec in self:
             if rec.role and rec.user_id:
-                rec.user_id.groups_id -= all_groups          # Xóa tất cả
-                rec.user_id.groups_id += group_map[rec.role] # Thêm đúng group
+                rec.user_id.groups_id -= all_groups
+                rec.user_id.groups_id += group_map[rec.role]
 
     # ── ORM Overrides ─────────────────────────────────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('user_id'):
+                full_name = (vals.get('full_name') or '').strip()
+                login = (vals.get('login') or '').strip()
+                if not full_name:
+                    raise UserError(_('Vui lòng nhập Full Name để tạo tài khoản người dùng.'))
+                if not login:
+                    raise UserError(_('Vui lòng nhập Login (Email) để tạo tài khoản người dùng.'))
+                # Kiểm tra login chưa được dùng
+                if self.env['res.users'].sudo().search([('login', '=', login)], limit=1):
+                    raise UserError(_('Login "%s" đã tồn tại. Vui lòng dùng email khác.') % login)
+                new_user = self.env['res.users'].sudo().with_context(
+                    no_reset_password=True
+                ).create({
+                    'name': full_name,
+                    'login': login,
+                    'email': login,
+                })
+                vals['user_id'] = new_user.id
         records = super().create(vals_list)
-        records.filtered('role').action_sync_security_group()
+        records.filtered('role')._sync_security_group()
         return records
 
     def write(self, vals):
         res = super().write(vals)
         if 'role' in vals:
-            self.action_sync_security_group()
+            self._sync_security_group()
         return res
     
 
