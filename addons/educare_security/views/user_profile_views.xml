@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ==================== FORM VIEW ==================== -->
+        <record id="educare_user_profile_form_view" model="ir.ui.view">
+            <field name="name">Educare User Profile Form</field>
+            <field name="model">educare.user.profile</field>
+            <field name="arch" type="xml">
+                <form string="User Profile">
+
+                    <!-- HEADER: Status bar only (sync is automatic) -->
+                    <header>
+                        <field name="status"
+                            widget="statusbar"
+                            statusbar_visible="active,suspended" />
+                    </header>
+
+                    <sheet>
+
+                        <!-- Avatar + Main Information -->
+                        <div class="oe_title">
+                            <field name="avatar"
+                                widget="image"
+                                class="oe_avatar"
+                                options="{'preview_image': 'avatar', 'size': [128, 128]}" />
+
+                            <group>
+                                <!-- Tạo mới: nhập full_name + login để tự động tạo res.users -->
+                                <field name="full_name"
+                                    invisible="user_id"
+                                    required="not user_id"
+                                    placeholder="e.g. Nguyễn Văn A" />
+                                <field name="login"
+                                    invisible="user_id"
+                                    required="not user_id"
+                                    placeholder="e.g. nguyenvana@example.com" />
+                                <!-- Khi đã tạo: hiển thị user liên kết (readonly) -->
+                                <field name="user_id"
+                                    invisible="not user_id"
+                                    readonly="1" />
+                                <field name="role" />
+                                <field name="center_id" invisible="role == 'parent'" />
+                                <field name="employee_code" invisible="role == 'parent'" />
+                            </group>
+                        </div>
+
+                        <!-- Notebook: 4 tabs -->
+                        <notebook>
+
+                            <!-- Tab 1: Information -->
+                            <page string="Information" name="info_tab">
+                                <group>
+                                    <group string="Contact &amp; Work">
+                                        <field name="email" />
+                                        <field name="phone" />
+                                        <field name="job_title" />
+                                        <field name="department" />
+                                    </group>
+                                    <group string="Login Information">
+                                        <field name="date_joined" />
+                                        <field name="last_login" />
+                                        <field name="login_count" />
+                                    </group>
+                                </group>
+                            </page>
+
+                            <!-- Tab 2: Expertise (hidden for Parent) -->
+                            <page string="Expertise" name="expertise_tab"
+                                invisible="role == 'parent'">
+                                <group>
+                                    <group string="Professional Skills">
+                                        <field name="specialization" />
+                                        <field name="certification" />
+                                        <field name="years_experience" />
+                                    </group>
+                                    <group string="Students">
+                                        <field name="max_students" />
+                                        <field name="current_student_count" readonly="1" />
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="bio" colspan="2" string="Biography" />
+                                </group>
+                            </page>
+
+                            <!-- Tab 3: Parent (only visible for Parent role) -->
+                            <page string="Parent" name="parent_tab"
+                                invisible="role != 'parent'">
+                                <group>
+                                    <group string="Parent Information">
+                                        <field name="parent_relation" />
+                                        <field name="preferred_contact" />
+                                        <field name="receive_notifications" />
+                                    </group>
+                                    <group string="Child's Center">
+                                        <field name="center_id" />
+                                    </group>
+                                </group>
+                                <field name="student_ids" readonly="1">
+                                    <tree string="Student List">
+                                        <field name="name" />
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <!-- Tab 4: Security (Admin only) -->
+                            <page string="Security" name="security_tab"
+                                groups="educare_security.group_admin">
+                                <group>
+                                    <group string="Account Lock">
+                                        <field name="account_locked" />
+                                        <field name="lock_reason"
+                                            invisible="not account_locked" />
+                                        <field name="two_factor_enabled" />
+                                    </group>
+                                    <group string="Failed Login Attempts">
+                                        <field name="failed_login_count" readonly="1" />
+                                        <field name="last_failed_login" readonly="1" />
+                                    </group>
+                                </group>
+                            </page>
+
+                        </notebook>
+
+                    </sheet>
+
+                    <!-- CHATTER -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="activity_ids" widget="mail_activity" />
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="educare_user_profile_tree_view" model="ir.ui.view">
+            <field name="name">Educare User Profile Tree</field>
+            <field name="model">educare.user.profile</field>
+            <field name="arch" type="xml">
+                <tree string="User Profiles" decoration-danger="status == 'suspended'"
+                    decoration-muted="status == 'inactive'">
+                    <field name="avatar"
+                        widget="image"
+                        options="{'size': [32, 32]}"
+                        string=" " />
+                    <field name="user_id" string="User" />
+                    <field name="role" string="Role" />
+                    <field name="center_id" string="Center" />
+                    <field name="status" string="Status" />
+                    <field name="employee_code" string="Employee Code" />
+                    <field name="date_joined" string="Date Joined" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- ==================== SEARCH VIEW ==================== -->
+        <record id="educare_user_profile_search_view" model="ir.ui.view">
+            <field name="name">Educare User Profile Search</field>
+            <field name="model">educare.user.profile</field>
+            <field name="arch" type="xml">
+                <search string="Search User Profile">
+
+                    <!-- Search fields -->
+                    <field name="user_id" string="User" />
+                    <field name="employee_code" string="Employee Code" />
+                    <field name="email" string="Email" />
+                    <field name="phone" string="Phone" />
+
+                    <separator />
+
+                    <!-- Filters by role -->
+                    <filter string="Admin" name="filter_admin"
+                        domain="[('role', '=', 'admin')]" />
+                    <filter string="Supervisor" name="filter_supervisor"
+                        domain="[('role', '=', 'supervisor')]" />
+                    <filter string="Teacher" name="filter_teacher"
+                        domain="[('role', '=', 'teacher')]" />
+                    <filter string="Parent" name="filter_parent"
+                        domain="[('role', '=', 'parent')]" />
+
+                    <separator />
+
+                    <!-- Filters by status -->
+                    <filter string="Active" name="filter_active"
+                        domain="[('status', '=', 'active')]" />
+                    <filter string="Inactive" name="filter_inactive"
+                        domain="[('status', '=', 'inactive')]" />
+                    <filter string="Suspended" name="filter_suspended"
+                        domain="[('status', '=', 'suspended')]" />
+
+                    <separator />
+
+                    <!-- Filter Locked -->
+                    <filter string="Account Locked" name="filter_locked"
+                        domain="[('account_locked', '=', True)]" />
+
+                    <!-- Group By -->
+                    <group string="Group By">
+                        <filter string="Role" name="group_by_role"
+                            context="{'group_by': 'role'}" />
+                        <filter string="Center" name="group_by_center"
+                            context="{'group_by': 'center_id'}" />
+                        <filter string="Status" name="group_by_status"
+                            context="{'group_by': 'status'}" />
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+        <!-- ==================== ACTION ==================== -->
+        <record id="action_educare_user_profile" model="ir.actions.act_window">
+            <field name="name">User Profile</field>
+            <field name="res_model">educare.user.profile</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_filter_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No user profiles found.
+                </p>
+                <p>Tạo profile mới: nhập Full Name, Login (Email) và Role.
+                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền tương ứng.
+                    Mọi thay đổi được ghi lại trong Audit Log.</p>
+            </field>
+        </record>
+
+    </data>
+
+</odoo>

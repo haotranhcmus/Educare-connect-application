@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ══════════════════════════════════════════════════════
+         USER PROFILE RULES
+    ══════════════════════════════════════════════════════ -->
+
+        <!--
+      Parent: chỉ đọc profile của chính mình
+      perm_write/create/unlink = False → những op này kiểm soát bởi ACL, không phải rule
+    -->
+        <record id="rule_user_profile_parent" model="ir.rule">
+            <field name="name">User Profile: Parent sees own</field>
+            <field name="model_id" ref="model_educare_user_profile" />
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('educare_security.group_parent'))]" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="False" />
+            <field name="perm_create" eval="False" />
+            <field name="perm_unlink" eval="False" />
+        </record>
+
+        <!--
+      Teacher: thấy profile mình + tất cả profiles cùng center
+      OR logic: user_id = mình HOẶC center_id thuộc centers của mình
+    -->
+        <record id="rule_user_profile_teacher" model="ir.rule">
+            <field name="name">User Profile: Teacher sees same center</field>
+            <field name="model_id" ref="model_educare_user_profile" />
+            <field name="domain_force">['|',
+                ('user_id', '=', user.id),
+                ('center_id', 'in', user.educare_profile_ids.center_id.ids)
+                ]</field>
+            <field name="groups" eval="[(4, ref('educare_security.group_teacher'))]" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="False" />
+            <field name="perm_create" eval="False" />
+            <field name="perm_unlink" eval="False" />
+        </record>
+
+        <!--
+      Supervisor: thấy tất cả profiles trong center của mình
+      Không khai báo perm_* → mặc định True cho tất cả operations
+    -->
+        <record id="rule_user_profile_supervisor" model="ir.rule">
+            <field name="name">User Profile: Supervisor sees all in center</field>
+            <field name="model_id" ref="model_educare_user_profile" />
+            <field name="domain_force">[('center_id', 'in', user.educare_profile_ids.center_id.ids)]</field>
+            <field name="groups" eval="[(4, ref('educare_security.group_supervisor'))]" />
+        </record>
+
+        <!--
+      Admin: thấy tất cả — domain (1=1) luôn True
+    -->
+        <record id="rule_user_profile_admin" model="ir.rule">
+            <field name="name">User Profile: Admin sees all</field>
+            <field name="model_id" ref="model_educare_user_profile" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('educare_security.group_admin'))]" />
+        </record>
+
+
+        <!-- ══════════════════════════════════════════════════════
+         AUDIT LOG RULES
+    ══════════════════════════════════════════════════════ -->
+
+        <!--
+      Supervisor: chỉ thấy audit log của center mình
+      Teacher và Parent không có rule → không thấy audit log gì cả
+      (được kiểm soát ở tầng ACL — không có perm_read cho group_teacher/parent)
+    -->
+        <record id="rule_audit_log_supervisor" model="ir.rule">
+            <field name="name">Audit Log: Supervisor sees center logs</field>
+            <field name="model_id" ref="model_educare_audit_log" />
+            <field name="domain_force">[('center_id', 'in', user.educare_profile_ids.center_id.ids)]</field>
+            <field name="groups" eval="[(4, ref('educare_security.group_supervisor'))]" />
+        </record>
+
+        <!--
+      Admin: thấy tất cả audit logs
+    -->
+        <record id="rule_audit_log_admin" model="ir.rule">
+            <field name="name">Audit Log: Admin sees all</field>
+            <field name="model_id" ref="model_educare_audit_log" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('educare_security.group_admin'))]" />
+        </record>
+
+
+    </data>
+</odoo>
