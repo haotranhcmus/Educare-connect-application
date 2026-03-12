@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_student_search" model="ir.ui.view">
+        <field name="name">educare.student.search</field>
+        <field name="model">educare.student</field>
+        <field name="arch" type="xml">
+            <search string="Search Students">
+                <!-- Search Fields -->
+                <field name="name"
+                    filter_domain="['|', ('name','ilike',self), ('student_code','ilike',self)]"
+                    string="Name / Code" />
+                <field name="parent_name" string="Parent" />
+                <field name="assigned_teacher_id" string="Teacher" />
+
+                <!-- Separator -->
+                <separator />
+
+                <!-- Filters -->
+                <filter name="filter_active" string="Active"
+                    domain="[('status','=','active')]" />
+                <filter name="filter_inactive" string="Inactive"
+                    domain="[('status','=','inactive')]" />
+                <filter name="filter_graduated" string="Graduated"
+                    domain="[('status','=','graduated')]" />
+                <separator />
+                <filter name="filter_medical_alert" string="Medical Alert"
+                    domain="[('medical_alert','=',True)]" />
+                <separator />
+                <filter name="filter_autism" string="Autism (ASD)"
+                    domain="[('primary_diagnosis','=','autism')]" />
+                <filter name="filter_adhd" string="ADHD"
+                    domain="[('primary_diagnosis','=','adhd')]" />
+                <filter name="filter_speech_delay" string="Speech Delay"
+                    domain="[('primary_diagnosis','=','speech_delay')]" />
+                <filter name="filter_developmental_delay" string="Developmental Delay"
+                    domain="[('primary_diagnosis','=','developmental_delay')]" />
+                <separator />
+                <filter name="filter_archived" string="Archived"
+                    domain="[('active','=',False)]" />
+
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter name="groupby_status" string="Status"
+                        context="{'group_by': 'status'}" />
+                    <filter name="groupby_diagnosis" string="Diagnosis"
+                        context="{'group_by': 'primary_diagnosis'}" />
+                    <filter name="groupby_teacher" string="Teacher"
+                        context="{'group_by': 'assigned_teacher_id'}" />
+                    <filter name="groupby_center" string="Center"
+                        context="{'group_by': 'center_id'}" />
+                    <filter name="groupby_classification" string="Classification"
+                        context="{'group_by': 'classification'}" />
+                    <filter name="groupby_enrollment_date" string="Enrollment Date"
+                        context="{'group_by': 'enrollment_date:month'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

@@ -103,11 +103,6 @@ msgid "Additional Notes"
 msgstr "Ghi Chú Thêm"
 
 #. module: educare_base
-#: model:ir.model.fields,help:educare_base.field_educare_lesson_template__source_reference
-msgid "Additional reference information about the source"
-msgstr ""
-
-#. module: educare_base
 #: model:ir.model.fields,field_description:educare_base.field_educare_center__address
 msgid "Address"
 msgstr "Địa Chỉ"
@@ -1082,11 +1077,6 @@ msgstr "Nguồn"
 #: model_terms:ir.ui.view,arch_db:educare_base.educare_lesson_template_form_view
 msgid "Source Information"
 msgstr "Thông Tin Nguồn"
-
-#. module: educare_base
-#: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__source_reference
-msgid "Source Reference"
-msgstr "Tham Khảo Nguồn"
 
 #. module: educare_base
 #: model:ir.model.fields,field_description:educare_base.field_educare_lesson_template__source_url

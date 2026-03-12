@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="view_educare_student_form" model="ir.ui.view">
+            <field name="name">educare.student.form</field>
+            <field name="model">educare.student</field>
+            <field name="arch" type="xml">
+                <form string="Student Profile">
+
+                    <!-- ══ HEADER: Status Bar ══ -->
+                    <header>
+                        <field name="status"
+                            widget="statusbar"
+                            statusbar_visible="active,inactive,graduated"
+                            clickable="1" />
+                    </header>
+
+                    <!-- ══ MEDICAL ALERT BANNER ══ -->
+                    <!-- Only visible when medical_alert = True — Bootstrap alert-danger -->
+                    <div class="alert alert-danger mb-0" role="alert"
+                        invisible="not medical_alert">
+                        <strong>MEDICAL ALERT: </strong>
+                        <field name="medical_alert_detail" nolabel="1" />
+                    </div>
+
+                    <sheet>
+
+                        <!-- ══ SMART BUTTONS ══ -->
+                        <div class="oe_button_box" name="button_box">
+                            <!-- Smart buttons will be added when IEP and Session modules are ready -->
+                        </div>
+
+                        <!-- ══ AVATAR + TITLE ══ -->
+                        <field name="avatar"
+                            widget="image"
+                            class="oe_avatar"
+                            options="{'preview_image': 'avatar'}" />
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Student full name" />
+                            </h1>
+                            <h3 invisible="student_code == '/' or not student_code">
+                                <field name="student_code" />
+                            </h3>
+                        </div>
+
+                        <!-- ══ QUICK INFO GROUP ══ -->
+                        <group>
+                            <group string="Quick Info">
+                                <field name="date_of_birth" />
+                                <field name="age" string="Age (Years)" readonly="1" />
+                                <field name="age_months" string="Age (Months)" readonly="1" />
+                                <field name="gender" />
+                                <field name="primary_diagnosis" />
+                            </group>
+                            <group string="Assignment">
+                                <field name="center_id" />
+                                <field name="assigned_teacher_id" />
+                                <field name="co_teacher_ids" widget="many2many_tags" />
+                                <field name="supervisor_id" />
+                                <field name="enrollment_date" />
+                            </group>
+                        </group>
+
+                        <!-- ══ NOTEBOOK: 7 TABS ══ -->
+                        <notebook>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 1: Personal Information
+              ──────────────────────────────────────────────────── -->
+                            <page string="Personal" name="personal">
+                                <group>
+                                    <group string="School">
+                                        <field name="school_name" />
+                                        <field name="class_name" />
+                                    </group>
+                                    <group string="Status">
+                                        <field name="graduation_date"
+                                            invisible="status not in ('graduated',)" />
+                                        <field name="status" />
+                                    </group>
+                                </group>
+                            </page>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 2: Family & Contact
+              ──────────────────────────────────────────────────── -->
+                            <page string="Family" name="family">
+                                <group>
+                                    <group string="Primary Parent">
+                                        <field name="parent_user_id" />
+                                        <field name="parent_name" />
+                                        <field name="parent_relation" />
+                                        <field name="parent_phone" widget="phone" />
+                                        <field name="parent_email" widget="email" />
+                                    </group>
+                                    <group string="Secondary Parent">
+                                        <field name="secondary_parent_name" />
+                                        <field name="secondary_parent_relation" />
+                                        <field name="secondary_parent_phone" widget="phone" />
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Emergency Contact">
+                                        <field name="emergency_contact_name" />
+                                        <field name="emergency_contact_phone" widget="phone" />
+                                        <field name="emergency_contact_relation" />
+                                    </group>
+                                    <group string="Contact Preferences">
+                                        <field name="home_address" />
+                                        <field name="preferred_contact_method" />
+                                        <field name="receive_daily_report" />
+                                    </group>
+                                </group>
+                            </page>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 3: Diagnosis & Medical
+              ──────────────────────────────────────────────────── -->
+                            <page string="Medical" name="medical">
+                                <group>
+                                    <group string="Primary Diagnosis">
+                                        <field name="primary_diagnosis" />
+                                        <field name="diagnosis_detail" />
+                                        <field name="diagnosis_date" />
+                                        <field name="diagnosed_by" />
+                                    </group>
+                                    <group string="Secondary Diagnoses">
+                                        <field name="secondary_diagnosis_ids"
+                                            widget="many2many_tags" />
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Medical Information">
+                                        <field name="current_medications" />
+                                        <field name="allergies" />
+                                        <field name="special_diet" />
+                                        <field name="immunization_notes" />
+                                        <field name="medical_notes" />
+                                    </group>
+                                    <group string="Medical Alert">
+                                        <field name="medical_alert" />
+                                        <field name="medical_alert_detail"
+                                            invisible="not medical_alert" />
+                                    </group>
+                                </group>
+                            </page>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 4: Learning Abilities
+              ──────────────────────────────────────────────────── -->
+                            <page string="Learning" name="learning">
+                                <group>
+                                    <group string="Cognitive &amp; Communication">
+                                        <field name="learning_style" />
+                                        <field name="communication_level" />
+                                        <field name="attention_span" />
+                                        <field name="cognitive_level" />
+                                    </group>
+                                    <group string="Motor &amp; Self-Care">
+                                        <field name="motor_skill_gross" />
+                                        <field name="motor_skill_fine" />
+                                        <field name="self_care_level" />
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="domain_ids"
+                                        widget="many2many_tags"
+                                        string="Intervention Domains"
+                                        colspan="2" />
+                                </group>
+                                <group>
+                                    <field name="academic_notes"
+                                        string="Learning Notes"
+                                        colspan="2"
+                                        nolabel="1" />
+                                </group>
+                            </page>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 5: Behavior & Emotions
+              ──────────────────────────────────────────────────── -->
+                            <page string="Behavior" name="behavior">
+                                <group>
+                                    <group string="Behavior Profile">
+                                        <field name="challenging_behaviors" />
+                                        <field name="behavior_triggers" />
+                                        <field name="calming_strategies" />
+                                        <field name="reinforcement_preferences" />
+                                    </group>
+                                    <group string="Sensory Profile">
+                                        <field name="sensory_sensitivities" />
+                                        <field name="sensory_preferences" />
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Social &amp; Emotional">
+                                        <field name="social_interaction_level" />
+                                        <field name="emotional_regulation" />
+                                    </group>
+                                    <group />
+                                </group>
+                                <group>
+                                    <field name="behavior_notes"
+                                        string="Behavior Notes"
+                                        colspan="2"
+                                        nolabel="1" />
+                                </group>
+                            </page>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 6: Assessment & Classification
+              ──────────────────────────────────────────────────── -->
+                            <page string="Assessment" name="assessment">
+                                <group>
+                                    <group string="Assessment History">
+                                        <field name="initial_assessment_date" />
+                                        <field name="last_assessment_date" readonly="1" />
+                                        <field name="next_assessment_date" />
+                                        <field name="assessment_cycle" />
+                                    </group>
+                                    <group string="Scores">
+                                        <field name="vbmapp_score" />
+                                        <field name="ablls_score" />
+                                        <field name="overall_progress" />
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Classification">
+                                        <field name="classification" />
+                                        <field name="classification_date" />
+                                    </group>
+                                    <group />
+                                </group>
+                                <group>
+                                    <field name="initial_assessment_notes"
+                                        string="Initial Assessment Notes"
+                                        colspan="2"
+                                        nolabel="1" />
+                                </group>
+                                <group>
+                                    <field name="assessment_notes"
+                                        string="Assessment Notes"
+                                        colspan="2"
+                                        nolabel="1" />
+                                </group>
+                            </page>
+
+                            <!-- ────────────────────────────────────────────────
+                   TAB 7: History & Notes
+              ──────────────────────────────────────────────────── -->
+                            <page string="History" name="history">
+                                <group>
+                                    <group string="Transfer History">
+                                        <field name="previous_center" />
+                                        <field name="transfer_reason" />
+                                        <field name="referral_source" />
+                                        <field name="insurance_number" />
+                                    </group>
+                                    <group string="Notes">
+                                        <field name="internal_notes"
+                                            groups="educare_security.group_supervisor" />
+                                        <field name="parent_notes" />
+                                    </group>
+                                </group>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+
+                    <!-- ══ CHATTER ══ -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="activity_ids" widget="mail_activity" />
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
+
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

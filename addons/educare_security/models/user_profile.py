@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class EducareUserProfile(models.Model):
@@ -46,7 +46,7 @@ class EducareUserProfile(models.Model):
         ('supervisor', 'Supervisor'),
         ('teacher', 'Teacher'),
         ('parent', 'Parent'),
-    ], string='Role', tracking=True)
+    ], string='Role', tracking=True, required=True)
 
     center_id = fields.Many2one(
         'educare.center',
@@ -122,6 +122,15 @@ class EducareUserProfile(models.Model):
     receive_notifications = fields.Boolean(
         string='Receive Notifications', default=True
     )
+
+    # ── Python Constraints ──────────────────────────────────────────────────
+    @api.constrains('role', 'center_id')
+    def _check_center_required(self):
+        for rec in self:
+            if rec.role in ('teacher', 'supervisor') and not rec.center_id:
+                raise ValidationError(
+                    _('Giáo viên và giám sát viên phải được gán vào một trung tâm.')
+                )
 
     # ── SQL Constraints ───────────────────────────────────────────────────────
     _sql_constraints = [

@@ -14,7 +14,7 @@
         'views/student_search.xml',
         'views/student_kanban.xml',
         'views/menu.xml',
-        'data/demo_students.xml',
+        'views/user_profile_ext_views.xml',
     ],
     'demo': [
         'data/demo_students.xml',
