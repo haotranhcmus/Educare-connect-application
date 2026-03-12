@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_student_admin,educare.student admin,model_educare_student,educare_security.group_admin,1,1,1,1
+access_student_supervisor,educare.student supervisor,model_educare_student,educare_security.group_supervisor,1,1,0,0
+access_student_teacher,educare.student teacher,model_educare_student,educare_security.group_teacher,1,1,1,0
+access_student_parent,educare.student parent,model_educare_student,educare_security.group_parent,1,0,0,0

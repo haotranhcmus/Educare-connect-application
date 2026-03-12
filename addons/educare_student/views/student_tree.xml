@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_student_tree" model="ir.ui.view">
+        <field name="name">educare.student.tree</field>
+        <field name="model">educare.student</field>
+        <field name="arch" type="xml">
+            <tree string="Student List"
+                decoration-danger="medical_alert == True"
+                decoration-muted="status == 'inactive'"
+                multi_edit="1">
+                <field name="student_code" />
+                <field name="name" />
+                <field name="date_of_birth" />
+                <field name="age" string="Age" />
+                <field name="gender" />
+                <field name="primary_diagnosis" />
+                <field name="assigned_teacher_id" />
+                <field name="center_id" />
+                <field name="enrollment_date" />
+                <field name="status"
+                    decoration-success="status == 'active'"
+                    decoration-warning="status == 'inactive'"
+                    decoration-info="status == 'graduated'"
+                    widget="badge" />
+                <field name="medical_alert" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+</odoo>

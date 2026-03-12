@@ -18,7 +18,6 @@ class EducareLessonTemplate(models.Model):
     session_duration_mins = fields.Integer(string="Session Duration (minutes)", default=45)
     source = fields.Selection([('original','Original'), ('twinkl','Twinkl'), ('vbmapp','VB-MAPP'), ('ablls_r','ABLLS-R'), ('autism_helper','Autism Helper'), ('attainment','Attainment Company'), ('other','Other')], string="Source", tracking=True)
     source_url = fields.Char(string="Source URL", help="Link to the original lesson plan or resource")
-    source_reference = fields.Char(string="Source Reference", help="Additional reference information about the source")
     materials_needed = fields.Text(string="Materials Needed", translate=True)
     objectives_text = fields.Text(string="Template Objectives", translate=True)
     notes = fields.Text(string="Additional Notes", translate=True)
