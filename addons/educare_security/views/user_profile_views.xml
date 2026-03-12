@@ -39,8 +39,10 @@
                                 <field name="user_id"
                                     invisible="not user_id"
                                     readonly="1" />
-                                <field name="role" />
-                                <field name="center_id" invisible="role == 'parent'" />
+                                <field name="role" required="1" />
+                                <field name="center_id"
+                                    invisible="role == 'parent'"
+                                    required="role in ('teacher', 'supervisor')" />
                                 <field name="employee_code" invisible="role == 'parent'" />
                             </group>
                         </div>
@@ -54,8 +56,8 @@
                                     <group string="Contact &amp; Work">
                                         <field name="email" />
                                         <field name="phone" />
-                                        <field name="job_title" />
-                                        <field name="department" />
+                                        <field name="job_title" invisible="role == 'parent'" />
+                                        <field name="department" invisible="role == 'parent'" />
                                     </group>
                                     <group string="Login Information">
                                         <field name="date_joined" />
@@ -88,13 +90,12 @@
                             <page string="Parent" name="parent_tab"
                                 invisible="role != 'parent'">
                                 <group>
-                                    <group string="Parent Information">
+                                    <group>
                                         <field name="parent_relation" />
+                                    </group>
+                                    <group>
                                         <field name="preferred_contact" />
                                         <field name="receive_notifications" />
-                                    </group>
-                                    <group string="Child's Center">
-                                        <field name="center_id" />
                                     </group>
                                 </group>
                                 <field name="student_ids" readonly="1">
@@ -212,6 +213,22 @@
         </record>
 
         <!-- ==================== ACTION ==================== -->
+
+        <!-- Action: My Profile — dành cho teacher/supervisor/parent tự xem profile của mình -->
+        <record id="action_my_profile" model="ir.actions.act_window">
+            <field name="name">My Profile</field>
+            <field name="res_model">educare.user.profile</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[("user_id", "=", uid)]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Your user profile was not found. This may be because your account has not been
+                    set up yet.
+                </p>
+                <p>Contact Admin to have your user profile created.</p>
+            </field>
+        </record>
+
         <record id="action_educare_user_profile" model="ir.actions.act_window">
             <field name="name">User Profile</field>
             <field name="res_model">educare.user.profile</field>

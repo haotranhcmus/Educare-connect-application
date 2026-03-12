@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Student 1: Active, Autism, Medical Alert -->
+        <record id="student_demo_01" model="educare.student">
+            <field name="name">Nguyễn Minh Phúc</field>
+            <field name="date_of_birth">2021-03-15</field>
+            <field name="gender">male</field>
+            <field name="enrollment_date">2025-01-10</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">autism</field>
+            <field name="diagnosis_detail">ASD Level 1, giao tiếp cụm từ</field>
+            <field name="parent_name">Nguyễn Văn An</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345001</field>
+            <field name="parent_email">nvan@example.com</field>
+            <field name="emergency_contact_name">Trần Thị Bình</field>
+            <field name="emergency_contact_phone">0912345002</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="communication_level">phrase</field>
+            <field name="attention_span">10</field>
+            <field name="learning_style">visual</field>
+            <field name="medical_alert" eval="True" />
+            <field name="medical_alert_detail">Dị ứng hải sản nặng, cần giám sát bữa ăn</field>
+            <field name="allergies">Hải sản (tôm, cua)</field>
+            <field name="center_id" ref="educare_base.center_hcm" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_1</field>
+            <field name="overall_progress">steady</field>
+        </record>
+
+        <!-- Student 2: Active, ADHD -->
+        <record id="student_demo_02" model="educare.student">
+            <field name="name">Trần Khánh Linh</field>
+            <field name="date_of_birth">2020-08-22</field>
+            <field name="gender">female</field>
+            <field name="enrollment_date">2024-09-01</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">adhd</field>
+            <field name="diagnosis_detail">ADHD kết hợp, tăng động ưu thế</field>
+            <field name="parent_name">Trần Minh Đức</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345003</field>
+            <field name="emergency_contact_name">Lê Thị Hoa</field>
+            <field name="emergency_contact_phone">0912345004</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="communication_level">sentence</field>
+            <field name="attention_span">5</field>
+            <field name="learning_style">kinesthetic</field>
+            <field name="social_interaction_level">responsive</field>
+            <field name="center_id" ref="educare_base.center_hcm" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_2</field>
+            <field name="overall_progress">slow</field>
+        </record>
+
+        <!-- Student 3: Inactive, Speech Delay -->
+        <record id="student_demo_03" model="educare.student">
+            <field name="name">Phạm Gia Huy</field>
+            <field name="date_of_birth">2022-01-05</field>
+            <field name="gender">male</field>
+            <field name="enrollment_date">2025-06-15</field>
+            <field name="status">inactive</field>
+            <field name="primary_diagnosis">speech_delay</field>
+            <field name="parent_name">Phạm Thị Mai</field>
+            <field name="parent_relation">mother</field>
+            <field name="parent_phone">0912345005</field>
+            <field name="emergency_contact_name">Phạm Văn Tuấn</field>
+            <field name="emergency_contact_phone">0912345006</field>
+            <field name="emergency_contact_relation">Bố</field>
+            <field name="communication_level">single_word</field>
+            <field name="attention_span">15</field>
+            <field name="learning_style">auditory</field>
+            <field name="center_id" ref="educare_base.center_hcm" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="overall_progress">plateau</field>
+        </record>
+
+        <!-- Student 4: Graduated -->
+        <record id="student_demo_04" model="educare.student">
+            <field name="name">Lê Thùy Dương</field>
+            <field name="date_of_birth">2019-11-30</field>
+            <field name="gender">female</field>
+            <field name="enrollment_date">2023-01-15</field>
+            <field name="graduation_date">2025-06-30</field>
+            <field name="status">graduated</field>
+            <field name="primary_diagnosis">developmental_delay</field>
+            <field name="parent_name">Lê Hoàng Nam</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345007</field>
+            <field name="emergency_contact_name">Võ Thị Loan</field>
+            <field name="emergency_contact_phone">0912345008</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="communication_level">fluent</field>
+            <field name="attention_span">25</field>
+            <field name="learning_style">mixed</field>
+            <field name="center_id" ref="educare_base.center_hcm" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_1</field>
+            <field name="overall_progress">rapid</field>
+        </record>
+
+        <!-- Student 5: Active, Down Syndrome, Level 3 -->
+        <record id="student_demo_05" model="educare.student">
+            <field name="name">Hoàng Thiên Bảo</field>
+            <field name="date_of_birth">2018-05-20</field>
+            <field name="gender">male</field>
+            <field name="enrollment_date">2022-09-01</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">down_syndrome</field>
+            <field name="diagnosis_detail">Hội chứng Down trisomy 21, kèm dị tật tim bẩm sinh đã
+                phẫu thuật</field>
+            <field name="diagnosis_date">2018-07-10</field>
+            <field name="diagnosed_by">BV Nhi Đồng 1</field>
+            <field name="parent_name">Hoàng Công Danh</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345009</field>
+            <field name="parent_email">hcdanh@example.com</field>
+            <field name="secondary_parent_name">Nguyễn Thị Hồng</field>
+            <field name="secondary_parent_relation">mother</field>
+            <field name="secondary_parent_phone">0912345010</field>
+            <field name="emergency_contact_name">Hoàng Công Danh</field>
+            <field name="emergency_contact_phone">0912345009</field>
+            <field name="emergency_contact_relation">Bố</field>
+            <field name="preferred_contact_method">zalo</field>
+            <field name="receive_daily_report" eval="True" />
+            <field name="communication_level">phrase</field>
+            <field name="attention_span">12</field>
+            <field name="learning_style">visual</field>
+            <field name="cognitive_level">moderate</field>
+            <field name="motor_skill_gross">mild_delay</field>
+            <field name="motor_skill_fine">moderate_delay</field>
+            <field name="self_care_level">partial</field>
+            <field name="social_interaction_level">responsive</field>
+            <field name="emotional_regulation">developing</field>
+            <field name="medical_alert" eval="True" />
+            <field name="medical_alert_detail">Tiền sử phẫu thuật tim, cần tránh vận động mạnh</field>
+            <field name="current_medications">Aspirin 81mg/ngày</field>
+            <field name="special_diet">Chế độ ăn mềm, tránh mặn</field>
+            <field name="school_name">Mầm non Hoa Sen</field>
+            <field name="class_name">Lớp Mầm</field>
+            <field name="center_id" ref="educare_base.center_hcm" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_3</field>
+            <field name="overall_progress">slow</field>
+            <field name="assessment_cycle">monthly</field>
+            <field name="vbmapp_score">18.5</field>
+            <field name="initial_assessment_date">2022-09-05</field>
+            <field name="referral_source">BV Nhi Đồng 1</field>
+        </record>
+
+        <!-- Student 6: Active, Cerebral Palsy, Level 2 -->
+        <record id="student_demo_06" model="educare.student">
+            <field name="name">Võ Ngọc Anh</field>
+            <field name="date_of_birth">2020-02-14</field>
+            <field name="gender">female</field>
+            <field name="enrollment_date">2024-03-01</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">cerebral_palsy</field>
+            <field name="diagnosis_detail">Bại não thể co cứng hai chi dưới (spastic diplegia)</field>
+            <field name="diagnosed_by">BV Phục hồi chức năng</field>
+            <field name="parent_name">Võ Minh Trí</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345011</field>
+            <field name="parent_email">vmtri@example.com</field>
+            <field name="emergency_contact_name">Lâm Thị Kim Cúc</field>
+            <field name="emergency_contact_phone">0912345012</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="preferred_contact_method">email</field>
+            <field name="communication_level">sentence</field>
+            <field name="attention_span">20</field>
+            <field name="learning_style">auditory</field>
+            <field name="cognitive_level">age_appropriate</field>
+            <field name="motor_skill_gross">severe_delay</field>
+            <field name="motor_skill_fine">mild_delay</field>
+            <field name="self_care_level">partial</field>
+            <field name="social_interaction_level">initiating</field>
+            <field name="emotional_regulation">adequate</field>
+            <field name="sensory_sensitivities">Nhạy cảm với tiếng ồn lớn</field>
+            <field name="challenging_behaviors">Khó chịu khi bị giới hạn tư thế lâu</field>
+            <field name="calming_strategies">Nhạc nhẹ, trò chuyện 1-1</field>
+            <field name="center_id" ref="educare_base.center_hanoi" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_2</field>
+            <field name="overall_progress">steady</field>
+            <field name="assessment_cycle">quarterly</field>
+            <field name="ablls_score">62.0</field>
+            <field name="home_address">45 Đường Hoa Lan, Q. Bình Thạnh, TP.HCM</field>
+        </record>
+
+        <!-- Student 7: Active, Autism, Level 1, rapid progress -->
+        <record id="student_demo_07" model="educare.student">
+            <field name="name">Đinh Nhật Khoa</field>
+            <field name="date_of_birth">2019-07-03</field>
+            <field name="gender">male</field>
+            <field name="enrollment_date">2023-06-01</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">autism</field>
+            <field name="diagnosis_detail">ASD Level 1, giao tiếp tốt, hành vi lặp nhẹ</field>
+            <field name="parent_name">Đinh Văn Quang</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345013</field>
+            <field name="parent_email">dvquang@example.com</field>
+            <field name="emergency_contact_name">Ngô Thị Lan</field>
+            <field name="emergency_contact_phone">0912345014</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="preferred_contact_method">app</field>
+            <field name="communication_level">fluent</field>
+            <field name="attention_span">30</field>
+            <field name="learning_style">mixed</field>
+            <field name="cognitive_level">age_appropriate</field>
+            <field name="motor_skill_gross">age_appropriate</field>
+            <field name="motor_skill_fine">mild_delay</field>
+            <field name="self_care_level">independent</field>
+            <field name="social_interaction_level">responsive</field>
+            <field name="emotional_regulation">good</field>
+            <field name="sensory_preferences">Thích đồ chơi xếp hình, màu sắc tươi sáng</field>
+            <field name="reinforcement_preferences">Sticker, thời gian chơi tự do</field>
+            <field name="school_name">Tiểu học Nguyễn Bỉnh Khiêm</field>
+            <field name="class_name">Lớp 2A</field>
+            <field name="center_id" ref="educare_base.center_hanoi" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_1</field>
+            <field name="overall_progress">rapid</field>
+            <field name="assessment_cycle">biannual</field>
+            <field name="vbmapp_score">54.0</field>
+            <field name="ablls_score">78.5</field>
+            <field name="initial_assessment_date">2023-06-05</field>
+        </record>
+
+        <!-- Student 8: Inactive, Intellectual Disability, transferred -->
+        <record id="student_demo_08" model="educare.student">
+            <field name="name">Bùi Thị Thanh Trúc</field>
+            <field name="date_of_birth">2017-09-18</field>
+            <field name="gender">female</field>
+            <field name="enrollment_date">2021-01-10</field>
+            <field name="status">transferred</field>
+            <field name="primary_diagnosis">intellectual_disability</field>
+            <field name="diagnosis_detail">Khuyết tật trí tuệ mức độ nhẹ (IQ 55-70)</field>
+            <field name="parent_name">Bùi Văn Lợi</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345015</field>
+            <field name="emergency_contact_name">Trương Thị Dung</field>
+            <field name="emergency_contact_phone">0912345016</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="communication_level">sentence</field>
+            <field name="attention_span">18</field>
+            <field name="learning_style">visual</field>
+            <field name="cognitive_level">mild</field>
+            <field name="self_care_level">partial</field>
+            <field name="social_interaction_level">passive</field>
+            <field name="emotional_regulation">developing</field>
+            <field name="previous_center">Trung tâm Ánh Sao</field>
+            <field name="transfer_reason">Gia đình chuyển chỗ ở sang quận 9</field>
+            <field name="referral_source">Trung tâm Ánh Sao</field>
+            <field name="center_id" ref="educare_base.center_hanoi" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_2</field>
+            <field name="overall_progress">plateau</field>
+            <field name="assessment_cycle">quarterly</field>
+        </record>
+
+        <!-- Student 9: Active, ADHD + Speech Delay (co-morbid) -->
+        <record id="student_demo_09" model="educare.student">
+            <field name="name">Lý Minh Tài</field>
+            <field name="date_of_birth">2021-11-25</field>
+            <field name="gender">male</field>
+            <field name="enrollment_date">2025-02-15</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">adhd</field>
+            <field name="diagnosis_detail">ADHD type không chú ý, kèm chậm nói</field>
+            <field name="parent_name">Lý Thị Hương</field>
+            <field name="parent_relation">mother</field>
+            <field name="parent_phone">0912345017</field>
+            <field name="parent_email">lthuong@example.com</field>
+            <field name="emergency_contact_name">Lý Văn Phú</field>
+            <field name="emergency_contact_phone">0912345018</field>
+            <field name="emergency_contact_relation">Bố</field>
+            <field name="preferred_contact_method">phone</field>
+            <field name="receive_daily_report" eval="True" />
+            <field name="communication_level">single_word</field>
+            <field name="attention_span">4</field>
+            <field name="learning_style">kinesthetic</field>
+            <field name="cognitive_level">mild</field>
+            <field name="motor_skill_gross">age_appropriate</field>
+            <field name="motor_skill_fine">mild_delay</field>
+            <field name="self_care_level">partial</field>
+            <field name="social_interaction_level">passive</field>
+            <field name="emotional_regulation">poor</field>
+            <field name="challenging_behaviors">Bỏ việc giữa chừng, khó ngồi yên quá 3 phút</field>
+            <field name="behavior_triggers">Câu lệnh dài, môi trường ồn ào</field>
+            <field name="calming_strategies">Break vận động 2 phút, hộp cát cảm giác</field>
+            <field name="sensory_sensitivities">Không chịu được ánh sáng mạnh</field>
+            <field name="reinforcement_preferences">Mini xe đồ chơi, khen ngợi trực tiếp</field>
+            <field name="center_id" ref="educare_base.center_hanoi" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_2</field>
+            <field name="overall_progress">slow</field>
+            <field name="assessment_cycle">monthly</field>
+        </record>
+
+        <!-- Student 10: Active, Autism Level 3, non-verbal, Medical Alert -->
+        <record id="student_demo_10" model="educare.student">
+            <field name="name">Trương Minh Khải</field>
+            <field name="date_of_birth">2020-04-08</field>
+            <field name="gender">male</field>
+            <field name="enrollment_date">2024-07-01</field>
+            <field name="status">active</field>
+            <field name="primary_diagnosis">autism</field>
+            <field name="diagnosis_detail">ASD Level 3, không ngôn ngữ, hành vi tự thương mức độ nhẹ</field>
+            <field name="diagnosed_by">BV Tâm thần TP.HCM</field>
+            <field name="parent_name">Trương Tấn Phát</field>
+            <field name="parent_relation">father</field>
+            <field name="parent_phone">0912345019</field>
+            <field name="parent_email">ttphat@example.com</field>
+            <field name="emergency_contact_name">Mai Thị Xuân</field>
+            <field name="emergency_contact_phone">0912345020</field>
+            <field name="emergency_contact_relation">Mẹ</field>
+            <field name="preferred_contact_method">zalo</field>
+            <field name="receive_daily_report" eval="True" />
+            <field name="communication_level">non_verbal</field>
+            <field name="attention_span">3</field>
+            <field name="learning_style">visual</field>
+            <field name="cognitive_level">severe</field>
+            <field name="motor_skill_gross">moderate_delay</field>
+            <field name="motor_skill_fine">severe_delay</field>
+            <field name="self_care_level">dependent</field>
+            <field name="social_interaction_level">avoidant</field>
+            <field name="emotional_regulation">poor</field>
+            <field name="medical_alert" eval="True" />
+            <field name="medical_alert_detail">Có xu hướng tự cắn tay khi stress, cần giám sát liên
+                tục</field>
+            <field name="allergies">Sữa bò, gluten</field>
+            <field name="special_diet">Chế độ GFCF (không gluten, không casein)</field>
+            <field name="current_medications">Risperidone 0.5mg tối</field>
+            <field name="challenging_behaviors">Tự thương (cắn tay), đập đầu khi quá kích thích</field>
+            <field name="behavior_triggers">Thay đổi lịch trình đột ngột, ồn ào, đám đông</field>
+            <field name="calming_strategies">Phòng yên tĩnh, đèn mờ, áo nặng (weighted vest)</field>
+            <field name="sensory_sensitivities">Cực nhạy âm thanh và ánh sáng</field>
+            <field name="sensory_preferences">Thích nước, xích đu</field>
+            <field name="center_id" ref="educare_base.center_hanoi" />
+            <field name="assigned_teacher_id" ref="base.user_admin" />
+            <field name="classification">level_3</field>
+            <field name="overall_progress">slow</field>
+            <field name="assessment_cycle">monthly</field>
+            <field name="vbmapp_score">6.0</field>
+            <field name="internal_notes">Cần hỗ trợ 1:1 liên tục trong suốt buổi học</field>
+        </record>
+    </data>
+</odoo>

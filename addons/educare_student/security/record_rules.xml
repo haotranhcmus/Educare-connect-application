@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Rule 1: Parent can only see their own children -->
+        <record id="rule_student_parent" model="ir.rule">
+            <field name="name">Student: Parent sees own children</field>
+            <field name="model_id" ref="model_educare_student" />
+            <field name="groups" eval="[(4, ref('educare_security.group_parent'))]" />
+            <field name="domain_force">[('parent_user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+
+        <!-- Rule 2: Teacher sees assigned students (assigned or co-teacher) -->
+        <record id="rule_student_teacher" model="ir.rule">
+            <field name="name">Student: Teacher sees assigned students</field>
+            <field name="model_id" ref="model_educare_student" />
+            <field name="groups" eval="[(4, ref('educare_security.group_teacher'))]" />
+            <field name="domain_force">['|',
+                ('assigned_teacher_id', '=', user.id),
+                ('co_teacher_ids', 'in', [user.id])
+                ]</field>
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+
+        <!-- Rule 3: Supervisor sees students in the same center -->
+        <record id="rule_student_supervisor" model="ir.rule">
+            <field name="name">Student: Supervisor sees center students</field>
+            <field name="model_id" ref="model_educare_student" />
+            <field name="groups" eval="[(4, ref('educare_security.group_supervisor'))]" />
+            <field name="domain_force">[('center_id', 'in', user.educare_profile_ids.center_id.ids)]</field>
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+
+        <!-- Rule 4: Admin sees all -->
+        <record id="rule_student_admin" model="ir.rule">
+            <field name="name">Student: Admin sees all</field>
+            <field name="model_id" ref="model_educare_student" />
+            <field name="groups" eval="[(4, ref('educare_security.group_admin'))]" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+    </data>
+</odoo>

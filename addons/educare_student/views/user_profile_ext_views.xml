@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Kế thừa form view của educare.user.profile (từ educare_security).
+            Tại thời điểm này student_ids đã được override thành educare.student
+            (trong user_profile_ext.py), nên center_id hợp lệ.
+        -->
+        <record id="educare_user_profile_form_student_ext" model="ir.ui.view">
+            <field name="name">Educare User Profile Form (student ext)</field>
+            <field name="model">educare.user.profile</field>
+            <field name="inherit_id" ref="educare_security.educare_user_profile_form_view" />
+            <field name="arch" type="xml">
+                <!-- Thêm cột center_id vào danh sách học sinh trong tab Phụ huynh -->
+                <xpath expr="//field[@name='student_ids']//tree//field[@name='name']"
+                    position="after">
+                    <field name="center_id" string="Center" />
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

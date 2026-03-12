@@ -29,7 +29,6 @@
                             <group string="Source Information">
                                 <field name="source" />
                                 <field name="source_url" widget="url" />
-                                <field name="source_reference" />
                             </group>
                         </group>
 

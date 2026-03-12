@@ -1,0 +1,1222 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* educare_student
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-11 08:59+0000\n"
+"PO-Revision-Date: 2026-03-11 08:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_kanban
+msgid "<strong>Age:</strong>"
+msgstr "<strong>Tuổi:</strong>"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_kanban
+msgid "<strong>Diagnosis:</strong>"
+msgstr "<strong>Chẩn đoán:</strong>"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "<strong>MEDICAL ALERT: </strong>"
+msgstr "<strong>CẢNH BÁO Y TẾ: </strong>"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_kanban
+msgid "<strong>Teacher:</strong>"
+msgstr "<strong>Giáo viên:</strong>"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__ablls_score
+msgid "ABLLS-R Score"
+msgstr "Điểm ABLLS-R"
+
+#. module: educare_student
+#: model:ir.model.constraint,message:educare_student.constraint_educare_student_ablls_score_positive
+msgid "ABLLS-R score must be greater than or equal to 0."
+msgstr "Điểm ABLLS-R phải lớn hơn hoặc bằng 0."
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__adhd
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "ADHD"
+msgstr "ADHD (Rối loạn tăng động giảm chú ý)"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_needaction
+msgid "Action Needed"
+msgstr "Cần thực hiện"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__active
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__status__active
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Active"
+msgstr "Đang học"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__emotional_regulation__adequate
+msgid "Adequate"
+msgstr "Đạt yêu cầu"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__age
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_tree
+msgid "Age"
+msgstr "Tuổi"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Age (Months)"
+msgstr "Tuổi (Tháng)"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Age (Years)"
+msgstr "Tuổi (Năm)"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__age_months
+msgid "Age (months)"
+msgstr "Tuổi (tháng)"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__cognitive_level__age_appropriate
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_fine__age_appropriate
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_gross__age_appropriate
+msgid "Age Appropriate"
+msgstr "Phù hợp độ tuổi"
+
+#. module: educare_student
+#: model:ir.ui.menu,name:educare_student.menu_student_all
+msgid "All Students"
+msgstr "Tất cả học sinh"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__allergies
+msgid "Allergies"
+msgstr "Dị ứng"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__assessment_cycle__annual
+msgid "Annual"
+msgstr "Hàng năm"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__preferred_contact_method__app
+msgid "App"
+msgstr "Ứng dụng"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Assessment"
+msgstr "Đánh giá"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__assessment_cycle
+msgid "Assessment Cycle"
+msgstr "Chu kỳ đánh giá"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Assessment History"
+msgstr "Lịch sử đánh giá"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__assessment_notes
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Assessment Notes"
+msgstr "Ghi chú đánh giá"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__assigned_teacher_id
+msgid "Assigned Teacher"
+msgstr "Giáo viên phụ trách"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Assignment"
+msgstr "Phân công"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__attention_span
+msgid "Attention Span (minutes)"
+msgstr "Khả năng tập trung (phút)"
+
+#. module: educare_student
+#: model:ir.model.constraint,message:educare_student.constraint_educare_student_attention_span_positive
+msgid "Attention span must be greater than or equal to 0."
+msgstr "Khả năng tập trung phải lớn hơn hoặc bằng 0."
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__learning_style__auditory
+msgid "Auditory"
+msgstr "Thính giác"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Autism (ASD)"
+msgstr "Tự kỷ (ASD)"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__autism
+msgid "Autism Spectrum Disorder (ASD)"
+msgstr "Rối loạn phổ tự kỷ (ASD)"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_kanban
+msgid "Avatar"
+msgstr "Ảnh đại diện"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__social_interaction_level__avoidant
+msgid "Avoidant"
+msgstr "Né tránh"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Behavior"
+msgstr "Hành vi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__behavior_notes
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Behavior Notes"
+msgstr "Ghi chú hành vi"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Behavior Profile"
+msgstr "Hồ sơ hành vi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__behavior_triggers
+msgid "Behavior Triggers"
+msgstr "Tác nhân kích thích hành vi"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__assessment_cycle__biannual
+msgid "Bi-Annual"
+msgstr "Hai năm một lần"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__calming_strategies
+msgid "Calming Strategies"
+msgstr "Chiến lược xoa dịu"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__center_id
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Center"
+msgstr "Trung tâm"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__cerebral_palsy
+msgid "Cerebral Palsy"
+msgstr "Bại não"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__challenging_behaviors
+msgid "Challenging Behaviors"
+msgstr "Hành vi thách thức"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__class_name
+msgid "Class"
+msgstr "Lớp học"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__classification
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Classification"
+msgstr "Phân loại"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__classification_date
+msgid "Classification Date"
+msgstr "Ngày phân loại"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__co_teacher_ids
+msgid "Co-Teachers"
+msgstr "Giáo viên hỗ trợ"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Cognitive & Communication"
+msgstr "Nhận thức & Giao tiếp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__cognitive_level
+msgid "Cognitive Level"
+msgstr "Mức độ nhận thức"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__communication_level
+msgid "Communication Level"
+msgstr "Mức độ giao tiếp"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Contact Preferences"
+msgstr "Tùy chọn liên lạc"
+
+#. module: educare_student
+#: model_terms:ir.actions.act_window,help:educare_student.action_educare_student
+msgid "Create your first student profile!"
+msgstr "Tạo hồ sơ học sinh đầu tiên!"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__current_medications
+msgid "Current Medications"
+msgstr "Thuốc đang dùng"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__date_of_birth
+msgid "Date of Birth"
+msgstr "Ngày sinh"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__self_care_level__dependent
+msgid "Dependent"
+msgstr "Phụ thuộc"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__emotional_regulation__developing
+msgid "Developing"
+msgstr "Đang phát triển"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__developmental_delay
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Developmental Delay"
+msgstr "Chậm phát triển"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__diagnosed_by
+msgid "Diagnosed By"
+msgstr "Chẩn đoán bởi"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Diagnosis"
+msgstr "Chẩn đoán"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__diagnosis_date
+msgid "Diagnosis Date"
+msgstr "Ngày chẩn đoán"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__diagnosis_detail
+msgid "Diagnosis Details"
+msgstr "Chi tiết chẩn đoán"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__down_syndrome
+msgid "Down Syndrome"
+msgstr "Hội chứng Down"
+
+#. module: educare_student
+#: model:ir.model,name:educare_student.model_educare_user_profile
+msgid "Educare User Profile"
+msgstr "Hồ sơ người dùng Educare"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__preferred_contact_method__email
+msgid "Email"
+msgstr "Email"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Emergency Contact"
+msgstr "Liên hệ khẩn cấp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__emergency_contact_name
+msgid "Emergency Contact Name"
+msgstr "Tên liên hệ khẩn cấp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__emergency_contact_phone
+msgid "Emergency Contact Phone"
+msgstr "Số điện thoại khẩn cấp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__emergency_contact_relation
+msgid "Emergency Contact Relation"
+msgstr "Quan hệ liên hệ khẩn cấp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__emotional_regulation
+msgid "Emotional Regulation"
+msgstr "Điều tiết cảm xúc"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__enrollment_date
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Enrollment Date"
+msgstr "Ngày nhập học"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Family"
+msgstr "Gia đình"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__parent_relation__father
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__secondary_parent_relation__father
+msgid "Father"
+msgstr "Cha"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__gender__female
+msgid "Female"
+msgstr "Nữ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__motor_skill_fine
+msgid "Fine Motor Skills"
+msgstr "Kỹ năng vận động tinh"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__communication_level__fluent
+msgid "Fluent"
+msgstr "Lưu loát"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ: fa-tasks"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__gender
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__emotional_regulation__good
+msgid "Good"
+msgstr "Tốt"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__status__graduated
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Graduated"
+msgstr "Đã tốt nghiệp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__graduation_date
+msgid "Graduation Date"
+msgstr "Ngày tốt nghiệp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__motor_skill_gross
+msgid "Gross Motor Skills"
+msgstr "Kỹ năng vận động thô"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__parent_relation__guardian
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__secondary_parent_relation__guardian
+msgid "Guardian"
+msgstr "Người giám hộ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__home_address
+msgid "Home Address"
+msgstr "Địa chỉ nhà"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__id
+msgid "ID"
+msgstr "ID"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng chỉ thị hoạt động ngoại lệ."
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__medical_alert_detail
+msgid "If Medical Alert is checked, provide details here."
+msgstr "Nếu Cảnh báo y tế được bật, hãy cung cấp chi tiết tại đây."
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được đánh dấu, tin nhắn mới cần bạn chú ý."
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__message_has_error
+#: model:ir.model.fields,help:educare_student.field_educare_student__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được đánh dấu, một số tin nhắn gặp lỗi khi gửi."
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__immunization_notes
+msgid "Immunization Notes"
+msgstr "Ghi chú tiêm chủng"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__status__inactive
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Inactive"
+msgstr "Không hoạt động"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__self_care_level__independent
+msgid "Independent"
+msgstr "Độc lập"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__initial_assessment_date
+msgid "Initial Assessment Date"
+msgstr "Ngày đánh giá ban đầu"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Initial Assessment Notes"
+msgstr "Ghi chú đánh giá ban đầu"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__initial_assessment_notes
+msgid "Initial Assessment Results"
+msgstr "Kết quả đánh giá ban đầu"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__social_interaction_level__initiating
+msgid "Initiating"
+msgstr "Chủ động"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__insurance_number
+msgid "Insurance Number"
+msgstr "Số bảo hiểm"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__intellectual_disability
+msgid "Intellectual Disability"
+msgstr "Khuyết tật trí tuệ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__internal_notes
+msgid "Internal Notes (Staff Only)"
+msgstr "Ghi chú nội bộ (Chỉ nhân viên)"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__domain_ids
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Intervention Domains"
+msgstr "Lĩnh vực can thiệp"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__learning_style__kinesthetic
+msgid "Kinesthetic"
+msgstr "Vận động"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__last_assessment_date
+msgid "Last Assessment Date"
+msgstr "Ngày đánh giá gần nhất"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__write_date
+msgid "Last Updated on"
+msgstr "Ngày cập nhật lần cuối"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Learning"
+msgstr "Học tập"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__academic_notes
+msgid "Learning Ability Notes"
+msgstr "Ghi chú khả năng học tập"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Learning Notes"
+msgstr "Ghi chú học tập"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__learning_style
+msgid "Learning Style"
+msgstr "Phong cách học tập"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__classification__level_1
+msgid "Level 1 — Mild"
+msgstr "Cấp độ 1 — Nhẹ"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__classification__level_2
+msgid "Level 2 — Moderate"
+msgstr "Cấp độ 2 — Trung bình"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__classification__level_3
+msgid "Level 3 — Severe"
+msgstr "Cấp độ 3 — Nặng"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_user_profile__student_ids
+msgid "List of students linked to this parent account."
+msgstr "Danh sách học sinh được liên kết với tài khoản phụ huynh này."
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__gender__male
+msgid "Male"
+msgstr "Nam"
+
+#. module: educare_student
+#: model_terms:ir.actions.act_window,help:educare_student.action_educare_student
+msgid "Manage all student profiles here."
+msgstr "Quản lý tất cả hồ sơ học sinh tại đây."
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_kanban
+msgid "Medical"
+msgstr "Y tế"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__medical_alert
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Medical Alert"
+msgstr "Cảnh báo y tế"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__medical_alert_detail
+msgid "Medical Alert Details"
+msgstr "Chi tiết cảnh báo y tế"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Medical Information"
+msgstr "Thông tin y tế"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__medical_notes
+msgid "Medical Notes"
+msgstr "Ghi chú y tế"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__cognitive_level__mild
+msgid "Mild"
+msgstr "Nhẹ"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_fine__mild_delay
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_gross__mild_delay
+msgid "Mild Delay"
+msgstr "Chậm nhẹ"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__learning_style__mixed
+msgid "Mixed"
+msgstr "Kết hợp"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__cognitive_level__moderate
+msgid "Moderate"
+msgstr "Trung bình"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_fine__moderate_delay
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_gross__moderate_delay
+msgid "Moderate Delay"
+msgstr "Chậm trung bình"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__assessment_cycle__monthly
+msgid "Monthly"
+msgstr "Hàng tháng"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__parent_relation__mother
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__secondary_parent_relation__mother
+msgid "Mother"
+msgstr "Mẹ"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Motor & Self-Care"
+msgstr "Vận động & Tự chăm sóc"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn chót hoạt động của tôi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__name
+msgid "Name"
+msgstr "Họ và tên"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Name / Code"
+msgstr "Tên / Mã số"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__diagnosed_by
+msgid "Name of the diagnosing specialist or organization."
+msgstr "Tên chuyên gia hoặc tổ chức thực hiện chẩn đoán."
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn chót hoạt động tiếp theo"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__next_assessment_date
+msgid "Next Assessment Date"
+msgstr "Ngày đánh giá tiếp theo"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__communication_level__non_verbal
+msgid "Non-Verbal"
+msgstr "Không lời"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__parent_notes
+msgid "Notes from Parent"
+msgstr "Ghi chú từ phụ huynh"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số lượng thao tác"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần thực hiện"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn gặp lỗi khi gửi"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__gender__other
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__overall_progress
+msgid "Overall Progress"
+msgstr "Tiến độ tổng thể"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Parent"
+msgstr "Phụ huynh"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__parent_user_id
+msgid "Parent Account"
+msgstr "Tài khoản phụ huynh"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__self_care_level__partial
+msgid "Partially Independent"
+msgstr "Độc lập một phần"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__social_interaction_level__passive
+msgid "Passive"
+msgstr "Thụ động"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Personal"
+msgstr "Cá nhân"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__preferred_contact_method__phone
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__communication_level__phrase
+msgid "Phrases"
+msgstr "Cụm từ"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__overall_progress__plateau
+msgid "Plateau"
+msgstr "Dừng lại"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__emotional_regulation__poor
+msgid "Poor"
+msgstr "Yếu"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__preferred_contact_method
+msgid "Preferred Contact Method"
+msgstr "Phương thức liên lạc ưa thích"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__reinforcement_preferences
+msgid "Preferred Reinforcements"
+msgstr "Phần thưởng ưa thích"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__previous_center
+msgid "Previous Center"
+msgstr "Trung tâm trước đây"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__primary_diagnosis
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Primary Diagnosis"
+msgstr "Chẩn đoán chính"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Primary Parent"
+msgstr "Phụ huynh chính"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__parent_email
+msgid "Primary Parent/Guardian Email"
+msgstr "Email phụ huynh/người giám hộ chính"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__parent_name
+msgid "Primary Parent/Guardian Name"
+msgstr "Tên phụ huynh/người giám hộ chính"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__parent_phone
+msgid "Primary Parent/Guardian Phone"
+msgstr "Số điện thoại phụ huynh/người giám hộ chính"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__avatar
+msgid "Profile Image"
+msgstr "Ảnh hồ sơ"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__assessment_cycle__quarterly
+msgid "Quarterly"
+msgstr "Hàng quý"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Quick Info"
+msgstr "Thông tin nhanh"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__overall_progress__rapid
+msgid "Rapid Progress"
+msgstr "Tiến bộ nhanh"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__transfer_reason
+msgid "Reason for Transfer"
+msgstr "Lý do chuyển trường"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__receive_daily_report
+msgid "Receive Daily Report"
+msgstr "Nhận báo cáo hàng ngày"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__referral_source
+msgid "Referral Source"
+msgstr "Nguồn giới thiệu"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__overall_progress__regression
+msgid "Regression"
+msgstr "Thụt lùi"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__parent_relation
+msgid "Relation"
+msgstr "Quan hệ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__social_interaction_level__responsive
+msgid "Responsive"
+msgstr "Phản hồi tốt"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__school_name
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "School"
+msgstr "Trường học"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Scores"
+msgstr "Điểm số"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Search Students"
+msgstr "Tìm kiếm học sinh"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__secondary_diagnosis_ids
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Secondary Diagnoses"
+msgstr "Chẩn đoán phụ"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Secondary Parent"
+msgstr "Phụ huynh phụ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__secondary_parent_name
+msgid "Secondary Parent/Guardian Name"
+msgstr "Tên phụ huynh/người giám hộ phụ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__secondary_parent_phone
+msgid "Secondary Parent/Guardian Phone"
+msgstr "Số điện thoại phụ huynh/người giám hộ phụ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__secondary_parent_relation
+msgid "Secondary Relation"
+msgstr "Quan hệ phụ"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__self_care_level
+msgid "Self-Care Level"
+msgstr "Mức độ tự chăm sóc"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__sensory_preferences
+msgid "Sensory Preferences"
+msgstr "Sở thích cảm giác"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Sensory Profile"
+msgstr "Hồ sơ cảm giác"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__sensory_sensitivities
+msgid "Sensory Sensitivities"
+msgstr "Nhạy cảm cảm giác"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__communication_level__sentence
+msgid "Sentences"
+msgstr "Câu hoàn chỉnh"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__cognitive_level__severe
+msgid "Severe"
+msgstr "Nặng"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_fine__severe_delay
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__motor_skill_gross__severe_delay
+msgid "Severe Delay"
+msgstr "Chậm nặng"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__communication_level__single_word
+msgid "Single Words"
+msgstr "Từ đơn"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__overall_progress__slow
+msgid "Slow Progress"
+msgstr "Tiến bộ chậm"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Social & Emotional"
+msgstr "Xã hội & Cảm xúc"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__social_interaction_level
+msgid "Social Interaction Level"
+msgstr "Mức độ tương tác xã hội"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__special_diet
+msgid "Special Diet"
+msgstr "Chế độ ăn đặc biệt"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__primary_diagnosis__speech_delay
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Speech Delay"
+msgstr "Chậm nói"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__status
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên hoạt động\n"
+"Quá hạn: Đã qua ngày đến hạn\n"
+"Hôm nay: Ngày hoạt động là hôm nay\n"
+"Đã lên kế hoạch: Hoạt động trong tương lai."
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__overall_progress__steady
+msgid "Steady Progress"
+msgstr "Tiến bộ đều đặn"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__student_code
+msgid "Student Code"
+msgstr "Mã học sinh"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_tree
+msgid "Student List"
+msgstr "Danh sách học sinh"
+
+#. module: educare_student
+#: model:ir.model,name:educare_student.model_educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Student Profile"
+msgstr "Hồ sơ học sinh"
+
+#. module: educare_student
+#: model:ir.model.constraint,message:educare_student.constraint_educare_student_student_code_unique
+msgid "Student code must be unique."
+msgstr "Mã học sinh phải là duy nhất."
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Student full name"
+msgstr "Họ và tên học sinh"
+
+#. module: educare_student
+#: model:ir.actions.act_window,name:educare_student.action_educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_user_profile__student_ids
+#: model:ir.ui.menu,name:educare_student.menu_student_parent
+msgid "Students"
+msgstr "Học sinh"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__supervisor_id
+msgid "Supervisor"
+msgstr "Người giám sát"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_search
+msgid "Teacher"
+msgstr "Giáo viên"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Teachers"
+msgstr "Giáo viên"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_form
+msgid "Transfer History"
+msgstr "Lịch sử chuyển trường"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__status__transferred
+msgid "Transferred"
+msgstr "Đã chuyển trường"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ được ghi nhận."
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__vbmapp_score
+msgid "VB-MAPP Score"
+msgstr "Điểm VB-MAPP"
+
+#. module: educare_student
+#: model:ir.model.constraint,message:educare_student.constraint_educare_student_vbmapp_score_positive
+msgid "VB-MAPP score must be greater than or equal to 0."
+msgstr "Điểm VB-MAPP phải lớn hơn hoặc bằng 0."
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__learning_style__visual
+msgid "Visual"
+msgstr "Thị giác"
+
+#. module: educare_student
+#: model:ir.model.fields,field_description:educare_student.field_educare_student__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: educare_student
+#: model:ir.model.fields,help:educare_student.field_educare_student__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử liên lạc trên trang web"
+
+#. module: educare_student
+#: model:ir.model.fields.selection,name:educare_student.selection__educare_student__preferred_contact_method__zalo
+msgid "Zalo"
+msgstr "Zalo"
+
+#. module: educare_student
+#: model_terms:ir.ui.view,arch_db:educare_student.view_educare_student_kanban
+msgid "years"
+msgstr "tuổi"

@@ -1,0 +1,804 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* educare_security
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-11 09:16+0000\n"
+"PO-Revision-Date: 2026-03-11 09:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Account Lock"
+msgstr "Khóa tài khoản"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__account_locked
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Account Locked"
+msgstr "Tài khoản bị khóa"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__action
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+msgid "Action"
+msgstr "Thao tác"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+msgid "Action Information"
+msgstr "Thông tin thao tác"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_needaction
+msgid "Action Needed"
+msgstr "Cần thực hiện"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__status__active
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__role__admin
+#: model:res.groups,name:educare_security.group_admin
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Admin"
+msgstr "Quản trị viên"
+
+#. module: educare_security
+#: model:res.groups,comment:educare_security.group_admin
+msgid "Admin — full system access across all centers"
+msgstr "Quản trị viên — toàn quyền truy cập hệ thống trên tất cả các trung tâm"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+msgid "Audit Log Details"
+msgstr "Chi tiết nhật ký kiểm tra"
+
+#. module: educare_security
+#: model:ir.model,name:educare_security.model_educare_audit_log
+msgid "Audit Trail Log"
+msgstr "Nhật ký kiểm tra"
+
+#. module: educare_security
+#: model:ir.model,name:educare_security.model_educare_audit_mixin
+msgid "Audit Trail Mixin"
+msgstr "Mixin nhật ký kiểm tra"
+
+#. module: educare_security
+#: model_terms:ir.actions.act_window,help:educare_security.action_educare_audit_log
+msgid ""
+"Audit logs are automatically recorded when create/update/delete operations are\n"
+"                    performed on the system."
+msgstr ""
+"Nhật ký kiểm tra được ghi lại tự động khi các thao tác tạo/cập nhật/xóa\n"
+"                    được thực hiện trên hệ thống."
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__avatar
+msgid "Avatar"
+msgstr "Ảnh đại diện"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__bio
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Biography"
+msgstr "Tiểu sử"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__center_id
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__center_id
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "Center"
+msgstr "Trung tâm"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__certification
+msgid "Certifications (BCBA, RBT, etc.)"
+msgstr "Chứng chỉ (BCBA, RBT, v.v.)"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Child's Center"
+msgstr "Trung tâm của trẻ"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Contact & Work"
+msgstr "Liên hệ & Công việc"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_audit_log__action__create
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "Create"
+msgstr "Tạo mới"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__create_uid
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__create_date
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__current_student_count
+msgid "Current Student Count"
+msgstr "Số học sinh hiện tại"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__date_joined
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "Date Joined"
+msgstr "Ngày tham gia"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_audit_log__action__unlink
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__department
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__display_name
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: educare_security
+#: model:ir.model.constraint,message:educare_security.constraint_educare_user_profile_unique_user
+msgid "Each user can only have one profile!"
+msgstr "Mỗi người dùng chỉ được có một hồ sơ!"
+
+#. module: educare_security
+#: model:ir.module.category,name:educare_security.module_category_educare
+msgid "Educare"
+msgstr "Educare"
+
+#. module: educare_security
+#: model:ir.module.category,description:educare_security.module_category_educare
+msgid "Educare IEP Management System"
+msgstr "Hệ thống quản lý IEP Educare"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_res_users__educare_profile_ids
+msgid "Educare Profiles"
+msgstr "Hồ sơ Educare"
+
+#. module: educare_security
+#: model:ir.model,name:educare_security.model_educare_user_profile
+msgid "Educare User Profile"
+msgstr "Hồ sơ người dùng Educare"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__email
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__preferred_contact__email
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Email"
+msgstr "Email"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__employee_code
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "Employee Code"
+msgstr "Mã nhân viên"
+
+#. module: educare_security
+#: model:ir.model.constraint,message:educare_security.constraint_educare_user_profile_unique_employee_code
+msgid "Employee code must be unique!"
+msgstr "Mã nhân viên phải là duy nhất!"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Expertise"
+msgstr "Chuyên môn"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Failed Login Attempts"
+msgstr "Số lần đăng nhập thất bại"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__failed_login_count
+msgid "Failed Login Count"
+msgstr "Số lần đăng nhập thất bại"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__parent_relation__father
+msgid "Father"
+msgstr "Cha"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ: fa-tasks"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__full_name
+msgid "Full Name"
+msgstr "Họ và tên"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__parent_relation__guardian
+msgid "Guardian"
+msgstr "Người giám hộ"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__id
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__id
+msgid "ID"
+msgstr "ID"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__ip_address
+msgid "IP Address"
+msgstr "Địa chỉ IP"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng chỉ thị hoạt động ngoại lệ."
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được đánh dấu, tin nhắn mới cần bạn chú ý."
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được đánh dấu, một số tin nhắn gặp lỗi khi gửi."
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__status__inactive
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Inactive"
+msgstr "Không hoạt động"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Information"
+msgstr "Thông tin"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__job_title
+msgid "Job Title"
+msgstr "Chức danh"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__last_failed_login
+msgid "Last Failed Login"
+msgstr "Lần đăng nhập thất bại gần nhất"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__last_login
+msgid "Last Login"
+msgstr "Lần đăng nhập gần nhất"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__write_uid
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__write_date
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__write_date
+msgid "Last Updated on"
+msgstr "Ngày cập nhật lần cuối"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__lock_reason
+msgid "Lock Reason"
+msgstr "Lý do khóa"
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Login \"%s\" đã tồn tại. Vui lòng dùng email khác."
+msgstr "Login \"%s\" đã tồn tại. Vui lòng dùng email khác."
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__login
+msgid "Login (Email)"
+msgstr "Đăng nhập (Email)"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__login_count
+msgid "Login Count"
+msgstr "Số lần đăng nhập"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Login Information"
+msgstr "Thông tin đăng nhập"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__max_students
+msgid "Max Students Capacity"
+msgstr "Sức chứa học sinh tối đa"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__model_name
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+msgid "Model"
+msgstr "Model"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__parent_relation__mother
+msgid "Mother"
+msgstr "Mẹ"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn chót hoạt động của tôi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__new_values
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+msgid "New Values (JSON)"
+msgstr "Giá trị mới (JSON)"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn chót hoạt động tiếp theo"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__login
+msgid "Nhập email/login cho tài khoản mới."
+msgstr "Nhập email/login cho tài khoản mới."
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__full_name
+msgid "Nhập tên người dùng. Hệ thống sẽ tự tạo tài khoản khi lưu."
+msgstr "Nhập tên người dùng. Hệ thống sẽ tự tạo tài khoản khi lưu."
+
+#. module: educare_security
+#: model_terms:ir.actions.act_window,help:educare_security.action_educare_audit_log
+msgid "No audit log found."
+msgstr "Không tìm thấy nhật ký kiểm tra."
+
+#. module: educare_security
+#: model_terms:ir.actions.act_window,help:educare_security.action_educare_user_profile
+msgid "No user profiles found."
+msgstr "Không tìm thấy hồ sơ người dùng."
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__notes
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số lượng thao tác"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần thực hiện"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn gặp lỗi khi gửi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__old_values
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+msgid "Old Values (JSON)"
+msgstr "Giá trị cũ (JSON)"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__parent_relation__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__role__parent
+#: model:res.groups,name:educare_security.group_parent
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Parent"
+msgstr "Phụ huynh"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Parent Information"
+msgstr "Thông tin phụ huynh"
+
+#. module: educare_security
+#: model:res.groups,comment:educare_security.group_parent
+msgid "Parent — read-only access to own child's information"
+msgstr "Phụ huynh — chỉ được xem thông tin của con mình"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__phone
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__preferred_contact__phone
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__preferred_contact
+msgid "Preferred Contact"
+msgstr "Phương thức liên lạc ưa thích"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Professional Skills"
+msgstr "Kỹ năng chuyên môn"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__receive_notifications
+msgid "Receive Notifications"
+msgstr "Nhận thông báo"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+msgid "Record"
+msgstr "Bản ghi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__record_id
+msgid "Record ID"
+msgstr "ID bản ghi"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+msgid "Record Information"
+msgstr "Thông tin bản ghi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__record_name
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "Record Name"
+msgstr "Tên bản ghi"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__parent_relation
+msgid "Relationship"
+msgstr "Quan hệ"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__role
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__preferred_contact__sms
+msgid "SMS"
+msgstr "SMS"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "Search Audit Log"
+msgstr "Tìm kiếm nhật ký kiểm tra"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Search User Profile"
+msgstr "Tìm kiếm hồ sơ người dùng"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Security"
+msgstr "Bảo mật"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__specialization
+msgid "Specialization"
+msgstr "Chuyên ngành"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__status
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên hoạt động\n"
+"Quá hạn: Đã qua ngày đến hạn\n"
+"Hôm nay: Ngày hoạt động là hôm nay\n"
+"Đã lên kế hoạch: Hoạt động trong tương lai."
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Student List"
+msgstr "Danh sách học sinh"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "Students"
+msgstr "Học sinh"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__role__supervisor
+#: model:res.groups,name:educare_security.group_supervisor
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Supervisor"
+msgstr "Giám sát viên"
+
+#. module: educare_security
+#: model:res.groups,comment:educare_security.group_supervisor
+msgid "Supervisor (BCBA) — oversees all operations within a center"
+msgstr "Giám sát viên (BCBA) — giám sát toàn bộ hoạt động trong một trung tâm"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__status__suspended
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Suspended"
+msgstr "Tạm ngừng"
+
+#. module: educare_security
+#: model:ir.actions.act_window,name:educare_security.action_educare_audit_log
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+msgid "System Audit Log"
+msgstr "Nhật ký kiểm tra hệ thống"
+
+#. module: educare_security
+#: model:ir.ui.menu,name:educare_security.menu_educare_audit_log
+msgid "System Log"
+msgstr "Nhật ký hệ thống"
+
+#. module: educare_security
+#: model:ir.ui.menu,name:educare_security.menu_my_profile
+msgid "User Profile"
+msgstr "Hồ sơ người dùng"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__role__teacher
+#: model:res.groups,name:educare_security.group_teacher
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+msgid "Teacher"
+msgstr "Giáo viên"
+
+#. module: educare_security
+#: model:res.groups,comment:educare_security.group_teacher
+msgid "Teacher — manages assigned student records"
+msgstr "Giáo viên — quản lý hồ sơ học sinh được phân công"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "This Month"
+msgstr "Tháng này"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "This Week"
+msgstr "Tuần này"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+msgid "Timestamp"
+msgstr "Thời gian"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__two_factor_enabled
+msgid "Two-Factor Auth"
+msgstr "Xác thực hai bước"
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ được ghi nhận."
+
+#. module: educare_security
+#: model_terms:ir.actions.act_window,help:educare_security.action_educare_user_profile
+msgid ""
+"Tạo profile mới: nhập Full Name, Login (Email) và Role.\n"
+"                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền tương ứng.\n"
+"                    Mọi thay đổi được ghi lại trong Audit Log."
+msgstr ""
+"Tạo hồ sơ mới: nhập Họ và tên, Đăng nhập (Email) và Vai trò.\n"
+"                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền tương ứng.\n"
+"                    Mọi thay đổi được ghi lại trong Nhật ký kiểm tra."
+
+#. module: educare_security
+#: model:ir.model,name:educare_security.model_res_users
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__user_id
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__user_id
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "User"
+msgstr "Người dùng"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__user_agent
+msgid "User Agent"
+msgstr "Trình duyệt người dùng"
+
+#. module: educare_security
+#: model:ir.ui.menu,name:educare_security.menu_educare_user_management
+msgid "User Management"
+msgstr "Quản lý người dùng"
+
+#. module: educare_security
+#: model:ir.actions.act_window,name:educare_security.action_educare_user_profile
+#: model:ir.ui.menu,name:educare_security.menu_educare_user_profile
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "User Profile"
+msgstr "Hồ sơ người dùng"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
+msgid "User Profiles"
+msgstr "Hồ sơ người dùng"
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Vui lòng nhập Full Name để tạo tài khoản người dùng."
+msgstr "Vui lòng nhập Họ và tên để tạo tài khoản người dùng."
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Vui lòng nhập Login (Email) để tạo tài khoản người dùng."
+msgstr "Vui lòng nhập Đăng nhập (Email) để tạo tài khoản người dùng."
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_audit_log__action__write
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
+msgid "Write"
+msgstr "Cập nhật"
+
+#. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__years_experience
+msgid "Years of Experience"
+msgstr "Số năm kinh nghiệm"
+
+#. module: educare_security
+#: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__preferred_contact__zalo
+msgid "Zalo"
+msgstr "Zalo"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "e.g. Nguyễn Văn A"
+msgstr "vd: Nguyễn Văn A"
+
+#. module: educare_security
+#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
+msgid "e.g. nguyenvana@example.com"
+msgstr "vd: nguyenvana@example.com"
