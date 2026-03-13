@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_iep_goal_admin,educare.iep.goal admin,model_educare_iep_goal,educare_security.group_admin,1,1,1,1
+access_iep_goal_supervisor,educare.iep.goal supervisor,model_educare_iep_goal,educare_security.group_supervisor,1,1,1,0
+access_iep_goal_teacher,educare.iep.goal teacher,model_educare_iep_goal,educare_security.group_teacher,1,1,1,0
+access_iep_goal_parent,educare.iep.goal parent,model_educare_iep_goal,educare_security.group_parent,1,0,0,0
+access_iep_objective_admin,educare.iep.objective admin,model_educare_iep_objective,educare_security.group_admin,1,1,1,1
+access_iep_objective_supervisor,educare.iep.objective supervisor,model_educare_iep_objective,educare_security.group_supervisor,1,1,1,0
+access_iep_objective_teacher,educare.iep.objective teacher,model_educare_iep_objective,educare_security.group_teacher,1,1,1,0
+access_iep_objective_parent,educare.iep.objective parent,model_educare_iep_objective,educare_security.group_parent,1,0,0,0
+access_iep_framework_admin,educare.iep.framework admin,model_educare_iep_framework,educare_security.group_admin,1,1,1,1
+access_iep_framework_user,educare.iep.framework user,model_educare_iep_framework,base.group_user,1,0,0,0
+access_iep_prompt_level_admin,educare.iep.prompt.level admin,model_educare_iep_prompt_level,educare_security.group_admin,1,1,1,1
+access_iep_prompt_level_user,educare.iep.prompt.level user,model_educare_iep_prompt_level,base.group_user,1,0,0,0
+access_iep_probe_method_admin,educare.iep.probe.method admin,model_educare_iep_probe_method,educare_security.group_admin,1,1,1,1
+access_iep_probe_method_user,educare.iep.probe.method user,model_educare_iep_probe_method,base.group_user,1,0,0,0
+access_iep_priority_admin,educare.iep.priority admin,model_educare_iep_priority,educare_security.group_admin,1,1,1,1
+access_iep_priority_user,educare.iep.priority user,model_educare_iep_priority,base.group_user,1,0,0,0
+access_iep_measurement_template_admin,educare.iep.measurement.template admin,model_educare_iep_measurement_template,educare_security.group_admin,1,1,1,1
+access_iep_measurement_template_user,educare.iep.measurement.template user,model_educare_iep_measurement_template,base.group_user,1,0,0,0

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Goal Action: Tree, Form, Kanban, Graph -->
+    <record id="action_educare_iep_goal" model="ir.actions.act_window">
+        <field name="name">Long-term Goals</field>
+        <field name="res_model">educare.iep.goal</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="search_view_id" ref="view_educare_iep_goal_search" />
+        <field name="context">{
+            'search_default_filter_active': 1,
+            'search_default_group_student': 1,
+            }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first long-term IEP goal
+            </p>
+            <p>Build SMART goals for students by development domain.</p>
+        </field>
+    </record>
+
+    <!-- Goal Kanban Action (dedicated for IEP Kanban menu) -->
+    <record id="action_educare_iep_goal_kanban" model="ir.actions.act_window">
+        <field name="name">Kanban IEP</field>
+        <field name="res_model">educare.iep.goal</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="view_educare_iep_goal_search" />
+        <field name="context">{
+            'search_default_filter_active': 1,
+            'group_by': 'goal_domain_id'
+            }</field>
+    </record>
+
+    <!-- Objective Action: Tree and Form -->
+    <record id="action_educare_iep_objective" model="ir.actions.act_window">
+        <field name="name">Short-term Objectives</field>
+        <field name="res_model">educare.iep.objective</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_educare_iep_objective_search" />
+        <field name="context">{
+            'search_default_filter_active': 1,
+            }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first short-term objective
+            </p>
+            <p>Objectives are linked to goals and used for detailed progress tracking.</p>
+        </field>
+    </record>
+</odoo>

@@ -9,6 +9,7 @@
         'security/ir.model.access.csv',
         'security/record_rules.xml',
         'data/sequence_data.xml',
+        'views/assessment_views.xml',
         'views/student_form.xml',
         'views/student_tree.xml',
         'views/student_search.xml',

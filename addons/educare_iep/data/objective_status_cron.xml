@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <record id="ir_cron_auto_sync_objective_status" model="ir.cron">
+        <field name="name">IEP Objective: Auto Sync Status</field>
+        <field name="model_id" ref="model_educare_iep_objective" />
+        <field name="state">code</field>
+        <field name="code">model.cron_auto_sync_objective_status()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

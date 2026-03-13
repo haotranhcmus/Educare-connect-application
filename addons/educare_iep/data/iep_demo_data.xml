@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+
+    <!-- ============================== -->
+    <!-- Demo Students (self-contained) -->
+    <!-- ============================== -->
+    <record id="demo_student_an" model="educare.student">
+        <field name="name">Trần An</field>
+        <field name="date_of_birth">2020-05-10</field>
+        <field name="gender">male</field>
+        <field name="enrollment_date">2025-01-15</field>
+        <field name="status">active</field>
+        <field name="primary_diagnosis">autism</field>
+        <field name="center_id" ref="educare_base.center_hcm" />
+        <field name="assigned_teacher_id" ref="base.user_admin" />
+        <field name="parent_phone">0901000001</field>
+        <field name="emergency_contact_phone">0901000002</field>
+    </record>
+
+    <record id="demo_student_binh" model="educare.student">
+        <field name="name">Lê Bình</field>
+        <field name="date_of_birth">2021-02-20</field>
+        <field name="gender">male</field>
+        <field name="enrollment_date">2025-03-01</field>
+        <field name="status">active</field>
+        <field name="primary_diagnosis">developmental_delay</field>
+        <field name="center_id" ref="educare_base.center_hcm" />
+        <field name="assigned_teacher_id" ref="base.user_admin" />
+        <field name="parent_phone">0901000003</field>
+        <field name="emergency_contact_phone">0901000004</field>
+    </record>
+
+    <!-- ============================== -->
+    <!-- GOAL 1: Giao tiếp — HS An      -->
+    <!-- ============================== -->
+    <record id="demo_goal_01" model="educare.iep.goal">
+        <field name="name">Phát triển kỹ năng giao tiếp bằng lời nói</field>
+        <field name="student_id" ref="demo_student_an" />
+        <field name="goal_domain_id" ref="educare_base.domain_communication" />
+        <field name="priority_id" ref="priority_medium" />
+        <field name="assigned_teacher_id" ref="base.user_admin" />
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=4)).strftime('%Y-%m-%d')" />
+        <field name="review_frequency">monthly</field>
+        <field name="status">draft</field>
+        <field name="goal_description">
+            Trẻ sẽ sử dụng lời nói để yêu cầu đồ vật và hoạt động
+            trong ít nhất 80% các cơ hội giao tiếp, được đo qua
+            quan sát trực tiếp trong 3 buổi liên tiếp.
+        </field>
+        <field name="smart_specific">Sử dụng câu 2-3 từ để yêu cầu (mand)</field>
+        <field name="smart_measurable">80% chính xác qua 3 buổi liên tiếp</field>
+        <field name="smart_achievable">Trẻ đã có khả năng bắt chước âm thanh</field>
+        <field name="smart_relevant">Giao tiếp là nền tảng cho mọi kỹ năng xã hội</field>
+        <field name="smart_timebound">6 tháng kể từ ngày bắt đầu</field>
+        <field name="baseline_description">Trẻ hiện chỉ dùng cử chỉ và tiếng kêu để yêu cầu</field>
+        <field name="baseline_accuracy_pct">15.0</field>
+        <field name="target_accuracy_pct">80.0</field>
+        <field name="measurement_criteria">Đếm số mand bằng lời / tổng cơ hội mand trong buổi</field>
+        <field name="measurement_condition">Trong buổi DTT và NET, không có prompt bằng lời</field>
+        <field name="framework_id" ref="framework_vbmapp" />
+        <field name="framework_domain">communication</field>
+        <field name="supervisor_approved" eval="True" />
+        <field name="approved_date"
+            eval="(DateTime.today() - relativedelta(months=2) + relativedelta(days=3)).strftime('%Y-%m-%d')" />
+        <field name="parent_consent" eval="True" />
+        <field name="parent_consent_date"
+            eval="(DateTime.today() - relativedelta(months=2) + relativedelta(days=5)).strftime('%Y-%m-%d')" />
+    </record>
+
+    <!-- Objectives cho Goal 1 -->
+    <record id="demo_obj_01_01" model="educare.iep.objective">
+        <field name="name">Yêu cầu đồ vật yêu thích bằng 1 từ (mand đơn)</field>
+        <field name="goal_id" ref="demo_goal_01" />
+        <field name="sequence">10</field>
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=1)).strftime('%Y-%m-%d')" />
+        <field name="status">in_progress</field>
+        <field name="description">Trẻ nói tên đồ vật (VD: "bóng", "xe") để yêu cầu mà không cần
+            prompt</field>
+        <field name="baseline_accuracy_pct">15.0</field>
+        <field name="target_accuracy_pct">80.0</field>
+        <field name="weight">3.0</field>
+        <field name="target_trials">10</field>
+        <field name="consecutive_sessions_required">3</field>
+        <field name="prompt_level_id" ref="prompt_gestural" />
+        <field name="measurement_method">Đếm số mand đúng / 10 trials DTT</field>
+        <field name="probe_method_id" ref="probe_daily" />
+    </record>
+
+    <record id="demo_obj_01_02" model="educare.iep.objective">
+        <field name="name">Ghép 2 từ để yêu cầu (mand frame: "muốn + [item]")</field>
+        <field name="goal_id" ref="demo_goal_01" />
+        <field name="sequence">20</field>
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=2)).strftime('%Y-%m-%d')" />
+        <field name="status">not_started</field>
+        <field name="description">Trẻ dùng câu 2 từ "muốn + [tên đồ vật]" trong tình huống tự nhiên</field>
+        <field name="baseline_accuracy_pct">0.0</field>
+        <field name="target_accuracy_pct">70.0</field>
+        <field name="weight">1.0</field>
+        <field name="target_trials">10</field>
+        <field name="consecutive_sessions_required">3</field>
+        <field name="prompt_level_id" ref="prompt_verbal" />
+        <field name="measurement_method">Quan sát trong NET, đếm frame 2 từ đúng / cơ hội</field>
+        <field name="probe_method_id" ref="probe_mixed" />
+    </record>
+
+    <!-- ============================== -->
+    <!-- GOAL 2: Hành vi — HS An        -->
+    <!-- ============================== -->
+    <record id="demo_goal_02" model="educare.iep.goal">
+        <field name="name">Giảm hành vi tự kích thích khi học</field>
+        <field name="student_id" ref="demo_student_an" />
+        <field name="goal_domain_id" ref="educare_base.domain_behavior" />
+        <field name="priority_id" ref="priority_high" />
+        <field name="assigned_teacher_id" ref="base.user_admin" />
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=5)).strftime('%Y-%m-%d')" />
+        <field name="review_frequency">biweekly</field>
+        <field name="status">draft</field>
+        <field name="goal_description">
+            Giảm tần suất hành vi tự kích thích (vỗ tay, lắc người)
+            xuống dưới 5 lần/buổi trong 5 buổi liên tiếp.
+        </field>
+        <field name="smart_specific">Giảm tần suất vỗ tay và lắc người khi ngồi học</field>
+        <field name="smart_measurable">Dưới 5 lần/buổi học 45 phút, 5 buổi liên tiếp</field>
+        <field name="smart_achievable">Trẻ có thể tự kiểm soát trong thời gian ngắn</field>
+        <field name="smart_relevant">Giảm hành vi giúp tập trung học tốt hơn</field>
+        <field name="smart_timebound">6 tháng</field>
+        <field name="baseline_description">Trung bình 15-20 lần/buổi</field>
+        <field name="baseline_accuracy_pct">0.0</field>
+        <field name="target_accuracy_pct">75.0</field>
+        <field name="measurement_criteria">Đếm tần suất (frequency count) trong buổi 45 phút</field>
+        <field name="measurement_condition">Trong DTT và structured play</field>
+        <field name="framework_id" ref="framework_ablls_r" />
+        <field name="framework_code">Cooperation B3</field>
+        <field name="framework_domain">behavior</field>
+        <field name="supervisor_approved" eval="True" />
+        <field name="approved_date"
+            eval="(DateTime.today() - relativedelta(months=1) + relativedelta(days=2)).strftime('%Y-%m-%d')" />
+        <field name="parent_consent" eval="False" />
+    </record>
+
+    <record id="demo_obj_02_01" model="educare.iep.objective">
+        <field name="name">Ngồi yên trong 5 phút liên tục không tự kích thích</field>
+        <field name="goal_id" ref="demo_goal_02" />
+        <field name="sequence">10</field>
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=2)).strftime('%Y-%m-%d')" />
+        <field name="status">in_progress</field>
+        <field name="description">Trẻ ngồi tại bàn và tham gia hoạt động mà không có hành vi tự kích
+            thích trong 5 phút liên tục</field>
+        <field name="baseline_accuracy_pct">10.0</field>
+        <field name="target_accuracy_pct">80.0</field>
+        <field name="weight">2.0</field>
+        <field name="target_trials">5</field>
+        <field name="consecutive_sessions_required">5</field>
+        <field name="prompt_level_id" ref="prompt_gestural" />
+        <field name="measurement_method">Duration recording -- đo thời gian ngồi yên liên tục</field>
+        <field name="probe_method_id" ref="probe_weekly" />
+    </record>
+
+    <!-- ============================== -->
+    <!-- GOAL 3: Nhận thức — HS Bình   -->
+    <!-- ============================== -->
+    <record id="demo_goal_03" model="educare.iep.goal">
+        <field name="name">Nhận diện và phân loại đồ vật theo nhóm</field>
+        <field name="student_id" ref="demo_student_binh" />
+        <field name="goal_domain_id" ref="educare_base.domain_cognitive" />
+        <field name="priority_id" ref="priority_high" />
+        <field name="assigned_teacher_id" ref="base.user_admin" />
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(weeks=3)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=3)).strftime('%Y-%m-%d')" />
+        <field name="review_frequency">monthly</field>
+        <field name="status">draft</field>
+        <field name="goal_description">
+            Trẻ sẽ nhận diện và phân loại ít nhất 10 loại đồ vật
+            vào đúng nhóm (thức ăn, đồ chơi, quần áo) với 90% chính xác.
+        </field>
+        <field name="smart_specific">Phân loại đồ vật vào 3 nhóm: thức ăn, đồ chơi, quần áo</field>
+        <field name="smart_measurable">90% chính xác với 10 items × 3 nhóm</field>
+        <field name="smart_achievable">Trẻ đã nhận diện được một số đồ vật quen thuộc</field>
+        <field name="smart_relevant">Phân loại là kỹ năng nền tảng cho nhận thức</field>
+        <field name="smart_timebound">3 tháng</field>
+        <field name="baseline_description">Trẻ phân loại đúng 3/10 items</field>
+        <field name="baseline_accuracy_pct">30.0</field>
+        <field name="target_accuracy_pct">90.0</field>
+        <field name="measurement_criteria">Probe: 10 items ngẫu nhiên, phân loại vào 3 nhóm</field>
+        <field name="measurement_condition">DTT với thẻ hình ảnh</field>
+        <field name="framework_id" ref="framework_vbmapp" />
+        <field name="framework_domain">cognitive</field>
+    </record>
+
+    <record id="demo_obj_03_01" model="educare.iep.objective">
+        <field name="name">Phân loại đồ vật "thức ăn" vs "không phải thức ăn"</field>
+        <field name="goal_id" ref="demo_goal_03" />
+        <field name="sequence">10</field>
+        <field name="start_date"
+            eval="(DateTime.today() - relativedelta(weeks=3)).strftime('%Y-%m-%d')" />
+        <field name="target_date"
+            eval="(DateTime.today() + relativedelta(months=1)).strftime('%Y-%m-%d')" />
+        <field name="status">not_started</field>
+        <field name="description">Trẻ phân loại 10 thẻ hình ảnh vào "ăn được" và "không ăn được" với
+            90% chính xác</field>
+        <field name="baseline_accuracy_pct">30.0</field>
+        <field name="target_accuracy_pct">90.0</field>
+        <field name="weight">1.0</field>
+        <field name="target_trials">10</field>
+        <field name="consecutive_sessions_required">3</field>
+        <field name="prompt_level_id" ref="prompt_partial_physical" />
+        <field name="measurement_method">DTT: đặt card vào rổ đúng, đếm số đúng / 10</field>
+        <field name="probe_method_id" ref="probe_daily" />
+    </record>
+
+    <!-- Activate goals after objectives are created (constraint: active goal needs objectives) -->
+    <record id="demo_goal_01" model="educare.iep.goal">
+        <field name="status">active</field>
+    </record>
+
+    <record id="demo_goal_02" model="educare.iep.goal">
+        <field name="status">active</field>
+    </record>
+
+</odoo>

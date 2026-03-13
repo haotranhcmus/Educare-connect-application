@@ -1,7 +1,8 @@
 import re
+from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class EducareStudent(models.Model):
@@ -10,6 +11,28 @@ class EducareStudent(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _order = 'student_code'
+
+    def action_create_supervisor_profile(self):
+        self.ensure_one()
+        if not self.env.user.has_group('educare_security.group_admin'):
+            raise UserError('Only Admin can create a new Supervisor from Student form.')
+
+        view = self.env.ref('educare_security.educare_user_profile_form_view')
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Create Supervisor',
+            'res_model': 'educare.user.profile',
+            'view_mode': 'form',
+            'view_id': view.id,
+            'target': 'new',
+            'context': {
+                'default_role': 'supervisor',
+                'default_center_id': self.center_id.id,
+                'force_supervisor_role': True,
+                'lock_role': True,
+                'from_student_id': self.id,
+            },
+        }
 
     # ── Tab 1: General Information ─────────────────────────────────────────────────────────────
     # ── Identifier ─────────────────────────────────────────────────────────────
@@ -250,16 +273,7 @@ class EducareStudent(models.Model):
 
     behavior_notes = fields.Text(string='Behavior Notes')
 
-    # ── Tab 6: Assessment & Classification ───────────────────────────────────────
-    initial_assessment_date = fields.Date(string='Initial Assessment Date')
-    initial_assessment_notes = fields.Text(string='Initial Assessment Results')
-
-    last_assessment_date = fields.Date(
-        string='Last Assessment Date',
-        compute='_compute_last_assessment_date',
-        store=True,
-    )
-
+    # ── Tab 6: Assessment ─────────────────────────────────────────────────────
     assessment_cycle = fields.Selection([
         ('monthly', 'Monthly'),
         ('quarterly', 'Quarterly'),
@@ -267,31 +281,59 @@ class EducareStudent(models.Model):
         ('annual', 'Annual'),
     ], string='Assessment Cycle', default='quarterly')
 
-    next_assessment_date = fields.Date(string='Next Assessment Date')
+    assessment_ids = fields.One2many(
+        'educare.assessment', 'student_id',
+        string='Assessment Records',
+    )
 
-    vbmapp_score = fields.Float(string='VB-MAPP Score', default=0.0)
-    ablls_score = fields.Float(string='ABLLS-R Score', default=0.0)
-
-    overall_progress = fields.Selection([
+    # ── Computed summaries from assessment_ids ────────────────────────────────
+    first_assessment_date = fields.Date(
+        string='First Assessment Date',
+        compute='_compute_assessment_stats',
+        store=True,
+    )
+    last_assessment_date = fields.Date(
+        string='Last Assessment Date',
+        compute='_compute_assessment_stats',
+        store=True,
+    )
+    next_assessment_date = fields.Date(
+        string='Next Assessment Date',
+        compute='_compute_assessment_stats',
+        store=True,
+    )
+    latest_vbmapp_score = fields.Float(
+        string='VB-MAPP Score (Latest)',
+        compute='_compute_assessment_stats',
+        store=True,
+        digits=(5, 2),
+    )
+    latest_ablls_score = fields.Float(
+        string='ABLLS-R Score (Latest)',
+        compute='_compute_assessment_stats',
+        store=True,
+        digits=(5, 2),
+    )
+    latest_overall_progress = fields.Selection([
         ('regression', 'Regression'),
         ('plateau', 'Plateau'),
         ('slow', 'Slow Progress'),
         ('steady', 'Steady Progress'),
         ('rapid', 'Rapid Progress'),
-    ], string='Overall Progress')
+    ], string='Overall Progress (Latest)', compute='_compute_assessment_stats', store=True)
 
-    classification = fields.Selection([
+    latest_classification = fields.Selection([
         ('level_1', 'Level 1 — Mild'),
         ('level_2', 'Level 2 — Moderate'),
         ('level_3', 'Level 3 — Severe'),
-    ], string='Classification')
+    ], string='Classification (Latest)', compute='_compute_assessment_stats', store=True)
 
-    classification_date = fields.Date(string='Classification Date')
-    assessment_notes = fields.Text(string='Assessment Notes')
+    # ── Tab 7: History & Notes ────────────────────────────────────────────────
+    transfer_ids = fields.One2many(
+        'educare.transfer', 'student_id',
+        string='Transfer History',
+    )
 
-    # ── Tab 7: History & Notes ────────────────────────────────────────────────────
-    previous_center = fields.Char(string='Previous Center', size=128)
-    transfer_reason = fields.Text(string='Reason for Transfer')
     referral_source = fields.Char(string='Referral Source', size=128)
     insurance_number = fields.Char(string='Insurance Number', size=32)
     internal_notes = fields.Text(string='Internal Notes (Staff Only)')
@@ -319,10 +361,6 @@ class EducareStudent(models.Model):
          'Student code must be unique.'),
         ('attention_span_positive', 'CHECK(attention_span >= 0)',
          'Attention span must be greater than or equal to 0.'),
-        ('vbmapp_score_positive', 'CHECK(vbmapp_score >= 0)',
-         'VB-MAPP score must be greater than or equal to 0.'),
-        ('ablls_score_positive', 'CHECK(ablls_score >= 0)',
-         'ABLLS-R score must be greater than or equal to 0.'),
     ]
 
     # ── Computed ──────────────────────────────────────────────────────────────
@@ -464,12 +502,35 @@ class EducareStudent(models.Model):
             else:
                 student.display_name = student.name
 
-    @api.depends('initial_assessment_date')  # Placeholder: replace with session_log_ids.date when Phase 2 is ready
-    def _compute_last_assessment_date(self):
-        """
-        Placeholder: When educare_session module is ready,
-        will compute from MAX(session_log_ids.date).
-        Currently falls back to initial_assessment_date.
-        """
+    @api.depends(
+        'assessment_ids.assessment_date',
+        'assessment_ids.vbmapp_score',
+        'assessment_ids.ablls_score',
+        'assessment_ids.overall_progress',
+        'assessment_ids.classification',
+        'assessment_cycle',
+    )
+    def _compute_assessment_stats(self):
+        """Compute summary fields from the assessment_ids One2many."""
+        cycle_days = {'monthly': 30, 'quarterly': 90, 'biannual': 180, 'annual': 365}
         for student in self:
-            student.last_assessment_date = student.initial_assessment_date
+            assessments = student.assessment_ids
+            if assessments:
+                dates = assessments.mapped('assessment_date')
+                student.first_assessment_date = min(dates)
+                latest = assessments.sorted('assessment_date', reverse=True)[0]
+                student.last_assessment_date = latest.assessment_date
+                days = cycle_days.get(student.assessment_cycle, 90)
+                student.next_assessment_date = latest.assessment_date + timedelta(days=days)
+                student.latest_vbmapp_score = latest.vbmapp_score
+                student.latest_ablls_score = latest.ablls_score
+                student.latest_overall_progress = latest.overall_progress
+                student.latest_classification = latest.classification
+            else:
+                student.first_assessment_date = False
+                student.last_assessment_date = False
+                student.next_assessment_date = False
+                student.latest_vbmapp_score = 0.0
+                student.latest_ablls_score = 0.0
+                student.latest_overall_progress = False
+                student.latest_classification = False

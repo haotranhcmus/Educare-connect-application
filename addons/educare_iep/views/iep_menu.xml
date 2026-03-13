@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Level 1: IEP and Goals -->
+    <menuitem id="menu_educare_iep_root"
+        name="IEP &amp; Goals"
+        parent="educare_base.menu_educare_root"
+        groups="educare_security.group_teacher"
+        sequence="30" />
+
+    <!-- Level 2: Long-term Goals -->
+    <menuitem id="menu_educare_iep_goal"
+        name="Long-term Goals"
+        parent="menu_educare_iep_root"
+        action="action_educare_iep_goal"
+        sequence="10" />
+
+    <!-- Level 2: Short-term Objectives -->
+    <menuitem id="menu_educare_iep_objective"
+        name="Short-term Objectives"
+        parent="menu_educare_iep_root"
+        action="action_educare_iep_objective"
+        sequence="20" />
+
+    <!-- Level 2: Configuration (admin only) -->
+    <menuitem id="menu_educare_iep_config"
+        name="Configuration"
+        parent="menu_educare_iep_root"
+        groups="educare_security.group_admin"
+        sequence="90" />
+
+    <menuitem id="menu_iep_config_framework"
+        name="Assessment Frameworks"
+        parent="menu_educare_iep_config"
+        action="action_iep_framework"
+        sequence="10" />
+
+    <menuitem id="menu_iep_config_priority"
+        name="Priority Levels"
+        parent="menu_educare_iep_config"
+        action="action_iep_priority"
+        sequence="20" />
+
+    <menuitem id="menu_iep_config_prompt_level"
+        name="Prompt Levels"
+        parent="menu_educare_iep_config"
+        action="action_iep_prompt_level"
+        sequence="30" />
+
+    <menuitem id="menu_iep_config_probe_method"
+        name="Probe Methods"
+        parent="menu_educare_iep_config"
+        action="action_iep_probe_method"
+        sequence="40" />
+
+    <menuitem id="menu_iep_config_measurement_template"
+        name="Measurement Templates"
+        parent="menu_educare_iep_config"
+        action="action_iep_measurement_template"
+        sequence="50" />
+</odoo>

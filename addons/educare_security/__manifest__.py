@@ -6,6 +6,7 @@
     'author': 'Educare',
     'depends': ['base', 'mail', 'educare_base'],
     'data': [
+        'data/sequence_data.xml',
         'security/educare_groups.xml',
         'security/ir.model.access.csv',
         'security/record_rules.xml',
