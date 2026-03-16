@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_plan_close_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.plan.close.wizard.form</field>
+        <field name="model">educare.iep.plan.close.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Close IEP Plan" create="false" edit="false">
+                <group>
+                    <group>
+                        <field name="plan_id" readonly="1" />
+                    </group>
+                </group>
+                <group>
+                    <group string="Closing Details">
+                        <field name="closing_reason" />
+                        <field name="closing_notes"
+                               placeholder="Ghi chú thêm về lý do đóng plan (tùy chọn)..." />
+                    </group>
+                </group>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                    <button name="action_confirm_close"
+                            string="Confirm"
+                            type="object"
+                            class="btn-primary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_educare_iep_plan_close_wizard" model="ir.actions.act_window">
+        <field name="name">Close IEP Plan</field>
+        <field name="res_model">educare.iep.plan.close.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_educare_iep_plan_close_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>
+

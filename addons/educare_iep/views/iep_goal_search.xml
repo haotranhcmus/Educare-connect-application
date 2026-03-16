@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_goal_search" model="ir.ui.view">
+        <field name="name">educare.iep.goal.search</field>
+        <field name="model">educare.iep.goal</field>
+        <field name="arch" type="xml">
+            <search string="Search IEP Goals">
+                <!-- Search Fields -->
+                <field name="student_id" />
+                <field name="plan_id" />
+                <field name="goal_code" />
+                <field name="name" string="Description" />
+
+                <separator />
+
+                <!-- Status Filters -->
+                <filter name="filter_draft" string="Draft"
+                    domain="[('status','=','draft')]" />
+                <filter name="filter_active" string="Active"
+                    domain="[('status','=','active')]" />
+                <filter name="filter_achieved" string="Achieved"
+                    domain="[('status','=','achieved')]" />
+                <filter name="filter_discontinued" string="Discontinued"
+                    domain="[('status','=','discontinued')]" />
+                <separator />
+                <filter name="filter_my_goals" string="My Goals"
+                    domain="[('assigned_teacher_id','=',uid)]" />
+                <filter name="filter_active_plan" string="In Active Plan"
+                    domain="[('plan_id.status','=','active')]" />
+                <filter name="filter_high_priority" string="High/Critical Priority"
+                    domain="[('priority', 'in', ['high', 'critical'])]" />
+                <separator />
+
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                        context="{'group_by': 'student_id'}" />
+                    <filter name="group_plan" string="IEP Plan"
+                        context="{'group_by': 'plan_id'}" />
+                    <filter name="group_domain" string="Domain"
+                        context="{'group_by': 'goal_domain_id'}" />
+                    <filter name="group_status" string="Status"
+                        context="{'group_by': 'status'}" />
+                    <filter name="group_priority" string="Priority"
+                        context="{'group_by': 'priority'}" />
+                    <filter name="group_teacher" string="Teacher"
+                        context="{'group_by': 'assigned_teacher_id'}" />
+                    <filter name="group_start_month" string="Start Month"
+                        context="{'group_by': 'start_date:month'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

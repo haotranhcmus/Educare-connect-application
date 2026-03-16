@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================ -->
+    <!-- Record Rules: educare.iep.plan               -->
+    <!-- ============================================ -->
+
+    <record id="rule_iep_plan_parent" model="ir.rule">
+        <field name="name">Parent: Only own child's IEP plans</field>
+        <field name="model_id" ref="model_educare_iep_plan" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_parent'))]" />
+        <field name="domain_force">
+            [('student_id.parent_user_id', '=', user.id)]
+        </field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="rule_iep_plan_teacher" model="ir.rule">
+        <field name="name">Teacher: Only assigned students' IEP plans</field>
+        <field name="model_id" ref="model_educare_iep_plan" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_teacher'))]" />
+        <field name="domain_force">
+            ['|',
+            ('student_id.assigned_teacher_id', '=', user.id),
+            ('student_id.co_teacher_ids', 'in', [user.id])]
+        </field>
+    </record>
+
+    <record id="rule_iep_plan_supervisor" model="ir.rule">
+        <field name="name">Supervisor: All IEP plans in center</field>
+        <field name="model_id" ref="model_educare_iep_plan" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_supervisor'))]" />
+        <field name="domain_force">
+            [('student_id.center_id', 'in',
+            user.educare_profile_ids.center_id.ids)]
+        </field>
+    </record>
+
+    <record id="rule_iep_plan_admin" model="ir.rule">
+        <field name="name">Admin: All IEP plans</field>
+        <field name="model_id" ref="model_educare_iep_plan" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- Record Rules: educare.iep.goal               -->
+    <!-- ============================================ -->
+
+    <record id="rule_iep_goal_parent" model="ir.rule">
+        <field name="name">Parent: Only own child's goals</field>
+        <field name="model_id" ref="model_educare_iep_goal" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_parent'))]" />
+        <field name="domain_force">
+            [('student_id.parent_user_id', '=', user.id)]
+        </field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="rule_iep_goal_teacher" model="ir.rule">
+        <field name="name">Teacher: Only assigned students' goals</field>
+        <field name="model_id" ref="model_educare_iep_goal" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_teacher'))]" />
+        <field name="domain_force">
+            ['|',
+            ('student_id.assigned_teacher_id', '=', user.id),
+            ('student_id.co_teacher_ids', 'in', [user.id])]
+        </field>
+    </record>
+
+    <record id="rule_iep_goal_supervisor" model="ir.rule">
+        <field name="name">Supervisor: All goals in center</field>
+        <field name="model_id" ref="model_educare_iep_goal" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_supervisor'))]" />
+        <field name="domain_force">
+            [('student_id.center_id', 'in',
+            user.educare_profile_ids.center_id.ids)]
+        </field>
+    </record>
+
+    <record id="rule_iep_goal_admin" model="ir.rule">
+        <field name="name">Admin: All goals</field>
+        <field name="model_id" ref="model_educare_iep_goal" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- Record Rules: educare.iep.objective          -->
+    <!-- ============================================ -->
+
+    <record id="rule_iep_objective_parent" model="ir.rule">
+        <field name="name">Parent: Only own child's objectives</field>
+        <field name="model_id" ref="model_educare_iep_objective" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_parent'))]" />
+        <field name="domain_force">
+            [('student_id.parent_user_id', '=', user.id)]
+        </field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="rule_iep_objective_teacher" model="ir.rule">
+        <field name="name">Teacher: Only assigned students' objectives</field>
+        <field name="model_id" ref="model_educare_iep_objective" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_teacher'))]" />
+        <field name="domain_force">
+            ['|',
+            ('student_id.assigned_teacher_id', '=', user.id),
+            ('student_id.co_teacher_ids', 'in', [user.id])]
+        </field>
+    </record>
+
+    <record id="rule_iep_objective_supervisor" model="ir.rule">
+        <field name="name">Supervisor: All objectives in center</field>
+        <field name="model_id" ref="model_educare_iep_objective" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_supervisor'))]" />
+        <field name="domain_force">
+            [('student_id.center_id', 'in',
+            user.educare_profile_ids.center_id.ids)]
+        </field>
+    </record>
+
+    <record id="rule_iep_objective_admin" model="ir.rule">
+        <field name="name">Admin: All objectives</field>
+        <field name="model_id" ref="model_educare_iep_objective" />
+        <field name="groups"
+            eval="[(4, ref('educare_security.group_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

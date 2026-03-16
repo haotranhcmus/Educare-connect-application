@@ -6,9 +6,11 @@
     'author': 'Educare',
     'depends': ['base', 'mail', 'educare_base'],
     'data': [
+        'data/sequence_data.xml',
         'security/educare_groups.xml',
         'security/ir.model.access.csv',
         'security/record_rules.xml',
+        'data/security_profile_demo_data.xml',
         'views/user_profile_views.xml',
         'views/audit_log_views.xml',
         'views/menu.xml',
