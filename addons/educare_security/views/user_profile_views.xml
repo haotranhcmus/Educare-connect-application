@@ -233,11 +233,8 @@
 
         <!-- ==================== ACTION ==================== -->
 
-        <!-- Migrate: remove old ir.actions.act_window with this ID if it exists -->
-        <delete id="action_my_profile" model="ir.actions.act_window" />
-
         <!-- Action: My Profile — auto-create profile for current user then open it -->
-        <record id="action_my_profile" model="ir.actions.server">
+        <record id="action_my_profile_server" model="ir.actions.server">
             <field name="name">My Profile</field>
             <field name="model_id" ref="model_educare_user_profile" />
             <field name="state">code</field>

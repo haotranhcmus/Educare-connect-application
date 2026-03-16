@@ -1,27 +1,25 @@
-from datetime import timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 GOAL_STATUS = [
     ('draft', 'Draft'),
-    ('active', 'In Progress'),
-    ('achieved', 'Achieved'),
+    ('active', 'Active'),
+    ('achieved', 'Mastered'),
     ('discontinued', 'Discontinued'),
-    ('modified', 'Modified'),
 ]
 
-REVIEW_FREQUENCIES = [
-    ('weekly', 'Weekly'),
-    ('biweekly', 'Biweekly'),
-    ('monthly', 'Monthly'),
-    ('quarterly', 'Quarterly'),
+GOAL_PRIORITY = [
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('high', 'High'),
+    ('critical', 'Critical'),
 ]
 
 class EducareIepGoal(models.Model):
     _name = 'educare.iep.goal'
     _description = 'IEP Long-term Goal'
     _rec_name = 'name'
-    _order = 'start_date desc, priority_sequence desc, id'
+    _order = 'start_date desc, id'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # Tab 1: General Information
@@ -39,37 +37,29 @@ class EducareIepGoal(models.Model):
         copy=False,
         readonly=True,
     )
-    student_id = fields.Many2one(
-        'educare.student',
-        string='Student',
+    plan_id = fields.Many2one(
+        'educare.iep.plan',
+        string='IEP Plan',
         required=True,
         ondelete='cascade',
         index=True,
         tracking=True,
     )
-    student_center_id = fields.Many2one(
-        'educare.center',
-        string='Student Center',
-        related='student_id.center_id',
+    student_id = fields.Many2one(
+        'educare.student',
+        string='Student',
+        related='plan_id.student_id',
+        store=True,
+        index=True,
         readonly=True,
     )
+
     goal_domain_id = fields.Many2one(
         'educare.domain',
         string='Development Domain',
         required=True,
         ondelete='restrict',
         index=True,
-    )
-    priority_id = fields.Many2one(
-        'educare.iep.priority',
-        string='Priority',
-        ondelete='restrict',
-        index=True,
-    )
-    priority_sequence = fields.Integer(
-        related='priority_id.sequence',
-        store=True,
-        string='Priority Sequence',
     )
     status = fields.Selection(
         selection=GOAL_STATUS,
@@ -79,28 +69,31 @@ class EducareIepGoal(models.Model):
         tracking=True,
         index=True,
     )
+    priority = fields.Selection(
+        selection=GOAL_PRIORITY,
+        string='Priority',
+        default='medium',
+        tracking=True,
+        index=True,
+        help='Prioritize among concurrent goals for the same student.',
+    )
     assigned_teacher_id = fields.Many2one(
         'res.users',
         string='Assigned Teacher',
-        required=True,
-        ondelete='restrict',
+        related='plan_id.assigned_teacher_id',
+        store=True,
         index=True,
-        tracking=True,
-        domain="[('educare_role', '=', 'teacher'), ('educare_profile_ids.center_id', '=', student_center_id)]",
+        readonly=True,
     )
     supervisor_id = fields.Many2one(
         'res.users',
         string='Supervisor',
-        ondelete='set null',
-        domain="[('educare_role', '=', 'supervisor'), ('educare_profile_ids.center_id', '=', student_center_id)]",
-    )
-    can_edit_assignment_fields = fields.Boolean(
-        string='Can Edit Assignment Fields',
-        compute='_compute_assignment_permissions',
+        related='plan_id.supervisor_id',
+        store=True,
+        readonly=True,
     )
     start_date = fields.Date(
         string='Start Date',
-        required=True,
         index=True,
     )
     target_date = fields.Date(
@@ -108,17 +101,6 @@ class EducareIepGoal(models.Model):
         required=True,
     )
     achieved_date = fields.Date(string='Achieved Date')
-    review_frequency = fields.Selection(
-        selection=REVIEW_FREQUENCIES,
-        string='Review Frequency',
-        required=True,
-        default='monthly',
-    )
-    next_review_date = fields.Date(
-        string='Next Review Date',
-        compute='_compute_next_review',
-        store=True,
-    )
 
     # Tab 2: SMART Goal Content
     goal_description = fields.Text(
@@ -127,23 +109,21 @@ class EducareIepGoal(models.Model):
     )
     smart_specific = fields.Text(
         string='S - Specific',
-        required=True,
     )
     smart_measurable = fields.Char(
         string='M - Measurable',
         size=256,
-        required=True,
     )
-    smart_achievable = fields.Text(string='A - Achievable')
-    smart_relevant = fields.Text(string='R - Relevant')
+    smart_analysis = fields.Text(
+        string='A/R - Achievable & Relevant',
+        help='Combined analysis of Achievable and Relevant aspects of the SMART goal.',
+    )
     smart_timebound = fields.Char(
         string='T - Time-Bound',
         size=128,
-        required=True,
     )
     baseline_description = fields.Text(
         string='Baseline Description',
-        required=True,
     )
     baseline_accuracy_pct = fields.Float(
         string='Baseline Accuracy (%)',
@@ -158,16 +138,17 @@ class EducareIepGoal(models.Model):
     )
     measurement_criteria = fields.Text(
         string='Measurement Criteria',
-        required=True,
+        help='Optional measurement criteria for tracking goal progress.',
     )
     measurement_condition = fields.Text(string='Measurement Condition')
     measurement_template_id = fields.Many2one(
         'educare.iep.measurement.template',
         string='Measurement Template',
         ondelete='set null',
+        help='Use Quick Template to auto-fill Measurement Criteria and Condition.',
     )
 
-    # Tab 3: Progress & Approval
+    # Tab 3: Progress
     progress_pct = fields.Float(
         string='Overall Progress (%)',
         compute='_compute_progress',
@@ -186,20 +167,15 @@ class EducareIepGoal(models.Model):
         compute='_compute_session_stats',
         store=True,
     )
-    supervisor_approved = fields.Boolean(
-        string='Supervisor Approved',
-        default=False,
-        tracking=True,
+    modification_history = fields.Text(
+        string='Modification History',
+        help='Free-text log of changes. For structured review history, use chatter or a future review model.',
     )
-    approved_date = fields.Date(string='Approval Date')
-    approval_notes = fields.Text(string='Approval Notes')
-    parent_consent = fields.Boolean(
-        string='Parent Consent Obtained',
-        default=False,
+    discontinue_reason = fields.Text(
+        string='Discontinue Reason',
         tracking=True,
+        help='Required when discontinuing a goal. Provides audit trail.',
     )
-    parent_consent_date = fields.Date(string='Parent Consent Date')
-    modification_history = fields.Text(string='Modification History')
 
     # Tab 4: Framework & References
     framework_id = fields.Many2one(
@@ -209,11 +185,14 @@ class EducareIepGoal(models.Model):
     )
     framework_code = fields.Char(
         string='Framework Code',
-        size=64,
+        related='framework_id.code',
+        readonly=True,
+        store=True,
     )
     framework_domain = fields.Char(
         string='Framework Domain',
         size=64,
+        help='Specific domain or milestone reference within the framework (e.g. VB-MAPP Milestone 3).',
     )
     literature_ref = fields.Text(string='Literature References')
     notes = fields.Text(string='Additional Notes')
@@ -224,6 +203,16 @@ class EducareIepGoal(models.Model):
     objective_ids = fields.One2many(
         'educare.iep.objective', 'goal_id',
         string='Short-term Objectives',
+    )
+    objective_count = fields.Integer(
+        string='Objective Count',
+        compute='_compute_objective_count',
+        store=False,
+    )
+    can_delete = fields.Boolean(
+        string='Can Delete',
+        compute='_compute_can_delete',
+        store=False,
     )
 
     # SQL constraints
@@ -245,11 +234,10 @@ class EducareIepGoal(models.Model):
     @api.constrains('start_date', 'target_date')
     def _check_goal_dates(self):
         for goal in self:
-            if goal.target_date and goal.start_date:
-                if goal.target_date <= goal.start_date:
-                    raise ValidationError(
-                        _('Target date must be after start date!')
-                    )
+            if goal.start_date and goal.target_date and goal.target_date <= goal.start_date:
+                raise ValidationError(
+                    _('Target date must be after start date!')
+                )
 
     @api.constrains('status', 'achieved_date')
     def _check_achieved_date(self):
@@ -259,146 +247,26 @@ class EducareIepGoal(models.Model):
                     _('Achieved date is required when marking a goal as achieved!')
                 )
 
-    @api.constrains('status', 'objective_ids')
-    def _check_objectives_when_active(self):
+    @api.constrains('status', 'discontinue_reason')
+    def _check_discontinue_reason(self):
         for goal in self:
-            if goal.status == 'active' and not goal.objective_ids:
+            if goal.status == 'discontinued' and not (goal.discontinue_reason or '').strip():
                 raise ValidationError(
-                    _('An active goal must have at least one short-term objective!')
+                    _('Please provide a reason before discontinuing this goal.')
                 )
-
-    @api.constrains('status', 'supervisor_approved', 'parent_consent', 'objective_ids')
-    def _check_status_workflow_gate(self):
-        for goal in self:
-            if goal.status == 'active':
-                if not goal.supervisor_approved:
-                    raise ValidationError(
-                        _('A goal can move to In Progress only after Supervisor Approved is checked.')
-                    )
-                if not goal.parent_consent:
-                    raise ValidationError(
-                        _('A goal can move to In Progress only after Parent Consent is checked.')
-                    )
-                if not goal.objective_ids:
-                    raise ValidationError(
-                        _('A goal can move to In Progress only when at least one short-term objective exists.')
-                    )
-
-            if goal.status == 'achieved':
-                active_objectives = goal.objective_ids.filtered(
-                    lambda o: o.status != 'discontinued'
-                )
-                if not goal.supervisor_approved or not goal.parent_consent:
-                    raise ValidationError(
-                        _('A goal can move to Achieved only when Supervisor Approved and Parent Consent are both checked.')
-                    )
-                if not active_objectives:
-                    raise ValidationError(
-                        _('A goal can move to Achieved only when it has at least one active objective.')
-                    )
-                if any(obj.status != 'mastered' for obj in active_objectives):
-                    raise ValidationError(
-                        _('A goal can move to Achieved only when all active objectives are Mastered.')
-                    )
-
-    @api.constrains('status', 'supervisor_approved', 'parent_consent')
-    def _check_approval_not_revoked_while_active(self):
-        for goal in self:
-            if goal.status in ('active', 'achieved') and not goal.supervisor_approved:
-                raise ValidationError(
-                    _('Cannot uncheck Supervisor Approved while goal status is In Progress or Achieved.')
-                )
-            if goal.status in ('active', 'achieved') and not goal.parent_consent:
-                raise ValidationError(
-                    _('Cannot uncheck Parent Consent while goal status is In Progress or Achieved.')
-                )
-
-    @api.constrains('student_id', 'assigned_teacher_id', 'supervisor_id')
-    def _check_assignment_consistency(self):
-        is_teacher_only = self._is_teacher_only_user()
-        for goal in self:
-            if not goal.student_id:
-                continue
-
-            if not goal.assigned_teacher_id:
-                raise ValidationError(
-                    _('Assigned teacher is required for every long-term goal.')
-                )
-
-            if goal.assigned_teacher_id.educare_role != 'teacher':
-                raise ValidationError(
-                    _('Assigned teacher must have the Teacher role.')
-                )
-
-            if not self._user_in_center(
-                goal.assigned_teacher_id,
-                goal.student_center_id,
-                allowed_roles=('teacher',),
-            ):
-                raise ValidationError(
-                    _('Assigned teacher must belong to the same center as the student.')
-                )
-
-            if goal.supervisor_id:
-                if goal.supervisor_id.educare_role != 'supervisor':
-                    raise ValidationError(
-                        _('Supervisor must have the Supervisor role.')
-                    )
-                if not self._user_in_center(
-                    goal.supervisor_id,
-                    goal.student_center_id,
-                    allowed_roles=('supervisor',),
-                ):
-                    raise ValidationError(
-                        _('Supervisor must belong to the same center as the student.')
-                    )
-
-            if is_teacher_only:
-                if goal.assigned_teacher_id != goal.student_id.assigned_teacher_id:
-                    raise ValidationError(
-                        _('Teachers must use the assigned teacher from the student profile when creating or editing an IEP goal.')
-                    )
-                if goal.supervisor_id != goal.student_id.supervisor_id:
-                    raise ValidationError(
-                        _('Teachers must use the supervisor from the student profile when creating or editing an IEP goal.')
-                    )
 
     # Computed fields
-    @api.depends('start_date', 'review_frequency')
-    def _compute_next_review(self):
-        frequency_days = {
-            'weekly': 7,
-            'biweekly': 14,
-            'monthly': 30,
-            'quarterly': 90,
-        }
-        for goal in self:
-            if goal.start_date and goal.review_frequency:
-                days = frequency_days.get(goal.review_frequency, 30)
-                goal.next_review_date = goal.start_date + timedelta(days=days)
-            else:
-                goal.next_review_date = False
-
-    def _compute_assignment_permissions(self):
-        can_edit = self._can_current_user_edit_assignments()
-        for goal in self:
-            goal.can_edit_assignment_fields = can_edit
-
-    @api.depends('objective_ids.progress_pct', 'objective_ids.weight', 'objective_ids.status')
+    @api.depends('objective_ids.progress_pct', 'objective_ids.status')
     def _compute_progress(self):
-        """Weighted average progress from non-discontinued objectives.
-        Formula: sum(objective_progress * weight) / sum(weight)
-        """
+        """Average progress from non-discontinued objectives."""
         for goal in self:
             objectives = goal.objective_ids.filtered(
                 lambda o: o.status != 'discontinued'
             )
             if objectives:
-                total_weight = sum(objectives.mapped('weight')) or 1.0
-                weighted_sum = sum(
-                    o.progress_pct * o.weight for o in objectives
+                goal.progress_pct = (
+                    sum(objectives.mapped('progress_pct')) / len(objectives)
                 )
-                goal.progress_pct = weighted_sum / total_weight
             else:
                 goal.progress_pct = 0.0
 
@@ -424,22 +292,32 @@ class EducareIepGoal(models.Model):
                 goal.objective_ids.mapped('total_sessions_worked')
             )
 
+    def _compute_objective_count(self):
+        for goal in self:
+            goal.objective_count = len(goal.objective_ids)
+
+    @api.depends('plan_id.status')
+    def _compute_can_delete(self):
+        for goal in self:
+            goal.can_delete = bool(goal.plan_id and goal.plan_id.status == 'draft')
+
     slow_progress_alert = fields.Boolean(
         string='Slow Progress Alert',
         compute='_compute_slow_progress_alert',
         store=False,
     )
 
-    @api.depends('status', 'progress_pct', 'next_review_date')
+    @api.depends('status', 'progress_pct', 'plan_id.next_review_date')
     def _compute_slow_progress_alert(self):
         """Only alert after the first review date has passed and progress is still below 50%."""
         today = fields.Date.today()
         for goal in self:
+            plan_next_review = goal.plan_id.next_review_date
             goal.slow_progress_alert = (
                 goal.status == 'active'
                 and goal.progress_pct < 50.0
-                and bool(goal.next_review_date)
-                and goal.next_review_date <= today
+                and bool(plan_next_review)
+                and plan_next_review <= today
             )
 
     # Display name
@@ -456,19 +334,18 @@ class EducareIepGoal(models.Model):
 
         today = fields.Date.today()
         for goal in self:
+            if not goal.plan_id:
+                continue
+
             active_objectives = goal.objective_ids.filtered(
                 lambda objective: objective.status != 'discontinued'
             )
             ready_to_start = (
                 goal.status == 'draft'
-                and goal.supervisor_approved
-                and goal.parent_consent
-                and bool(goal.objective_ids)
+                and goal.plan_id.status == 'active'
             )
             ready_to_achieve = (
                 goal.status == 'active'
-                and goal.supervisor_approved
-                and goal.parent_consent
                 and bool(active_objectives)
                 and all(objective.status == 'mastered' for objective in active_objectives)
             )
@@ -489,72 +366,46 @@ class EducareIepGoal(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            if not vals.get('start_date') and vals.get('plan_id'):
+                plan = self.env['educare.iep.plan'].browse(vals['plan_id'])
+                if plan.exists() and plan.start_date:
+                    vals['start_date'] = plan.start_date
             if not vals.get('goal_code') or vals['goal_code'] == '/':
                 vals['goal_code'] = (
                     self.env['ir.sequence'].next_by_code('educare.iep.goal') or '/'
                 )
-            student = self.env['educare.student'].browse(vals.get('student_id'))
-            if student.exists():
-                if not vals.get('assigned_teacher_id'):
-                    vals['assigned_teacher_id'] = student.assigned_teacher_id.id
-                if 'supervisor_id' not in vals:
-                    vals['supervisor_id'] = student.supervisor_id.id
         goals = super().create(vals_list)
         goals._auto_update_status_from_workflow()
+        goals.mapped('plan_id')._auto_move_to_ready_review_if_ready()
         return goals
 
     def write(self, vals):
+        vals = dict(vals)
+        if 'plan_id' in vals and 'start_date' not in vals and vals.get('plan_id'):
+            plan = self.env['educare.iep.plan'].browse(vals['plan_id'])
+            if plan.exists() and plan.start_date:
+                vals['start_date'] = plan.start_date
+        old_plans = self.mapped('plan_id')
         res = super().write(vals)
+        if 'status' in vals:
+            self.mapped('objective_ids')._auto_sync_status_from_rules()
         if not self.env.context.get('skip_auto_goal_status_sync') and {
-            'supervisor_approved', 'parent_consent', 'objective_ids'
+            'plan_id', 'objective_ids', 'status'
         }.intersection(vals):
             self._auto_update_status_from_workflow()
+        (old_plans | self.mapped('plan_id'))._auto_move_to_ready_review_if_ready()
         return res
 
-    def _can_current_user_edit_assignments(self):
-        return (
-            self.env.user.has_group('educare_security.group_admin')
-            or self.env.user.has_group('educare_security.group_supervisor')
-        )
-
-    def _is_teacher_only_user(self):
-        return (
-            self.env.user.has_group('educare_security.group_teacher')
-            and not self._can_current_user_edit_assignments()
-        )
-
-    def _user_in_center(self, user, center, allowed_roles):
-        if not user or not center:
-            return False
-        if user.educare_role not in allowed_roles:
-            return False
-        return center in user.educare_profile_ids.mapped('center_id')
-
-    # Action methods
-    def action_supervisor_approve(self):
-        self.ensure_one()
-        # Validate before approving: supervisor must belong to the same center
-        if self.student_center_id and not self._user_in_center(
-            self.env.user, self.student_center_id, allowed_roles=('supervisor',)
-        ):
-            raise ValidationError(
-                _('You must be a supervisor in the same center as the student to approve this goal.')
-            )
-        if not self.objective_ids:
-            raise ValidationError(
-                _('This goal must have at least one short-term objective before a supervisor can approve it.')
-            )
-        self.write({
-            'supervisor_approved': True,
-            'approved_date': fields.Date.today(),
-        })
-
-    def action_parent_consent(self):
-        self.ensure_one()
-        self.write({
-            'parent_consent': True,
-            'parent_consent_date': fields.Date.today(),
-        })
+    def unlink(self):
+        for goal in self:
+            if goal.plan_id and goal.plan_id.status != 'draft':
+                raise ValidationError(
+                    _('Goals can be deleted only when the parent plan is in Draft.')
+                )
+        plans = self.mapped('plan_id')
+        result = super().unlink()
+        plans._auto_move_to_ready_review_if_ready()
+        return result
 
     def _apply_measurement_template_from_master_data(self):
         self.ensure_one()
@@ -572,68 +423,36 @@ class EducareIepGoal(models.Model):
 
 
     # Onchange handlers
-    @api.onchange('student_id')
-    def _onchange_student_id(self):
-        if not self.student_id:
-            self.assigned_teacher_id = False
-            self.supervisor_id = False
-            return
-
-        self.assigned_teacher_id = self.student_id.assigned_teacher_id
-        if self.student_id.supervisor_id:
-            self.supervisor_id = self.student_id.supervisor_id
-        elif self.env.user.has_group('educare_security.group_supervisor'):
-            self.supervisor_id = self.env.user
-        else:
-            self.supervisor_id = False
-
     @api.onchange('status')
     def _onchange_status(self):
         if self.status == 'achieved' and not self.achieved_date:
             self.achieved_date = fields.Date.today()
 
-    @api.onchange('supervisor_approved')
-    def _onchange_supervisor_approved(self):
-        if self.status in ('active', 'achieved') and not self.supervisor_approved:
-            self.supervisor_approved = True
-            return {
-                'warning': {
-                    'title': _('Approval Required'),
-                    'message': _('Cannot uncheck Supervisor Approved while goal status is In Progress or Achieved.'),
-                }
-            }
-        if self.supervisor_approved and not self.approved_date:
-            self.approved_date = fields.Date.today()
-        if not self.supervisor_approved:
-            self.approved_date = False
+    def action_open_objectives(self):
+        self.ensure_one()
+        action = self.env.ref('educare_iep.action_educare_iep_objective').read()[0]
+        action['domain'] = [('goal_id', '=', self.id)]
+        action['context'] = {
+            'default_goal_id': self.id,
+        }
+        return action
 
-    @api.onchange('parent_consent')
-    def _onchange_parent_consent(self):
-        if self.status in ('active', 'achieved') and not self.parent_consent:
-            self.parent_consent = True
-            return {
-                'warning': {
-                    'title': _('Consent Required'),
-                    'message': _('Cannot uncheck Parent Consent while goal status is In Progress or Achieved.'),
-                }
-            }
-        if self.parent_consent and not self.parent_consent_date:
-            self.parent_consent_date = fields.Date.today()
-        if not self.parent_consent:
-            self.parent_consent_date = False
+    def action_open_objective_wizard(self):
+        self.ensure_one()
+        action = self.env.ref('educare_iep.action_educare_objective_quick_wizard').read()[0]
+        action['context'] = {
+            'default_goal_id': self.id,
+            'default_start_date': self.start_date,
+            'default_target_date': self.target_date,
+        }
+        return action
 
-    def write(self, vals):
-        vals = dict(vals)
-        today = fields.Date.today()
-        if 'supervisor_approved' in vals:
-            vals.setdefault('approved_date', today if vals['supervisor_approved'] else False)
-        if 'parent_consent' in vals:
-            vals.setdefault('parent_consent_date', today if vals['parent_consent'] else False)
-        result = super().write(vals)
-        if 'status' in vals:
-            self.mapped('objective_ids')._auto_sync_status_from_rules()
-        if not self.env.context.get('skip_auto_goal_status_sync') and {
-            'supervisor_approved', 'parent_consent', 'objective_ids', 'status'
-        }.intersection(vals):
-            self._auto_update_status_from_workflow()
-        return result
+    def action_delete_goal(self):
+        self.ensure_one()
+        plan = self.plan_id
+        self.unlink()
+
+        action = self.env.ref('educare_iep.action_educare_iep_goal').read()[0]
+        if plan:
+            action['domain'] = [('plan_id', '=', plan.id)]
+        return action

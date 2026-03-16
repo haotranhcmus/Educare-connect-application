@@ -8,13 +8,12 @@
                 <field name="name" />
                 <field name="goal_code" />
                 <field name="goal_domain_id" />
+                <field name="plan_id" />
                 <field name="student_id" />
                 <field name="assigned_teacher_id" />
                 <field name="target_date" />
                 <field name="progress_pct" />
                 <field name="status" />
-                <field name="supervisor_approved" />
-                <field name="parent_consent" />
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_card oe_kanban_global_click">
@@ -34,6 +33,9 @@
                                         <field name="student_id" />
                                     </div>
                                     <div>
+                                        <field name="plan_id" />
+                                    </div>
+                                    <div>
                                         <field name="assigned_teacher_id" />
                                     </div>
                                     <div>
@@ -42,14 +44,6 @@
                                     <div class="mt-2">
                                         <field name="progress_pct"
                                             widget="progressbar" />
-                                    </div>
-                                </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <span t-if="record.supervisor_approved.raw_value"
-                                            class="badge text-bg-success">SUP</span>
-                                        <span t-if="record.parent_consent.raw_value"
-                                            class="badge text-bg-info">PAR</span>
                                     </div>
                                 </div>
                             </div>

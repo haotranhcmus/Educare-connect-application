@@ -157,56 +157,6 @@
     </record>
 
     <!-- ================================================= -->
-    <!-- PRIORITY LEVELS                                   -->
-    <!-- ================================================= -->
-    <record id="view_iep_priority_form" model="ir.ui.view">
-        <field name="name">educare.iep.priority.form</field>
-        <field name="model">educare.iep.priority</field>
-        <field name="arch" type="xml">
-            <form string="Priority Level">
-                <sheet>
-                    <group>
-                        <group string="Identity">
-                            <field name="name" />
-                            <field name="code" />
-                            <field name="sequence" />
-                            <field name="color" widget="color_picker" />
-                            <field name="active" />
-                        </group>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="view_iep_priority_tree" model="ir.ui.view">
-        <field name="name">educare.iep.priority.tree</field>
-        <field name="model">educare.iep.priority</field>
-        <field name="arch" type="xml">
-            <tree string="Priority Levels"
-                decoration-muted="active == False">
-                <field name="active" column_invisible="1" />
-                <field name="sequence" widget="handle" />
-                <field name="name" />
-                <field name="code" />
-                <field name="color" widget="color" />
-            </tree>
-        </field>
-    </record>
-
-    <record id="action_iep_priority" model="ir.actions.act_window">
-        <field name="name">Priority Levels</field>
-        <field name="res_model">educare.iep.priority</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'active_test': False}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Define goal priority levels (Low, Medium, High...)
-            </p>
-        </field>
-    </record>
-
-    <!-- ================================================= -->
     <!-- MEASUREMENT TEMPLATES                            -->
     <!-- ================================================= -->
     <record id="view_iep_measurement_template_form" model="ir.ui.view">

@@ -5,7 +5,6 @@ access_diagnosis_user,educare.diagnosis.user,model_educare_diagnosis,base.group_
 access_diagnosis_system,educare.diagnosis.system,model_educare_diagnosis,base.group_system,1,1,1,1
 access_domain_user,educare.domain.user,model_educare_domain,base.group_user,1,0,0,0
 access_domain_system,educare.domain.system,model_educare_domain,base.group_system,1,1,1,1
-access_domain_admin,educare.domain.admin,model_educare_domain,educare_security.group_admin,1,1,1,0
 access_template_user,educare.template.user,model_educare_lesson_template,base.group_user,1,0,0,0
 access_template_system,educare.template.system,model_educare_lesson_template,base.group_system,1,1,1,1
 access_template_activity_user,educare.template.activity.user,model_educare_lesson_template_activity,base.group_user,1,0,0,0

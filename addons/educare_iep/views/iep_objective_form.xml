@@ -6,17 +6,33 @@
         <field name="arch" type="xml">
             <form string="Short-term Objective">
                 <header>
-                    <button name="action_put_on_hold" string="Tạm Dừng" type="object"
-                        class="btn-warning"
-                        invisible="status != 'in_progress'" />
-                    <button name="action_resume" string="Tiếp Tục" type="object"
+                    <field name="can_delete" invisible="1" />
+                    <button name="action_delete_objective" string="Xóa Objective" type="object"
+                        class="btn-danger"
+                        confirm="Bạn chắc chắn muốn xóa mục tiêu ngắn hạn này? Hành động này không thể hoàn tác."
+                        invisible="not can_delete"
+                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
+                    <button name="action_start" string="Start" type="object"
                         class="btn-primary"
+                        confirm="Xác nhận chuyển trạng thái objective sang In Progress?"
+                        invisible="status != 'not_started'" />
+                    <button name="action_put_on_hold" string="Pause" type="object"
+                        class="btn-warning"
+                        confirm="Xác nhận chuyển trạng thái objective sang Paused?"
+                        invisible="status != 'in_progress'" />
+                    <button name="action_resume" string="Resume" type="object"
+                        class="btn-secondary"
+                        confirm="Xác nhận chuyển trạng thái objective sang In Progress?"
                         invisible="status != 'on_hold'" />
-                    <button name="action_discontinue" string="Ngừng Hẳn" type="object"
+                    <button name="action_mark_mastered" string="Mastered" type="object"
+                        class="btn-success"
+                        confirm="Xác nhận đánh dấu objective là Mastered?"
+                        invisible="status not in ('in_progress', 'on_hold')" />
+                    <button name="action_open_discontinue_wizard" string="Discontinue" type="object"
                         class="btn-danger"
                         invisible="status in ('mastered', 'discontinued')" />
                     <field name="status" widget="statusbar"
-                        statusbar_visible="not_started,in_progress,mastered"
+                        statusbar_visible="not_started,in_progress,on_hold,mastered,discontinued"
                         clickable="0" />
                 </header>
 
@@ -46,8 +62,8 @@
                                     <field name="goal_id" />
                                     <field name="student_id" readonly="1" />
                                     <field name="sequence" />
-                                    <field name="start_date" />
-                                    <field name="target_date" />
+                                    <field name="start_date" readonly="1" />
+                                    <field name="target_date" readonly="1" />
                                     <field name="mastery_date"
                                         invisible="status != 'mastered'" />
                                 </group>
@@ -55,7 +71,7 @@
                                     <field name="prompt_level_id" />
                                     <field name="probe_method_id" />
                                     <field name="weight" />
-                                    <field name="status" />
+                                    <field name="status" readonly="1" />
                                     <field name="is_overdue" readonly="1" />
                                     <field name="trend" widget="badge"
                                         decoration-success="trend == 'improving'"
@@ -65,12 +81,18 @@
                             </group>
                             <group>
                                 <field name="description"
-                                    placeholder="Detailed short-term objective description..."
+                                    placeholder="Mô tả chi tiết mục tiêu ngắn hạn cần đạt..."
                                     colspan="2" />
                             </group>
                             <group>
                                 <field name="measurement_method"
-                                    placeholder="e.g. Number of correct responses / total trials"
+                                    placeholder="VD: Số câu trả lời đúng / tổng số lần thử"
+                                    colspan="2" />
+                            </group>
+                            <group>
+                                <field name="discontinued_reason"
+                                    placeholder="Lý do ngừng hẳn objective..."
+                                    required="status == 'discontinued'"
                                     colspan="2" />
                             </group>
                         </page>
@@ -113,7 +135,7 @@
                             </group>
                             <group>
                                 <field name="notes"
-                                    placeholder="Observation notes..."
+                                    placeholder="VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm"
                                     colspan="2" />
                             </group>
                             <!-- Placeholder: add session_result_ids inline tree when session

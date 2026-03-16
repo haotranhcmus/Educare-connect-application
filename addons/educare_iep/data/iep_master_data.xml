@@ -96,31 +96,6 @@
     </record>
 
     <!-- ============================= -->
-    <!-- Priority Levels               -->
-    <!-- (sequence: low=10 < medium=20 < high=30) -->
-    <!-- ============================= -->
-    <record id="priority_low" model="educare.iep.priority">
-        <field name="name">Low</field>
-        <field name="code">low</field>
-        <field name="color">0</field>
-        <field name="sequence">10</field>
-    </record>
-
-    <record id="priority_medium" model="educare.iep.priority">
-        <field name="name">Medium</field>
-        <field name="code">medium</field>
-        <field name="color">3</field>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="priority_high" model="educare.iep.priority">
-        <field name="name">High</field>
-        <field name="code">high</field>
-        <field name="color">1</field>
-        <field name="sequence">30</field>
-    </record>
-
-    <!-- ============================= -->
     <!-- Measurement Templates         -->
     <!-- ============================= -->
     <record id="measurement_template_accuracy_trials" model="educare.iep.measurement.template">

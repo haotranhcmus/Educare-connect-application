@@ -8,7 +8,7 @@ import uuid
 OBJECTIVE_STATUS = [
     ('not_started', 'Not Started'),
     ('in_progress', 'In Progress'),
-    ('on_hold', 'On Hold'),
+    ('on_hold', 'Paused'),
     ('mastered', 'Mastered'),
     ('discontinued', 'Discontinued'),
 ]
@@ -86,6 +86,11 @@ class EducareIepObjective(models.Model):
         tracking=True,
         index=True,
     )
+    can_delete = fields.Boolean(
+        string='Can Delete',
+        compute='_compute_can_delete',
+        store=False,
+    )
 
     # Tab 2: Success Criteria
     baseline_accuracy_pct = fields.Float(
@@ -108,6 +113,7 @@ class EducareIepObjective(models.Model):
         string='Consecutive Sessions Required',
         default=3,
         required=True,
+        help='So buoi lien tiep dat target accuracy de tinh la mastered. Mac dinh 3 buoi theo chuan ABA.',
     )
     consecutive_sessions_achieved = fields.Integer(
         string='Consecutive Sessions Achieved',
@@ -121,6 +127,7 @@ class EducareIepObjective(models.Model):
     )
     measurement_method = fields.Text(
         string='Data Collection Method',
+        default='Quan sat truc tiep trong buoi hoc.',
         required=True,
     )
     probe_method_id = fields.Many2one(
@@ -184,6 +191,7 @@ class EducareIepObjective(models.Model):
         compute='_compute_alert_message',
             # No store=True, display only
     )
+    discontinued_reason = fields.Text(string='Discontinued Reason', tracking=True)
     notes = fields.Text(string='Notes / Observations')
 
     # Relationships (placeholder)
@@ -240,6 +248,14 @@ class EducareIepObjective(models.Model):
             if obj.status == 'mastered' and not obj.mastery_date:
                 raise ValidationError(
                     _('Mastery date is required when marking an objective as mastered!')
+                )
+
+    @api.constrains('status', 'discontinued_reason')
+    def _check_discontinued_reason(self):
+        for obj in self:
+            if obj.status == 'discontinued' and not obj.discontinued_reason:
+                raise ValidationError(
+                    _('Please provide a reason before discontinuing this objective.')
                 )
 
     def _is_mastery_criteria_met(self):
@@ -336,6 +352,17 @@ class EducareIepObjective(models.Model):
             self.mapped('goal_id')._auto_update_status_from_workflow()
         return result
 
+    def unlink(self):
+        for obj in self:
+            if obj.goal_id and obj.goal_id.plan_id and obj.goal_id.plan_id.status != 'draft':
+                raise ValidationError(
+                    _('Objectives can be deleted only when the parent plan is in Draft.')
+                )
+        goals = self.mapped('goal_id')
+        result = super().unlink()
+        goals._auto_update_status_from_workflow()
+        return result
+
     # Computed methods (placeholders)
     def _compute_display_name(self):
         for obj in self:
@@ -414,6 +441,15 @@ class EducareIepObjective(models.Model):
                 and obj.status not in ('mastered', 'discontinued')
             )
 
+    @api.depends('goal_id.plan_id.status')
+    def _compute_can_delete(self):
+        for obj in self:
+            obj.can_delete = bool(
+                obj.goal_id
+                and obj.goal_id.plan_id
+                and obj.goal_id.plan_id.status == 'draft'
+            )
+
     @api.depends(
         'trend', 'last_session_date',
         'current_accuracy_pct', 'target_accuracy_pct', 'status'
@@ -464,17 +500,59 @@ class EducareIepObjective(models.Model):
             if not self.target_date:
                 self.target_date = self.goal_id.target_date
 
+    def action_start(self):
+        """Start objective: move from Not Started to In Progress."""
+        for obj in self:
+            if obj.status != 'not_started':
+                continue
+            vals = {'status': 'in_progress'}
+            if not obj.start_date:
+                vals['start_date'] = fields.Date.today()
+            obj.write(vals)
+
     def action_put_on_hold(self):
+        """Pause objective: In Progress -> Paused."""
         for obj in self:
             if obj.status == 'in_progress':
                 obj.write({'status': 'on_hold'})
 
     def action_resume(self):
+        """Resume objective: Paused -> In Progress."""
         for obj in self:
             if obj.status == 'on_hold':
                 obj.write({'status': 'in_progress'})
 
-    def action_discontinue(self):
+    def action_mark_mastered(self):
+        """Mark objective as Mastered."""
         for obj in self:
-            if obj.status not in ('mastered', 'discontinued'):
-                obj.write({'status': 'discontinued'})
+            if obj.status not in ('in_progress', 'on_hold'):
+                continue
+            vals = {'status': 'mastered'}
+            if not obj.mastery_date:
+                vals['mastery_date'] = fields.Date.today()
+            obj.write(vals)
+
+    def action_open_discontinue_wizard(self):
+        """Open Discontinue Objective wizard."""
+        self.ensure_one()
+        if self.status in ('mastered', 'discontinued'):
+            raise ValidationError(
+                _('Cannot discontinue an objective that is already Mastered or Discontinued.')
+            )
+        action = self.env.ref('educare_iep.action_educare_iep_objective_discontinue_wizard').read()[0]
+        action['context'] = {
+            'default_objective_id': self.id,
+            'default_reason': False,
+            'default_notes': '',
+        }
+        return action
+
+    def action_delete_objective(self):
+        self.ensure_one()
+        goal = self.goal_id
+        self.unlink()
+
+        action = self.env.ref('educare_iep.action_educare_iep_goal_form').read()[0]
+        if goal:
+            action['res_id'] = goal.id
+        return action

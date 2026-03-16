@@ -7,19 +7,26 @@
         groups="educare_security.group_teacher"
         sequence="30" />
 
+    <!-- Level 2: IEP Plans -->
+    <menuitem id="menu_educare_iep_plan"
+        name="IEP Plans"
+        parent="menu_educare_iep_root"
+        action="action_educare_iep_plan"
+        sequence="10" />
+
     <!-- Level 2: Long-term Goals -->
     <menuitem id="menu_educare_iep_goal"
         name="Long-term Goals"
         parent="menu_educare_iep_root"
         action="action_educare_iep_goal"
-        sequence="10" />
+        sequence="20" />
 
     <!-- Level 2: Short-term Objectives -->
     <menuitem id="menu_educare_iep_objective"
         name="Short-term Objectives"
         parent="menu_educare_iep_root"
         action="action_educare_iep_objective"
-        sequence="20" />
+        sequence="30" />
 
     <!-- Level 2: Configuration (admin only) -->
     <menuitem id="menu_educare_iep_config"
@@ -33,12 +40,6 @@
         parent="menu_educare_iep_config"
         action="action_iep_framework"
         sequence="10" />
-
-    <menuitem id="menu_iep_config_priority"
-        name="Priority Levels"
-        parent="menu_educare_iep_config"
-        action="action_iep_priority"
-        sequence="20" />
 
     <menuitem id="menu_iep_config_prompt_level"
         name="Prompt Levels"

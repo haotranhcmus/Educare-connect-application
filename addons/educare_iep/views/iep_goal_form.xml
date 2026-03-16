@@ -5,38 +5,18 @@
         <field name="model">educare.iep.goal</field>
         <field name="arch" type="xml">
             <form string="Long-term IEP Goal">
-                <!-- Header: Status Bar -->
                 <header>
-                    <button name="action_supervisor_approve"
-                        string="Supervisor Approve"
+                    <field name="can_delete" invisible="1" />
+                    <button name="action_delete_goal"
+                        string="Xóa Goal"
                         type="object"
-                        class="btn-primary"
-                        confirm="Confirm supervisor approval? This action cannot be undone."
-                        invisible="supervisor_approved"
-                        groups="educare_security.group_supervisor" />
-                    <button name="action_parent_consent"
-                        string="Parent Consent"
-                        type="object"
-                        confirm="Confirm parent consent? This action cannot be undone."
-                        invisible="parent_consent"
-                        groups="educare_security.group_parent" />
+                        class="btn-danger"
+                        confirm="Bạn chắc chắn muốn xóa mục tiêu dài hạn này? Hành động này không thể hoàn tác."
+                        invisible="not can_delete"
+                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
                     <field name="status" widget="statusbar"
                         statusbar_visible="draft,active,achieved" />
                 </header>
-
-                <!-- Draft checklist: show what is still blocking Start Goal -->
-                <div class="alert alert-info" role="alert"
-                    invisible="status != 'draft' or (supervisor_approved and parent_consent and objective_ids)">
-                    <strong>Goal sẽ tự chuyển sang In Progress khi đủ các điều kiện sau:</strong>
-                    <ul class="mb-0 mt-1">
-                        <li invisible="supervisor_approved">Supervisor chưa duyệt — nhấn nút <em>Supervisor
-                            Approve</em></li>
-                        <li invisible="parent_consent">Phụ huynh chưa đồng ý — nhấn nút <em>Parent
-                            Consent</em></li>
-                        <li invisible="objective_ids">Chưa có mục tiêu ngắn hạn (Short-term
-                            Objective) nào</li>
-                    </ul>
-                </div>
 
                 <!-- Alert banner when objective alerts are active -->
                 <field name="slow_progress_alert" invisible="1" />
@@ -48,14 +28,27 @@
                 <sheet>
                     <!-- Smart Buttons -->
                     <div class="oe_button_box" name="button_box">
-                        <!-- Objective count placeholder, add action when standalone view is ready -->
+                        <button name="action_open_objective_wizard"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plus"
+                            string="Add Objective"
+                            invisible="status in ['achieved', 'discontinued']">
+                        </button>
+                        <button name="action_open_objectives"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-list-ol"
+                            string="Objectives">
+                            <field name="objective_count" widget="statinfo" />
+                        </button>
                     </div>
 
                     <!-- Title Section -->
                     <div class="oe_title">
                         <label for="name" />
                         <h1>
-                            <field name="name" placeholder="Long-term Goal Name..." />
+                            <field name="name" placeholder="VD: Tăng khả năng giao tiếp xã hội..." />
                         </h1>
                         <h3>
                             <field name="goal_code" />
@@ -65,27 +58,20 @@
                     <!-- Quick Info -->
                     <group>
                         <group string="Information">
-                            <field name="student_center_id" invisible="1" />
-                            <field name="can_edit_assignment_fields" invisible="1" />
-                            <field name="student_id" />
+                            <field name="plan_id" />
+                            <field name="student_id" readonly="1" />
                             <field name="goal_domain_id" />
-                            <field name="priority_id" widget="many2one" />
-                            <field name="assigned_teacher_id"
-                                readonly="not can_edit_assignment_fields"
-                                domain="[('educare_role', '=', 'teacher'), ('educare_profile_ids.center_id', '=', student_center_id)]"
-                                options="{'no_create': True, 'no_open': True}" />
-                            <field name="supervisor_id"
-                                readonly="not can_edit_assignment_fields"
-                                domain="[('educare_role', '=', 'supervisor'), ('educare_profile_ids.center_id', '=', student_center_id)]"
-                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="priority" />
+                            <field name="assigned_teacher_id" readonly="1" />
+                            <field name="supervisor_id" readonly="1" />
                         </group>
                         <group string="Time Frame">
-                            <field name="start_date" />
+                            <field name="start_date" invisible="1" />
                             <field name="target_date" />
                             <field name="achieved_date"
                                 invisible="status != 'achieved'" />
-                            <field name="review_frequency" />
-                            <field name="next_review_date" />
+                            <field name="discontinue_reason"
+                                invisible="status != 'discontinued'" />
                         </group>
                     </group>
 
@@ -98,80 +84,84 @@
                     <!-- Notebook Tabs -->
                     <notebook>
 
-                        <!-- Tab 1: SMART Goal -->
-                        <page string="SMART Goal" name="smart">
-                            <group>
-                                <field name="goal_description"
-                                    placeholder="Describe the overall goal..."
-                                    colspan="2" />
-                            </group>
-                            <group>
-                                <group string="S.M.A.R.T.">
-                                    <field name="smart_specific"
-                                        placeholder="Specific behavior to achieve..." />
-                                    <field name="smart_measurable"
-                                        placeholder="e.g. 80% accuracy across 3 sessions" />
-                                    <field name="smart_achievable" />
-                                    <field name="smart_relevant" />
-                                    <field name="smart_timebound"
-                                        placeholder="e.g. Within 6 months" />
-                                </group>
-                                <group string="Measurement">
-                                    <field name="baseline_description"
-                                        placeholder="Baseline before intervention..." />
-                                    <field name="baseline_accuracy_pct" />
-                                    <field name="target_accuracy_pct" />
-                                    <field name="measurement_template_id"
-                                        string="Quick Template (Optional)"
-                                        options="{'no_create': True}"
-                                        placeholder="Choose a template to auto-fill criteria/condition" />
-                                    <field name="measurement_criteria"
-                                        placeholder="Specific measurement criteria..." />
-                                    <field name="measurement_condition" />
-                                </group>
-                            </group>
-                        </page>
 
-                        <!-- Tab 2: Objectives (Inline) -->
+                        <!-- Tab 1: Objectives (Inline) -->
                         <page string="Short-term Objectives" name="objectives">
                             <field name="objective_ids"
-                                context="{'form_view_ref': 'educare_iep.view_educare_iep_objective_form',
-                                          'default_goal_id': id}">
-                                <tree
+                                create="false"
+                                context="{'default_goal_id': id}">
+                                <tree open="full"
+                                    create="false"
                                     decoration-success="status == 'mastered'"
                                     decoration-warning="is_overdue == True"
                                     decoration-danger="alert_triggered == True"
                                     decoration-muted="status == 'discontinued'">
-                                    <field name="sequence" widget="handle" />
+                                    <header>
+                                        <button name="action_delete_objective"
+                                            type="object"
+                                            string="Xóa Objective"
+                                            class="btn-link text-danger"
+                                            confirm="Bạn chắc chắn muốn xóa mục tiêu ngắn hạn đã chọn? Hành động này không thể hoàn tác." />
+                                    </header>
                                     <field name="objective_code" readonly="1"
                                         column_invisible="1" />
                                     <field name="name" />
-                                    <field name="description"
-                                        column_invisible="1" />
                                     <field name="start_date" />
                                     <field name="target_date" />
-                                    <field name="baseline_accuracy_pct" />
-                                    <field name="target_accuracy_pct" />
-                                    <field name="weight" />
+                                    <field name="target_accuracy_pct" string="Target (%)" />
                                     <field name="current_accuracy_pct"
-                                        widget="progressbar" />
+                                        widget="progressbar" string="Accuracy" />
                                     <field name="status" widget="badge"
                                         decoration-success="status == 'mastered'"
                                         decoration-info="status == 'in_progress'"
                                         decoration-warning="status == 'not_started'"
                                         decoration-primary="status == 'on_hold'"
                                         decoration-danger="status == 'discontinued'" />
-                                    <field name="is_overdue" widget="boolean" />
-                                    <field name="trend" widget="badge"
-                                        decoration-success="trend == 'improving'"
-                                        decoration-warning="trend == 'stable'"
-                                        decoration-danger="trend in ('declining','stagnant')" />
                                     <field name="alert_triggered" widget="boolean" />
+                                    <field name="is_overdue" column_invisible="1" />
+                                    <field name="trend" column_invisible="1" />
+                                    <field name="baseline_accuracy_pct" column_invisible="1" />
+                                    <field name="weight" column_invisible="1" />
                                 </tree>
                             </field>
                         </page>
+                        <!-- Tab 2: SMART Goal -->
+                        <page string="SMART Goal" name="smart">
+                            <group>
+                                <field name="goal_description"
+                                    placeholder="Mô tả tổng quan mục tiêu dài hạn..."
+                                    colspan="2" />
+                            </group>
+                            <group col="2">
+                                <group string="S.M.A.R.T.">
+                                    <field name="smart_specific"
+                                        placeholder="Hành vi cụ thể cần đạt được..." />
+                                    <field name="smart_measurable"
+                                        placeholder="VD: Đạt 80% chính xác qua 3 buổi liên tiếp" />
+                                    <field name="smart_timebound"
+                                        placeholder="VD: Trong vòng 6 tháng" />
+                                    <field name="smart_analysis"
+                                        placeholder="VD: Trẻ có khả năng tự điều chỉnh trong thời gian ngắn với hỗ trợ. Giảm hành vi giúp trẻ tham gia học tập hiệu quả hơn." />
+                                </group>
 
-                        <!-- Tab 3: Progress and Approval -->
+                                <group string="Measurement Setup">
+                                    <field name="baseline_description"
+                                        placeholder="Mô tả mức độ ban đầu trước can thiệp..." />
+                                    <field name="baseline_accuracy_pct" />
+                                    <field name="target_accuracy_pct" />
+                                    <field name="measurement_template_id"
+                                        string="Quick Template"
+                                        options="{'no_create': True}"
+                                        placeholder="Select template to auto-fill criteria and condition" />
+                                    <field name="measurement_criteria"
+                                        placeholder="Tiêu chí đo lường cụ thể..." />
+                                    <field name="measurement_condition"
+                                        placeholder="VD: Trong DTT và structured play" />
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Tab 3: Progress -->
                         <page string="Progress" name="progress">
                             <group>
                                 <group string="Summary (Auto-calculated)">
@@ -179,20 +169,10 @@
                                     <field name="current_accuracy_pct" />
                                     <field name="total_sessions" />
                                 </group>
-                                <group string="Approval">
-                                    <field name="supervisor_approved" />
-                                    <field name="approved_date"
-                                        invisible="not supervisor_approved" />
-                                    <field name="approval_notes"
-                                        invisible="not supervisor_approved" />
-                                    <field name="parent_consent" />
-                                    <field name="parent_consent_date"
-                                        invisible="not parent_consent" />
-                                </group>
                             </group>
                             <group>
                                 <field name="modification_history"
-                                    placeholder="Change history..." />
+                                    placeholder="VD: 15/03/2026 - Điều chỉnh target từ 80% xuống 70% do trẻ gặp khó khăn" />
                             </group>
                         </page>
                         <!-- Tab 4: Framework -->
@@ -200,13 +180,15 @@
                             <group>
                                 <group string="Reference Framework">
                                     <field name="framework_id" />
-                                    <field name="framework_code"
-                                        placeholder="e.g. VB-MAPP Milestone 3" />
-                                    <field name="framework_domain" />
+                                    <field name="framework_code" />
+                                    <field name="framework_domain"
+                                        placeholder="e.g. VB-MAPP Milestone 3 - Tact" />
                                 </group>
                                 <group string="References">
-                                    <field name="literature_ref" />
-                                    <field name="notes" />
+                                    <field name="literature_ref"
+                                        placeholder="VD: Cooper, Heron &amp; Heward (2020). Applied Behavior Analysis, 3rd Ed." />
+                                    <field name="notes"
+                                        placeholder="VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm" />
                                 </group>
                             </group>
                         </page>
