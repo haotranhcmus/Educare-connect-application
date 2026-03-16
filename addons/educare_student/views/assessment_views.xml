@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ══ ASSESSMENT: Form View ══ -->
+        <record id="view_educare_assessment_form" model="ir.ui.view">
+            <field name="name">educare.assessment.form</field>
+            <field name="model">educare.assessment</field>
+            <field name="arch" type="xml">
+                <form string="Assessment Record">
+                    <sheet>
+                        <group>
+                            <group string="Assessment Info">
+                                <field name="student_id" />
+                                <field name="assessment_date" />
+                                <field name="assessment_type" />
+                                <field name="assessor_id" />
+                            </group>
+                            <group string="Results">
+                                <field name="vbmapp_score" />
+                                <field name="ablls_score" />
+                                <field name="overall_progress" />
+                                <field name="classification" />
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Assessment notes..." />
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══ ASSESSMENT: Tree View ══ -->
+        <record id="view_educare_assessment_tree" model="ir.ui.view">
+            <field name="name">educare.assessment.tree</field>
+            <field name="model">educare.assessment</field>
+            <field name="arch" type="xml">
+                <tree string="Assessment Records"
+                    default_order="assessment_date desc">
+                    <field name="student_id" />
+                    <field name="assessment_date" />
+                    <field name="assessment_type" />
+                    <field name="assessor_id" />
+                    <field name="vbmapp_score" />
+                    <field name="ablls_score" />
+                    <field name="overall_progress" />
+                    <field name="classification" />
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

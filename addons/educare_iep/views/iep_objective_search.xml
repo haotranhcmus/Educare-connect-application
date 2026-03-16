@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_objective_search" model="ir.ui.view">
+        <field name="name">educare.iep.objective.search</field>
+        <field name="model">educare.iep.objective</field>
+        <field name="arch" type="xml">
+            <search string="Search Short-term Objectives">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="goal_id" />
+
+                <separator />
+                <filter name="filter_active" string="In Progress"
+                    domain="[('status','=','in_progress')]" />
+                <filter name="filter_mastered" string="Mastered"
+                    domain="[('status','=','mastered')]" />
+                <filter name="filter_on_hold" string="On Hold"
+                    domain="[('status','=','on_hold')]" />
+                <filter name="filter_alert" string="Alert"
+                    domain="[('alert_triggered','=',True)]" />
+                <filter name="filter_overdue" string="Overdue"
+                    domain="[('is_overdue','=',True)]" />
+                <separator />
+                <filter name="filter_high_accuracy" string="Near Target (&gt;=70%)"
+                    domain="[('current_accuracy_pct','&gt;=',70)]" />
+                <filter name="filter_low_accuracy" string="Needs Support (&lt;50%)"
+                    domain="[('current_accuracy_pct','&lt;',50)]" />
+
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                        context="{'group_by': 'student_id'}" />
+                    <filter name="group_goal" string="Parent Goal"
+                        context="{'group_by': 'goal_id'}" />
+                    <filter name="group_status" string="Status"
+                        context="{'group_by': 'status'}" />
+                    <filter name="group_trend" string="Trend"
+                        context="{'group_by': 'trend'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

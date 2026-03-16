@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_objective_form" model="ir.ui.view">
+        <field name="name">educare.iep.objective.form</field>
+        <field name="model">educare.iep.objective</field>
+        <field name="arch" type="xml">
+            <form string="Short-term Objective">
+                <header>
+                    <field name="can_delete" invisible="1" />
+                    <button name="action_delete_objective" string="Xóa Objective" type="object"
+                        class="btn-danger"
+                        confirm="Bạn chắc chắn muốn xóa mục tiêu ngắn hạn này? Hành động này không thể hoàn tác."
+                        invisible="not can_delete"
+                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
+                    <button name="action_start" string="Start" type="object"
+                        class="btn-primary"
+                        confirm="Xác nhận chuyển trạng thái objective sang In Progress?"
+                        invisible="status != 'not_started'" />
+                    <button name="action_put_on_hold" string="Pause" type="object"
+                        class="btn-warning"
+                        confirm="Xác nhận chuyển trạng thái objective sang Paused?"
+                        invisible="status != 'in_progress'" />
+                    <button name="action_resume" string="Resume" type="object"
+                        class="btn-secondary"
+                        confirm="Xác nhận chuyển trạng thái objective sang In Progress?"
+                        invisible="status != 'on_hold'" />
+                    <button name="action_mark_mastered" string="Mastered" type="object"
+                        class="btn-success"
+                        confirm="Xác nhận đánh dấu objective là Mastered?"
+                        invisible="status not in ('in_progress', 'on_hold')" />
+                    <button name="action_open_discontinue_wizard" string="Discontinue" type="object"
+                        class="btn-danger"
+                        invisible="status in ('mastered', 'discontinued')" />
+                    <field name="status" widget="statusbar"
+                        statusbar_visible="not_started,in_progress,on_hold,mastered,discontinued"
+                        clickable="0" />
+                </header>
+
+                <!-- Alert Banner -->
+                <div class="alert alert-danger" role="alert"
+                    invisible="not alert_triggered">
+                    <strong>Alert:</strong>
+                    <field name="alert_message" nolabel="1" />
+                </div>
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                        <h3>
+                            <field name="objective_code" />
+                        </h3>
+                    </div>
+
+                    <notebook>
+                        <!-- Tab 1: Objective -->
+                        <page string="Objective" name="objective_info">
+                            <group>
+                                <group string="Core Information">
+                                    <field name="goal_id" />
+                                    <field name="student_id" readonly="1" />
+                                    <field name="sequence" />
+                                    <field name="start_date" readonly="1" />
+                                    <field name="target_date" readonly="1" />
+                                    <field name="mastery_date"
+                                        invisible="status != 'mastered'" />
+                                </group>
+                                <group string="Method &amp; Workflow">
+                                    <field name="prompt_level_id" />
+                                    <field name="probe_method_id" />
+                                    <field name="weight" />
+                                    <field name="status" readonly="1" />
+                                    <field name="is_overdue" readonly="1" />
+                                    <field name="trend" widget="badge"
+                                        decoration-success="trend == 'improving'"
+                                        decoration-warning="trend == 'stable'"
+                                        decoration-danger="trend in ('declining','stagnant')" />
+                                </group>
+                            </group>
+                            <group>
+                                <field name="description"
+                                    placeholder="Mô tả chi tiết mục tiêu ngắn hạn cần đạt..."
+                                    colspan="2" />
+                            </group>
+                            <group>
+                                <field name="measurement_method"
+                                    placeholder="VD: Số câu trả lời đúng / tổng số lần thử"
+                                    colspan="2" />
+                            </group>
+                            <group>
+                                <field name="discontinued_reason"
+                                    placeholder="Lý do ngừng hẳn objective..."
+                                    required="status == 'discontinued'"
+                                    colspan="2" />
+                            </group>
+                        </page>
+
+                        <!-- Tab 2: Success Criteria -->
+                        <page string="Criteria" name="criteria">
+                            <group>
+                                <group string="Accuracy Targets">
+                                    <field name="baseline_accuracy_pct" />
+                                    <field name="target_accuracy_pct" />
+                                </group>
+                                <group string="Session Rules">
+                                    <field name="target_trials" />
+                                    <field name="consecutive_sessions_required" />
+                                    <field name="consecutive_sessions_achieved"
+                                        readonly="1" />
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Tab 3: Actual Progress -->
+                        <page string="Progress" name="progress">
+                            <group>
+                                <group string="Results">
+                                    <field name="current_accuracy_pct"
+                                        widget="progressbar" />
+                                    <field name="progress_pct"
+                                        widget="progressbar" />
+                                    <field name="last_session_date" />
+                                    <field name="last_session_accuracy" />
+                                </group>
+                                <group string="Statistics">
+                                    <field name="total_sessions_worked" />
+                                    <field name="trend" widget="badge" />
+                                    <field name="is_overdue" />
+                                    <field name="alert_triggered" />
+                                    <field name="alert_message"
+                                        invisible="not alert_triggered" />
+                                </group>
+                            </group>
+                            <group>
+                                <field name="notes"
+                                    placeholder="VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm"
+                                    colspan="2" />
+                            </group>
+                            <!-- Placeholder: add session_result_ids inline tree when session
+                            module is ready -->
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

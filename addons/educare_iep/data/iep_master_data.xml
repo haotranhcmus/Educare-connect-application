@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+
+    <!-- ============================= -->
+    <!-- Assessment Framework Records  -->
+    <!-- ============================= -->
+    <record id="framework_vbmapp" model="educare.iep.framework">
+        <field name="name">VB-MAPP</field>
+        <field name="code">vbmapp</field>
+        <field name="description">Verbal Behavior Milestones Assessment and Placement Program</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="framework_ablls_r" model="educare.iep.framework">
+        <field name="name">ABLLS-R</field>
+        <field name="code">ablls_r</field>
+        <field name="description">Assessment of Basic Language and Learning Skills - Revised</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="framework_icf" model="educare.iep.framework">
+        <field name="name">ICF (WHO)</field>
+        <field name="code">icf</field>
+        <field name="description">International Classification of Functioning, Disability and Health
+            (World Health Organization)</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="framework_custom" model="educare.iep.framework">
+        <field name="name">Custom</field>
+        <field name="code">custom</field>
+        <field name="description">Center-defined custom framework</field>
+        <field name="sequence">99</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- Prompt Support Levels         -->
+    <!-- ============================= -->
+    <record id="prompt_independent" model="educare.iep.prompt.level">
+        <field name="name">Independent</field>
+        <field name="code">independent</field>
+        <field name="description">Student performs the skill without any prompting</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="prompt_verbal" model="educare.iep.prompt.level">
+        <field name="name">Verbal Prompt</field>
+        <field name="code">verbal_prompt</field>
+        <field name="description">Teacher provides verbal cues or spoken instructions</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="prompt_gestural" model="educare.iep.prompt.level">
+        <field name="name">Gestural Prompt</field>
+        <field name="code">gestural_prompt</field>
+        <field name="description">Teacher uses gestures, pointing, or visual cues</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="prompt_partial_physical" model="educare.iep.prompt.level">
+        <field name="name">Partial Physical Assist</field>
+        <field name="code">partial_physical</field>
+        <field name="description">Light physical guidance to initiate the behavior</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="prompt_full_physical" model="educare.iep.prompt.level">
+        <field name="name">Full Physical Assist</field>
+        <field name="code">full_physical</field>
+        <field name="description">Hand-over-hand full physical guidance</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- Data Collection Probe Methods -->
+    <!-- ============================= -->
+    <record id="probe_daily" model="educare.iep.probe.method">
+        <field name="name">Daily Probe</field>
+        <field name="code">daily_probe</field>
+        <field name="description">Data collected at every session</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="probe_weekly" model="educare.iep.probe.method">
+        <field name="name">Weekly Probe</field>
+        <field name="code">weekly_probe</field>
+        <field name="description">Data collected once per week (probe session)</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="probe_mixed" model="educare.iep.probe.method">
+        <field name="name">Mixed</field>
+        <field name="code">mixed</field>
+        <field name="description">Combination of daily teaching trials and weekly probes</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- Measurement Templates         -->
+    <!-- ============================= -->
+    <record id="measurement_template_accuracy_trials" model="educare.iep.measurement.template">
+        <field name="name">Accuracy by Trials</field>
+        <field name="code">accuracy_trials</field>
+        <field name="criteria_template">Tỷ lệ đúng = số phản hồi đúng / tổng số cơ hội (trials)
+            trong buổi.</field>
+        <field name="condition_template">Trong giờ DTT, prompt tối đa theo kế hoạch can thiệp.</field>
+        <field name="description">Phù hợp mục tiêu học kỹ năng mới cần đo theo lần thử chuẩn hóa.</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="measurement_template_frequency_count" model="educare.iep.measurement.template">
+        <field name="name">Frequency Count</field>
+        <field name="code">frequency_count</field>
+        <field name="criteria_template">Đếm tần suất hành vi mục tiêu trong thời lượng buổi học đã
+            xác định.</field>
+        <field name="condition_template">Trong hoạt động học có cấu trúc và hoạt động chơi hướng
+            dẫn.</field>
+        <field name="description">Phù hợp mục tiêu giảm/tăng hành vi cần theo dõi tần suất xuất
+            hiện.</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="measurement_template_duration_recording" model="educare.iep.measurement.template">
+        <field name="name">Duration Recording</field>
+        <field name="code">duration_recording</field>
+        <field name="criteria_template">Đo tổng thời gian duy trì hành vi mục tiêu trong mỗi buổi.</field>
+        <field name="condition_template">Trong phiên NET hoặc hoạt động nhóm nhỏ, ghi nhận bằng đồng
+            hồ bấm giờ.</field>
+        <field name="description">Phù hợp mục tiêu kéo dài thời gian chú ý, ngồi học, hoặc tham gia
+            hoạt động.</field>
+        <field name="sequence">30</field>
+    </record>
+
+</odoo>

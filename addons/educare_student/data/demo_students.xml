@@ -24,9 +24,9 @@
             <field name="medical_alert_detail">Dị ứng hải sản nặng, cần giám sát bữa ăn</field>
             <field name="allergies">Hải sản (tôm, cua)</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_1</field>
-            <field name="overall_progress">steady</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_01" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_01" />
         </record>
 
         <!-- Student 2: Active, ADHD -->
@@ -49,9 +49,9 @@
             <field name="learning_style">kinesthetic</field>
             <field name="social_interaction_level">responsive</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_2</field>
-            <field name="overall_progress">slow</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_02" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_02" />
         </record>
 
         <!-- Student 3: Inactive, Speech Delay -->
@@ -72,8 +72,9 @@
             <field name="attention_span">15</field>
             <field name="learning_style">auditory</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="overall_progress">plateau</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_01" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_03" />
         </record>
 
         <!-- Student 4: Graduated -->
@@ -95,9 +96,9 @@
             <field name="attention_span">25</field>
             <field name="learning_style">mixed</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_1</field>
-            <field name="overall_progress">rapid</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_02" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_04" />
         </record>
 
         <!-- Student 5: Active, Down Syndrome, Level 3 -->
@@ -140,12 +141,10 @@
             <field name="school_name">Mầm non Hoa Sen</field>
             <field name="class_name">Lớp Mầm</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_3</field>
-            <field name="overall_progress">slow</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_01" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_01" />
             <field name="assessment_cycle">monthly</field>
-            <field name="vbmapp_score">18.5</field>
-            <field name="initial_assessment_date">2022-09-05</field>
             <field name="referral_source">BV Nhi Đồng 1</field>
         </record>
 
@@ -180,11 +179,10 @@
             <field name="challenging_behaviors">Khó chịu khi bị giới hạn tư thế lâu</field>
             <field name="calming_strategies">Nhạc nhẹ, trò chuyện 1-1</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_2</field>
-            <field name="overall_progress">steady</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_03" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hanoi" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_02" />
             <field name="assessment_cycle">quarterly</field>
-            <field name="ablls_score">62.0</field>
             <field name="home_address">45 Đường Hoa Lan, Q. Bình Thạnh, TP.HCM</field>
         </record>
 
@@ -219,13 +217,10 @@
             <field name="school_name">Tiểu học Nguyễn Bỉnh Khiêm</field>
             <field name="class_name">Lớp 2A</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_1</field>
-            <field name="overall_progress">rapid</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_04" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hanoi" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_03" />
             <field name="assessment_cycle">biannual</field>
-            <field name="vbmapp_score">54.0</field>
-            <field name="ablls_score">78.5</field>
-            <field name="initial_assessment_date">2023-06-05</field>
         </record>
 
         <!-- Student 8: Inactive, Intellectual Disability, transferred -->
@@ -250,13 +245,11 @@
             <field name="self_care_level">partial</field>
             <field name="social_interaction_level">passive</field>
             <field name="emotional_regulation">developing</field>
-            <field name="previous_center">Trung tâm Ánh Sao</field>
-            <field name="transfer_reason">Gia đình chuyển chỗ ở sang quận 9</field>
             <field name="referral_source">Trung tâm Ánh Sao</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_2</field>
-            <field name="overall_progress">plateau</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_03" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hanoi" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_04" />
             <field name="assessment_cycle">quarterly</field>
         </record>
 
@@ -293,9 +286,9 @@
             <field name="sensory_sensitivities">Không chịu được ánh sáng mạnh</field>
             <field name="reinforcement_preferences">Mini xe đồ chơi, khen ngợi trực tiếp</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_2</field>
-            <field name="overall_progress">slow</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_04" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hanoi" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_01" />
             <field name="assessment_cycle">monthly</field>
         </record>
 
@@ -339,12 +332,76 @@
             <field name="sensory_sensitivities">Cực nhạy âm thanh và ánh sáng</field>
             <field name="sensory_preferences">Thích nước, xích đu</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="assigned_teacher_id" ref="base.user_admin" />
-            <field name="classification">level_3</field>
-            <field name="overall_progress">slow</field>
+            <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_03" />
+            <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hanoi" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_02" />
             <field name="assessment_cycle">monthly</field>
-            <field name="vbmapp_score">6.0</field>
             <field name="internal_notes">Cần hỗ trợ 1:1 liên tục trong suốt buổi học</field>
+        </record>
+
+        <!-- ══ ASSESSMENT DEMO RECORDS ══ -->
+        <record id="assessment_demo_01" model="educare.assessment">
+            <field name="student_id" ref="student_demo_01" />
+            <field name="assessment_date">2025-02-01</field>
+            <field name="assessment_type">initial</field>
+            <field name="vbmapp_score">25.0</field>
+            <field name="overall_progress">steady</field>
+            <field name="classification">level_1</field>
+        </record>
+
+        <record id="assessment_demo_02" model="educare.assessment">
+            <field name="student_id" ref="student_demo_02" />
+            <field name="assessment_date">2024-10-01</field>
+            <field name="assessment_type">initial</field>
+            <field name="vbmapp_score">35.0</field>
+            <field name="overall_progress">slow</field>
+            <field name="classification">level_2</field>
+        </record>
+
+        <record id="assessment_demo_05" model="educare.assessment">
+            <field name="student_id" ref="student_demo_05" />
+            <field name="assessment_date">2022-09-05</field>
+            <field name="assessment_type">initial</field>
+            <field name="vbmapp_score">18.5</field>
+            <field name="overall_progress">slow</field>
+            <field name="classification">level_3</field>
+        </record>
+
+        <record id="assessment_demo_06" model="educare.assessment">
+            <field name="student_id" ref="student_demo_06" />
+            <field name="assessment_date">2024-04-01</field>
+            <field name="assessment_type">initial</field>
+            <field name="ablls_score">62.0</field>
+            <field name="overall_progress">steady</field>
+            <field name="classification">level_2</field>
+        </record>
+
+        <record id="assessment_demo_07" model="educare.assessment">
+            <field name="student_id" ref="student_demo_07" />
+            <field name="assessment_date">2023-06-05</field>
+            <field name="assessment_type">initial</field>
+            <field name="vbmapp_score">54.0</field>
+            <field name="ablls_score">78.5</field>
+            <field name="overall_progress">rapid</field>
+            <field name="classification">level_1</field>
+        </record>
+
+        <record id="assessment_demo_10" model="educare.assessment">
+            <field name="student_id" ref="student_demo_10" />
+            <field name="assessment_date">2024-08-01</field>
+            <field name="assessment_type">initial</field>
+            <field name="vbmapp_score">6.0</field>
+            <field name="overall_progress">slow</field>
+            <field name="classification">level_3</field>
+        </record>
+
+        <!-- ══ TRANSFER DEMO RECORD ══ -->
+        <record id="transfer_demo_08" model="educare.transfer">
+            <field name="student_id" ref="student_demo_08" />
+            <field name="transfer_date">2024-06-01</field>
+            <field name="from_center_id" ref="educare_base.center_hcm" />
+            <field name="to_center_id" ref="educare_base.center_hanoi" />
+            <field name="reason">Gia đình chuyển chỗ ở sang quận 9</field>
         </record>
     </data>
 </odoo>
