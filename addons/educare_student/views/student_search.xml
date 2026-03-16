@@ -49,7 +49,7 @@
                     <filter name="groupby_center" string="Center"
                         context="{'group_by': 'center_id'}" />
                     <filter name="groupby_classification" string="Classification"
-                        context="{'group_by': 'latest_classification'}" />
+                        context="{'group_by': 'classification'}" />
                     <filter name="groupby_enrollment_date" string="Enrollment Date"
                         context="{'group_by': 'enrollment_date:month'}" />
                 </group>

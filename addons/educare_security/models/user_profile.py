@@ -46,7 +46,7 @@ class EducareUserProfile(models.Model):
         ('supervisor', 'Supervisor'),
         ('teacher', 'Teacher'),
         ('parent', 'Parent'),
-    ], string='Role', tracking=True, required=True, default='teacher')
+    ], string='Role', tracking=True, required=True)
 
     center_id = fields.Many2one(
         'educare.center',
@@ -56,7 +56,7 @@ class EducareUserProfile(models.Model):
     )
     job_title = fields.Char(string='Job Title', size=128)
     department = fields.Char(string='Department', size=128)
-    employee_code = fields.Char(string='Employee Code', size=20, index=True, copy=False)
+    employee_code = fields.Char(string='Employee Code', size=20, index=True)
 
     # ── Nhóm 3: Trạng thái & Bảo mật ────────────────────────────────────────
     status = fields.Selection([
@@ -181,46 +181,10 @@ class EducareUserProfile(models.Model):
                 rec.user_id.groups_id -= all_groups
                 rec.user_id.groups_id += group_map[rec.role]
 
-    def _assign_created_supervisor_to_student(self):
-        student_id = self.env.context.get('from_student_id')
-        if not student_id:
-            return
-
-        student = self.env['educare.student'].browse(student_id)
-        if not student.exists():
-            return
-
-        for rec in self:
-            if rec.role != 'supervisor' or not rec.user_id:
-                continue
-            student.write({'supervisor_id': rec.user_id.id})
-            break
-
-    def _normalize_security_status_vals(self, vals, current_status=None):
-        vals = dict(vals)
-        if vals.get('account_locked') is True:
-            vals['status'] = 'suspended'
-        elif vals.get('account_locked') is False:
-            if vals.get('status') == 'suspended' or current_status == 'suspended':
-                vals.setdefault('status', 'active')
-
-        if vals.get('status') == 'suspended':
-            vals['account_locked'] = True
-        elif vals.get('status') == 'active':
-            vals.setdefault('account_locked', False)
-
-        return vals
-
     # ── ORM Overrides ─────────────────────────────────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
-        if self.env.context.get('force_supervisor_role'):
-            for vals in vals_list:
-                vals['role'] = 'supervisor'
-
-        normalized_vals_list = []
         for vals in vals_list:
-            vals = self._normalize_security_status_vals(vals)
             if not vals.get('user_id'):
                 full_name = (vals.get('full_name') or '').strip()
                 login = (vals.get('login') or '').strip()
@@ -239,108 +203,15 @@ class EducareUserProfile(models.Model):
                     'email': login,
                 })
                 vals['user_id'] = new_user.id
-            # Auto-generate employee_code for teacher / supervisor
-            if vals.get('role') in ('teacher', 'supervisor'):
-                if not vals.get('employee_code'):
-                    vals['employee_code'] = (
-                        self.env['ir.sequence'].next_by_code('educare.employee.code') or '/'
-                    )
-            normalized_vals_list.append(vals)
-        records = super().create(normalized_vals_list)
-        if not self._context.get('skip_group_sync'):
-            records.filtered('role')._sync_security_group()
-        records._sync_user_active_state()
-        records._assign_created_supervisor_to_student()
+        records = super().create(vals_list)
+        records.filtered('role')._sync_security_group()
         return records
 
     def write(self, vals):
-        if len(self) == 1:
-            vals = self._normalize_security_status_vals(vals, current_status=self.status)
-        if self.env.context.get('force_supervisor_role'):
-            if 'role' in vals and vals['role'] != 'supervisor':
-                raise UserError(_('Role is locked to Supervisor in this flow.'))
-            vals = dict(vals)
-            vals['role'] = 'supervisor'
-
         res = super().write(vals)
         if 'role' in vals:
             self._sync_security_group()
-        if 'account_locked' in vals or 'status' in vals:
-            self._sync_user_active_state()
         return res
-
-    def _sync_user_active_state(self):
-        """Sync res.users.active based on account_locked and profile status.
-        Locked OR suspended/inactive → user cannot login (active=False).
-        """
-        for rec in self:
-            if not rec.user_id:
-                continue
-            should_be_active = (
-                not rec.account_locked
-                and rec.status == 'active'
-            )
-            if rec.user_id.active != should_be_active:
-                rec.user_id.sudo().write({'active': should_be_active})
-
-    @api.onchange('account_locked')
-    def _onchange_account_locked(self):
-        if self.account_locked:
-            self.status = 'suspended'
-        elif self.status == 'suspended':
-            self.status = 'active'
-
-    @api.onchange('status')
-    def _onchange_status(self):
-        if self.status == 'suspended':
-            self.account_locked = True
-        elif self.status == 'active':
-            self.account_locked = False
-
-    @api.constrains('role', 'employee_code')
-    def _check_employee_code_required(self):
-        for rec in self:
-            if rec.role in ('teacher', 'supervisor') and not rec.employee_code:
-                raise ValidationError(
-                    _('Teacher và Supervisor phải có mã nhân viên (Employee Code).')
-                )
-
-    @api.model
-    def action_open_my_profile(self):
-        """Open the current user's profile, auto-creating one if it doesn't exist."""
-        user = self.env.user
-        profile = self.sudo().search([('user_id', '=', user.id)], limit=1)
-        if not profile:
-            # Determine role from res.users groups (don't rely on profile existing)
-            if user.has_group('educare_security.group_admin'):
-                role = 'admin'
-            elif user.has_group('educare_security.group_supervisor'):
-                role = 'supervisor'
-            elif user.has_group('educare_security.group_teacher'):
-                role = 'teacher'
-            else:
-                role = 'parent'
-            # Use sudo() so even read-only users can initialise their own profile.
-            # skip_group_sync=True: user already has correct groups, no need to
-            # remove-then-re-add them (which temporarily breaks the security cache).
-            vals = {
-                'user_id': user.id,
-                'role': role,
-                'status': 'active',
-            }
-            profile = self.sudo().with_context(skip_group_sync=True).create(vals)
-        view_id = self.env.ref(
-            'educare_security.educare_user_profile_my_profile_form'
-        ).id
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('My Profile'),
-            'res_model': 'educare.user.profile',
-            'view_mode': 'form',
-            'res_id': profile.id,
-            'view_id': view_id,
-            'target': 'current',
-        }
     
 
 class ResUsers(models.Model):

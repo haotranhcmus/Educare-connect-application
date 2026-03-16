@@ -58,22 +58,7 @@
                                 <field name="center_id" />
                                 <field name="assigned_teacher_id" />
                                 <field name="co_teacher_ids" widget="many2many_tags" />
-                                <label for="supervisor_id" string="Supervisor" />
-                                <div class="o_row">
-                                    <field name="supervisor_id"
-                                        nolabel="1"
-                                        class="oe_inline"
-                                        options="{'no_create': True, 'no_create_edit': True}" />
-                                    <button name="action_create_supervisor_profile"
-                                        type="object"
-                                        icon="fa-user-plus"
-                                        string=""
-                                        title="Create Supervisor"
-                                        class="btn btn-link oe_inline"
-                                        help="Create a Supervisor profile (Admin only)"
-                                        groups="educare_security.group_admin"
-                                        invisible="supervisor_id or not center_id" />
-                                </div>
+                                <field name="supervisor_id" />
                                 <field name="enrollment_date" />
                             </group>
                         </group>
@@ -225,112 +210,51 @@
                             </page>
 
                             <!-- ────────────────────────────────────────────────
-                   TAB 6: Assessment
+                   TAB 6: Assessment & Classification
               ──────────────────────────────────────────────────── -->
                             <page string="Assessment" name="assessment">
-
-                                <!-- Summary row computed from records -->
-                                <group string="Summary">
-                                    <group>
-                                        <field name="first_assessment_date" readonly="1" />
+                                <group>
+                                    <group string="Assessment History">
+                                        <field name="initial_assessment_date" />
                                         <field name="last_assessment_date" readonly="1" />
+                                        <field name="next_assessment_date" />
                                         <field name="assessment_cycle" />
-                                        <field name="next_assessment_date" readonly="1" />
                                     </group>
-                                    <group>
-                                        <field name="latest_vbmapp_score" readonly="1" />
-                                        <field name="latest_ablls_score" readonly="1" />
-                                        <field name="latest_overall_progress" readonly="1" />
-                                        <field name="latest_classification" readonly="1" />
+                                    <group string="Scores">
+                                        <field name="vbmapp_score" />
+                                        <field name="ablls_score" />
+                                        <field name="overall_progress" />
                                     </group>
                                 </group>
-
-                                <!-- Assessment history table -->
-                                <field name="assessment_ids"
-                                    string="Assessment History"
-                                    mode="tree"
-                                    context="{'default_student_id': active_id}">
-                                    <tree string="Assessment" editable="bottom"
-                                        default_order="assessment_date desc">
-                                        <field name="assessment_date" string="Assessment Date" />
-                                        <field name="assessment_type" string="Type" />
-                                        <field name="assessor_id" string="Assessor" />
-                                        <field name="vbmapp_score" string="VB-MAPP" />
-                                        <field name="ablls_score" string="ABLLS-R" />
-                                        <field name="overall_progress" string="Progress" />
-                                        <field name="classification" string="Classification" />
-                                    </tree>
-                                    <form>
-                                        <sheet>
-                                            <group>
-                                                <group string="Assessment Info">
-                                                    <field name="assessment_date" />
-                                                    <field name="assessment_type" />
-                                                    <field name="assessor_id" />
-                                                </group>
-                                                <group string="Classification Result">
-                                                    <field name="overall_progress" />
-                                                    <field name="classification" />
-                                                </group>
-                                            </group>
-                                            <group string="Scores">
-                                                <group>
-                                                    <field name="vbmapp_score" />
-                                                    <field name="ablls_score" />
-                                                </group>
-                                                <group />
-                                            </group>
-                                            <group>
-                                                <field name="notes" colspan="2" nolabel="1"
-                                                    placeholder="Ghi chú chi tiết..." />
-                                            </group>
-                                        </sheet>
-                                    </form>
-                                </field>
-
+                                <group>
+                                    <group string="Classification">
+                                        <field name="classification" />
+                                        <field name="classification_date" />
+                                    </group>
+                                    <group />
+                                </group>
+                                <group>
+                                    <field name="initial_assessment_notes"
+                                        string="Initial Assessment Notes"
+                                        colspan="2"
+                                        nolabel="1" />
+                                </group>
+                                <group>
+                                    <field name="assessment_notes"
+                                        string="Assessment Notes"
+                                        colspan="2"
+                                        nolabel="1" />
+                                </group>
                             </page>
 
                             <!-- ────────────────────────────────────────────────
                    TAB 7: History & Notes
               ──────────────────────────────────────────────────── -->
                             <page string="History" name="history">
-
-                                <!-- Transfer history table -->
-                                <field name="transfer_ids"
-                                    string="Transfer History"
-                                    mode="tree"
-                                    context="{'default_student_id': active_id}">
-                                    <tree string="Transfer" editable="bottom"
-                                        default_order="transfer_date desc">
-                                        <field name="transfer_date" string="Date" />
-                                        <field name="from_center_id" string="From Center" />
-                                        <field name="to_center_id" string="To Center" />
-                                        <field name="reason" string="Reason" />
-                                    </tree>
-                                    <form>
-                                        <sheet>
-                                            <group>
-                                                <group>
-                                                    <field name="transfer_date" />
-                                                    <field name="from_center_id" />
-                                                    <field name="to_center_id" />
-                                                </group>
-                                                <group />
-                                            </group>
-                                            <group>
-                                                <field name="reason" colspan="2" nolabel="1"
-                                                    placeholder="Lý do chuyển trường..." />
-                                            </group>
-                                            <group>
-                                                <field name="notes" colspan="2" nolabel="1"
-                                                    placeholder="Ghi chú thêm..." />
-                                            </group>
-                                        </sheet>
-                                    </form>
-                                </field>
-
                                 <group>
-                                    <group string="Source Info">
+                                    <group string="Transfer History">
+                                        <field name="previous_center" />
+                                        <field name="transfer_reason" />
                                         <field name="referral_source" />
                                         <field name="insurance_number" />
                                     </group>
@@ -340,7 +264,6 @@
                                         <field name="parent_notes" />
                                     </group>
                                 </group>
-
                             </page>
 
                         </notebook>

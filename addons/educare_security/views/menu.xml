@@ -25,7 +25,7 @@
         <menuitem id="menu_my_profile"
             name="My Profile"
             parent="educare_base.menu_educare_root"
-            action="action_my_profile_server"
+            action="action_my_profile"
             sequence="90"
             groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_parent" />
     </data>
