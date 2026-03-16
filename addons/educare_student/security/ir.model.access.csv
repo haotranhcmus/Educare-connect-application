@@ -3,11 +3,3 @@ access_student_admin,educare.student admin,model_educare_student,educare_securit
 access_student_supervisor,educare.student supervisor,model_educare_student,educare_security.group_supervisor,1,1,0,0
 access_student_teacher,educare.student teacher,model_educare_student,educare_security.group_teacher,1,1,1,0
 access_student_parent,educare.student parent,model_educare_student,educare_security.group_parent,1,0,0,0
-access_assessment_admin,educare.assessment admin,model_educare_assessment,educare_security.group_admin,1,1,1,1
-access_assessment_supervisor,educare.assessment supervisor,model_educare_assessment,educare_security.group_supervisor,1,1,1,0
-access_assessment_teacher,educare.assessment teacher,model_educare_assessment,educare_security.group_teacher,1,1,1,0
-access_assessment_parent,educare.assessment parent,model_educare_assessment,educare_security.group_parent,1,0,0,0
-access_transfer_admin,educare.transfer admin,model_educare_transfer,educare_security.group_admin,1,1,1,1
-access_transfer_supervisor,educare.transfer supervisor,model_educare_transfer,educare_security.group_supervisor,1,1,1,0
-access_transfer_teacher,educare.transfer teacher,model_educare_transfer,educare_security.group_teacher,1,0,0,0
-access_transfer_parent,educare.transfer parent,model_educare_transfer,educare_security.group_parent,1,0,0,0
