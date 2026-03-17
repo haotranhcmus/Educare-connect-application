@@ -13,11 +13,26 @@ class EducareStudentInherit(models.Model):
         compute='_compute_iep_plan_count',
         store=False,
     )
+    active_iep_plan_id = fields.Many2one(
+        'educare.iep.plan',
+        string='Active IEP Plan',
+        compute='_compute_active_iep_plan',
+        store=True,
+        index=True,
+    )
 
     @api.depends('iep_plan_ids')
     def _compute_iep_plan_count(self):
         for student in self:
             student.iep_plan_count = len(student.iep_plan_ids)
+
+    @api.depends('iep_plan_ids', 'iep_plan_ids.status', 'iep_plan_ids.is_latest_version')
+    def _compute_active_iep_plan(self):
+        for student in self:
+            active_plan = student.iep_plan_ids.filtered(
+                lambda p: p.status == 'active' and p.is_latest_version
+            )
+            student.active_iep_plan_id = active_plan[:1] if active_plan else False
 
     def action_open_iep_plans(self):
         self.ensure_one()

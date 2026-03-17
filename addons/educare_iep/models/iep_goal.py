@@ -258,15 +258,21 @@ class EducareIepGoal(models.Model):
     # Computed fields
     @api.depends('objective_ids.progress_pct', 'objective_ids.status')
     def _compute_progress(self):
-        """Average progress from non-discontinued objectives."""
+        """Weighted average progress from non-discontinued objectives."""
         for goal in self:
             objectives = goal.objective_ids.filtered(
                 lambda o: o.status != 'discontinued'
             )
             if objectives:
-                goal.progress_pct = (
-                    sum(objectives.mapped('progress_pct')) / len(objectives)
-                )
+                total_weight = sum(objectives.mapped('weight'))
+                if total_weight > 0:
+                    weighted_sum = sum(
+                        obj.progress_pct * obj.weight
+                        for obj in objectives
+                    )
+                    goal.progress_pct = weighted_sum / total_weight
+                else:
+                    goal.progress_pct = 0.0
             else:
                 goal.progress_pct = 0.0
 
@@ -320,13 +326,14 @@ class EducareIepGoal(models.Model):
                 and plan_next_review <= today
             )
 
-    # Display name
-    def _compute_display_name(self):
+    def name_get(self):
+        result = []
         for goal in self:
             if goal.goal_code:
-                goal.display_name = f"[{goal.goal_code}] {goal.name}"
+                result.append((goal.id, f"[{goal.goal_code}] {goal.name}"))
             else:
-                goal.display_name = goal.name
+                result.append((goal.id, goal.name or ''))
+        return result
 
     def _auto_update_status_from_workflow(self):
         if self.env.context.get('skip_auto_goal_status_sync'):
