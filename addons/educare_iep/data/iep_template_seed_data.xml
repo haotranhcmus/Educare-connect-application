@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- LTG Template: Communication -->
+        <record id="tpl_goal_comm_request" model="educare.iep.goal.template">
+            <field name="name">Functional Communication: Verbal Requesting</field>
+            <field name="code">TPL-LTG-COMM-001</field>
+            <field name="template_domain_id" ref="educare_base.domain_communication" />
+            <field name="priority">high</field>
+            <field name="goal_summary">Increase ability to request objects/activities using
+                functional language in learning and daily living contexts.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="tpl_obj_comm_request_1w" model="educare.iep.objective.template">
+            <field name="template_domain_id" ref="educare_base.domain_communication" />
+            <field name="sequence">10</field>
+            <field name="name">Request preferred items using 1 word</field>
+            <field name="description">Child says 1 word to request desired object/activity in
+                motivating situations.</field>
+            <field name="smart_specific">Use 1 functional word to make requests.</field>
+            <field name="smart_measurable">Achieve >= 80% across 3 consecutive sessions.</field>
+            <field name="smart_analysis">Appropriate for current level, foundational for social
+                communication.</field>
+            <field name="smart_timebound">8 weeks</field>
+            <field name="baseline_description">Currently uses only gestures or pulling adult's hand.</field>
+            <field name="baseline_accuracy_pct">15</field>
+            <field name="target_accuracy_pct">80</field>
+            <field name="target_trials">10</field>
+            <field name="consecutive_sessions_required">3</field>
+            <field name="weight">3</field>
+        </record>
+
+        <record id="tpl_obj_comm_request_2w" model="educare.iep.objective.template">
+            <field name="template_domain_id" ref="educare_base.domain_communication" />
+            <field name="sequence">20</field>
+            <field name="name">Combine 2 words to make requests</field>
+            <field name="description">Child uses 2-word functional phrases (e.g., 'want cookie',
+                'open box').</field>
+            <field name="smart_specific">Use 2-word phrases in NET and DTT contexts.</field>
+            <field name="smart_measurable">Achieve >= 70% across 3 consecutive sessions.</field>
+            <field name="smart_analysis">Gradually increase sentence length after stabilizing 1-word
+                level.</field>
+            <field name="smart_timebound">12 weeks</field>
+            <field name="baseline_description">No spontaneous 2-word combinations yet.</field>
+            <field name="baseline_accuracy_pct">0</field>
+            <field name="target_accuracy_pct">70</field>
+            <field name="target_trials">10</field>
+            <field name="consecutive_sessions_required">3</field>
+            <field name="weight">1</field>
+        </record>
+
+        <!-- LTG Template: Behavior -->
+        <record id="tpl_goal_behavior_regulation" model="educare.iep.goal.template">
+            <field name="name">Behavior Regulation During Learning Sessions</field>
+            <field name="code">TPL-LTG-BEH-001</field>
+            <field name="template_domain_id" ref="educare_base.domain_behavior" />
+            <field name="priority">high</field>
+            <field name="goal_summary">Reduce behaviors that interfere with learning and increase
+                age-appropriate seated learning duration.</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="tpl_obj_behavior_sit" model="educare.iep.objective.template">
+            <field name="template_domain_id" ref="educare_base.domain_behavior" />
+            <field name="sequence">10</field>
+            <field name="name">Sit quietly for 5 consecutive minutes</field>
+            <field name="description">Child maintains seated position without leaving seat during
+                structured sessions.</field>
+            <field name="smart_specific">Maintain seated position for minimum 5 minutes.</field>
+            <field name="smart_measurable">Achieve 4/5 sessions per week, maintained for 2 weeks.</field>
+            <field name="smart_analysis">Increase task engagement and reduce escape behaviors.</field>
+            <field name="smart_timebound">6 weeks</field>
+            <field name="baseline_description">Currently sits only 1-2 minutes before leaving seat.</field>
+            <field name="baseline_accuracy_pct">20</field>
+            <field name="target_accuracy_pct">80</field>
+            <field name="target_trials">5</field>
+            <field name="consecutive_sessions_required">4</field>
+            <field name="weight">2</field>
+        </record>
+
+        <!-- LTG Template: Cognitive -->
+        <record id="tpl_goal_cognitive_sorting" model="educare.iep.goal.template">
+            <field name="name">Categorization by Concept Groups</field>
+            <field name="code">TPL-LTG-COG-001</field>
+            <field name="template_domain_id" ref="educare_base.domain_cognitive" />
+            <field name="priority">medium</field>
+            <field name="goal_summary">Increase ability to categorize objects by basic attributes
+                for pre-academic readiness.</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="tpl_obj_cognitive_sort_3groups" model="educare.iep.objective.template">
+            <field name="template_domain_id" ref="educare_base.domain_cognitive" />
+            <field name="sequence">10</field>
+            <field name="name">Sort objects into 3 categories</field>
+            <field name="description">Child sorts cards into categories: food, toys, clothing.</field>
+            <field name="smart_specific">Correctly sort into 3 categories with a random set of 10
+                items.</field>
+            <field name="smart_measurable">Achieve >= 80% across 3 consecutive sessions.</field>
+            <field name="smart_analysis">Foundation for conceptual skills and academic language.</field>
+            <field name="smart_timebound">10 weeks</field>
+            <field name="baseline_description">Currently requires physical assistance for most
+                items.</field>
+            <field name="baseline_accuracy_pct">30</field>
+            <field name="target_accuracy_pct">80</field>
+            <field name="target_trials">10</field>
+            <field name="consecutive_sessions_required">3</field>
+            <field name="weight">2</field>
+        </record>
+
+        <!-- Link LTG templates with STO templates via M2M -->
+        <record id="tpl_goal_comm_request" model="educare.iep.goal.template">
+            <field name="objective_template_ids"
+                eval="[(6, 0, [ref('tpl_obj_comm_request_1w'), ref('tpl_obj_comm_request_2w')])]" />
+        </record>
+
+        <record id="tpl_goal_behavior_regulation" model="educare.iep.goal.template">
+            <field name="objective_template_ids"
+                eval="[(6, 0, [ref('tpl_obj_behavior_sit')])]" />
+        </record>
+
+        <record id="tpl_goal_cognitive_sorting" model="educare.iep.goal.template">
+            <field name="objective_template_ids"
+                eval="[(6, 0, [ref('tpl_obj_cognitive_sort_3groups')])]" />
+        </record>
+    </data>
+</odoo>

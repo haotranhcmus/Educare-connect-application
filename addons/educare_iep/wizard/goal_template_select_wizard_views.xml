@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_goal_template_select_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.goal.template.select.wizard.form</field>
+        <field name="model">educare.iep.goal.template.select.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Objective Templates">
+                <sheet>
+                    <!-- Goal banner -->
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-3 py-2"
+                        role="alert">
+                        <i class="fa fa-bullseye fa-lg text-info" />
+                        <span>
+                            <strong>Goal:</strong>
+                            <field name="goal_id" readonly="1" nolabel="1" class="ms-1 fw-semibold"
+                                options='{"no_open": true}' />
+                        </span>
+                        <span class="text-muted mx-1">|</span>
+                        <span>
+                            <strong>Domain:</strong>
+                            <field name="goal_domain_id" readonly="1" nolabel="1" class="ms-1" />
+                        </span>
+                    </div>
+
+                    <!-- Filter toolbar -->
+                    <div
+                        class="d-flex align-items-center gap-2 mb-3 flex-wrap p-2 bg-light rounded border">
+                        <field name="filter_domain_id"
+                            nolabel="1"
+                            placeholder="All domains..."
+                            options='{"no_create": true, "no_open": true}'
+                            style="min-width: 180px; max-width: 220px;" />
+                        <field name="search_term" nolabel="1"
+                            placeholder="Search by name..."
+                            style="min-width: 180px; flex: 1;" />
+                        <button name="action_apply_filters"
+                            string="Search"
+                            type="object"
+                            icon="fa-search"
+                            class="btn-primary btn-sm" />
+                        <span class="ms-auto badge text-bg-primary fs-6 px-3 py-2">
+                            <field name="selected_count" nolabel="1" /> selected </span>
+                    </div>
+
+                    <!-- Template list -->
+                    <field name="line_ids" nolabel="1">
+                        <tree
+                            editable="top"
+                            create="false"
+                            delete="false"
+                            default_order="sequence, id"
+                            decoration-muted="not selected">
+                            <field name="selected" widget="boolean" optional="show" />
+                            <field name="template_id" readonly="1" string="Template Name" />
+                            <field name="template_domain_id" readonly="1" string="Domain" />
+                            <field name="target_accuracy_pct" readonly="1" string="Target (%)" />
+                            <field name="consecutive_sessions_required" readonly="1"
+                                string="Sessions" />
+                            <field name="sequence" column_invisible="1" />
+                        </tree>
+                    </field>
+
+                    <!-- Empty state -->
+                    <div class="text-center text-muted py-4" invisible="line_ids">
+                        <i class="fa fa-search fa-2x mb-2 d-block" />
+                        <p class="mb-1">No templates found for the current filter.</p>
+                        <p class="small">Try clearing the domain filter or search term, then click
+                            Search.</p>
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_import"
+                        string="Import Selected"
+                        type="object"
+                        class="btn-primary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

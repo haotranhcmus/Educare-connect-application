@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_session_log_teacher,educare.session.log.teacher,model_educare_session_log,educare_security.group_teacher,1,1,1,0
+access_session_log_supervisor,educare.session.log.supervisor,model_educare_session_log,educare_security.group_supervisor,1,1,1,1
+access_session_log_admin,educare.session.log.admin,model_educare_session_log,educare_security.group_admin,1,1,1,1
+access_session_log_parent,educare.session.log.parent,model_educare_session_log,educare_security.group_parent,1,0,0,0
+access_session_result_teacher,educare.session.result.teacher,model_educare_session_result,educare_security.group_teacher,1,1,1,0
+access_session_result_supervisor,educare.session.result.supervisor,model_educare_session_result,educare_security.group_supervisor,1,1,1,1
+access_session_result_admin,educare.session.result.admin,model_educare_session_result,educare_security.group_admin,1,1,1,1
+access_session_result_parent,educare.session.result.parent,model_educare_session_result,educare_security.group_parent,1,0,0,0
+access_review_wizard_teacher,educare.session.review.wizard.teacher,model_educare_session_review_wizard,educare_security.group_teacher,1,1,1,1
+access_review_wizard_supervisor,educare.session.review.wizard.supervisor,model_educare_session_review_wizard,educare_security.group_supervisor,1,1,1,1
+access_review_wizard_admin,educare.session.review.wizard.admin,model_educare_session_review_wizard,educare_security.group_admin,1,1,1,1
+access_review_wizard_line_teacher,educare.session.review.wizard.line.teacher,model_educare_session_review_wizard_line,educare_security.group_teacher,1,1,1,1
+access_review_wizard_line_supervisor,educare.session.review.wizard.line.supervisor,model_educare_session_review_wizard_line,educare_security.group_supervisor,1,1,1,1
+access_review_wizard_line_admin,educare.session.review.wizard.line.admin,model_educare_session_review_wizard_line,educare_security.group_admin,1,1,1,1

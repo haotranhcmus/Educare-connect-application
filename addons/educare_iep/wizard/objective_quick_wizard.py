@@ -1,8 +1,9 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from .accuracy_mixin import AccuracyValidationMixin
 
 
-class EducareIepObjectiveQuickWizard(models.TransientModel):
+class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMixin):
     _name = 'educare.iep.objective.quick.wizard'
     _description = 'IEP Objective Quick Create Wizard'
 
@@ -27,24 +28,8 @@ class EducareIepObjectiveQuickWizard(models.TransientModel):
     consecutive_sessions_required = fields.Integer(
         string='Consecutive Sessions Required',
         default=3,
-        help='Số buổi liên tiếp đạt target accuracy để tính là mastered. Mặc định 3 buổi theo chuẩn ABA.',
+        help='Number of consecutive sessions reaching target accuracy to be considered mastered. Default 3 sessions per ABA standard.',
     )
-
-    @api.constrains('baseline_accuracy_pct', 'target_accuracy_pct')
-    def _check_accuracy_values(self):
-        for wizard in self:
-            if wizard.baseline_accuracy_pct < 0 or wizard.baseline_accuracy_pct > 100:
-                raise ValidationError(
-                    _('Baseline accuracy must be between 0 and 100.')
-                )
-            if wizard.target_accuracy_pct < 0 or wizard.target_accuracy_pct > 100:
-                raise ValidationError(
-                    _('Target accuracy must be between 0 and 100.')
-                )
-            if wizard.target_accuracy_pct <= wizard.baseline_accuracy_pct:
-                raise ValidationError(
-                    _('Target accuracy must be greater than baseline accuracy.')
-                )
 
     @api.constrains('consecutive_sessions_required')
     def _check_consecutive_sessions(self):

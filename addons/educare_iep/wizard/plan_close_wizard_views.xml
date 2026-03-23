@@ -14,15 +14,15 @@
                     <group string="Closing Details">
                         <field name="closing_reason" />
                         <field name="closing_notes"
-                               placeholder="Ghi chú thêm về lý do đóng plan (tùy chọn)..." />
+                            placeholder="Additional notes about the closing reason (optional)..." />
                     </group>
                 </group>
                 <footer>
                     <button string="Cancel" class="btn-secondary" special="cancel" />
                     <button name="action_confirm_close"
-                            string="Confirm"
-                            type="object"
-                            class="btn-primary" />
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary" />
                 </footer>
             </form>
         </field>
@@ -36,4 +36,3 @@
         <field name="target">new</field>
     </record>
 </odoo>
-

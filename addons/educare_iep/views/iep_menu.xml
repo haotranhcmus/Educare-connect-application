@@ -58,4 +58,16 @@
         parent="menu_educare_iep_config"
         action="action_iep_measurement_template"
         sequence="50" />
+
+    <menuitem id="menu_iep_config_goal_template"
+        name="Goal Templates"
+        parent="menu_educare_iep_config"
+        action="action_iep_goal_template"
+        sequence="60" />
+
+    <menuitem id="menu_iep_config_objective_template"
+        name="Objective Templates"
+        parent="menu_educare_iep_config"
+        action="action_iep_objective_template"
+        sequence="70" />
 </odoo>

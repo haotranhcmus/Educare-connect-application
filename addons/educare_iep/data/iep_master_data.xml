@@ -101,33 +101,36 @@
     <record id="measurement_template_accuracy_trials" model="educare.iep.measurement.template">
         <field name="name">Accuracy by Trials</field>
         <field name="code">accuracy_trials</field>
-        <field name="criteria_template">Tỷ lệ đúng = số phản hồi đúng / tổng số cơ hội (trials)
-            trong buổi.</field>
-        <field name="condition_template">Trong giờ DTT, prompt tối đa theo kế hoạch can thiệp.</field>
-        <field name="description">Phù hợp mục tiêu học kỹ năng mới cần đo theo lần thử chuẩn hóa.</field>
+        <field name="criteria_template">Accuracy rate = correct responses / total opportunities
+            (trials) per session.</field>
+        <field name="condition_template">During DTT session, with maximum prompting per intervention
+            plan.</field>
+        <field name="description">Suitable for new skill acquisition goals requiring standardized
+            trial-based measurement.</field>
         <field name="sequence">10</field>
     </record>
 
     <record id="measurement_template_frequency_count" model="educare.iep.measurement.template">
         <field name="name">Frequency Count</field>
         <field name="code">frequency_count</field>
-        <field name="criteria_template">Đếm tần suất hành vi mục tiêu trong thời lượng buổi học đã
-            xác định.</field>
-        <field name="condition_template">Trong hoạt động học có cấu trúc và hoạt động chơi hướng
-            dẫn.</field>
-        <field name="description">Phù hợp mục tiêu giảm/tăng hành vi cần theo dõi tần suất xuất
-            hiện.</field>
+        <field name="criteria_template">Count frequency of target behavior within defined session
+            duration.</field>
+        <field name="condition_template">During structured learning activities and guided play
+            activities.</field>
+        <field name="description">Suitable for behavior reduction/increase goals requiring frequency
+            occurrence tracking.</field>
         <field name="sequence">20</field>
     </record>
 
     <record id="measurement_template_duration_recording" model="educare.iep.measurement.template">
         <field name="name">Duration Recording</field>
         <field name="code">duration_recording</field>
-        <field name="criteria_template">Đo tổng thời gian duy trì hành vi mục tiêu trong mỗi buổi.</field>
-        <field name="condition_template">Trong phiên NET hoặc hoạt động nhóm nhỏ, ghi nhận bằng đồng
-            hồ bấm giờ.</field>
-        <field name="description">Phù hợp mục tiêu kéo dài thời gian chú ý, ngồi học, hoặc tham gia
-            hoạt động.</field>
+        <field name="criteria_template">Measure total duration of target behavior maintained per
+            session.</field>
+        <field name="condition_template">During NET sessions or small group activities, recorded
+            with a stopwatch.</field>
+        <field name="description">Suitable for goals extending attention duration, seated learning,
+            or activity participation.</field>
         <field name="sequence">30</field>
     </record>
 

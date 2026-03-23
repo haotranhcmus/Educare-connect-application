@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_report_iep_plan" model="ir.actions.report">
+        <field name="name">IEP Plan Report</field>
+        <field name="model">educare.iep.plan</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">educare_iep.report_educare_iep_plan_document</field>
+        <field name="report_file">educare_iep.report_educare_iep_plan_document</field>
+        <field name="print_report_name">'IEP Plan - %s' % (object.iep_period or '')</field>
+        <field name="binding_model_id" ref="model_educare_iep_plan" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

@@ -28,6 +28,10 @@ class EducareIepObjectiveDiscontinueWizard(models.TransientModel):
         self.ensure_one()
         if not self.objective_id:
             raise ValidationError(_('No objective selected to discontinue.'))
+        if self.objective_id.goal_id.plan_id.status != 'active':
+            raise ValidationError(
+                _('Objectives can only be discontinued when the plan is Active.')
+            )
 
         reason_label = dict(self._fields['reason'].selection).get(self.reason)
         combined_reason = reason_label or ''

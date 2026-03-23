@@ -14,15 +14,15 @@
                     <group string="Discontinue Details">
                         <field name="reason" />
                         <field name="notes"
-                               placeholder="Ghi chú thêm về lý do discontinue (tùy chọn)..." />
+                            placeholder="Additional notes about the discontinue reason (optional)..." />
                     </group>
                 </group>
                 <footer>
                     <button string="Cancel" class="btn-secondary" special="cancel" />
                     <button name="action_confirm_discontinue"
-                            string="Confirm"
-                            type="object"
-                            class="btn-primary" />
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary" />
                 </footer>
             </form>
         </field>
@@ -36,4 +36,3 @@
         <field name="target">new</field>
     </record>
 </odoo>
-

@@ -51,6 +51,11 @@ class EducareIepObjective(models.Model):
         ondelete='cascade',
         index=True,
     )
+    plan_status = fields.Selection(
+        related='goal_id.plan_id.status',
+        string='Plan Status',
+        store=False,
+    )
     # Related stored field, auto-filled from goal_id.student_id
     # store=True allows search/filter/record rules on this field
     student_id = fields.Many2one(
@@ -113,7 +118,7 @@ class EducareIepObjective(models.Model):
         string='Consecutive Sessions Required',
         default=3,
         required=True,
-        help='So buoi lien tiep dat target accuracy de tinh la mastered. Mac dinh 3 buoi theo chuan ABA.',
+        help='Number of consecutive sessions reaching target accuracy to be considered mastered. Default 3 sessions per ABA standard.',
     )
     consecutive_sessions_achieved = fields.Integer(
         string='Consecutive Sessions Achieved',
@@ -127,7 +132,7 @@ class EducareIepObjective(models.Model):
     )
     measurement_method = fields.Text(
         string='Data Collection Method',
-        default='Quan sat truc tiep trong buoi hoc.',
+        default='Direct observation during session.',
         required=True,
     )
     probe_method_id = fields.Many2one(
@@ -346,7 +351,11 @@ class EducareIepObjective(models.Model):
                 for rec in need_patch:
                     rec.with_context(skip_goal_sync=True).write({'objective_code': self._next_objective_code()})
         result = super().write(vals)
-        if not self.env.context.get('skip_auto_objective_status_sync'):
+        _STATUS_SYNC_TRIGGERS = {
+            'status', 'start_date', 'goal_id',
+            'current_accuracy_pct', 'consecutive_sessions_achieved',
+        }
+        if not self.env.context.get('skip_auto_objective_status_sync') and _STATUS_SYNC_TRIGGERS.intersection(vals):
             self._auto_sync_status_from_rules()
         if {'status', 'goal_id'}.intersection(vals) and not self.env.context.get('skip_goal_sync'):
             self.mapped('goal_id')._auto_update_status_from_workflow()
@@ -357,6 +366,12 @@ class EducareIepObjective(models.Model):
             if obj.goal_id and obj.goal_id.plan_id and obj.goal_id.plan_id.status != 'draft':
                 raise ValidationError(
                     _('Objectives can be deleted only when the parent plan is in Draft.')
+                )
+            if obj.total_sessions_worked > 0:
+                raise ValidationError(
+                    _('Objective "%s" cannot be deleted because it has %d session(s) of '
+                      'tracking data. Use Discontinue instead to deactivate it.',
+                      obj.name, int(obj.total_sessions_worked))
                 )
         goals = self.mapped('goal_id')
         result = super().unlink()
@@ -441,13 +456,14 @@ class EducareIepObjective(models.Model):
                 and obj.status not in ('mastered', 'discontinued')
             )
 
-    @api.depends('goal_id.plan_id.status')
+    @api.depends('goal_id.plan_id.status', 'total_sessions_worked')
     def _compute_can_delete(self):
         for obj in self:
             obj.can_delete = bool(
                 obj.goal_id
                 and obj.goal_id.plan_id
                 and obj.goal_id.plan_id.status == 'draft'
+                and obj.total_sessions_worked == 0
             )
 
     @api.depends(
@@ -503,6 +519,10 @@ class EducareIepObjective(models.Model):
     def action_start(self):
         """Start objective: move from Not Started to In Progress."""
         for obj in self:
+            if obj.goal_id.plan_id.status != 'active':
+                raise ValidationError(
+                    _('Objectives can only be started when the plan is Active.')
+                )
             if obj.status != 'not_started':
                 continue
             vals = {'status': 'in_progress'}
@@ -513,18 +533,30 @@ class EducareIepObjective(models.Model):
     def action_put_on_hold(self):
         """Pause objective: In Progress -> Paused."""
         for obj in self:
+            if obj.goal_id.plan_id.status != 'active':
+                raise ValidationError(
+                    _('Objectives can only be paused when the plan is Active.')
+                )
             if obj.status == 'in_progress':
                 obj.write({'status': 'on_hold'})
 
     def action_resume(self):
         """Resume objective: Paused -> In Progress."""
         for obj in self:
+            if obj.goal_id.plan_id.status != 'active':
+                raise ValidationError(
+                    _('Objectives can only be resumed when the plan is Active.')
+                )
             if obj.status == 'on_hold':
                 obj.write({'status': 'in_progress'})
 
     def action_mark_mastered(self):
         """Mark objective as Mastered."""
         for obj in self:
+            if obj.goal_id.plan_id.status != 'active':
+                raise ValidationError(
+                    _('Objectives can only be marked as mastered when the plan is Active.')
+                )
             if obj.status not in ('in_progress', 'on_hold'):
                 continue
             vals = {'status': 'mastered'}
@@ -539,7 +571,11 @@ class EducareIepObjective(models.Model):
             raise ValidationError(
                 _('Cannot discontinue an objective that is already Mastered or Discontinued.')
             )
-        action = self.env.ref('educare_iep.action_educare_iep_objective_discontinue_wizard').read()[0]
+        if self.goal_id.plan_id.status != 'active':
+            raise ValidationError(
+                _('Objectives can only be discontinued when the plan is Active.')
+            )
+        action = self.env.ref('educare_iep.action_educare_iep_objective_discontinue_wizard').sudo().read()[0]
         action['context'] = {
             'default_objective_id': self.id,
             'default_reason': False,
@@ -552,7 +588,7 @@ class EducareIepObjective(models.Model):
         goal = self.goal_id
         self.unlink()
 
-        action = self.env.ref('educare_iep.action_educare_iep_goal_form').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_goal_form').sudo().read()[0]
         if goal:
             action['res_id'] = goal.id
         return action

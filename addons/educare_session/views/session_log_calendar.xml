@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_log_calendar" model="ir.ui.view">
+        <field name="name">educare.session.log.calendar</field>
+        <field name="model">educare.session.log</field>
+        <field name="arch" type="xml">
+            <calendar string="Sessions" date_start="session_date"
+                color="student_id" quick_create="0">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="teacher_id" />
+                <field name="status" />
+            </calendar>
+        </field>
+    </record>
+</odoo>

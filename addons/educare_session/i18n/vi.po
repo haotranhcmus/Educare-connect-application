@@ -1,0 +1,1338 @@
+# Vietnamese translation for educare_session
+# This file is distributed under the same license as the Odoo Server package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-23 04:19+0000\n"
+"PO-Revision-Date: 2026-03-23 04:19+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese <vi@li.org>\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-23 04:19+0000\n"
+"PO-Revision-Date: 2026-03-23 04:19+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__session_type__individual
+msgid "1:1 (Individual)"
+msgstr "1:1 (Cá nhân)"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_result__result_type
+#: model:ir.model.fields,help:educare_session.field_educare_session_review_wizard_line__result_type
+msgid ""
+"ABA collection mode: trial_by_trial (common), probe, whole_task, "
+"partial_interval, or momentary_time_sample. This affects how accuracy is "
+"interpreted."
+msgstr "Chế độ thu thập ABA: trial_by_trial (phổ biến), probe, whole_task, partial_interval, hoặc momentary_time_sample. Điều này ảnh hưởng đến cách giải thích độ chính xác."
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__attendance__absent_excused
+msgid "Absent (Excused)"
+msgstr "Vắng mặt (Có phép)"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__attendance__absent_unexcused
+msgid "Absent (Unexcused)"
+msgstr "Vắng mặt (Không phép)"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__accuracy_pct
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_tree
+msgid "Accuracy (%)"
+msgstr "Độ chính xác (%)"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__accuracy_label
+msgid "Accuracy Description"
+msgstr "Mô tả độ chính xác"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_needaction
+msgid "Action Needed"
+msgstr "Cần hành động"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Active Sessions"
+msgstr "Buổi học đang hoạt động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_result__reinforcer_used
+msgid ""
+"Actual reinforcer used in this session. Example: sticker, iPad time, praise."
+msgstr "Củng cố thực tế được sử dụng trong buổi này. Ví dụ: nhãn dán, thời gian iPad, khen ngợi."
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_result__teaching_method
+msgid "Actual teaching method used for this objective in this session."
+msgstr "Phương pháp giảng dạy thực tế được sử dụng cho mục tiêu này trong buổi học."
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Adjust Review"
+msgstr "Điều chỉnh đánh giá"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__all_reviewed
+msgid "All Reviewed"
+msgstr "Tất cả đã đánh giá"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số lượng đính kèm"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__attendance
+msgid "Attendance"
+msgstr "Điểm danh"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__avg_accuracy
+msgid "Avg Accuracy (%)"
+msgstr "Độ chính xác trung bình (%)"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__phase__baseline
+msgid "Baseline"
+msgstr "Mức cơ sở"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_review_wizard_form
+msgid "Cancel"
+msgstr "Hủy"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__attendance__cancelled_center
+msgid "Cancelled by Center"
+msgstr "Hủy bởi trung tâm"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__attendance__cancelled_family
+msgid "Cancelled by Family"
+msgstr "Hủy bởi gia đình"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__center_id
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__location__center
+msgid "Center"
+msgstr "Trung tâm"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Complete Session"
+msgstr "Hoàn thành buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__status__completed
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Completed"
+msgstr "Đã hoàn thành"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__session_type__consultation
+msgid "Consultation"
+msgstr "Tư vấn"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__correct_trials
+msgid "Correct"
+msgstr "Đúng"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__correct_trials
+msgid "Correct Trials"
+msgstr "Lần thử đúng"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__correct_trials_label
+msgid "Correct Trials Label"
+msgstr "Nhãn lần thử đúng"
+
+
+#. module: educare_session
+#: model:ir.model.constraint,message:educare_session.constraint_educare_session_result_trials_check
+msgid "Correct trials must be >= 0 and <= total trials."
+msgstr "Lần thử đúng phải >= 0 và <= tổng lần thử."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/wizard/session_review_wizard.py:0
+#, python-format
+msgid "Correct value cannot exceed total trials."
+msgstr "Giá trị đúng không thể vượt quá tổng lần thử."
+
+
+#. module: educare_session
+#: model_terms:ir.actions.act_window,help:educare_session.action_session_log
+msgid "Create your first session"
+msgstr "Tạo buổi học đầu tiên của bạn"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__create_uid
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__create_uid
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__create_uid
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__create_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__create_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__create_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Date"
+msgstr "Ngày"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__mood__difficult
+msgid "Difficult"
+msgstr "Khó khăn"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__teaching_method__dtt
+msgid "Discrete Trial Training (DTT)"
+msgstr "Huấn luyện Thử nghiệm Rời rạc (DTT)"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__engagement_level__disengaged
+msgid "Disengaged"
+msgstr "Không tham gia"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__display_name
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__display_name
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__display_name
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__status__draft
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Draft"
+msgstr "Nháp"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__duration
+msgid "Duration (hours)"
+msgstr "Thời lượng (giờ)"
+
+
+#. module: educare_session
+#: model:ir.model.constraint,message:educare_session.constraint_educare_session_result_session_objective_unique
+msgid "Each objective can only have one result row per session."
+msgstr "Mỗi mục tiêu ngắn hạn chỉ có thể có một dòng kết quả cho mỗi buổi."
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__end_time
+msgid "End Time"
+msgstr "Giờ kết thúc"
+
+
+#. module: educare_session
+#: model:ir.model.constraint,message:educare_session.constraint_educare_session_log_time_check
+msgid "End time must be after start time."
+msgstr "Giờ kết thúc phải sau giờ bắt đầu."
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__energy_level
+msgid "Energy Level"
+msgstr "Mức năng lượng"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__engagement_level__engaged
+msgid "Engaged"
+msgstr "Tham gia"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__engagement_level
+msgid "Engagement Level"
+msgstr "Mức độ tham gia"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__teaching_method__errorless
+msgid "Errorless Learning"
+msgstr "Học không sai lầm"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_review_wizard_form
+msgid "Evaluate Each Objective"
+msgstr "Đánh giá từng mục tiêu ngắn hạn"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__overall_performance__excellent
+msgid "Excellent"
+msgstr "Xuất sắc"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__overall_performance__fair
+msgid "Fair"
+msgstr "Khá"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng font awesome, ví dụ: fa-tasks"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__prompt_level_used__full_physical
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_review_wizard_line__prompt_level_used__full_physical
+msgid "Full Physical Prompt"
+msgstr "Gợi ý thể chất toàn phần"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__phase__generalization
+msgid "Generalization"
+msgstr "Tổng quát hóa"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__prompt_level_used__gestural_prompt
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_review_wizard_line__prompt_level_used__gestural_prompt
+msgid "Gestural Prompt"
+msgstr "Gợi ý cử chỉ"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__mood__good
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__overall_performance__good
+msgid "Good"
+msgstr "Tốt"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_search
+msgid "Group By"
+msgstr "Nhóm theo"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Hide draft sessions — used as default view in Calendar"
+msgstr "Ẩn các buổi nháp — dùng làm chế độ xem mặc định trong Lịch"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__energy_level__high
+msgid "High"
+msgstr "Cao"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__reinforcement_effectiveness__high
+msgid "High - Strong learner response"
+msgstr "Cao - Phản ứng học sinh mạnh"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__engagement_level__highly_engaged
+msgid "Highly Engaged"
+msgstr "Tham gia tích cực"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__location__home
+msgid "Home"
+msgstr "Nhà"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__id
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__id
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__id
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__id
+msgid "ID"
+msgstr "ID"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__objective_id
+msgid "IEP Objective"
+msgstr "Mục tiêu ngắn hạn IEP"
+
+
+#. module: educare_session
+#: model:ir.model,name:educare_session.model_educare_iep_objective
+msgid "IEP Short-term Objective"
+msgstr "Mục tiêu ngắn hạn IEP"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để chỉ ra hoạt động ngoại lệ."
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới yêu cầu sự chú ý của bạn."
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__message_has_error
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn có lỗi gửi."
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__teaching_method__incidental
+msgid "Incidental Teaching"
+msgstr "Giảng dạy ngẫu nhiên"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__prompt_level_used__independent
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_review_wizard_line__prompt_level_used__independent
+msgid "Independent"
+msgstr "Độc lập"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__phase__intervention
+msgid "Intervention"
+msgstr "Can thiệp"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__write_uid
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__write_uid
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__write_uid
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__write_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__write_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__write_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__location
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Location"
+msgstr "Địa điểm"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__energy_level__low
+msgid "Low"
+msgstr "Thấp"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__reinforcement_effectiveness__low
+msgid "Low - Limited learner response"
+msgstr "Thấp - Phản ứng học sinh hạn chế"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__phase__maintenance
+msgid "Maintenance"
+msgstr "Duy trì"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_result.py:0
+#, python-format
+msgid ""
+"Manual result row creation is not allowed. Select objectives on the Session "
+"first."
+msgstr ""
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_search
+msgid "Mastery Achieved"
+msgstr "Đã đạt thành thạo"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__mastery_achieved
+msgid "Mastery Achieved in This Session?"
+msgstr "Đạt thành thạo trong buổi này?"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__reinforcement_effectiveness__medium
+msgid "Medium - Moderate learner response"
+msgstr "Trung bình - Phản ứng học sinh vừa phải"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_result.py:0
+#, python-format
+msgid ""
+"Method %s usually requires at least 5 intervals/checks. Please verify "
+"total_trials."
+msgstr ""
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__result_type__momentary_time_sample
+msgid "Momentary Time Sample"
+msgstr "Mẫu thời gian tức thời"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn chót hoạt động của tôi"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "My Sessions"
+msgstr "Buổi học của tôi"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__teaching_method__net
+msgid "Natural Environment Teaching (NET)"
+msgstr "Dạy học trong Môi trường Tự nhiên (NET)"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__overall_performance__poor
+msgid "Needs Improvement"
+msgstr "Cần cải thiện"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__mood__neutral
+msgid "Neutral"
+msgstr "Trung tính"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn chót hoạt động tiếp theo"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__energy_level__normal
+msgid "Normal"
+msgstr "Bình thường"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid ""
+"Not all objectives have been evaluated. Please enter trial data for the following objectives:\n"
+"\n"
+"%s\n"
+"\n"
+"Enter Correct Trials and Total Trials for each objective in the Objectives table, then try again."
+msgstr ""
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số lượng hành động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần hành động"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn có lỗi gửi"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__objective_id
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_search
+msgid "Objective"
+msgstr "Mục tiêu ngắn hạn"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_result.py:0
+#, python-format
+msgid "Objective must be included in the selected session objectives."
+msgstr "Mục tiêu ngắn hạn phải được bao gồm trong các mục tiêu buổi học đã chọn."
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_result__phase
+#: model:ir.model.fields,help:educare_session.field_educare_session_review_wizard_line__phase
+msgid "Objective phase at the time of this session."
+msgstr "Giai đoạn mục tiêu ngắn hạn tại thời điểm của buổi học này."
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__notes
+msgid "Objective-Specific Notes"
+msgstr "Ghi chú cụ thể cho mục tiêu ngắn hạn"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Objective-specific notes..."
+msgstr "Ghi chú cụ thể cho mục tiêu ngắn hạn..."
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Objectives"
+msgstr "Mục tiêu ngắn hạn"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__line_ids
+msgid "Objectives to Review"
+msgstr "Mục tiêu ngắn hạn cần đánh giá"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Observations"
+msgstr "Quan sát"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__location__online
+msgid "Online"
+msgstr "Trực tuyến"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_result.py:0
+#, python-format
+msgid ""
+"Only Supervisor or Admin can edit reviews when session status is Reviewed."
+msgstr "Chỉ Người giám sát hoặc Quản trị viên mới có thể chỉnh sửa đánh giá khi trạng thái buổi học là Đã đánh giá."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Only Supervisor or Admin can reopen a reviewed session for correction."
+msgstr "Chỉ Người giám sát hoặc Quản trị viên mới có thể mở lại buổi học đã đánh giá để chỉnh sửa."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Only draft sessions can be scheduled."
+msgstr "Chỉ các buổi học nháp mới có thể được lên lịch."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Only reviewed sessions can be reopened."
+msgstr "Chỉ các buổi học đã đánh giá mới có thể được mở lại."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Only scheduled sessions can be marked as completed."
+msgstr "Chỉ các buổi học đã lên lịch mới có thể được đánh dấu là hoàn thành."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Only scheduled sessions can be reset to draft."
+msgstr "Chỉ các buổi học đã lên lịch mới có thể đặt lại về nháp."
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__overall_performance
+msgid "Overall Performance"
+msgstr "Hiệu suất tổng thể"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__result_type__partial_interval
+msgid "Partial Interval"
+msgstr "Khoảng thời gian một phần"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__prompt_level_used__partial_physical
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_review_wizard_line__prompt_level_used__partial_physical
+msgid "Partial Physical Prompt"
+msgstr "Gợi ý thể chất một phần"
+
+
+#. module: educare_session
+#: model:ir.model,name:educare_session.model_educare_session_result
+msgid "Per-Objective Session Result"
+msgstr "Kết quả buổi học theo từng mục tiêu ngắn hạn"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__phase
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__phase
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_search
+msgid "Phase"
+msgstr "Giai đoạn"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Please select at least one objective before scheduling."
+msgstr "Vui lòng chọn ít nhất một mục tiêu ngắn hạn trước khi lên lịch."
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__attendance__present
+msgid "Present"
+msgstr "Có mặt"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__result_type__probe
+msgid "Probe"
+msgstr "Kiểm tra"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__prompt_fading_noted
+msgid "Prompt Fading Noted"
+msgstr "Đã ghi nhận giảm dần gợi ý"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__prompt_level_used
+msgid "Prompt Level"
+msgstr "Mức gợi ý"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__prompt_level_used
+msgid "Prompt Level Used"
+msgstr "Mức gợi ý được sử dụng"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__raw_data_notes
+msgid "Raw Data Notes"
+msgstr "Ghi chú dữ liệu thô"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Raw data notes..."
+msgstr "Ghi chú dữ liệu thô..."
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Reference"
+msgstr "Tham chiếu"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Reinforcement"
+msgstr "Củng cố"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__reinforcement_effectiveness
+msgid "Reinforcement Effectiveness"
+msgstr "Hiệu quả củng cố"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__reinforcer_used
+msgid "Reinforcer Used"
+msgstr "Củng cố được sử dụng"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Reset to Draft"
+msgstr "Đặt lại về Nháp"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__activity_user_id
+msgid "Responsible User"
+msgstr "Người dùng phụ trách"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__result_id
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Result"
+msgstr "Kết quả"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__result_type
+msgid "Result Type"
+msgstr "Loại kết quả"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__result_count
+msgid "Results"
+msgstr "Kết quả"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_review_wizard_form
+msgid "Review Session"
+msgstr "Đánh giá buổi học"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/wizard/session_review_wizard.py:0
+#, python-format
+msgid "Review values cannot be negative."
+msgstr "Giá trị đánh giá không thể âm."
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__status__done
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Reviewed"
+msgstr "Đã đánh giá"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_review_wizard_form
+msgid "Save Review"
+msgstr "Lưu đánh giá"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Schedule"
+msgstr "Lên lịch"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__status__scheduled
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Scheduled"
+msgstr "Đã lên lịch"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__location__school
+msgid "School"
+msgstr "Trường học"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_search
+msgid "Search Results"
+msgstr "Tìm kiếm kết quả"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Search Sessions"
+msgstr "Tìm kiếm buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__sequence
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__session_id
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard__session_id
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_search
+msgid "Session"
+msgstr "Buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__name
+msgid "Session Code"
+msgstr "Mã buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__session_date
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__session_date
+msgid "Session Date"
+msgstr "Ngày buổi học"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Session Info"
+msgstr "Thông tin buổi học"
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/wizard/session_review_wizard.py:0
+#: model:ir.model,name:educare_session.model_educare_session_log
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+#, python-format
+msgid "Session Log"
+msgstr "Nhật ký buổi học"
+
+
+#. module: educare_session
+#: model:ir.ui.menu,name:educare_session.menu_session_logs
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_tree
+msgid "Session Logs"
+msgstr "Nhật ký buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__notes
+msgid "Session Notes"
+msgstr "Ghi chú buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__objective_ids
+msgid "Session Objectives"
+msgstr "Mục tiêu buổi học"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Session Result"
+msgstr "Kết quả buổi học"
+
+
+#. module: educare_session
+#: model:ir.actions.act_window,name:educare_session.action_session_result
+#: model:ir.model.fields,field_description:educare_session.field_educare_iep_objective__session_result_ids
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__result_line_ids
+#: model:ir.ui.menu,name:educare_session.menu_session_results
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_tree
+msgid "Session Results"
+msgstr "Kết quả buổi học"
+
+
+#. module: educare_session
+#: model:ir.model,name:educare_session.model_educare_session_review_wizard
+msgid "Session Review Wizard"
+msgstr "Trình hướng dẫn đánh giá buổi học"
+
+
+#. module: educare_session
+#: model:ir.model,name:educare_session.model_educare_session_review_wizard_line
+msgid "Session Review Wizard Line"
+msgstr "Dòng trình hướng dẫn đánh giá buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__session_type
+msgid "Session Type"
+msgstr "Loại buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.constraint,message:educare_session.constraint_educare_session_log_name_unique
+msgid "Session code must be unique."
+msgstr "Mã buổi học phải là duy nhất."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_log.py:0
+#, python-format
+msgid "Session must be completed before submitting review."
+msgstr "Buổi học phải được hoàn thành trước khi gửi đánh giá."
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Session notes..."
+msgstr "Ghi chú buổi học..."
+
+
+#. module: educare_session
+#: model:ir.actions.act_window,name:educare_session.action_session_log
+#: model:ir.ui.menu,name:educare_session.menu_session_root
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_calendar
+msgid "Sessions"
+msgstr "Buổi học"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__session_type__small_group
+msgid "Small Group (2-4 Learners)"
+msgstr "Nhóm nhỏ (2-4 học sinh)"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__engagement_level__somewhat_engaged
+msgid "Somewhat Engaged"
+msgstr "Tham gia một phần"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__start_time
+msgid "Start Time"
+msgstr "Giờ bắt đầu"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__status
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Status"
+msgstr "Trạng thái"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__student_id
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Student"
+msgstr "Học sinh"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__mood
+msgid "Student Mood"
+msgstr "Tâm trạng học sinh"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Submit Review"
+msgstr "Gửi đánh giá"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
+msgid "Summary"
+msgstr "Tóm tắt"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_result_form
+msgid "Support"
+msgstr "Hỗ trợ"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__teaching_method__task_analysis
+msgid "Task Analysis"
+msgstr "Phân tích nhiệm vụ"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_log__teacher_id
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Teacher"
+msgstr "Giáo viên"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_result__reinforcement_effectiveness
+msgid "Teacher-rated effectiveness of reinforcement in this session."
+msgstr "Hiệu quả củng cố do giáo viên đánh giá trong buổi học này."
+
+
+#. module: educare_session
+
+#. odoo-python
+#: code:addons/educare_session/models/session_result.py:0
+#, python-format
+msgid ""
+"Teachers cannot create manual objective rows. Enter values only on auto-"
+"generated rows."
+msgstr ""
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__teaching_method
+msgid "Teaching Method"
+msgstr "Phương pháp giảng dạy"
+
+
+#. module: educare_session
+#: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_search
+msgid "Today"
+msgstr "Hôm nay"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__total_trials
+msgid "Total Trials"
+msgstr "Tổng lần thử"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_result__total_trials_label
+msgid "Total Trials Label"
+msgstr "Nhãn tổng lần thử"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__result_type__trial_by_trial
+msgid "Trial by Trial"
+msgstr "Từng lần thử"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__total_trials
+msgid "Trials"
+msgstr "Lần thử"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__result_type
+msgid "Type"
+msgstr "Loại"
+
+
+#. module: educare_session
+#: model:ir.model.fields,help:educare_session.field_educare_session_log__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trong hồ sơ."
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__prompt_level_used__verbal_prompt
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_review_wizard_line__prompt_level_used__verbal_prompt
+msgid "Verbal Prompt"
+msgstr "Gợi ý lời nói"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__mood__very_difficult
+msgid "Very Difficult"
+msgstr "Rất khó khăn"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__mood__very_good
+msgid "Very Good"
+msgstr "Rất tốt"
+
+
+#. module: educare_session
+#: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__result_type__whole_task
+msgid "Whole Task"
+msgstr "Toàn bộ nhiệm vụ"
+
+
+#. module: educare_session
+#: model:ir.model.fields,field_description:educare_session.field_educare_session_review_wizard_line__wizard_id
+msgid "Wizard"
+msgstr "Trình hướng dẫn"

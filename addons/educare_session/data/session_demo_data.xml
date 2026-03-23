@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Session Demo Data
+    =================
+    Creates 8 reviewed sessions for Student An + 4 for Student Binh.
+    All sessions are set to status='done' so their results are picked up by
+    current_accuracy_pct, progress_pct, trend, and consecutive computations.
+
+    Resulting progress after this data:
+
+    Student An – Plan active
+      obj_01_01 (Communication, target=80%, weight=3):
+        Sessions: 30/40/50/50/60/60/70/70 %
+        current = avg(60,70,70) = 66.7 %  |  progress ≈ 79 %  |  trend = improving
+
+      obj_02_01 (Behavior - sit still, target=80%, weight=2):
+        Sessions: 30/40/40/50 %
+        current = avg(40,40,50) = 43 %  |  progress ≈ 47 %  |  trend = improving
+
+      Goal 01 weighted progress = (79%×3 + 0%×1) / 4 ≈ 59 %
+      Goal 02 weighted progress = 47 %
+-->
+<odoo noupdate="1">
+
+    <!-- ============================================================ -->
+    <!-- STUDENT AN – 8 sessions                                       -->
+    <!--   Sessions AN-01 … AN-04: obj_01_01 + obj_02_01              -->
+    <!--   Sessions AN-05 … AN-08: obj_01_01 only                     -->
+    <!-- ============================================================ -->
+
+    <!-- Session AN-01  (day -56)  obj_01_01=3/10  obj_02_01=3/10 -->
+    <record id="demo_session_an_01" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-01</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=56)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">neutral</field>
+        <field name="energy_level">normal</field>
+        <field name="engagement_level">somewhat_engaged</field>
+        <field name="notes">Week 1. Child requires heavy prompting. Establishing routine and
+            rapport.</field>
+        <field name="objective_ids"
+            eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
+    </record>
+    <record id="demo_result_an_01_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_01" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">3</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">gestural_prompt</field>
+        <field name="teaching_method">dtt</field>
+        <field name="notes">Child responded only with gestural prompt. 3/10 independent mands.</field>
+    </record>
+    <record id="demo_result_an_01_b" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_01" />
+        <field name="objective_id" ref="educare_iep.demo_obj_02_01" />
+        <field name="correct_trials">3</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">partial_physical</field>
+        <field name="teaching_method">dtt</field>
+        <field name="notes">High frequency of self-stimulatory behavior. Baseline confirmed.</field>
+    </record>
+
+    <!-- Session AN-02  (day -49)  obj_01_01=4/10  obj_02_01=4/10 -->
+    <record id="demo_session_an_02" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-02</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=49)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">normal</field>
+        <field name="engagement_level">engaged</field>
+        <field name="notes">Improved motivation with token board. Slight gains in both objectives.</field>
+        <field name="objective_ids"
+            eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
+    </record>
+    <record id="demo_result_an_02_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_02" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">4</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">gestural_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+    <record id="demo_result_an_02_b" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_02" />
+        <field name="objective_id" ref="educare_iep.demo_obj_02_01" />
+        <field name="correct_trials">4</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">gestural_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+
+    <!-- Session AN-03  (day -42)  obj_01_01=5/10  obj_02_01=4/10 -->
+    <record id="demo_session_an_03" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-03</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=42)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">high</field>
+        <field name="engagement_level">engaged</field>
+        <field name="notes">Noticeable improvement. Child initiating more without prompting.</field>
+        <field name="objective_ids"
+            eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
+    </record>
+    <record id="demo_result_an_03_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_03" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">5</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">gestural_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+    <record id="demo_result_an_03_b" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_03" />
+        <field name="objective_id" ref="educare_iep.demo_obj_02_01" />
+        <field name="correct_trials">4</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">gestural_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+
+    <!-- Session AN-04  (day -35)  obj_01_01=5/10  obj_02_01=5/10 -->
+    <record id="demo_session_an_04" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-04</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=35)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">high</field>
+        <field name="engagement_level">highly_engaged</field>
+        <field name="notes">Consistent progress on both objectives. Prompt fading beginning.</field>
+        <field name="objective_ids"
+            eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
+    </record>
+    <record id="demo_result_an_04_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_04" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">5</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">verbal_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+    <record id="demo_result_an_04_b" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_04" />
+        <field name="objective_id" ref="educare_iep.demo_obj_02_01" />
+        <field name="correct_trials">5</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">verbal_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+
+    <!-- Session AN-05  (day -28)  obj_01_01=6/10 only -->
+    <record id="demo_session_an_05" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-05</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=28)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">high</field>
+        <field name="engagement_level">highly_engaged</field>
+        <field name="notes">Strong communication session. Child leading DTT trials independently.</field>
+        <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
+    </record>
+    <record id="demo_result_an_05_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_05" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">6</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">verbal_prompt</field>
+        <field name="teaching_method">dtt</field>
+    </record>
+
+    <!-- Session AN-06  (day -21)  obj_01_01=6/10 -->
+    <record id="demo_session_an_06" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-06</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=21)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">high</field>
+        <field name="engagement_level">highly_engaged</field>
+        <field name="notes">Excellent session. Transitioning to NET environment training.</field>
+        <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
+    </record>
+    <record id="demo_result_an_06_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_06" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">6</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">verbal_prompt</field>
+        <field name="teaching_method">net</field>
+    </record>
+
+    <!-- Session AN-07  (day -14)  obj_01_01=7/10 -->
+    <record id="demo_session_an_07" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-07</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=14)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">high</field>
+        <field name="engagement_level">highly_engaged</field>
+        <field name="notes">Child spontaneously initiated 2 mands without prompting. Great
+            milestone!</field>
+        <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
+    </record>
+    <record id="demo_result_an_07_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_07" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">7</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">verbal_prompt</field>
+        <field name="prompt_fading_noted" eval="True" />
+        <field name="teaching_method">net</field>
+        <field name="notes">Prompt fading noted. Ready to reduce prompt level next session.</field>
+    </record>
+
+    <!-- Session AN-08  (day -7)  obj_01_01=7/10 -->
+    <record id="demo_session_an_08" model="educare.session.log">
+        <field name="name">SES-DEMO-AN-08</field>
+        <field name="student_id" ref="educare_iep.demo_student_an" />
+        <field name="teacher_id" ref="educare_security.user_educare_teacher_01" />
+        <field name="session_date"
+            eval="(DateTime.today() - relativedelta(days=7)).strftime('%Y-%m-%d')" />
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="status">done</field>
+        <field name="attendance">present</field>
+        <field name="mood">good</field>
+        <field name="energy_level">high</field>
+        <field name="engagement_level">highly_engaged</field>
+        <field name="notes">Sustained progress. Approaching 80% target. Plan review scheduled.</field>
+        <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
+    </record>
+    <record id="demo_result_an_08_c" model="educare.session.result">
+        <field name="session_id" ref="demo_session_an_08" />
+        <field name="objective_id" ref="educare_iep.demo_obj_01_01" />
+        <field name="correct_trials">7</field>
+        <field name="total_trials">10</field>
+        <field name="result_type">trial_by_trial</field>
+        <field name="phase">intervention</field>
+        <field name="prompt_level_used">verbal_prompt</field>
+        <field name="prompt_fading_noted" eval="True" />
+        <field name="teaching_method">net</field>
+    </record>
+
+</odoo>

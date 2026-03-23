@@ -21,7 +21,7 @@ class EducareStudentInherit(models.Model):
 
     def action_open_iep_plans(self):
         self.ensure_one()
-        action = self.env.ref('educare_iep.action_educare_iep_plan').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_plan').sudo().read()[0]
         action['domain'] = [('student_id', '=', self.id)]
         action['context'] = {
             'default_student_id': self.id,

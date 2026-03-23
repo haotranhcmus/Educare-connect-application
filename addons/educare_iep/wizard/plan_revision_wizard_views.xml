@@ -10,11 +10,13 @@
                         <field name="plan_id" readonly="1" />
                     </group>
                 </group>
+                <field name="revision_info" widget="html"
+                    nolabel="1" />
                 <group>
                     <group string="Revision Details">
                         <field name="revision_reason" required="1" />
                         <field name="revision_notes"
-                            placeholder="Mô tả ngắn lý do tạo revision và điểm thay đổi chính..." />
+                            placeholder="Brief description of the revision reason and key changes..." />
                     </group>
                 </group>
                 <footer>

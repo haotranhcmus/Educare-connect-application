@@ -4,7 +4,7 @@
         <field name="name">educare.iep.objective.quick.wizard.form</field>
         <field name="model">educare.iep.objective.quick.wizard</field>
         <field name="arch" type="xml">
-            <form string="Thêm Mục tiêu Ngắn hạn">
+            <form string="Add Short-term Objective">
                 <sheet>
                     <group col="4" class="mb-0">
                         <field name="goal_id" readonly="1" />
@@ -13,11 +13,11 @@
 
                     <separator />
 
-                    <group col="2" string="Thông tin cơ bản">
+                    <group col="2" string="Basic Information">
                         <field name="name"
-                            placeholder="VD: Nhận dạng 10 từ vựng cơ bản" />
+                            placeholder="E.g.: Identify 10 basic vocabulary words" />
                         <field name="description"
-                            placeholder="Mô tả chi tiết kỹ năng ngắn hạn cần đạt..." />
+                            placeholder="Detailed description of the short-term skill to achieve..." />
                     </group>
 
                     <group col="2">
@@ -38,15 +38,14 @@
                     </group>
 
                     <div class="text-muted small mt-2">
-                        <i class="fa fa-info-circle me-1" />
-                        Các trường nâng cao (prompt level, probe method, measurement chi tiết) có thể điền sau trong form Objective đầy đủ.
-                        Consecutive Sessions Required mặc định = 3 theo chuẩn ABA.
-                    </div>
+                        <i class="fa fa-info-circle me-1" /> Advanced fields (prompt level, probe
+                        method, detailed measurement) can be filled later in the full Objective
+                        form. Consecutive Sessions Required defaults to 3 per ABA standard. </div>
                 </sheet>
                 <footer>
-                    <button name="action_create_objective" string="Tạo Objective" type="object"
+                    <button name="action_create_objective" string="Create Objective" type="object"
                         class="btn-primary" />
-                    <button string="Hủy" special="cancel" class="btn-secondary" />
+                    <button string="Cancel" special="cancel" class="btn-secondary" />
                 </footer>
             </form>
         </field>

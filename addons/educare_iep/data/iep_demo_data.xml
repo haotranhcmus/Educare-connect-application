@@ -237,6 +237,12 @@
     </record>
 
     <!-- Apply workflow-compliant transitions for demo plan -->
+    <!-- Step 1: draft -> ready_review -->
+    <record id="demo_plan_an" model="educare.iep.plan">
+        <field name="status">ready_review</field>
+    </record>
+
+    <!-- Step 2: ready_review -> supervisor_approved -->
     <record id="demo_plan_an" model="educare.iep.plan">
         <field name="supervisor_approved" eval="True" />
         <field name="approved_date"
@@ -244,6 +250,7 @@
         <field name="status">supervisor_approved</field>
     </record>
 
+    <!-- Step 3: supervisor_approved -> active -->
     <record id="demo_plan_an" model="educare.iep.plan">
         <field name="parent_consent" eval="True" />
         <field name="parent_consent_date"

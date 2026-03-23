@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_objective_template_import_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.objective.template.import.wizard.form</field>
+        <field name="model">educare.iep.objective.template.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Objective Templates">
+                <group>
+                    <field name="goal_id" readonly="1" />
+                    <field name="goal_domain_id" invisible="1" />
+                </group>
+                <field name="template_ids" nolabel="1"
+                    domain="[('template_domain_id', '=', goal_domain_id)]"
+                    options="{'no_create': True}">
+                    <tree>
+                        <field name="sequence" optional="hide" />
+                        <field name="name" />
+                        <field name="template_domain_id" string="Domain" />
+                        <field name="description" optional="show" />
+                        <field name="baseline_accuracy_pct" string="Baseline (%)" optional="hide" />
+                        <field name="target_accuracy_pct" string="Target (%)" optional="show" />
+                    </tree>
+                </field>
+                <div class="text-muted small mt-2">
+                    <i class="fa fa-info-circle me-1" />Select STO templates to create new
+                    objectives for the selected goal. Template data will be copied. The list is
+                    filtered by the goal's domain. </div>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                    <button name="action_import"
+                        string="Import"
+                        type="object"
+                        class="btn-primary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_educare_iep_objective_template_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Objective Templates</field>
+        <field name="res_model">educare.iep.objective.template.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_educare_iep_objective_template_import_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>

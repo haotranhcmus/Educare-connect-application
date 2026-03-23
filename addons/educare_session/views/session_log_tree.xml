@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_log_tree" model="ir.ui.view">
+        <field name="name">educare.session.log.tree</field>
+        <field name="model">educare.session.log</field>
+        <field name="arch" type="xml">
+            <tree string="Session Logs"
+                decoration-info="status == 'draft'"
+                decoration-warning="status == 'scheduled'"
+                decoration-success="status == 'done'">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="teacher_id" />
+                <field name="session_date" />
+                <field name="start_time" widget="float_time" />
+                <field name="duration" widget="float_time" />
+                <field name="location" />
+                <field name="status" widget="badge"
+                    decoration-info="status == 'draft'"
+                    decoration-warning="status == 'scheduled'"
+                    decoration-success="status == 'done'"
+                    decoration-primary="status == 'completed'" />
+                <field name="avg_accuracy" string="Accuracy (%)" />
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,292 @@
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError, UserError
+
+from ..constants import (
+    SESSION_STATUS,
+    ATTENDANCE_STATUS,
+    MOOD_LEVELS,
+    ENERGY_LEVELS,
+    ENGAGEMENT_LEVELS,
+    PERFORMANCE_LEVELS,
+    LOCATIONS,
+    SESSION_TYPES,
+)
+
+
+class EducareSessionLog(models.Model):
+    _name = 'educare.session.log'
+    _description = 'Session Log'
+    _rec_name = 'name'
+    _order = 'session_date desc, id desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    name = fields.Char(
+        string='Session Code',
+        default='/',
+        required=True,
+        copy=False,
+        readonly=True,
+        index=True,
+    )
+    student_id = fields.Many2one(
+        'educare.student',
+        string='Student',
+        required=True,
+        ondelete='cascade',
+        tracking=True,
+        index=True,
+    )
+    teacher_id = fields.Many2one(
+        'res.users',
+        string='Teacher',
+        required=True,
+        ondelete='restrict',
+        tracking=True,
+        index=True,
+        default=lambda self: self.env.user,
+    )
+    center_id = fields.Many2one(
+        'educare.center',
+        string='Center',
+        related='student_id.center_id',
+        store=True,
+        index=True,
+    )
+
+    # ── Scheduling ────────────────────────────────────────────────
+    session_date = fields.Date(
+        string='Session Date',
+        required=True,
+        default=fields.Date.context_today,
+        tracking=True,
+    )
+    start_time = fields.Float(
+        string='Start Time',
+        required=True,
+        default=8.0,
+    )
+    end_time = fields.Float(
+        string='End Time',
+        required=True,
+        default=9.0,
+    )
+    duration = fields.Float(
+        string='Duration (hours)',
+        compute='_compute_duration',
+        store=True,
+    )
+    location = fields.Selection(
+        LOCATIONS,
+        string='Location',
+        default='center',
+        required=True,
+    )
+    session_type = fields.Selection(
+        SESSION_TYPES,
+        string='Session Type',
+        default='individual',
+        required=True,
+    )
+
+    # ── Status ────────────────────────────────────────────────────
+    status = fields.Selection(
+        SESSION_STATUS,
+        string='Status',
+        default='draft',
+        required=True,
+        tracking=True,
+        index=True,
+    )
+
+    # ── Objectives & Results ──────────────────────────────────────
+    objective_ids = fields.Many2many(
+        'educare.iep.objective',
+        'session_log_objective_rel',
+        'session_id',
+        'objective_id',
+        string='Session Objectives',
+    )
+    result_line_ids = fields.One2many(
+        'educare.session.result',
+        'session_id',
+        string='Session Results',
+    )
+
+    # ── Observations ──────────────────────────────────────────────
+    attendance = fields.Selection(
+        ATTENDANCE_STATUS,
+        string='Attendance',
+        default='present',
+    )
+    mood = fields.Selection(MOOD_LEVELS, string='Student Mood')
+    energy_level = fields.Selection(ENERGY_LEVELS, string='Energy Level')
+    engagement_level = fields.Selection(ENGAGEMENT_LEVELS, string='Engagement Level')
+    overall_performance = fields.Selection(PERFORMANCE_LEVELS, string='Overall Performance')
+    notes = fields.Text(string='Session Notes')
+
+    # ── Computed Summary ──────────────────────────────────────────
+    result_count = fields.Integer(
+        string='Results',
+        compute='_compute_result_summary',
+        store=True,
+    )
+    avg_accuracy = fields.Float(
+        string='Avg Accuracy (%)',
+        compute='_compute_result_summary',
+        store=True,
+        digits=(5, 2),
+    )
+    all_reviewed = fields.Boolean(
+        string='All Reviewed',
+        compute='_compute_result_summary',
+        store=True,
+    )
+
+    _sql_constraints = [
+        ('name_unique', 'UNIQUE(name)', 'Session code must be unique.'),
+        ('time_check', 'CHECK(end_time > start_time)',
+         'End time must be after start time.'),
+    ]
+
+    # ── Computed ──────────────────────────────────────────────────
+
+    @api.depends('start_time', 'end_time')
+    def _compute_duration(self):
+        for rec in self:
+            rec.duration = max(rec.end_time - rec.start_time, 0)
+
+    @api.depends(
+        'result_line_ids',
+        'result_line_ids.total_trials',
+        'result_line_ids.accuracy_pct',
+    )
+    def _compute_result_summary(self):
+        for rec in self:
+            results = rec.result_line_ids
+            rec.result_count = len(results)
+            reviewed = results.filtered(lambda r: r.total_trials > 0)
+            if reviewed:
+                rec.avg_accuracy = sum(reviewed.mapped('accuracy_pct')) / len(reviewed)
+            else:
+                rec.avg_accuracy = 0.0
+            rec.all_reviewed = bool(results) and len(reviewed) == len(results)
+
+    # ── ORM Overrides ─────────────────────────────────────────────
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', '/') == '/':
+                vals['name'] = (
+                    self.env['ir.sequence'].next_by_code('educare.session.log')
+                    or '/'
+                )
+        return super().create(vals_list)
+
+    # ── Helpers ───────────────────────────────────────────────────
+
+    def _populate_result_lines(self):
+        """Create result lines for each selected objective."""
+        self.ensure_one()
+        existing_obj_ids = set(self.result_line_ids.mapped('objective_id').ids)
+        new_objectives = self.objective_ids.filtered(
+            lambda o: o.id not in existing_obj_ids
+        )
+        if new_objectives:
+            seq = max(self.result_line_ids.mapped('sequence') or [0])
+            vals_list = []
+            for obj in new_objectives:
+                seq += 10
+                vals_list.append({
+                    'session_id': self.id,
+                    'objective_id': obj.id,
+                    'sequence': seq,
+                })
+            self.env['educare.session.result'].with_context(
+                auto_populate_session_results=True,
+            ).create(vals_list)
+        # Remove result lines for de-selected objectives
+        removed = self.result_line_ids.filtered(
+            lambda r: r.objective_id not in self.objective_ids
+        )
+        if removed:
+            removed.unlink()
+
+    # ── Workflow Actions ──────────────────────────────────────────
+
+    def action_schedule(self):
+        """Draft → Scheduled: validate and populate result lines."""
+        for rec in self:
+            if rec.status != 'draft':
+                raise ValidationError(_('Only draft sessions can be scheduled.'))
+            if not rec.objective_ids:
+                raise ValidationError(
+                    _('Please select at least one objective before scheduling.')
+                )
+            rec._populate_result_lines()
+            rec.status = 'scheduled'
+
+    def action_complete(self):
+        """Scheduled → Completed: teacher marks lesson done."""
+        for rec in self:
+            if rec.status != 'scheduled':
+                raise ValidationError(
+                    _('Only scheduled sessions can be marked as completed.')
+                )
+            rec.status = 'completed'
+
+    def action_submit_review(self):
+        """Completed → Reviewed: validate all objectives have trial data, then transition."""
+        self.ensure_one()
+        if self.status != 'completed':
+            raise ValidationError(_('Session must be completed before submitting review.'))
+
+        unevaluated = self.result_line_ids.filtered(lambda r: r.total_trials == 0)
+        if unevaluated:
+            obj_details = '\n'.join(
+                f"• [{r.objective_id.objective_code}] {r.objective_id.name}"
+                for r in unevaluated.sorted('sequence')
+            )
+            raise UserError(
+                _('Not all objectives have been evaluated. Please enter trial data for the following objectives:\n\n%s\n\n'
+                  'Enter Correct Trials and Total Trials for each objective in the Objectives table, then try again.') % obj_details
+            )
+
+        # Set session done FIRST so that objective computed fields
+        # (_compute_accuracy, _compute_consecutive) read the fresh 'done' session data
+        self.status = 'done'
+        # Now sync objective progress and trigger mastery check with correct data
+        self._update_objective_progress()
+
+    def action_reopen_review(self):
+        """Reviewed → Completed: allow supervisor/admin to correct evaluation data."""
+        self.ensure_one()
+        is_supervisor = self.env.user.has_group('educare_security.group_supervisor')
+        is_admin = self.env.user.has_group('educare_security.group_admin')
+        if not (is_supervisor or is_admin):
+            raise ValidationError(
+                _('Only Supervisor or Admin can reopen a reviewed session for correction.')
+            )
+        if self.status != 'done':
+            raise ValidationError(_('Only reviewed sessions can be reopened.'))
+        self.status = 'completed'
+
+    def action_reset_to_draft(self):
+        """Scheduled → Draft: allow re-editing before the session starts."""
+        for rec in self:
+            if rec.status != 'scheduled':
+                raise ValidationError(
+                    _('Only scheduled sessions can be reset to draft.')
+                )
+            rec.status = 'draft'
+
+    # ── Post-Review Helpers ───────────────────────────────────────
+
+    def _update_objective_progress(self):
+        """Trigger status-sync on related IEP objectives after review.
+        Call this AFTER setting session status to 'done' so computed fields
+        (_compute_accuracy, _compute_consecutive) read the fresh session data.
+        """
+        objectives = self.mapped('result_line_ids.objective_id')
+        if objectives:
+            objectives._auto_sync_status_from_rules()

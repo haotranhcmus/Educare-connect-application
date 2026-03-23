@@ -7,30 +7,31 @@
             <form string="Short-term Objective">
                 <header>
                     <field name="can_delete" invisible="1" />
-                    <button name="action_delete_objective" string="Xóa Objective" type="object"
+                    <field name="plan_status" invisible="1" />
+                    <button name="action_delete_objective" string="Delete Objective" type="object"
                         class="btn-danger"
-                        confirm="Bạn chắc chắn muốn xóa mục tiêu ngắn hạn này? Hành động này không thể hoàn tác."
+                        confirm="Are you sure you want to delete this short-term objective? This action cannot be undone."
                         invisible="not can_delete"
                         groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
                     <button name="action_start" string="Start" type="object"
                         class="btn-primary"
-                        confirm="Xác nhận chuyển trạng thái objective sang In Progress?"
-                        invisible="status != 'not_started'" />
+                        confirm="Confirm transitioning objective status to In Progress?"
+                        invisible="status != 'not_started' or plan_status != 'active'" />
                     <button name="action_put_on_hold" string="Pause" type="object"
                         class="btn-warning"
-                        confirm="Xác nhận chuyển trạng thái objective sang Paused?"
-                        invisible="status != 'in_progress'" />
+                        confirm="Confirm transitioning objective status to Paused?"
+                        invisible="status != 'in_progress' or plan_status != 'active'" />
                     <button name="action_resume" string="Resume" type="object"
                         class="btn-secondary"
-                        confirm="Xác nhận chuyển trạng thái objective sang In Progress?"
-                        invisible="status != 'on_hold'" />
+                        confirm="Confirm transitioning objective status to In Progress?"
+                        invisible="status != 'on_hold' or plan_status != 'active'" />
                     <button name="action_mark_mastered" string="Mastered" type="object"
                         class="btn-success"
-                        confirm="Xác nhận đánh dấu objective là Mastered?"
-                        invisible="status not in ('in_progress', 'on_hold')" />
+                        confirm="Confirm marking objective as Mastered?"
+                        invisible="status not in ('in_progress', 'on_hold') or plan_status != 'active'" />
                     <button name="action_open_discontinue_wizard" string="Discontinue" type="object"
                         class="btn-danger"
-                        invisible="status in ('mastered', 'discontinued')" />
+                        invisible="status in ('mastered', 'discontinued') or plan_status != 'active'" />
                     <field name="status" widget="statusbar"
                         statusbar_visible="not_started,in_progress,on_hold,mastered,discontinued"
                         clickable="0" />
@@ -47,9 +48,9 @@
                     <div class="oe_title">
                         <label for="name" />
                         <h1>
-                            <field name="name" />
+                            <field name="name" readonly="plan_status != 'draft'" />
                         </h1>
-                        <h3>
+                        <h3 invisible="not objective_code or objective_code == '/'">
                             <field name="objective_code" />
                         </h3>
                     </div>
@@ -59,18 +60,26 @@
                         <page string="Objective" name="objective_info">
                             <group>
                                 <group string="Core Information">
-                                    <field name="goal_id" />
+                                    <field name="goal_id" readonly="1" />
                                     <field name="student_id" readonly="1" />
-                                    <field name="sequence" />
+                                    <field name="sequence" readonly="plan_status != 'draft'" />
                                     <field name="start_date" readonly="1" />
                                     <field name="target_date" readonly="1" />
                                     <field name="mastery_date"
                                         invisible="status != 'mastered'" />
                                 </group>
                                 <group string="Method &amp; Workflow">
-                                    <field name="prompt_level_id" />
-                                    <field name="probe_method_id" />
-                                    <field name="weight" />
+                                    <field name="prompt_level_id"
+                                        readonly="plan_status != 'draft'"
+                                        options="{'no_create': True}"
+                                        placeholder="E.g.: Verbal Prompt, Physical Prompt..."
+                                        help="Maximum prompt level used during ABA intervention session. Select from low (Gesture) to high (Full Physical)." />
+                                    <field name="probe_method_id"
+                                        readonly="plan_status != 'draft'"
+                                        options="{'no_create': True}"
+                                        placeholder="E.g.: DTT, Natural Environment..."
+                                        help="Method for measuring child responses: DTT (discrete trial training) or NE (natural environment)." />
+                                    <field name="weight" readonly="plan_status != 'draft'" />
                                     <field name="status" readonly="1" />
                                     <field name="is_overdue" readonly="1" />
                                     <field name="trend" widget="badge"
@@ -81,17 +90,19 @@
                             </group>
                             <group>
                                 <field name="description"
-                                    placeholder="Mô tả chi tiết mục tiêu ngắn hạn cần đạt..."
+                                    placeholder="Detailed description of the short-term objective to achieve..."
+                                    readonly="plan_status != 'draft'"
                                     colspan="2" />
                             </group>
                             <group>
                                 <field name="measurement_method"
-                                    placeholder="VD: Số câu trả lời đúng / tổng số lần thử"
+                                    placeholder="E.g.: Number of correct responses / total trials"
+                                    readonly="plan_status != 'draft'"
                                     colspan="2" />
                             </group>
                             <group>
                                 <field name="discontinued_reason"
-                                    placeholder="Lý do ngừng hẳn objective..."
+                                    placeholder="Reason for permanently discontinuing objective..."
                                     required="status == 'discontinued'"
                                     colspan="2" />
                             </group>
@@ -101,12 +112,15 @@
                         <page string="Criteria" name="criteria">
                             <group>
                                 <group string="Accuracy Targets">
-                                    <field name="baseline_accuracy_pct" />
-                                    <field name="target_accuracy_pct" />
+                                    <field name="baseline_accuracy_pct"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="target_accuracy_pct"
+                                        readonly="plan_status != 'draft'" />
                                 </group>
                                 <group string="Session Rules">
-                                    <field name="target_trials" />
-                                    <field name="consecutive_sessions_required" />
+                                    <field name="target_trials" readonly="plan_status != 'draft'" />
+                                    <field name="consecutive_sessions_required"
+                                        readonly="plan_status != 'draft'" />
                                     <field name="consecutive_sessions_achieved"
                                         readonly="1" />
                                 </group>
@@ -135,7 +149,7 @@
                             </group>
                             <group>
                                 <field name="notes"
-                                    placeholder="VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm"
+                                    placeholder="E.g.: Student performs better in the morning, needs further monitoring"
                                     colspan="2" />
                             </group>
                             <!-- Placeholder: add session_result_ids inline tree when session

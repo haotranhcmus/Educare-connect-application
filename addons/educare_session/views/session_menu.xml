@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_session_root"
+        name="Sessions"
+        parent="educare_base.menu_educare_root"
+        sequence="30"
+        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
+
+
+    <menuitem id="menu_session_logs"
+        name="Session Logs"
+        parent="menu_session_root"
+        action="action_session_log"
+        sequence="10" />
+
+    <menuitem id="menu_session_results"
+        name="Session Results"
+        parent="menu_session_root"
+        action="action_session_result"
+        sequence="20" />
+</odoo>

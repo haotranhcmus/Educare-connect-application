@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_goal_discontinue_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.goal.discontinue.wizard.form</field>
+        <field name="model">educare.iep.goal.discontinue.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Discontinue Goal" create="false" edit="false">
+                <group>
+                    <group>
+                        <field name="goal_id" readonly="1" />
+                    </group>
+                </group>
+                <group>
+                    <group string="Discontinue Details">
+                        <field name="reason" />
+                        <field name="notes"
+                            placeholder="Additional notes about the discontinue reason (optional)..." />
+                    </group>
+                </group>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                    <button name="action_confirm_discontinue"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_educare_iep_goal_discontinue_wizard" model="ir.actions.act_window">
+        <field name="name">Discontinue Goal</field>
+        <field name="res_model">educare.iep.goal.discontinue.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_educare_iep_goal_discontinue_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>
