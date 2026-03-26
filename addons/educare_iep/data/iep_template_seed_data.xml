@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Mau STO: Giao tiep - yeu cau 1 tu -->
+        <record id="tpl_obj_comm_request_1w" model="educare.iep.objective.template">
+            <field name="template_domain_ids"
+                eval="[(6, 0, [ref('educare_base.domain_communication')])]" />
+            <field name="sequence">10</field>
+            <field name="name">Yeu cau do vat yeu thich bang 1 tu</field>
+            <field name="description">Tre noi 1 tu de yeu cau do vat/hoat dong mong muon trong tinh huong
+                co dong luc.</field>
+            <field name="smart_specific">Su dung 1 tu chuc nang de yeu cau.</field>
+            <field name="smart_measurable">Dat >= 80% trong 3 buoi lien tiep.</field>
+            <field name="smart_analysis">Phu hop muc hien tai, la nen tang cho giao tiep xa hoi.</field>
+            <field name="smart_timebound">8 weeks</field>
+            <field name="baseline_description">Hien tai chi dung cu chi hoac keo tay nguoi lon.</field>
+            <field name="default_baseline_accuracy_pct">15</field>
+            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_consecutive_sessions">3</field>
+            <field name="age_min_months">18</field>
+            <field name="age_max_months">48</field>
+            <field name="difficulty_level">1</field>
+        </record>
+
+        <!-- Mau STO: Giao tiep - yeu cau 2 tu -->
+        <record id="tpl_obj_comm_request_2w" model="educare.iep.objective.template">
+            <field name="template_domain_ids"
+                eval="[(6, 0, [ref('educare_base.domain_communication')])]" />
+            <field name="sequence">20</field>
+            <field name="name">Ket hop 2 tu de yeu cau</field>
+            <field name="description">Tre su dung cum tu chuc nang 2 tu (vi du: "muon banh", "mo hop").</field>
+            <field name="smart_specific">Dung cum 2 tu trong boi canh NET va DTT.</field>
+            <field name="smart_measurable">Dat >= 70% trong 3 buoi lien tiep.</field>
+            <field name="smart_analysis">Tang dan do dai cau sau khi on dinh muc 1 tu.</field>
+            <field name="smart_timebound">12 weeks</field>
+            <field name="baseline_description">Chua co ket hop 2 tu tu phat.</field>
+            <field name="default_baseline_accuracy_pct">0</field>
+            <field name="default_target_accuracy_pct">70</field>
+            <field name="default_consecutive_sessions">3</field>
+            <field name="age_min_months">24</field>
+            <field name="age_max_months">60</field>
+            <field name="difficulty_level">2</field>
+            <field name="prerequisite_objective_ids"
+                eval="[(6, 0, [ref('tpl_obj_comm_request_1w')])]" />
+        </record>
+
+        <!-- Mau STO: Hanh vi - ngoi hoc -->
+        <record id="tpl_obj_behavior_sit" model="educare.iep.objective.template">
+            <field name="template_domain_ids"
+                eval="[(6, 0, [ref('educare_base.domain_behavior')])]" />
+            <field name="sequence">10</field>
+            <field name="name">Ngoi yen 5 phut lien tuc</field>
+            <field name="description">Tre duy tri tu the ngoi, khong roi khoi ghe trong buoi hoc
+                co cau truc.</field>
+            <field name="smart_specific">Duy tri vi tri ngoi toi thieu 5 phut.</field>
+            <field name="smart_measurable">Dat 4/5 buoi moi tuan, duy tri trong 2 tuan.</field>
+            <field name="smart_analysis">Tang kha nang tham gia nhiem vu va giam hanh vi tron tranh.</field>
+            <field name="smart_timebound">6 weeks</field>
+            <field name="baseline_description">Hien tai chi ngoi duoc 1-2 phut truoc khi roi ghe.</field>
+            <field name="default_baseline_accuracy_pct">20</field>
+            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_consecutive_sessions">4</field>
+            <field name="age_min_months">24</field>
+            <field name="age_max_months">72</field>
+            <field name="difficulty_level">2</field>
+        </record>
+
+        <!-- Mau STO: Nhan thuc - phan loai -->
+        <record id="tpl_obj_cognitive_sort_3groups" model="educare.iep.objective.template">
+            <field name="template_domain_ids"
+                eval="[(6, 0, [ref('educare_base.domain_cognitive')])]" />
+            <field name="sequence">10</field>
+            <field name="name">Phan loai do vat vao 3 nhom</field>
+            <field name="description">Tre phan loai the vao cac nhom: thuc an, do choi, quan ao.</field>
+            <field name="smart_specific">Phan loai dung vao 3 nhom voi bo 10 vat pham ngau nhien.</field>
+            <field name="smart_measurable">Dat >= 80% trong 3 buoi lien tiep.</field>
+            <field name="smart_analysis">Nen tang cho ky nang khai niem va ngon ngu hoc tap.</field>
+            <field name="smart_timebound">10 weeks</field>
+            <field name="baseline_description">Hien tai can ho tro the chat voi phan lon vat pham.</field>
+            <field name="default_baseline_accuracy_pct">30</field>
+            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_consecutive_sessions">3</field>
+            <field name="age_min_months">30</field>
+            <field name="age_max_months">72</field>
+            <field name="difficulty_level">3</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Graph view: current accuracy by objective name -->
+    <record id="view_iep_objective_graph" model="ir.ui.view">
+        <field name="name">educare.iep.objective.graph</field>
+        <field name="model">educare.iep.objective</field>
+        <field name="arch" type="xml">
+            <graph string="Objective Progress" type="bar">
+                <field name="name" type="row" />
+                <field name="current_accuracy_pct" type="measure" />
+                <field name="target_accuracy_pct" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <!-- Graph view: accuracy grouped by student -->
+    <record id="view_iep_objective_graph_student" model="ir.ui.view">
+        <field name="name">educare.iep.objective.graph.student</field>
+        <field name="model">educare.iep.objective</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <graph string="Accuracy by Student" type="bar" stacked="1">
+                <field name="student_id" type="row" />
+                <field name="current_accuracy_pct" type="measure" />
+                <field name="target_accuracy_pct" type="measure" />
+                <field name="total_sessions_worked" type="measure" />
+            </graph>
+        </field>
+    </record>
+</odoo>

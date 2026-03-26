@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_log_form" model="ir.ui.view">
+        <field name="name">educare.session.log.form</field>
+        <field name="model">educare.session.log</field>
+        <field name="arch" type="xml">
+            <form string="Session Log">
+                <header>
+                    <button name="action_schedule" string="Schedule"
+                        type="object" class="btn-primary"
+                        invisible="status != 'draft'" />
+                    <button name="action_reset_to_draft" string="Reset to Draft"
+                        type="object"
+                        invisible="status != 'scheduled'" />
+                    <button name="action_complete" string="Complete Session"
+                        type="object" class="btn-primary"
+                        invisible="status != 'scheduled'" />
+                    <button name="action_submit_review" string="Submit Review"
+                        type="object" class="btn-primary"
+                        invisible="status != 'completed'" />
+                    <button name="action_reopen_review" string="Adjust Review"
+                        type="object"
+                        groups="educare_security.group_supervisor,educare_security.group_admin"
+                        invisible="status != 'done'" />
+                    <field name="status" widget="statusbar"
+                        statusbar_visible="draft,scheduled,completed,done" />
+                </header>
+                <sheet>
+                    <!-- Hide code when still placeholder, only show after save -->
+                    <div class="oe_title" invisible="name == '/'">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Session Info">
+                            <field name="student_id"
+                                readonly="status != 'draft'"
+                                domain="[('iep_plan_ids.status', '=', 'active')]" />
+                            <field name="teacher_id"
+                                readonly="status != 'draft'" />
+                            <field name="center_id" />
+                            <field name="session_purpose"
+                                readonly="status != 'draft'" />
+                            <field name="session_type"
+                                readonly="status not in ('draft', 'scheduled')" />
+                        </group>
+                        <group string="Schedule">
+                            <field name="session_date"
+                                readonly="status not in ('draft', 'scheduled')" />
+                            <field name="start_time" widget="float_time"
+                                readonly="status not in ('draft', 'scheduled')" />
+                            <field name="end_time" widget="float_time"
+                                readonly="status not in ('draft', 'scheduled')" />
+                            <field name="duration" widget="float_time" />
+                            <field name="location"
+                                readonly="status not in ('draft', 'scheduled')" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Objectives" name="objectives">
+                            <!-- Draft/Scheduled phase: select objectives from list -->
+                            <field name="objective_ids"
+                                invisible="status not in ('draft', 'scheduled') or session_purpose == 'parent_training'"
+                                readonly="status != 'draft'"
+                                domain="[('id', 'in', available_objective_ids)]"
+                                options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}">
+                                <tree create="0" delete="0">
+                                    <field name="objective_code" readonly="1" />
+                                    <field name="name" readonly="1" />
+                                    <field name="goal_id" readonly="1" />
+                                    <field name="status" readonly="1" widget="badge"
+                                        decoration-info="status == 'not_started'"
+                                        decoration-success="status == 'mastered'"
+                                        decoration-warning="status == 'on_hold'" />
+                                    <field name="target_accuracy_pct" readonly="1" />
+                                    <field name="current_accuracy_pct" readonly="1" />
+                                </tree>
+                            </field>
+                            <field name="available_objective_ids" invisible="1" />
+                            <!-- Completed/Done phase: view evaluation results -->
+                            <field name="result_line_ids"
+                                invisible="status in ('draft', 'scheduled')"
+                                readonly="status != 'completed'">
+                                <tree editable="bottom" create="false" delete="false">
+                                    <field name="sequence" column_invisible="1" />
+                                    <field name="objective_id" readonly="1" />
+                                    <field name="result_type" />
+                                    <field name="phase" />
+                                    <field name="correct_trials" />
+                                    <field name="total_trials" />
+                                    <field name="accuracy_pct" readonly="1" widget="progressbar" />
+                                    <field name="prompt_level_used" />
+                                    <field name="mastery_achieved" readonly="1"
+                                        widget="boolean_toggle" />
+                                </tree>
+                            </field>
+                        </page>
+                        <!-- Observations only visible after session is completed -->
+                        <page string="Observations" name="observations"
+                            invisible="status not in ('completed', 'done')">
+                            <group>
+                                <group>
+                                    <field name="attendance" />
+                                    <field name="mood" />
+                                    <field name="energy_level" />
+                                </group>
+                                <group>
+                                    <field name="engagement_level" />
+                                    <field name="overall_performance" />
+                                </group>
+                            </group>
+                            <field name="notes" placeholder="Session notes..." />
+                        </page>
+                        <page string="Summary" name="summary"
+                            invisible="status not in ('completed', 'done')">
+                            <group>
+                                <field name="result_count" />
+                                <field name="avg_accuracy" />
+                                <field name="all_reviewed" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

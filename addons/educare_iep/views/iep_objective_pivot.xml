@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_iep_objective_pivot" model="ir.ui.view">
+        <field name="name">educare.iep.objective.pivot</field>
+        <field name="model">educare.iep.objective</field>
+        <field name="arch" type="xml">
+            <pivot string="Objective Progress Analysis">
+                <field name="student_id" type="row" />
+                <field name="name" type="row" />
+                <field name="current_accuracy_pct" type="measure" />
+                <field name="baseline_accuracy_pct" type="measure" />
+                <field name="target_accuracy_pct" type="measure" />
+                <field name="total_sessions_worked" type="measure" />
+                <field name="consecutive_sessions_achieved" type="measure" />
+            </pivot>
+        </field>
+    </record>
+</odoo>

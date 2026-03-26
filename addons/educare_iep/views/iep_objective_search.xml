@@ -21,10 +21,16 @@
                 <filter name="filter_overdue" string="Overdue"
                     domain="[('is_overdue','=',True)]" />
                 <separator />
-                <filter name="filter_high_accuracy" string="Near Target (&gt;=70%)"
-                    domain="[('current_accuracy_pct','&gt;=',70)]" />
+                <filter name="filter_high_accuracy" string="Near Target (&gt;=80%)"
+                    domain="[('current_accuracy_pct','&gt;=',80)]" />
                 <filter name="filter_low_accuracy" string="Needs Support (&lt;50%)"
                     domain="[('current_accuracy_pct','&lt;',50)]" />
+                <filter name="filter_improving" string="Improving"
+                    domain="[('trend','=','improving')]" />
+                <filter name="filter_declining" string="Declining"
+                    domain="[('trend','=','declining')]" />
+                <filter name="filter_near_target" string="Near Target (&gt;=80%)"
+                    domain="[('current_accuracy_pct','&gt;=',80)]" />
 
                 <group expand="0" string="Group By">
                     <filter name="group_student" string="Student"

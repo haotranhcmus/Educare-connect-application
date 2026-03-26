@@ -37,7 +37,7 @@
                                 <field name="target_age_min" string="From (months)" />
                                 <field name="target_age_max" string="To (months)" />
                             </group>
-                            <!-- Cột phải để trống hoặc thêm field khác nếu cần -->
+                            <!-- Keep right column empty or add fields if needed -->
                             <group />
                         </group>
 
@@ -45,7 +45,7 @@
                             <page string="Activities" name="activities_tab">
                                 <field name="activity_line_ids">
 
-                                    <!-- INLINE TREE: hiển thị các cột quan trọng -->
+                                    <!-- INLINE TREE: show key columns -->
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="name" />
@@ -55,7 +55,7 @@
                                         <field name="reinforcement_type" />
                                     </tree>
 
-                                    <!-- FORM POPUP: hiển thị khi click vào dòng (để edit chi tiết) -->
+                                    <!-- FORM POPUP: opens on row click for detailed edits -->
                                     <form string="Activity Details">
                                         <sheet>
                                             <group>

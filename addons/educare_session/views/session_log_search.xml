@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_log_search" model="ir.ui.view">
+        <field name="name">educare.session.log.search</field>
+        <field name="model">educare.session.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Sessions">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="teacher_id" />
+                <field name="session_purpose" />
+                <filter name="my_sessions" string="My Sessions"
+                    domain="[('teacher_id', '=', uid)]" />
+                <filter name="intervention" string="Intervention"
+                    domain="[('session_purpose', '=', 'intervention')]" />
+                <filter name="maintenance_probe" string="Maintenance Probe"
+                    domain="[('session_purpose', '=', 'maintenance_probe')]" />
+                <filter name="generalization_probe" string="Generalization Probe"
+                    domain="[('session_purpose', '=', 'generalization_probe')]" />
+                <filter name="parent_training" string="Parent Training"
+                    domain="[('session_purpose', '=', 'parent_training')]" />
+                <filter name="active_sessions" string="Active Sessions"
+                    domain="[('status', 'in', ['scheduled', 'completed', 'done'])]"
+                    help="Hide draft sessions — used as default view in Calendar" />
+                <separator />
+                <filter name="draft" string="Draft"
+                    domain="[('status', '=', 'draft')]" />
+                <filter name="scheduled" string="Scheduled"
+                    domain="[('status', '=', 'scheduled')]" />
+                <filter name="completed" string="Completed"
+                    domain="[('status', '=', 'completed')]" />
+                <filter name="done" string="Reviewed"
+                    domain="[('status', '=', 'done')]" />
+                <separator />
+                <filter name="today" string="Today"
+                    domain="[('session_date', '=', context_today().strftime('%Y-%m-%d'))]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}" />
+                    <filter name="group_student" string="Student"
+                        context="{'group_by': 'student_id'}" />
+                    <filter name="group_teacher" string="Teacher"
+                        context="{'group_by': 'teacher_id'}" />
+                    <filter name="group_date" string="Date"
+                        context="{'group_by': 'session_date:week'}" />
+                    <filter name="group_location" string="Location"
+                        context="{'group_by': 'location'}" />
+                    <filter name="group_purpose" string="Session Purpose"
+                        context="{'group_by': 'session_purpose'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

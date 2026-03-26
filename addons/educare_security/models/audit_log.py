@@ -7,7 +7,7 @@ class EducareAuditLog(models.Model):
     _order = 'create_date desc'
     _rec_name = 'display_name'
 
-    # ── Thông tin Record được audit ───────────────────────────────────────────
+    # Audited record information
     model_name = fields.Char(
         string='Model', size=128,
         required=True, index=True, readonly=True,
@@ -26,7 +26,7 @@ class EducareAuditLog(models.Model):
         ('unlink', 'Delete'),
     ], string='Action', required=True, index=True, readonly=True)
 
-    # ── Thông tin User ────────────────────────────────────────────────────────
+    # User information
     user_id = fields.Many2one(
         'res.users',
         string='User',
@@ -36,7 +36,7 @@ class EducareAuditLog(models.Model):
         index=True,
     )
 
-    # ── Dữ liệu thay đổi ─────────────────────────────────────────────────────
+    # Changed data
     old_values = fields.Text(
         string='Old Values (JSON)',
         readonly=True,
@@ -46,7 +46,7 @@ class EducareAuditLog(models.Model):
         readonly=True,
     )
 
-    # ── Thông tin môi trường ──────────────────────────────────────────────────
+    # Environment metadata
     ip_address = fields.Char(
         string='IP Address', size=45,
         readonly=True,

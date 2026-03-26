@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_daily_report_form" model="ir.ui.view">
+        <field name="name">educare.daily.report.form</field>
+        <field name="model">educare.daily.report</field>
+        <field name="arch" type="xml">
+            <form string="Daily Report">
+                <header>
+                    <button name="action_mark_ready" type="object"
+                        string="Mark Ready" class="btn-primary"
+                        invisible="status != 'draft'" />
+                    <button name="action_send_to_parent" type="object"
+                        string="Send to Parent" class="btn-primary"
+                        invisible="status != 'ready'" />
+                    <button name="action_mark_read" type="object"
+                        string="Mark Read" class="btn-success"
+                        invisible="status != 'sent'" />
+                    <button name="action_reset_to_draft" type="object"
+                        string="Reset to Draft"
+                        invisible="status != 'ready'"
+                        confirm="Reset this report to draft?" />
+                    <field name="status" widget="statusbar"
+                        statusbar_visible="draft,ready,sent,read" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Report title..." />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id" />
+                            <field name="session_log_id" />
+                            <field name="report_date" />
+                            <field name="report_type" />
+                        </group>
+                        <group>
+                            <field name="teacher_id" />
+                            <field name="report_code" />
+                            <field name="overall_performance" widget="badge"
+                                decoration-success="overall_performance == 'excellent'"
+                                decoration-info="overall_performance == 'good'"
+                                decoration-warning="overall_performance == 'fair'"
+                                decoration-danger="overall_performance == 'poor'" />
+                            <field name="session_duration" widget="float_time" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <!-- Tab 1: Parent-facing content -->
+                        <page string="Parent Report Content" name="content">
+                            <group>
+                                <field name="activity_summary"
+                                    placeholder="Describe what the child did today..." />
+                                <field name="achievements"
+                                    placeholder="What went well..." />
+                                <field name="challenges_noted"
+                                    placeholder="What to keep working on..." />
+                                <field name="highlight_moment"
+                                    placeholder="A special moment..." />
+                                <field name="parent_action_guide"
+                                    placeholder="1-2 activities for home..." />
+                                <field name="next_session_preview"
+                                    placeholder="What's coming next..." />
+                                <field name="teacher_note"
+                                    placeholder="Personal message..." />
+                            </group>
+                        </page>
+                        <!-- Tab 2: Technical reference (staff only) -->
+                        <page string="Technical Summary" name="technical"
+                            groups="educare_security.group_teacher">
+                            <group>
+                                <field name="objectives_worked" />
+                                <field name="accuracy_summary" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

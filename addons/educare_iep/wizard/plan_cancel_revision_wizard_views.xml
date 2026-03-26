@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_plan_cancel_revision_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.plan.cancel.revision.wizard.form</field>
+        <field name="model">educare.iep.plan.cancel.revision.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cancel Revision">
+                <div class="alert alert-warning" role="alert">
+                    <strong>Warning:</strong> This will cancel the current revision, restore all
+                    goals and objectives to their original state, and reactivate the previous plan
+                    version. Any changes made to goals/objectives in this revision draft will be
+                    discarded. </div>
+                <group>
+                    <group>
+                        <field name="plan_id" readonly="1" />
+                        <field name="original_plan_id" readonly="1" />
+                    </group>
+                </group>
+                <group>
+                    <group string="Cancel Details">
+                        <field name="cancel_reason"
+                            placeholder="Explain why this revision is being cancelled..."
+                            required="1" />
+                    </group>
+                </group>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                    <button name="action_confirm_cancel"
+                        string="Confirm Cancel Revision"
+                        type="object"
+                        class="btn-danger"
+                        confirm="Are you sure? All changes made in this revision will be lost." />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_educare_iep_plan_cancel_revision_wizard" model="ir.actions.act_window">
+        <field name="name">Cancel Revision</field>
+        <field name="res_model">educare.iep.plan.cancel.revision.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

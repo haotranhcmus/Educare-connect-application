@@ -14,7 +14,7 @@
                                 <field name="icon" />
                             </group>
                             <group string="Details">
-                                <field name="color" widget="color_picker" />
+                                <field name="color" widget="color" />
                                 <field name="sequence" />
                             </group>
                         </group>

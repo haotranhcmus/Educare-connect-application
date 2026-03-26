@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Objective Template: Tree                                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <record id="view_educare_iep_objective_template_tree" model="ir.ui.view">
+        <field name="name">educare.iep.objective.template.tree</field>
+        <field name="model">educare.iep.objective.template</field>
+        <field name="arch" type="xml">
+            <tree string="Objective Templates"
+                default_order="sequence, name">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="template_domain_ids" widget="many2many_tags" />
+                <field name="difficulty_level" />
+                <field name="age_min_months" string="Min Age" optional="show" />
+                <field name="age_max_months" string="Max Age" optional="show" />
+                <field name="default_target_accuracy_pct" string="Suggested Target (%)"
+                    optional="show" />
+                <field name="active" widget="boolean_toggle" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Objective Template: Form                                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <record id="view_educare_iep_objective_template_form" model="ir.ui.view">
+        <field name="name">educare.iep.objective.template.form</field>
+        <field name="model">educare.iep.objective.template</field>
+        <field name="arch" type="xml">
+            <form string="Objective Template">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name"
+                                placeholder="E.g.: Request a preferred item using 1 word" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Template Info">
+                            <field name="template_domain_ids" widget="many2many_tags" />
+                            <field name="sequence" />
+                            <field name="active" />
+                        </group>
+                        <group string="Suggested Defaults">
+                            <field name="default_baseline_accuracy_pct" />
+                            <field name="default_target_accuracy_pct" />
+                            <field name="default_consecutive_sessions" />
+                            <field name="default_data_collection_method" />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description &amp; Guidance" name="description">
+                            <group>
+                                <field name="description"
+                                    placeholder="Detailed description of the behavior/skill to achieve..." />
+                            </group>
+                            <group>
+                                <field name="baseline_description"
+                                    placeholder="Description of initial level before intervention..." />
+                            </group>
+                            <group>
+                                <field name="materials_needed"
+                                    placeholder="List of materials/supplies needed..." />
+                            </group>
+                            <group>
+                                <field name="implementation_steps"
+                                    placeholder="Step-by-step teaching instructions..." />
+                            </group>
+                        </page>
+                        <page string="SMART Components" name="smart">
+                            <group>
+                                <field name="smart_specific"
+                                    placeholder="Specific behavior to be achieved..." />
+                                <field name="smart_measurable"
+                                    placeholder="E.g.: Achieve 80% accuracy across 3 consecutive sessions" />
+                                <field name="smart_analysis"
+                                    placeholder="Clinical rationale for appropriateness..." />
+                                <field name="smart_timebound"
+                                    placeholder="E.g.: 8 weeks" />
+                            </group>
+                        </page>
+                        <page string="Enrichment" name="enrichment">
+                            <group>
+                                <group string="Age &amp; Difficulty">
+                                    <field name="age_min_months" />
+                                    <field name="age_max_months" />
+                                    <field name="difficulty_level" />
+                                </group>
+                                <group string="Clinical References">
+                                    <field name="relevant_diagnosis_ids" widget="many2many_tags" />
+                                    <field name="suggested_prompt_level" />
+                                    <field name="measurement_template_id" />
+                                </group>
+                            </group>
+                            <group string="Prerequisites">
+                                <field name="prerequisite_objective_ids" widget="many2many_tags"
+                                    nolabel="1"
+                                    options='{"no_create": true}' />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Objective Template: Search                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <record id="view_educare_iep_objective_template_search" model="ir.ui.view">
+        <field name="name">educare.iep.objective.template.search</field>
+        <field name="model">educare.iep.objective.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Objective Templates">
+                <field name="name" />
+                <field name="template_domain_ids" />
+                <separator />
+                <filter name="filter_active" string="Active"
+                    domain="[('active', '=', True)]" />
+                <separator />
+                <group expand="0" string="Group By">
+                    <filter name="group_difficulty" string="Difficulty"
+                        context="{'group_by': 'difficulty_level'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Objective Template: Action                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <record id="action_iep_objective_template" model="ir.actions.act_window">
+        <field name="name">Objective Templates</field>
+        <field name="res_model">educare.iep.objective.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_educare_iep_objective_template_search" />
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Objective Template
+            </p>
+            <p>Objective templates are reusable STO blueprints with SMART components, enrichment
+                metadata, and suggested defaults.</p>
+        </field>
+    </record>
+</odoo>

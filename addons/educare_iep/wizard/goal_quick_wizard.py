@@ -1,5 +1,4 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 
 
 class EducareIepGoalWizard(models.TransientModel):
@@ -40,112 +39,47 @@ class EducareIepGoalWizard(models.TransientModel):
         required=True,
     )
     target_date = fields.Date(string='Target Date', required=True)
+    priority = fields.Selection(
+        selection=[
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+            ('critical', 'Critical'),
+        ],
+        string='Priority',
+        default='medium',
+    )
     goal_description = fields.Text(
         string='Overall Goal Description',
-        required=True,
     )
-
-    # ── Objective lines (inline tree) ────────────────────────────
-    objective_line_ids = fields.One2many(
-        'educare.iep.goal.wizard.line',
-        'wizard_id',
-        string='Short-term Objectives',
-    )
-    objective_count = fields.Integer(
-        string='Objective Count',
-        compute='_compute_objective_count',
-    )
-
-    def _compute_objective_count(self):
-        for wizard in self:
-            wizard.objective_count = len(wizard.objective_line_ids)
 
     # ── Actions ──────────────────────────────────────────────────
     def action_create_goal(self):
-        """Validate and create goal + objectives in one shot."""
+        """Create goal record then open template selection dialog (step 2)."""
         self.ensure_one()
-        if not self.objective_line_ids:
-            raise ValidationError(
-                _('Vui lòng thêm ít nhất 1 mục tiêu ngắn hạn trước khi tạo Goal.')
-            )
-
-        goal = self.env['educare.iep.goal'].create({
+        goal = self.env['educare.iep.goal'].with_context(skip_auto_status_flow=True).create({
             'plan_id': self.plan_id.id,
             'name': self.name,
             'goal_domain_id': self.goal_domain_id.id,
             'target_date': self.target_date,
+            'priority': self.priority,
             'goal_description': self.goal_description,
         })
-
-        objective_model = self.env['educare.iep.objective']
-        for line in self.objective_line_ids.sorted('sequence'):
-            objective_model.create({
-                'goal_id': goal.id,
-                'sequence': line.sequence,
-                'name': line.name,
-                'description': (line.description or line.name or '').strip(),
-                'baseline_accuracy_pct': line.baseline_accuracy_pct,
-                'target_accuracy_pct': line.target_accuracy_pct,
-                'weight': line.weight,
-                'consecutive_sessions_required': line.consecutive_sessions_required,
-                'measurement_method': line.measurement_method,
-                'status': 'not_started',
-            })
-
+        # Pre-create wizard record so _reload_lines() fires on create() and
+        # the template list is visible immediately when the dialog opens.
+        wizard = self.env['educare.iep.goal.template.select.wizard'].create({
+            'goal_id': goal.id,
+            'plan_id': self.plan_id.id,
+        })
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Long-term Goal'),
-            'res_model': 'educare.iep.goal',
-            'res_id': goal.id,
+            'name': _('Select Objective Templates'),
+            'res_model': 'educare.iep.goal.template.select.wizard',
+            'res_id': wizard.id,
             'view_mode': 'form',
-            'target': 'current',
+            'view_id': self.env.ref(
+                'educare_iep.view_educare_iep_goal_template_select_wizard_form'
+            ).id,
+            'target': 'new',
         }
 
-
-class EducareIepGoalWizardLine(models.TransientModel):
-    _name = 'educare.iep.goal.wizard.line'
-    _description = 'IEP Goal Wizard Objective Line'
-    _order = 'sequence, id'
-
-    wizard_id = fields.Many2one(
-        'educare.iep.goal.wizard',
-        required=True,
-        ondelete='cascade',
-    )
-    sequence = fields.Integer(default=10)
-    name = fields.Char(string='Objective Name', required=True)
-    description = fields.Text(string='Description')
-    baseline_accuracy_pct = fields.Float(
-        string='Baseline Accuracy (%)',
-        default=0.0,
-    )
-    target_accuracy_pct = fields.Float(
-        string='Target Accuracy (%)',
-        default=80.0,
-    )
-    weight = fields.Float(string='Weight', default=1.0)
-    consecutive_sessions_required = fields.Integer(
-        string='Consecutive Sessions Required',
-        default=3,
-    )
-    measurement_method = fields.Text(
-        string='Measurement Method',
-        default='Quan sát trực tiếp trong buổi học.',
-        required=True,
-    )
-
-    @api.constrains('baseline_accuracy_pct', 'target_accuracy_pct')
-    def _check_accuracy_values(self):
-        for line in self:
-            if line.baseline_accuracy_pct < 0 or line.baseline_accuracy_pct > 100:
-                raise ValidationError(
-                    _('Baseline accuracy must be between 0 and 100 for objective "%s".') % line.name
-                )
-            if line.target_accuracy_pct < 0 or line.target_accuracy_pct > 100:
-                raise ValidationError(
-                    _('Target accuracy must be between 0 and 100 for objective "%s".') % line.name
-                )
-            if line.target_accuracy_pct <= line.baseline_accuracy_pct:
-                raise ValidationError(
-                    _('Target accuracy must be greater than baseline accuracy for objective "%s".') % line.name
-                )

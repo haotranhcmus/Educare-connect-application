@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_daily_report_admin,educare.daily.report admin,model_educare_daily_report,educare_security.group_admin,1,1,1,1
+access_daily_report_supervisor,educare.daily.report supervisor,model_educare_daily_report,educare_security.group_supervisor,1,1,0,0
+access_daily_report_teacher,educare.daily.report teacher,model_educare_daily_report,educare_security.group_teacher,1,1,1,0
+access_daily_report_parent,educare.daily.report parent,model_educare_daily_report,educare_security.group_parent,1,0,0,0
+access_generate_report_wizard_teacher,educare.generate.report.wizard teacher,model_educare_generate_report_wizard,educare_security.group_teacher,1,1,1,1
+access_generate_report_wizard_supervisor,educare.generate.report.wizard supervisor,model_educare_generate_report_wizard,educare_security.group_supervisor,1,1,1,1
+access_generate_report_wizard_admin,educare.generate.report.wizard admin,model_educare_generate_report_wizard,educare_security.group_admin,1,1,1,1

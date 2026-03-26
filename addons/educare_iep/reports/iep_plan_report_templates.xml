@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_educare_iep_plan_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="plan">
+                <t t-call="web.external_layout">
+                    <t t-set="lang" t-value="plan.env.context.get('lang', 'en_US')" />
+                    <t t-set="is_vi" t-value="lang and lang.startswith('vi')" />
+
+                    <style>
+                        /* Fix 1: Đồng nhất cỡ chữ trong tất cả các bảng */
+                        .page table td,
+                        .page table th {
+                        font-size: 0.85rem;
+                        vertical-align: middle;
+                        }
+
+                        /* Fix 2: Tránh cắt ngang hàng khi ngắt trang */
+                        .page table { page-break-inside: auto; }
+                        .page table tr { page-break-inside: avoid; page-break-after: auto; }
+                        .page table thead { display: table-header-group; }
+                        .page table tfoot { display: table-footer-group; }
+
+                        /* Tránh cắt các khối goal */
+                        .goal-block { page-break-inside: avoid; }
+
+                        /* Tránh cắt header section */
+                        .section-block { page-break-inside: avoid; }
+                    </style>
+
+                    <div class="page">
+                        <!-- Header with Center Info -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <t t-if="plan.student_center_id">
+                                    <h3 style="margin-bottom:2px;">
+                                        <t t-esc="plan.student_center_id.name" />
+                                    </h3>
+                                    <div class="small text-muted"
+                                        t-if="plan.student_center_id.address or plan.student_center_id.phone or plan.student_center_id.email">
+                                        <t t-if="plan.student_center_id.address">
+                                            <span>
+                                                <t t-esc="plan.student_center_id.address" />
+                                            </span>
+                                        </t>
+                                        <t t-if="plan.student_center_id.phone"> | <span>Tel: <t
+                                                    t-esc="plan.student_center_id.phone" /></span>
+                                        </t>
+                                        <t t-if="plan.student_center_id.email"> | <span>
+                                                <t t-esc="plan.student_center_id.email" />
+                                            </span>
+                                        </t>
+                                    </div>
+                                </t>
+                                <h2 class="mt-2">Individualized Education Program (IEP)</h2>
+                                <h4 t-field="plan.iep_period" />
+                                <span class="badge bg-secondary" style="font-size:1rem;">
+                                    <t
+                                        t-esc="dict(plan.fields_get(['status'])['status']['selection']).get(plan.status, plan.status)" />
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Student Details -->
+                        <t t-set="student" t-value="plan.student_id" />
+                        <h5 class="mb-2 border-bottom pb-1">Student Information</h5>
+                        <div class="row mb-3 section-block">
+                            <div class="col-6">
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <th class="bg-light" style="width:40%">Student Code</th>
+                                        <td>
+                                            <t t-esc="student.student_code or '—'" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Full Name</th>
+                                        <td>
+                                            <t t-esc="student.name" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Date of Birth</th>
+                                        <td>
+                                            <!-- Fix 3: Định dạng ngày theo tiếng Việt -->
+                                            <t t-if="student.date_of_birth">
+                                                <t t-if="is_vi">
+                                                    <t
+                                                        t-esc="student.date_of_birth.strftime('%d/%m/%Y')" />
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="student.date_of_birth" />
+                                                </t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Age</th>
+                                        <td>
+                                            <t t-if="student.age">
+                                                <t t-esc="student.age" /> years <t
+                                                    t-if="student.age_months"> (<t
+                                                        t-esc="student.age_months" /> months)</t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <th class="bg-light" style="width:40%">Gender</th>
+                                        <td>
+                                            <t
+                                                t-esc="dict(student.fields_get(['gender'])['gender']['selection']).get(student.gender, '—')" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Primary Diagnosis</th>
+                                        <td>
+                                            <t
+                                                t-esc="dict(student.fields_get(['primary_diagnosis'])['primary_diagnosis']['selection']).get(student.primary_diagnosis, '—')" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Center</th>
+                                        <td>
+                                            <t t-esc="student.center_id.name or '—'" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Enrollment Date</th>
+                                        <td>
+                                            <t t-if="student.enrollment_date">
+                                                <t t-if="is_vi">
+                                                    <t
+                                                        t-esc="student.enrollment_date.strftime('%d/%m/%Y')" />
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="student.enrollment_date" />
+                                                </t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Teacher / Supervisor / Plan Info -->
+                        <h5 class="mb-2 border-bottom pb-1">Plan Details</h5>
+                        <div class="row mb-3 section-block">
+                            <div class="col-6">
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <th class="bg-light" style="width:40%">Teacher</th>
+                                        <td>
+                                            <t t-esc="plan.assigned_teacher_id.name or '—'" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Supervisor</th>
+                                        <td>
+                                            <t t-esc="plan.supervisor_id.name or '—'" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Version</th>
+                                        <td>
+                                            <t t-esc="plan.version_number" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <th class="bg-light" style="width:40%">Start Date</th>
+                                        <td>
+                                            <t t-if="plan.start_date">
+                                                <t t-if="is_vi">
+                                                    <t t-esc="plan.start_date.strftime('%d/%m/%Y')" />
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="plan.start_date" />
+                                                </t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">End Date</th>
+                                        <td>
+                                            <t t-if="plan.end_date">
+                                                <t t-if="is_vi">
+                                                    <t t-esc="plan.end_date.strftime('%d/%m/%Y')" />
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="plan.end_date" />
+                                                </t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Review Frequency</th>
+                                        <td>
+                                            <t
+                                                t-esc="dict(plan.fields_get(['review_frequency'])['review_frequency']['selection']).get(plan.review_frequency, '—')" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Approval Info -->
+                        <div class="row mb-4 section-block" t-if="plan.status != 'draft'">
+                            <div class="col-12">
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <th class="bg-light" style="width:25%">Supervisor Approved</th>
+                                        <td>
+                                            <t t-esc="'Yes' if plan.supervisor_approved else 'No'" />
+                                        </td>
+                                        <th class="bg-light" style="width:25%">Approved Date</th>
+                                        <td>
+                                            <t t-if="plan.approved_date">
+                                                <t t-if="is_vi">
+                                                    <t
+                                                        t-esc="plan.approved_date.strftime('%d/%m/%Y')" />
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="plan.approved_date" />
+                                                </t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Parent Consent</th>
+                                        <td>
+                                            <t t-esc="'Yes' if plan.parent_consent else 'No'" />
+                                        </td>
+                                        <th class="bg-light">Consent Date</th>
+                                        <td>
+                                            <t t-if="plan.parent_consent_date">
+                                                <t t-if="is_vi">
+                                                    <t
+                                                        t-esc="plan.parent_consent_date.strftime('%d/%m/%Y')" />
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="plan.parent_consent_date" />
+                                                </t>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Latest Assessment -->
+                        <t t-set="latest_assessment"
+                            t-value="student.assessment_ids[:1] if student.assessment_ids else False" />
+                        <t t-if="latest_assessment">
+                            <h5 class="mb-2 border-bottom pb-1">Latest Assessment</h5>
+                            <div class="row mb-3 section-block">
+                                <div class="col-12">
+                                    <table class="table table-sm table-bordered">
+                                        <tr>
+                                            <th class="bg-light" style="width:20%">Date</th>
+                                            <td>
+                                                <t t-if="latest_assessment.assessment_date">
+                                                    <t t-if="is_vi">
+                                                        <t
+                                                            t-esc="latest_assessment.assessment_date.strftime('%d/%m/%Y')" />
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-esc="latest_assessment.assessment_date" />
+                                                    </t>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                            <th class="bg-light" style="width:20%">Type</th>
+                                            <td>
+                                                <t
+                                                    t-esc="dict(latest_assessment.fields_get(['assessment_type'])['assessment_type']['selection']).get(latest_assessment.assessment_type, '—')" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">VB-MAPP</th>
+                                            <td>
+                                                <t t-esc="latest_assessment.vbmapp_score" />
+                                            </td>
+                                            <th class="bg-light">ABLLS-R</th>
+                                            <td>
+                                                <t t-esc="latest_assessment.ablls_score" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">Overall Progress</th>
+                                            <td>
+                                                <t
+                                                    t-esc="dict(latest_assessment.fields_get(['overall_progress'])['overall_progress']['selection']).get(latest_assessment.overall_progress, '—')" />
+                                            </td>
+                                            <th class="bg-light">Classification</th>
+                                            <td>
+                                                <t
+                                                    t-esc="dict(latest_assessment.fields_get(['classification'])['classification']['selection']).get(latest_assessment.classification, '—')" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Assessment Detail Lines grouped by domain -->
+                            <!-- Fix 1: Bỏ font-size cứng 0.78rem, dùng font-size thống nhất từ CSS -->
+                            <t t-if="latest_assessment.line_ids">
+                                <h6 class="mb-2 mt-2">Strengths / Limitations Assessment by Domain</h6>
+                                <t t-set="all_lines" t-value="latest_assessment.line_ids" />
+                                <t t-foreach="all_lines.mapped('domain_id')" t-as="domain">
+                                    <!-- Fix 2: page-break-inside: avoid trên từng domain block -->
+                                    <div class="mb-3" style="page-break-inside: avoid;">
+                                        <div class="fw-bold small text-uppercase"
+                                            style="background:#f0f0f0;padding:3px 6px;border-left:3px solid #6f42c1;margin-bottom:4px;">
+                                            <t t-esc="domain.name" />
+                                        </div>
+                                        <!-- Fix 1: Bỏ style="font-size:0.78rem;" để dùng font-size
+                                        từ CSS chung -->
+                                        <table class="table table-sm table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width:24%">Criterion</th>
+                                                    <th style="width:38%">Strength</th>
+                                                    <th style="width:38%">Limitation / Challenge</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t
+                                                    t-foreach="all_lines.filtered(lambda l: l.domain_id.id == domain.id)"
+                                                    t-as="dl">
+                                                    <tr>
+                                                        <td>
+                                                            <t t-esc="dl.item_id.name" />
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="dl.strength_text or '—'" />
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="dl.limitation_text or '—'" />
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                            </t>
+                        </t>
+
+                        <!-- Goals -->
+                        <h5 class="mt-3 mb-2 border-bottom pb-1">Long-term Goals</h5>
+                        <t t-if="not plan.goal_ids">
+                            <p class="text-muted fst-italic">No goals have been added to this plan
+                                yet.</p>
+                        </t>
+                        <t t-foreach="plan.goal_ids" t-as="goal">
+                            <!-- Fix 2: page-break-inside: avoid trên từng goal block -->
+                            <div class="mb-4 p-2 border rounded goal-block"
+                                style="page-break-inside: avoid;">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong>
+                                        <t t-esc="goal.goal_code" /> — <t t-esc="goal.name" />
+                                    </strong>
+                                    <span class="badge bg-secondary ms-2">
+                                        <t
+                                            t-esc="dict(goal.fields_get(['status'])['status']['selection']).get(goal.status, goal.status)" />
+                                    </span>
+                                </div>
+                                <div class="row small mb-1">
+                                    <div class="col-4">Domain: <t
+                                            t-esc="goal.goal_domain_id.name or '—'" /></div>
+                                    <div class="col-4">Priority: <t t-esc="goal.priority or '—'" /></div>
+                                    <div class="col-4">Target Date: <t t-if="goal.target_date">
+                                            <t t-if="is_vi">
+                                                <t t-esc="goal.target_date.strftime('%d/%m/%Y')" />
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="goal.target_date" />
+                                            </t>
+                                        </t>
+                                    <t
+                                            t-else="">—</t></div>
+                                </div>
+                                <div class="row small mb-1" t-if="goal.goal_description">
+                                    <div class="col-12">Description: <t
+                                            t-esc="goal.goal_description" /></div>
+                                </div>
+                                <div class="row small mb-1">
+                                    <div class="col-6"> Baseline: <t
+                                            t-esc="goal.baseline_accuracy_pct" />% </div>
+                                    <div class="col-6"> Target: <t t-esc="goal.target_accuracy_pct" />
+                                        % </div>
+                                </div>
+
+                                <!-- Objectives -->
+                                <t t-if="goal.objective_ids">
+                                    <table class="table table-sm table-bordered mt-2">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Objective</th>
+                                                <th>Target Date</th>
+                                                <th>Baseline %</th>
+                                                <th>Target %</th>
+                                                <th>Current %</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="goal.objective_ids" t-as="obj">
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="obj.objective_code" />
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="obj.name" />
+                                                    </td>
+                                                    <td>
+                                                        <t t-if="obj.target_date">
+                                                            <t t-if="is_vi">
+                                                                <t
+                                                                    t-esc="obj.target_date.strftime('%d/%m/%Y')" />
+                                                            </t>
+                                                            <t t-else="">
+                                                                <t t-esc="obj.target_date" />
+                                                            </t>
+                                                        </t>
+                                                        <t t-else="">—</t>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="obj.baseline_accuracy_pct" />
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="obj.target_accuracy_pct" />
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="obj.current_accuracy_pct" />
+                                                    </td>
+                                                    <td>
+                                                        <t
+                                                            t-esc="dict(obj.fields_get(['status'])['status']['selection']).get(obj.status, obj.status)" />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <p class="small text-muted fst-italic ms-2">No short-term
+                                        objectives yet.</p>
+                                </t>
+                            </div>
+                        </t>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5" style="page-break-inside: avoid;">
+                            <div class="col-4 text-center">
+                                <div
+                                    style="border-top: 1px solid #000; margin-top: 40px; padding-top: 5px;">
+                                    Teacher Signature
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div
+                                    style="border-top: 1px solid #000; margin-top: 40px; padding-top: 5px;">
+                                    Supervisor Signature
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div
+                                    style="border-top: 1px solid #000; margin-top: 40px; padding-top: 5px;">
+                                    Parent / Guardian Signature
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

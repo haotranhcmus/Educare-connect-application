@@ -9,7 +9,9 @@
         'security/ir.model.access.csv',
         'security/record_rules.xml',
         'data/sequence_data.xml',
+        'data/assessment_item_data.xml',
         'views/assessment_views.xml',
+        'views/assessment_item_views.xml',
         'views/student_form.xml',
         'views/student_tree.xml',
         'views/student_search.xml',
@@ -20,6 +22,11 @@
     'demo': [
         'data/demo_students.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'educare_student/static/src/js/domain_color_badge.js',
+        ],
+    },
     'installable': True,
     'license': 'LGPL-3',
 }

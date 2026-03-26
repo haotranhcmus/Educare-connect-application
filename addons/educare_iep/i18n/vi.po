@@ -6,86 +6,82 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-16 08:17+0000\n"
-"PO-Revision-Date: 2026-03-16 08:17+0000\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2026-03-26 01:14+0000\n"
+"PO-Revision-Date: 2026-03-26 01:14+0000\n"
+"Last-Translator: Vietnamese Translation\n"
 "Language-Team: Vietnamese\n"
-"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
+"Language: vi\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+#: model:ir.actions.report,print_report_name:educare_iep.action_report_iep_plan
+msgid "'IEP Plan - %s' % (object.iep_period or '')"
+msgstr "'Kế hoạch IEP - %s' % (object.iep_period or '')"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_timebound:educare_iep.tpl_obj_cognitive_sort_3groups
+msgid "10 weeks"
+msgstr "10 tuần"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_timebound:educare_iep.tpl_obj_comm_request_2w
+msgid "12 weeks"
+msgstr "12 tuần"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_timebound:educare_iep.tpl_obj_behavior_sit
+msgid "6 weeks"
+msgstr "6 tuần"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_timebound:educare_iep.tpl_obj_comm_request_1w
+msgid "8 weeks"
+msgstr "8 tuần"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
 msgid ""
-"<i class=\"fa fa-exclamation-triangle me-1\"/>Thêm ít nhất 1 mục tiêu dài hạn\n"
-"                        (Goal) để chuyển sang bước tiếp theo."
+"<i class=\"fa fa-info-circle me-1\"/> Adjust baseline, target, weight, and\n"
+"                        consecutive sessions for each objective before importing."
 msgstr ""
-"<i class=\"fa fa-exclamation-triangle me-1\"/>Thêm ít nhất 1 mục tiêu dài hạn\n"
-"                        (Goal) để chuyển sang bước tiếp theo."
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
 msgid ""
-"<i class=\"fa fa-info-circle me-1\"/>\n"
-"                        Các trường nâng cao (prompt level, probe method, measurement chi tiết) có thể điền sau trong form Objective đầy đủ.\n"
-"                        Consecutive Sessions Required mặc định = 3 theo chuẩn ABA."
+"<i class=\"fa fa-info-circle me-1\"/> Advanced fields (prompt level, probe\n"
+"                        method, detailed measurement) can be filled later in the full Objective\n"
+"                        form. Consecutive Sessions Required defaults to 3 per ABA standard."
 msgstr ""
-"<i class=\"fa fa-info-circle me-1\"/>\n"
-"                        Các trường nâng cao (mức hỗ trợ, phương pháp probe, đo lường chi tiết) có thể điền sau trong form Mục tiêu ngắn hạn đầy đủ.\n"
-"                        Số buổi liên tiếp yêu cầu mặc định = 3 theo chuẩn ABA."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
-msgid ""
-"<i class=\"fa fa-info-circle me-1\"/> Thêm ít nhất 1 mục tiêu ngắn\n"
-"                                hạn trước khi tạo Goal. Các chi tiết nâng cao có thể điền sau trong\n"
-"                                form Objective."
-msgstr ""
-"<i class=\"fa fa-info-circle me-1\"/> Thêm ít nhất 1 mục tiêu ngắn\n"
-"                                hạn trước khi tạo Mục tiêu dài hạn. Các chi tiết nâng cao có thể điền sau trong\n"
-"                                form Mục tiêu ngắn hạn."
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid ""
-"<i class=\"fa fa-info-circle me-1\"/>Quy trình: Draft → Ready for Review →\n"
+"<i class=\"fa fa-info-circle me-1\"/>Save the plan first, then use the <strong>Add\n"
+"                        Goal</strong> button to add goals before submitting for review."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
+msgid ""
+"<i class=\"fa fa-info-circle me-1\"/>Select STO templates to create new\n"
+"                    objectives for the selected goal. Template data will be copied. The list is\n"
+"                    filtered by the goal's domain."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid ""
+"<i class=\"fa fa-info-circle me-1\"/>Workflow: Draft → Ready for Review →\n"
 "                        Supervisor Approved → Active → Closed."
 msgstr ""
-"<i class=\"fa fa-info-circle me-1\"/>Quy trình: Nháp → Chờ duyệt →\n"
-"                        Giám sát viên đã duyệt → Đang thực hiện → Đã đóng."
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
-msgid ""
-"<span class=\"fw-bold\">Approval Checklist</span>\n"
-"                        <span class=\"badge text-bg-success\" invisible=\"not goal_ids\">\n"
-"                            <i class=\"fa fa-check me-1\"/>Goal added </span>\n"
-"                        <span class=\"badge text-bg-warning\" invisible=\"goal_ids\">\n"
-"                            <i class=\"fa fa-exclamation-triangle me-1\"/>Goal added </span>\n"
-"                        <span class=\"badge text-bg-success\" invisible=\"not supervisor_approved\">\n"
-"                            <i class=\"fa fa-check me-1\"/>Supervisor approved </span>\n"
-"                        <span class=\"badge text-bg-secondary\" invisible=\"supervisor_approved\">\n"
-"                            <i class=\"fa fa-hourglass-half me-1\"/>Supervisor approved </span>\n"
-"                        <span class=\"badge text-bg-success\" invisible=\"status == 'draft' or not parent_consent\">\n"
-"                            <i class=\"fa fa-check me-1\"/>Parent consent received </span>\n"
-"                        <span class=\"badge text-bg-secondary\" invisible=\"status == 'draft' or parent_consent\">\n"
-"                            <i class=\"fa fa-hourglass-half me-1\"/>Parent consent received </span>"
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "<span class=\"text-muted mx-1\">|</span>"
 msgstr ""
-"<span class=\"fw-bold\">Danh sách kiểm tra phê duyệt</span>\n"
-"                        <span class=\"badge text-bg-success\" invisible=\"not goal_ids\">\n"
-"                            <i class=\"fa fa-check me-1\"/>Đã thêm mục tiêu dài hạn </span>\n"
-"                        <span class=\"badge text-bg-warning\" invisible=\"goal_ids\">\n"
-"                            <i class=\"fa fa-exclamation-triangle me-1\"/>Đã thêm mục tiêu dài hạn </span>\n"
-"                        <span class=\"badge text-bg-success\" invisible=\"not supervisor_approved\">\n"
-"                            <i class=\"fa fa-check me-1\"/>Giám sát viên đã duyệt </span>\n"
-"                        <span class=\"badge text-bg-secondary\" invisible=\"supervisor_approved\">\n"
-"                            <i class=\"fa fa-hourglass-half me-1\"/>Giám sát viên đã duyệt </span>\n"
-"                        <span class=\"badge text-bg-success\" invisible=\"status == 'draft' or not parent_consent\">\n"
-"                            <i class=\"fa fa-check me-1\"/>Đã nhận đồng ý từ phụ huynh </span>\n"
-"                        <span class=\"badge text-bg-secondary\" invisible=\"status == 'draft' or parent_consent\">\n"
-"                            <i class=\"fa fa-hourglass-half me-1\"/>Đã nhận đồng ý từ phụ huynh </span>"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
@@ -93,42 +89,87 @@ msgid "<strong>Alert:</strong>"
 msgstr "<strong>Cảnh báo:</strong>"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "<strong>Domain:</strong>"
+msgstr "<strong>Lĩnh vực:</strong>"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
+msgid "<strong>Goal:</strong>"
+msgstr "<strong>Mục tiêu:</strong>"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
+msgid "<strong>Note:</strong>"
+msgstr "<strong>Ghi chú:</strong>"
+
+#. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
 msgid ""
 "<strong>Slow Progress</strong> Objective(s) are not progressing as expected.\n"
 "                    Please review the objectives and update the intervention strategies."
 msgstr ""
-"<strong>Tiến độ chậm</strong> Một hoặc nhiều mục tiêu ngắn hạn không đạt tiến độ như kỳ vọng.\n"
-"                    Vui lòng xem xét lại các mục tiêu và cập nhật chiến lược can thiệp."
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
+msgid "<strong>Warning:</strong> Closing this plan will affect"
+msgstr "<strong>Cảnh báo:</strong> Đóng kế hoạch này sẽ ảnh hưởng đến"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
+msgid ""
+"<strong>Warning:</strong> This is the last active goal in this plan.\n"
+"                    Discontinuing it will leave the plan with no active goals."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
+msgid ""
+"<strong>Warning:</strong> This is the last active objective in this goal.\n"
+"                    Discontinuing it will leave the parent goal with no active objectives."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
+msgid ""
+"<strong>Warning:</strong> This will cancel the current revision, restore all\n"
+"                    goals and objectives to their original state, and reactivate the previous plan\n"
+"                    version. Any changes made to goals/objectives in this revision draft will be\n"
+"                    discarded."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "A plan can move to Active only after parent consent."
-msgstr "Kế hoạch chỉ có thể chuyển sang Đang thực hiện sau khi có đồng ý của phụ huynh."
+msgstr "Kế hoạch chỉ có thể chuyển sang Đang hoạt động sau khi có sự đồng ý của phụ huynh."
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "A plan can move to Active only after supervisor approval."
-msgstr "Kế hoạch chỉ có thể chuyển sang Đang thực hiện sau khi giám sát viên phê duyệt."
+msgstr "Kế hoạch chỉ có thể chuyển sang Đang hoạt động sau khi được giám sát viên phê duyệt."
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
-msgid "A plan can move to Active only when it has at least one long-term goal."
-msgstr "Kế hoạch chỉ có thể chuyển sang Đang thực hiện khi có ít nhất một mục tiêu dài hạn."
+msgid ""
+"A plan can move to Active only when it has at least one long-term goal."
+msgstr "Kế hoạch chỉ có thể chuyển sang Đang hoạt động khi có ít nhất một mục tiêu dài hạn."
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__smart_analysis
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__smart_analysis
 msgid "A/R - Achievable & Relevant"
 msgstr "A/R - Khả thi & Phù hợp"
 
 #. module: educare_iep
 #: model:educare.iep.framework,name:educare_iep.framework_ablls_r
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "ABLLS-R"
 msgstr "ABLLS-R"
 
@@ -141,48 +182,95 @@ msgstr "Độ chính xác"
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
 msgid "Accuracy Targets"
-msgstr "Chỉ tiêu độ chính xác"
+msgstr "Mục tiêu độ chính xác"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_objective_graph_student
+msgid "Accuracy by Student"
+msgstr "Độ chính xác theo học sinh"
 
 #. module: educare_iep
 #: model:educare.iep.measurement.template,name:educare_iep.measurement_template_accuracy_trials
 msgid "Accuracy by Trials"
-msgstr "Độ chính xác theo số lần thử"
+msgstr "Độ chính xác theo thử nghiệm"
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,criteria_template:educare_iep.measurement_template_accuracy_trials
+msgid ""
+"Accuracy rate = correct responses / total opportunities\n"
+"            (trials) per session."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_objective_kanban
+msgid "Accuracy:"
+msgstr "Độ chính xác:"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_measurable:educare_iep.tpl_obj_behavior_sit
+msgid "Achieve 4/5 sessions per week, maintained for 2 weeks."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_measurable:educare_iep.tpl_obj_comm_request_2w
+msgid "Achieve >= 70% across 3 consecutive sessions."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_measurable:educare_iep.tpl_obj_cognitive_sort_3groups
+#: model:educare.iep.objective.template,smart_measurable:educare_iep.tpl_obj_comm_request_1w
+msgid "Achieve >= 80% across 3 consecutive sessions."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 msgid "Achieved"
-msgstr "Đã đạt"
+msgstr "Đã đạt được"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__achieved_date
 msgid "Achieved Date"
-msgstr "Ngày đạt mục tiêu"
+msgstr "Ngày đạt được"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_goal.py:0
 #, python-format
 msgid "Achieved date is required when marking a goal as achieved!"
-msgstr "Ngày đạt mục tiêu là bắt buộc khi đánh dấu mục tiêu là đã đạt!"
+msgstr "Ngày đạt được là bắt buộc khi đánh dấu mục tiêu là đã hoàn thành!"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_needaction
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__message_needaction
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__message_needaction
 msgid "Action Needed"
-msgstr "Cần thực hiện"
+msgstr "Cần hành động"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__active
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__active
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__active
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__active
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__active
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__active
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__active
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__status__active
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__status__active
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
 msgid "Active"
-msgstr "Đang thực hiện"
+msgstr "Đang hoạt động"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__active_goal_count
+msgid "Active Goals"
+msgstr "Mục tiêu đang hoạt động"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__active_objective_count
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__active_objective_count
+msgid "Active Objectives"
+msgstr "Mục tiêu ngắn hạn đang hoạt động"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__activity_ids
@@ -194,7 +282,7 @@ msgstr "Hoạt động"
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__activity_exception_decoration
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "Kiểu hiển thị hoạt động ngoại lệ"
+msgstr "Trang trí ngoại lệ hoạt động"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__activity_state
@@ -212,7 +300,7 @@ msgstr "Biểu tượng loại hoạt động"
 #: model:ir.actions.act_window,name:educare_iep.action_educare_goal_quick_wizard
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Add Goal"
-msgstr "Thêm mục tiêu dài hạn"
+msgstr "Thêm mục tiêu"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
@@ -226,24 +314,24 @@ msgid "Add Objective"
 msgstr "Thêm mục tiêu ngắn hạn"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+msgid "Add Objectives"
+msgstr "Thêm các mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
+msgid "Add Short-term Objective"
+msgstr "Thêm mục tiêu ngắn hạn"
+
+#. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_iep_framework
 msgid "Add an assessment framework (VB-MAPP, ABLLS-R, ICF...)"
-msgstr "Thêm khung đánh giá (VB-MAPP, ABLLS-R, ICF...)"
-
-#. module: educare_iep
-#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_probe_method
-msgid "Add data collection probe methods"
-msgstr "Thêm phương pháp thu thập dữ liệu probe"
-
-#. module: educare_iep
-#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_prompt_level
-msgid "Add prompt support levels (Independent, Verbal, Gestural...)"
-msgstr "Thêm mức hỗ trợ (Độc lập, Lời nhắc, Cử chỉ...)"
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_iep_measurement_template
 msgid "Add reusable templates for measurement criteria and conditions."
-msgstr "Thêm mẫu đo lường có thể tái sử dụng cho tiêu chí và điều kiện đo."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__notes
@@ -251,25 +339,69 @@ msgid "Additional Notes"
 msgstr "Ghi chú bổ sung"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
+msgid "Additional notes about the closing reason (optional)..."
+msgstr "Ghi chú bổ sung về lý do đóng (tùy chọn)..."
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
+msgid "Additional notes about the discontinue reason (optional)..."
+msgstr "Ghi chú bổ sung về lý do ngừng (tùy chọn)..."
+
+#. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__closing_notes
 msgid "Additional notes or audit trail for why the plan was closed."
-msgstr "Ghi chú bổ sung hoặc lịch sử kiểm toán về lý do đóng kế hoạch."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Age"
+msgstr "Tuổi"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Age & Difficulty"
+msgstr "Tuổi & Độ khó"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__alert_triggered
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_objective_kanban
 msgid "Alert"
 msgstr "Cảnh báo"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__alert_message
 msgid "Alert Message"
-msgstr "Nội dung cảnh báo"
+msgstr "Thông báo cảnh báo"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid ""
+"All goals must have at least one objective before submitting. Goals missing "
+"objectives: %s"
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_educare_iep_plan
-msgid "An IEP plan contains approval workflow and groups long-term goals by period."
-msgstr "Kế hoạch IEP chứa quy trình phê duyệt và nhóm các mục tiêu dài hạn theo kỳ học."
+msgid ""
+"An IEP plan contains approval workflow and groups long-term goals by period."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_template__default_data_collection_method__anecdotal
+msgid "Anecdotal"
+msgstr "Ghi chép giai thoại"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_analysis:educare_iep.tpl_obj_comm_request_1w
+msgid ""
+"Appropriate for current level, foundational for social\n"
+"                communication."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
@@ -283,8 +415,40 @@ msgstr "Ghi chú phê duyệt"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__approved_date
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Approved Date"
 msgstr "Ngày phê duyệt"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+msgid ""
+"Are you sure you want to delete the selected short-term objective? This "
+"action cannot be undone."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid ""
+"Are you sure you want to delete this long-term goal? This action cannot be "
+"undone."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid ""
+"Are you sure you want to delete this short-term objective? This action "
+"cannot be undone."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Are you sure you want to reset this plan back to Draft status?"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
+msgid "Are you sure? All changes made in this revision will be lost."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_framework_form
@@ -294,14 +458,14 @@ msgstr "Khung đánh giá"
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_iep_framework
 msgid "Assessment Framework Reference"
-msgstr "Tham chiếu khung đánh giá"
+msgstr "Tài liệu tham chiếu khung đánh giá"
 
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_iep_framework
 #: model:ir.ui.menu,name:educare_iep.menu_iep_config_framework
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_framework_tree
 msgid "Assessment Frameworks"
-msgstr "Khung đánh giá"
+msgstr "Các khung đánh giá"
 
 #. module: educare_iep
 #: model:educare.iep.framework,description:educare_iep.framework_ablls_r
@@ -313,7 +477,7 @@ msgstr "Đánh giá Kỹ năng Ngôn ngữ và Học tập Cơ bản - Phiên b�
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__assigned_teacher_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__assigned_teacher_id
 msgid "Assigned Teacher"
-msgstr "Giáo viên phụ trách"
+msgstr "Giáo viên được phân công"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_attachment_count
@@ -323,40 +487,60 @@ msgid "Attachment Count"
 msgstr "Số tệp đính kèm"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Baseline %"
+msgstr "% Đường cơ sở"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__baseline_accuracy_pct
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
+msgid "Baseline (%)"
+msgstr "Đường cơ sở (%)"
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__baseline_accuracy_pct
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__baseline_accuracy_pct
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__baseline_accuracy_pct
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__baseline_accuracy_pct
 msgid "Baseline Accuracy (%)"
-msgstr "Độ chính xác ban đầu (%)"
+msgstr "Độ chính xác đường cơ sở (%)"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__baseline_description
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__baseline_description
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__baseline_description
 msgid "Baseline Description"
-msgstr "Mô tả mức độ ban đầu"
+msgstr "Mô tả đường cơ sở"
 
 #. module: educare_iep
 #. odoo-python
-#: code:addons/educare_iep/wizard/goal_quick_wizard.py:0
+#: code:addons/educare_iep/wizard/accuracy_mixin.py:0
 #, python-format
-msgid "Baseline accuracy must be between 0 and 100 for objective \"%s\"."
-msgstr "Độ chính xác ban đầu phải nằm trong khoảng 0 đến 100 cho mục tiêu \"%s\"."
+msgid "Baseline accuracy must be between 0 and 100%s."
+msgstr ""
 
 #. module: educare_iep
-#. odoo-python
-#: code:addons/educare_iep/wizard/objective_quick_wizard.py:0
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_goal_baseline_pct_range
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_baseline_accuracy_check
-#, python-format
 msgid "Baseline accuracy must be between 0 and 100."
-msgstr "Độ chính xác ban đầu phải nằm trong khoảng 0 đến 100."
+msgstr "Độ chính xác đường cơ sở phải nằm trong khoảng 0 và 100."
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_baseline_lt_target_check
 msgid "Baseline accuracy must be less than target accuracy."
-msgstr "Độ chính xác ban đầu phải nhỏ hơn độ chính xác mục tiêu."
+msgstr "Độ chính xác đường cơ sở phải nhỏ hơn độ chính xác mục tiêu."
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Baseline:"
+msgstr "Đường cơ sở:"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
+msgid "Basic Information"
+msgstr "Thông tin cơ bản"
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_discontinue_wizard__reason__behavior_barrier
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_discontinue_wizard__reason__behavior_barrier
 msgid "Behavior barrier"
 msgstr "Rào cản hành vi"
@@ -364,32 +548,22 @@ msgstr "Rào cản hành vi"
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__review_frequency__biweekly
 msgid "Biweekly"
-msgstr "2 tuần một lần"
+msgstr "Hai tuần một lần"
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,description:educare_iep.teaching_task_analysis
+msgid "Breaking a complex skill into smaller, sequential steps."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_revision_wizard_form
+msgid "Brief description of the revision reason and key changes..."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_educare_iep_goal
 msgid "Build SMART goals for students by development domain."
 msgstr "Xây dựng mục tiêu SMART cho học sinh theo lĩnh vực phát triển."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Bạn chắc chắn muốn xóa mục tiêu dài hạn này? Hành động này không thể hoàn tác."
-msgstr "Bạn chắc chắn muốn xóa mục tiêu dài hạn này? Hành động này không thể hoàn tác."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
-msgid "Bạn chắc chắn muốn xóa mục tiêu dài hạn đã chọn? Hành động này không thể hoàn tác."
-msgstr "Bạn chắc chắn muốn xóa mục tiêu dài hạn đã chọn? Hành động này không thể hoàn tác."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Bạn chắc chắn muốn xóa mục tiêu ngắn hạn này? Hành động này không thể hoàn tác."
-msgstr "Bạn chắc chắn muốn xóa mục tiêu ngắn hạn này? Hành động này không thể hoàn tác."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Bạn chắc chắn muốn xóa mục tiêu ngắn hạn đã chọn? Hành động này không thể hoàn tác."
-msgstr "Bạn chắc chắn muốn xóa mục tiêu ngắn hạn đã chọn? Hành động này không thể hoàn tác."
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__can_delete
@@ -398,29 +572,150 @@ msgid "Can Delete"
 msgstr "Có thể xóa"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_reject_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_revision_wizard_form
 msgid "Cancel"
 msgstr "Hủy"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
+msgid "Cancel Details"
+msgstr "Chi tiết hủy"
+
+#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_plan_cancel_revision_wizard
+msgid "Cancel IEP Plan Revision Wizard"
+msgstr "Trình hướng dẫn hủy sửa đổi kế hoạch IEP"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__cancel_reason
+msgid "Cancel Reason"
+msgstr "Lý do hủy"
+
+#. module: educare_iep
+#: model:ir.actions.act_window,name:educare_iep.action_educare_iep_plan_cancel_revision_wizard
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Cancel Revision"
+msgstr "Hủy sửa đổi"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Cannot cancel: a newer revision (v%s) already depends on this plan."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Cannot cancel: no goal snapshot available for rollback."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid ""
+"Cannot delete a goal that has already been started or activated. Use "
+"Discontinue or Close instead."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid "Cannot delete a goal when the plan is not in Draft state."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid ""
+"Cannot delete this goal because %d objective(s) already have tracking data. "
+"Close the goal instead."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid "Cannot discontinue a goal that is already Achieved or Discontinued."
+msgstr ""
+
+#. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
-msgid "Cannot discontinue an objective that is already Mastered or Discontinued."
-msgstr "Không thể ngừng một mục tiêu ngắn hạn đã ở trạng thái Thành thạo hoặc Đã ngừng."
+msgid ""
+"Cannot discontinue an objective that is already Mastered or Discontinued."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Center"
+msgstr "Trung tâm"
 
 #. module: educare_iep
 #: model:educare.iep.framework,description:educare_iep.framework_custom
 msgid "Center-defined custom framework"
-msgstr "Khung tự định nghĩa của trung tâm"
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,description:educare_iep.tpl_obj_behavior_sit
+msgid ""
+"Child maintains seated position without leaving seat during\n"
+"                structured sessions."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,description:educare_iep.tpl_obj_comm_request_1w
+msgid ""
+"Child says 1 word to request desired object/activity in\n"
+"                motivating situations."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,description:educare_iep.tpl_obj_cognitive_sort_3groups
+msgid "Child sorts cards into categories: food, toys, clothing."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,description:educare_iep.tpl_obj_comm_request_2w
+msgid ""
+"Child uses 2-word functional phrases (e.g., 'want cookie',\n"
+"                'open box')."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Classification"
+msgstr "Phân loại"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Clinical References"
+msgstr "Tài liệu tham khảo lâm sàng"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Clinical rationale for appropriateness..."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Close"
-msgstr "Đóng kế hoạch"
+msgstr "Đóng"
 
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_plan_close_wizard
@@ -442,17 +737,17 @@ msgstr "Đã đóng"
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
 msgid "Closing Details"
-msgstr "Thông tin đóng kế hoạch"
+msgstr "Chi tiết đóng"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Closing Information"
-msgstr "Thông tin đóng kế hoạch"
+msgstr "Thông tin đóng"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__closing_notes
 msgid "Closing Notes"
-msgstr "Ghi chú đóng kế hoạch"
+msgstr "Ghi chú đóng"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__closing_reason
@@ -461,28 +756,31 @@ msgid "Closing Reason"
 msgstr "Lý do đóng"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__code
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__code
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__code
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__code
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__code
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__code
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Code"
 msgstr "Mã"
 
 #. module: educare_iep
-#: model:educare.iep.probe.method,description:educare_iep.probe_mixed
-msgid "Combination of daily teaching trials and weekly probes"
-msgstr "Kết hợp giữa thử nghiệm dạy hàng ngày và probe hàng tuần"
+#: model:educare.iep.objective.template,name:educare_iep.tpl_obj_comm_request_2w
+msgid "Combine 2 words to make requests"
+msgstr "Kết hợp 2 từ để đưa ra yêu cầu"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__smart_analysis
-msgid "Combined analysis of Achievable and Relevant aspects of the SMART goal."
-msgstr "Phân tích kết hợp khía cạnh Khả thi và Phù hợp của mục tiêu SMART."
+msgid ""
+"Combined analysis of Achievable and Relevant aspects of the SMART goal."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__closing_reason__completed_period
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_close_wizard__closing_reason__completed_period
 msgid "Completed period"
-msgstr "Kết thúc kỳ học"
+msgstr "Đã hoàn thành giai đoạn"
 
 #. module: educare_iep
 #: model:ir.ui.menu,name:educare_iep.menu_educare_iep_config
@@ -490,10 +788,58 @@ msgid "Configuration"
 msgstr "Cấu hình"
 
 #. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/goal_template_select_wizard.py:0
+#, python-format
+msgid "Configure Objectives"
+msgstr "Cấu hình mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
+msgid "Configure Objectives (Step 3 of 3)"
+msgstr "Cấu hình mục tiêu ngắn hạn (Bước 3/3)"
+
+#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_objective_configure_wizard
+msgid "Configure Student-Specific Objective Data (Step 3)"
+msgstr "Cấu hình dữ liệu mục tiêu ngắn hạn riêng của học sinh (Bước 3)"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
 msgid "Confirm"
 msgstr "Xác nhận"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
+msgid "Confirm Cancel Revision"
+msgstr "Xác nhận hủy sửa đổi"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_reject_wizard_form
+msgid "Confirm Reject"
+msgstr "Xác nhận từ chối"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "Confirm marking objective as Mastered?"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "Confirm transitioning objective status to In Progress?"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "Confirm transitioning objective status to Paused?"
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__consecutive_sessions_required
+msgid "Consec. Sessions"
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__consecutive_sessions_achieved
@@ -501,7 +847,6 @@ msgid "Consecutive Sessions Achieved"
 msgstr "Số buổi liên tiếp đã đạt"
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__consecutive_sessions_required
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__consecutive_sessions_required
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__consecutive_sessions_required
 msgid "Consecutive Sessions Required"
@@ -516,25 +861,61 @@ msgid "Consecutive sessions required must be at least 1."
 msgstr "Số buổi liên tiếp yêu cầu phải ít nhất là 1."
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Consent Date"
+msgstr "Ngày đồng ý"
+
+#. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
 msgid "Core Information"
-msgstr "Thông tin cơ bản"
+msgstr "Thông tin cốt lõi"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_specific:educare_iep.tpl_obj_cognitive_sort_3groups
+msgid ""
+"Correctly sort into 3 categories with a random set of 10\n"
+"                items."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,criteria_template:educare_iep.measurement_template_frequency_count
+msgid ""
+"Count frequency of target behavior within defined session\n"
+"            duration."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
 msgid "Create Goal"
-msgstr "Tạo mục tiêu dài hạn"
+msgstr "Tạo mục tiêu"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_student_form_iep_plans
+msgid "Create IEP"
+msgstr "Tạo IEP"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/inherit_student.py:0
+#, python-format
+msgid "Create IEP Plan"
+msgstr "Tạo kế hoạch IEP"
 
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_iep_plan_revision_wizard
 msgid "Create IEP Plan Revision Wizard"
-msgstr "Trình hướng dẫn tạo phiên bản sửa đổi kế hoạch IEP"
+msgstr "Trình hướng dẫn tạo sửa đổi kế hoạch IEP"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
+msgid "Create Objective"
+msgstr "Tạo mục tiêu ngắn hạn"
 
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_plan_revision_wizard
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_revision_wizard_form
 msgid "Create Plan Revision"
-msgstr "Tạo phiên bản sửa đổi"
+msgstr "Tạo sửa đổi kế hoạch"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_revision_wizard_form
@@ -544,49 +925,72 @@ msgstr "Tạo sửa đổi"
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_educare_iep_plan
 msgid "Create your first IEP plan"
-msgstr "Tạo kế hoạch IEP đầu tiên"
+msgstr "Tạo kế hoạch IEP đầu tiên của bạn"
+
+#. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_objective_template
+msgid "Create your first Objective Template"
+msgstr "Tạo mẫu mục tiêu ngắn hạn đầu tiên của bạn"
 
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_educare_iep_goal
 msgid "Create your first long-term IEP goal"
-msgstr "Tạo mục tiêu dài hạn IEP đầu tiên"
+msgstr "Tạo mục tiêu dài hạn IEP đầu tiên của bạn"
 
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_educare_iep_objective
 msgid "Create your first short-term objective"
-msgstr "Tạo mục tiêu ngắn hạn đầu tiên"
+msgstr "Tạo mục tiêu ngắn hạn đầu tiên của bạn"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__create_uid
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__create_uid
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__create_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__create_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__create_uid
 msgid "Created by"
 msgstr "Tạo bởi"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__create_date
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__create_date
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__create_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__create_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__create_date
 msgid "Created on"
 msgstr "Ngày tạo"
 
@@ -596,9 +1000,20 @@ msgid "Criteria"
 msgstr "Tiêu chí"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Criterion"
+msgstr "Tiêu chí"
+
+#. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__priority__critical
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_wizard__priority__critical
 msgid "Critical"
-msgstr "Cực kỳ quan trọng"
+msgstr "Quan trọng"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Current %"
+msgstr "% Hiện tại"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__current_accuracy_pct
@@ -612,73 +1027,201 @@ msgid "Current IEP Plan"
 msgstr "Kế hoạch IEP hiện tại"
 
 #. module: educare_iep
+#: model:educare.iep.objective.template,baseline_description:educare_iep.tpl_obj_cognitive_sort_3groups
+msgid ""
+"Currently requires physical assistance for most\n"
+"                items."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,baseline_description:educare_iep.tpl_obj_behavior_sit
+msgid "Currently sits only 1-2 minutes before leaving seat."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,baseline_description:educare_iep.tpl_obj_comm_request_1w
+msgid "Currently uses only gestures or pulling adult's hand."
+msgstr ""
+
+#. module: educare_iep
 #: model:educare.iep.framework,name:educare_iep.framework_custom
 msgid "Custom"
 msgstr "Tùy chỉnh"
 
 #. module: educare_iep
-#: model:educare.iep.probe.method,name:educare_iep.probe_daily
-msgid "Daily Probe"
-msgstr "Probe hàng ngày"
-
-#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_data_collection_method
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__measurement_method
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_data_collection_method_form
 msgid "Data Collection Method"
 msgstr "Phương pháp thu thập dữ liệu"
 
 #. module: educare_iep
-#: model:ir.model,name:educare_iep.model_educare_iep_probe_method
-msgid "Data Collection Probe Method"
-msgstr "Phương pháp probe thu thập dữ liệu"
+#: model:ir.actions.act_window,name:educare_iep.action_iep_data_collection_method
+#: model:ir.ui.menu,name:educare_iep.menu_iep_config_data_collection_method
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_data_collection_method_tree
+msgid "Data Collection Methods"
+msgstr "Các phương pháp thu thập dữ liệu"
 
 #. module: educare_iep
-#: model:educare.iep.probe.method,description:educare_iep.probe_daily
-msgid "Data collected at every session"
-msgstr "Dữ liệu thu thập tại mỗi buổi học"
+#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_data_collection_method_code_unique
+msgid "Data collection method code must be unique."
+msgstr "Mã phương pháp thu thập dữ liệu phải là duy nhất."
 
 #. module: educare_iep
-#: model:educare.iep.probe.method,description:educare_iep.probe_weekly
-msgid "Data collected once per week (probe session)"
-msgstr "Dữ liệu thu thập một lần mỗi tuần (buổi probe)"
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Date"
+msgstr "Ngày"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Date of Birth"
+msgstr "Ngày sinh"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__trend__declining
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 msgid "Declining"
-msgstr "Giảm sút"
+msgstr "Đang giảm"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Declining trend - review teaching method"
-msgstr "Xu hướng giảm sút - cần xem xét lại phương pháp giảng dạy"
+msgstr "Xu hướng giảm - xem lại phương pháp giảng dạy"
 
 #. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_data_collection_method
+msgid "Define data collection methods (Trial by Trial, Probe, etc.)"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_prompt_level
+msgid "Define prompt/support levels (Independent, Verbal, Gestural, etc.)"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_teaching_method
+msgid "Define teaching methods (DTT, NET, Task Analysis, etc.)"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "Delete Objective"
+msgstr "Xóa mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__description
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__description
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__description
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__description
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__description
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_tree
 msgid "Description"
 msgstr "Mô tả"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Description & Guidance"
+msgstr "Mô tả & Hướng dẫn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Description of initial level before intervention..."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Description:"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Detailed description of the behavior/skill to achieve..."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "Detailed description of the short-term objective to achieve..."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
+msgid "Detailed description of the short-term skill to achieve..."
+msgstr ""
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__goal_domain_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__goal_domain_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__goal_domain_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__goal_domain_id
 msgid "Development Domain"
 msgstr "Lĩnh vực phát triển"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__template_domain_ids
+msgid "Development Domains"
+msgstr "Các lĩnh vực phát triển"
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__domain_ids
+msgid "Development domains for this objective. Defaults to goal domain."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__relevant_diagnosis_ids
+msgid "Diagnoses for which this template is particularly relevant."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__difficulty_level
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_search
+msgid "Difficulty"
+msgstr "Độ khó"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__difficulty_level
+msgid "Difficulty Level"
+msgstr "Mức độ khó"
+
+#. module: educare_iep
+#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_template_difficulty_range
+msgid "Difficulty level must be between 1 and 5."
+msgstr "Mức độ khó phải nằm trong khoảng 1 và 5."
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/objective_template_import_wizard.py:0
+#, python-format
+msgid "Direct observation during session."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
 msgid "Discontinue"
+msgstr "Ngừng"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
+msgid "Discontinue Details"
+msgstr "Chi tiết ngừng"
+
+#. module: educare_iep
+#: model:ir.actions.act_window,name:educare_iep.action_educare_iep_goal_discontinue_wizard
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
+msgid "Discontinue Goal"
 msgstr "Ngừng mục tiêu"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
-msgid "Discontinue Details"
-msgstr "Thông tin ngừng mục tiêu"
+#: model:ir.model,name:educare_iep.model_educare_iep_goal_discontinue_wizard
+msgid "Discontinue Goal Wizard"
+msgstr "Trình hướng dẫn ngừng mục tiêu"
 
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_objective_discontinue_wizard
@@ -709,19 +1252,38 @@ msgid "Discontinued Reason"
 msgstr "Lý do đã ngừng"
 
 #. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_template__default_data_collection_method__discrete_trial
+msgid "Discrete Trial"
+msgstr "Thử nghiệm rời rạc"
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,name:educare_iep.teaching_dtt
+msgid "Discrete Trial Training (DTT)"
+msgstr "Huấn luyện thử nghiệm rời rạc (DTT)"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__display_name
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__display_name
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__display_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__display_name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
@@ -729,6 +1291,19 @@ msgstr "Tên hiển thị"
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 msgid "Domain"
 msgstr "Lĩnh vực"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Domain:"
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__template_domain_ids
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__domain_ids
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
+msgid "Domains"
+msgstr "Các lĩnh vực"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__status__draft
@@ -739,24 +1314,132 @@ msgid "Draft"
 msgstr "Nháp"
 
 #. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_template__default_data_collection_method__duration
+msgid "Duration"
+msgstr "Thời lượng"
+
+#. module: educare_iep
 #: model:educare.iep.measurement.template,name:educare_iep.measurement_template_duration_recording
 msgid "Duration Recording"
-msgstr "Ghi nhận thời lượng"
+msgstr "Ghi lại thời lượng"
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,condition_template:educare_iep.measurement_template_accuracy_trials
+msgid ""
+"During DTT session, with maximum prompting per intervention\n"
+"            plan."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,condition_template:educare_iep.measurement_template_duration_recording
+msgid ""
+"During NET sessions or small group activities, recorded\n"
+"            with a stopwatch."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,condition_template:educare_iep.measurement_template_frequency_count
+msgid ""
+"During structured learning activities and guided play\n"
+"            activities."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+msgid ""
+"E.g.: 03/15/2026 - Adjusted target from 80% to 70% due to student difficulty"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "E.g.: 2026-H1 or 2026 Semester 1"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "E.g.: 8 weeks"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "E.g.: Achieve 80% accuracy across 3 consecutive sessions"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
+msgid "E.g.: Identify 10 basic vocabulary words"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
+msgid "E.g.: Improve social communication skills"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+msgid "E.g.: Improve social communication skills..."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "E.g.: Number of correct responses / total trials"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "E.g.: Request a preferred item using 1 word"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "E.g.: Student performs better in the morning, needs further monitoring"
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__end_date
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "End Date"
 msgstr "Ngày kết thúc"
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_plan_plan_dates_check
 msgid "End date must be after start date."
-msgstr "Ngày kết thúc phải sau ngày bắt đầu."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Enrichment"
+msgstr "Tăng cường"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Enrollment Date"
+msgstr "Ngày nhập học"
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,name:educare_iep.teaching_errorless
+msgid "Errorless Learning"
+msgstr "Học không mắc lỗi"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__iep_period
 msgid "Example: 2026-H1, 2026-Term1"
-msgstr "Ví dụ: 2026-HK1, 2026-Term1"
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_plan_cancel_revision_wizard__cancel_reason
+msgid "Explain why this revision is being cancelled."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_cancel_revision_wizard_form
+msgid "Explain why this revision is being cancelled..."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_goal_template_select_wizard__search_term
+msgid "Filter templates by name"
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_follower_ids
@@ -776,77 +1459,119 @@ msgstr "Người theo dõi (Đối tác)"
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__activity_type_icon
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Biểu tượng Font Awesome, ví dụ: fa-tasks"
+msgstr ""
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Framework"
-msgstr "Khung đánh giá"
+#: model:educare.iep.objective.template,smart_analysis:educare_iep.tpl_obj_cognitive_sort_3groups
+msgid "Foundation for conceptual skills and academic language."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__framework_code
 msgid "Framework Code"
-msgstr "Mã khung đánh giá"
+msgstr "Mã khung"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__framework_domain
 msgid "Framework Domain"
-msgstr "Lĩnh vực khung đánh giá"
+msgstr "Lĩnh vực khung"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__name
 msgid "Framework Name"
-msgstr "Tên khung đánh giá"
+msgstr "Tên khung"
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_framework_code_unique
 msgid "Framework code must be unique."
-msgstr "Mã khung đánh giá phải là duy nhất."
+msgstr "Mã khung phải là duy nhất."
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__modification_history
-msgid "Free-text log of changes. For structured review history, use chatter or a future review model."
-msgstr "Nhật ký thay đổi dạng văn bản tự do. Để có lịch sử xem xét có cấu trúc, sử dụng chatter hoặc model xem xét sau."
+msgid ""
+"Free-text log of changes. For structured review history, use chatter or a "
+"future review model."
+msgstr ""
 
 #. module: educare_iep
 #: model:educare.iep.measurement.template,name:educare_iep.measurement_template_frequency_count
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_template__default_data_collection_method__frequency
 msgid "Frequency Count"
 msgstr "Đếm tần suất"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Full Name"
+msgstr "Họ và tên"
+
+#. module: educare_iep
 #: model:educare.iep.prompt.level,name:educare_iep.prompt_full_physical
-msgid "Full Physical Assist"
-msgstr "Hỗ trợ thể chất toàn phần"
+msgid "Full Physical Prompt"
+msgstr "Gợi ý thể chất đầy đủ"
+
+#. module: educare_iep
+#: model:educare.iep.prompt.level,description:educare_iep.prompt_full_physical
+msgid "Full hand-over-hand guidance through the entire response."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Gender"
+msgstr "Giới tính"
 
 #. module: educare_iep
 #: model:educare.iep.prompt.level,name:educare_iep.prompt_gestural
 msgid "Gestural Prompt"
-msgstr "Lời nhắc cử chỉ"
+msgstr "Gợi ý bằng cử chỉ"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_discontinue_wizard_form
-msgid "Ghi chú thêm về lý do discontinue (tùy chọn)..."
-msgstr "Ghi chú thêm về lý do ngừng (tùy chọn)..."
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__goal_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__goal_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__goal_id
+msgid "Goal"
+msgstr "Mục tiêu"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
-msgid "Ghi chú thêm về lý do đóng plan (tùy chọn)..."
-msgstr "Ghi chú thêm về lý do đóng kế hoạch (tùy chọn)..."
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid ""
+"Goal \"%s\" cannot be deleted because %d objective(s) already have tracking "
+"data. Close the goal instead."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid ""
+"Goal \"%s\" cannot be deleted because %d objective(s) have session tracking "
+"data. Use Discontinue instead."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid ""
+"Goal \"%s\" cannot be deleted because it has already been started. Use "
+"Discontinue or Close instead."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__goal_code
 msgid "Goal Code"
-msgstr "Mã mục tiêu dài hạn"
+msgstr "Mã mục tiêu"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__goal_count
 msgid "Goal Count"
-msgstr "Số mục tiêu dài hạn"
+msgstr "Số mục tiêu"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
 msgid "Goal Information"
-msgstr "Thông tin mục tiêu dài hạn"
+msgstr "Thông tin mục tiêu"
 
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_iep_measurement_template
@@ -855,9 +1580,16 @@ msgstr "Mẫu đo lường mục tiêu"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__goal_name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__goal_name
 msgid "Goal Name"
-msgstr "Tên mục tiêu dài hạn"
+msgstr "Tên mục tiêu"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__goal_snapshot_json
+msgid "Goal Snapshot (JSON)"
+msgstr "Ảnh chụp mục tiêu (JSON)"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__revision_reason__goal_adjustment
@@ -866,33 +1598,46 @@ msgid "Goal adjustment"
 msgstr "Điều chỉnh mục tiêu"
 
 #. module: educare_iep
-#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_goal_goal_code_unique
-msgid "Goal code must be unique."
-msgstr "Mã mục tiêu dài hạn phải là duy nhất."
+#. odoo-python
+#: code:addons/educare_iep/wizard/goal_discontinue_wizard.py:0
+#, python-format
+msgid "Goal discontinued: %s"
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Goals"
-msgstr "Mục tiêu dài hạn"
+msgstr "Mục tiêu"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_goal.py:0
 #, python-format
 msgid "Goals can be deleted only when the parent plan is in Draft."
-msgstr "Mục tiêu dài hạn chỉ có thể xóa khi kế hoạch cha đang ở trạng thái Nháp."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#: code:addons/educare_iep/wizard/goal_discontinue_wizard.py:0
+#, python-format
+msgid "Goals can only be discontinued when the plan is Active."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_analysis:educare_iep.tpl_obj_comm_request_2w
+msgid ""
+"Gradually increase sentence length after stabilizing 1-word\n"
+"                level."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
 msgid "Group By"
 msgstr "Nhóm theo"
-
-#. module: educare_iep
-#: model:educare.iep.prompt.level,description:educare_iep.prompt_full_physical
-msgid "Hand-over-hand full physical guidance"
-msgstr "Hướng dẫn thể chất tay-trong-tay toàn phần"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__has_message
@@ -903,23 +1648,14 @@ msgstr "Có tin nhắn"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__priority__high
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_wizard__priority__high
 msgid "High"
 msgstr "Cao"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 msgid "High/Critical Priority"
-msgstr "Ưu tiên Cao/Cực kỳ quan trọng"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Hành vi cụ thể cần đạt được..."
-msgstr "Hành vi cụ thể cần đạt được..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
-msgid "Hủy"
-msgstr "Hủy"
+msgstr "Ưu tiên Cao/Quan trọng"
 
 #. module: educare_iep
 #: model:educare.iep.framework,name:educare_iep.framework_icf
@@ -927,19 +1663,28 @@ msgid "ICF (WHO)"
 msgstr "ICF (WHO)"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__id
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__id
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__id
 msgid "ID"
 msgstr "ID"
 
@@ -951,17 +1696,12 @@ msgstr "IEP & Mục tiêu"
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_iep_goal_wizard
 msgid "IEP Goal Quick Create Wizard"
-msgstr "Trình hướng dẫn tạo nhanh mục tiêu dài hạn IEP"
-
-#. module: educare_iep
-#: model:ir.model,name:educare_iep.model_educare_iep_goal_wizard_line
-msgid "IEP Goal Wizard Objective Line"
-msgstr "Dòng mục tiêu ngắn hạn trong trình tạo mục tiêu dài hạn IEP"
+msgstr "Trình hướng dẫn tạo nhanh mục tiêu IEP"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_tree
 msgid "IEP Goals"
-msgstr "Mục tiêu dài hạn IEP"
+msgstr "Mục tiêu IEP"
 
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_iep_goal
@@ -974,22 +1714,36 @@ msgid "IEP Objective Quick Create Wizard"
 msgstr "Trình hướng dẫn tạo nhanh mục tiêu ngắn hạn IEP"
 
 #. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_objective_template
+msgid "IEP Objective Template Library"
+msgstr "Thư viện mẫu mục tiêu ngắn hạn IEP"
+
+#. module: educare_iep
 #: model:ir.actions.server,name:educare_iep.ir_cron_auto_sync_objective_status_ir_actions_server
 msgid "IEP Objective: Auto Sync Status"
-msgstr "Mục tiêu ngắn hạn IEP: Đồng bộ trạng thái tự động"
+msgstr "Mục tiêu ngắn hạn IEP: Tự động đồng bộ trạng thái"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__iep_period
 msgid "IEP Period"
-msgstr "Kỳ IEP"
+msgstr "Giai đoạn IEP"
 
 #. module: educare_iep
 #. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#: code:addons/educare_iep/models/iep_plan.py:0
+#: code:addons/educare_iep/wizard/goal_template_select_wizard.py:0
+#: code:addons/educare_iep/wizard/objective_configure_wizard.py:0
 #: code:addons/educare_iep/wizard/plan_close_wizard.py:0
+#: code:addons/educare_iep/wizard/plan_reject_wizard.py:0
 #: model:ir.model,name:educare_iep.model_educare_iep_plan
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__plan_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__plan_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__plan_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__plan_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__plan_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__plan_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__plan_id
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 #, python-format
@@ -997,11 +1751,21 @@ msgid "IEP Plan"
 msgstr "Kế hoạch IEP"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_student__iep_plan_count
+msgid "IEP Plan Count"
+msgstr "Số kế hoạch IEP"
+
+#. module: educare_iep
+#: model:ir.actions.report,name:educare_iep.action_report_iep_plan
+msgid "IEP Plan Report"
+msgstr "Báo cáo kế hoạch IEP"
+
+#. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "IEP Plan Revision"
-msgstr "Phiên bản sửa đổi kế hoạch IEP"
+msgstr "Sửa đổi kế hoạch IEP"
 
 #. module: educare_iep
 #. odoo-python
@@ -1017,7 +1781,7 @@ msgstr "Các phiên bản kế hoạch IEP"
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_tree
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_student_form_iep_plans
 msgid "IEP Plans"
-msgstr "Kế hoạch IEP"
+msgstr "Các kế hoạch IEP"
 
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_iep_objective
@@ -1034,22 +1798,23 @@ msgstr "Biểu tượng"
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__activity_exception_icon
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "Biểu tượng chỉ ra hoạt động ngoại lệ."
+msgstr ""
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_data_collection_method_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_framework_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_measurement_template_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_probe_method_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_prompt_level_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_teaching_method_form
 msgid "Identity"
-msgstr "Nhận dạng"
+msgstr "Định danh"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__message_needaction
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__message_needaction
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Nếu được chọn, có tin nhắn mới cần bạn chú ý."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__message_has_error
@@ -1059,17 +1824,49 @@ msgstr "Nếu được chọn, có tin nhắn mới cần bạn chú ý."
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__message_has_error
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Nếu được chọn, một số tin nhắn có lỗi gửi."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__implementation_steps
+msgid "Implementation Steps"
+msgstr "Các bước thực hiện"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
+msgid "Import"
+msgstr "Nhập"
+
+#. module: educare_iep
+#: model:ir.actions.act_window,name:educare_iep.action_educare_iep_objective_template_import_wizard
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
+msgid "Import Objective Templates"
+msgstr "Nhập mẫu mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_objective_template_import_wizard
+msgid "Import Objective Templates into Goal"
+msgstr "Nhập mẫu mục tiêu ngắn hạn vào mục tiêu"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
+msgid "Import Objectives"
+msgstr "Nhập mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+msgid "Import Template"
+msgstr "Nhập mẫu"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__trend__improving
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 msgid "Improving"
-msgstr "Cải thiện"
+msgstr "Đang cải thiện"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 msgid "In Active Plan"
-msgstr "Trong kế hoạch đang thực hiện"
+msgstr "Trong kế hoạch đang hoạt động"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__status__in_progress
@@ -1078,9 +1875,34 @@ msgid "In Progress"
 msgstr "Đang thực hiện"
 
 #. module: educare_iep
+#: model:educare.iep.teaching.method,name:educare_iep.teaching_incidental
+msgid "Incidental Teaching"
+msgstr "Dạy học tình huống"
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_reject_wizard__rejection_reason__incomplete_goals
+msgid "Incomplete goals"
+msgstr "Mục tiêu chưa hoàn thiện"
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_reject_wizard__rejection_reason__incorrect_data
+msgid "Incorrect data"
+msgstr "Dữ liệu không chính xác"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_analysis:educare_iep.tpl_obj_behavior_sit
+msgid "Increase task engagement and reduce escape behaviors."
+msgstr ""
+
+#. module: educare_iep
 #: model:educare.iep.prompt.level,name:educare_iep.prompt_independent
 msgid "Independent"
 msgstr "Độc lập"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Individualized Education Program (IEP)"
+msgstr "Chương trình giáo dục cá nhân (IEP)"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
@@ -1093,13 +1915,23 @@ msgid "Insufficient Data"
 msgstr "Dữ liệu không đủ"
 
 #. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__goal_snapshot_json
+msgid ""
+"Internal: JSON snapshot of goals/objectives at revision creation time for "
+"rollback."
+msgstr ""
+
+#. module: educare_iep
 #: model:educare.iep.framework,description:educare_iep.framework_icf
 msgid ""
 "International Classification of Functioning, Disability and Health\n"
 "            (World Health Organization)"
 msgstr ""
-"Phân loại Quốc tế về Chức năng, Khuyết tật và Sức khỏe\n"
-"            (Tổ chức Y tế Thế giới)"
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_template__default_data_collection_method__interval
+msgid "Interval Recording"
+msgstr "Ghi lại theo khoảng"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__revision_reason__strategy_change
@@ -1118,15 +1950,17 @@ msgstr "Giá trị độ chính xác không hợp lệ"
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
-msgid "Invalid status transition: %(current)s -> %(target)s. Use workflow actions (Approve, Parent Consent, Close, Revise)."
-msgstr "Chuyển trạng thái không hợp lệ: %(current)s -> %(target)s. Vui lòng sử dụng các nút hành vi (Phê duyệt, Đồng ý phụ huynh, Đóng, Sửa đổi)."
+msgid ""
+"Invalid status transition: %(current)s -> %(target)s. Use workflow actions "
+"(Approve, Parent Consent, Close, Revise)."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_is_follower
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__message_is_follower
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__message_is_follower
 msgid "Is Follower"
-msgstr "Đang theo dõi"
+msgstr "Là người theo dõi"
 
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_goal_kanban
@@ -1134,48 +1968,86 @@ msgid "Kanban IEP"
 msgstr "Kanban IEP"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__is_last_active_goal
+msgid "Last Active Goal"
+msgstr "Mục tiêu hoạt động cuối cùng"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__is_last_active_objective
+msgid "Last Active Objective"
+msgstr "Mục tiêu ngắn hạn hoạt động cuối cùng"
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__last_session_accuracy
 msgid "Last Session Accuracy"
-msgstr "Độ chính xác buổi cuối"
+msgstr "Độ chính xác buổi gần nhất"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__last_session_date
 msgid "Last Session Date"
-msgstr "Ngày buổi học cuối"
+msgstr "Ngày buổi gần nhất"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__write_uid
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__write_uid
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__write_uid
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__write_uid
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__write_uid
 msgid "Last Updated by"
-msgstr "Cập nhật lần cuối bởi"
+msgstr "Cập nhật bởi"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__write_date
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__write_date
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__write_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__write_date
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__write_date
 msgid "Last Updated on"
-msgstr "Cập nhật lần cuối lúc"
+msgstr "Ngày cập nhật"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_objective_kanban
+msgid "Last session:"
+msgstr "Buổi cuối:"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Latest Assessment"
+msgstr "Đánh giá mới nhất"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__is_latest_version
@@ -1185,8 +2057,23 @@ msgstr "Phiên bản mới nhất"
 
 #. module: educare_iep
 #: model:educare.iep.prompt.level,description:educare_iep.prompt_partial_physical
-msgid "Light physical guidance to initiate the behavior"
-msgstr "Hướng dẫn thể chất nhẹ để khởi tạo hành vi"
+msgid "Light physical guidance to initiate or complete the response."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Limitation / Challenge"
+msgstr "Hạn chế / Thử thách"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "List of materials/supplies needed..."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__materials_needed
+msgid "List of materials/supplies required for this objective."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__literature_ref
@@ -1195,7 +2082,8 @@ msgstr "Tài liệu tham khảo"
 
 #. module: educare_iep
 #. odoo-python
-#: code:addons/educare_iep/wizard/goal_quick_wizard.py:0
+#: code:addons/educare_iep/wizard/goal_discontinue_wizard.py:0
+#: code:addons/educare_iep/wizard/objective_template_import_wizard.py:0
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_goal_form
 #, python-format
 msgid "Long-term Goal"
@@ -1205,8 +2093,9 @@ msgstr "Mục tiêu dài hạn"
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_goal
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__goal_ids
 #: model:ir.ui.menu,name:educare_iep.menu_educare_iep_goal
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Long-term Goals"
-msgstr "Mục tiêu dài hạn"
+msgstr "Các mục tiêu dài hạn"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
@@ -1215,28 +2104,20 @@ msgstr "Mục tiêu dài hạn IEP"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__priority__low
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_wizard__priority__low
 msgid "Low"
 msgstr "Thấp"
 
 #. module: educare_iep
-#: model:ir.model.fields,help:educare_iep.field_educare_iep_prompt_level__sequence
-msgid "Lower = more independent; higher = more support needed"
-msgstr "Thấp hơn = độc lập hơn; cao hơn = cần hỗ trợ nhiều hơn"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Lý do ngừng hẳn objective..."
-msgstr "Lý do ngừng hẳn mục tiêu ngắn hạn..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
-msgid "Lý do đóng IEP plan, ghi chú cho hồ sơ kiểm toán..."
-msgstr "Lý do đóng kế hoạch IEP, ghi chú cho hồ sơ kiểm toán..."
-
-#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__smart_measurable
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__smart_measurable
 msgid "M - Measurable"
 msgstr "M - Đo lường được"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_specific:educare_iep.tpl_obj_behavior_sit
+msgid "Maintain seated position for minimum 5 minutes."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__status__achieved
@@ -1244,7 +2125,7 @@ msgstr "M - Đo lường được"
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 msgid "Mastered"
-msgstr "Thành thạo"
+msgstr "Đã thành thạo"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
@@ -1261,12 +2142,34 @@ msgstr "Ngày thành thạo"
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Mastery date is required when marking an objective as mastered!"
-msgstr "Ngày thành thạo là bắt buộc khi đánh dấu mục tiêu là thành thạo!"
+msgstr "Ngày thành thạo là bắt buộc khi đánh dấu mục tiêu là đã thành thạo!"
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__prompt_level_id
-msgid "Max Prompt Level"
-msgstr "Mức hỗ trợ tối đa"
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__materials_needed
+msgid "Materials Needed"
+msgstr "Vật liệu cần thiết"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_tree
+msgid "Max Age"
+msgstr "Tuổi tối đa"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__age_max_months
+msgid "Max Age (months)"
+msgstr "Tuổi tối đa (tháng)"
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__age_max_months
+msgid "Maximum recommended age in months."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,criteria_template:educare_iep.measurement_template_duration_recording
+msgid ""
+"Measure total duration of target behavior maintained per\n"
+"            session."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__measurement_condition
@@ -1289,24 +2192,8 @@ msgid "Measurement Criteria Template"
 msgstr "Mẫu tiêu chí đo lường"
 
 #. module: educare_iep
-#. odoo-python
-#: code:addons/educare_iep/models/iep_goal.py:0
-#, python-format
-msgid "Measurement Criteria is required before a goal can move to In Progress."
-msgstr "Tiêu chí đo lường là bắt buộc trước khi mục tiêu có thể chuyển sang Đang thực hiện."
-
-#. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__measurement_method
-msgid "Measurement Method"
-msgstr "Phương pháp đo lường"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Measurement Setup"
-msgstr "Thiết lập đo lường"
-
-#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__measurement_template_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__measurement_template_id
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_measurement_template_form
 msgid "Measurement Template"
 msgstr "Mẫu đo lường"
@@ -1316,7 +2203,7 @@ msgstr "Mẫu đo lường"
 #: model:ir.ui.menu,name:educare_iep.menu_iep_config_measurement_template
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_measurement_template_tree
 msgid "Measurement Templates"
-msgstr "Mẫu đo lường"
+msgstr "Các mẫu đo lường"
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_measurement_template_mt_code_unique
@@ -1325,6 +2212,7 @@ msgstr "Mã mẫu đo lường phải là duy nhất."
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal__priority__medium
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_wizard__priority__medium
 msgid "Medium"
 msgstr "Trung bình"
 
@@ -1348,14 +2236,34 @@ msgid "Method & Workflow"
 msgstr "Phương pháp & Quy trình"
 
 #. module: educare_iep
-#: model:educare.iep.probe.method,name:educare_iep.probe_mixed
-msgid "Mixed"
-msgstr "Kết hợp"
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_tree
+msgid "Min Age"
+msgstr "Tuổi tối thiểu"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__age_min_months
+msgid "Min Age (months)"
+msgstr "Tuổi tối thiểu (tháng)"
+
+#. module: educare_iep
+#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_template_age_range_check
+msgid "Minimum age must be less than or equal to maximum age."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__age_min_months
+msgid "Minimum recommended age in months."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__modification_history
 msgid "Modification History"
-msgstr "Lịch sử chỉnh sửa"
+msgstr "Lịch sử sửa đổi"
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,name:educare_iep.collection_momentary_time
+msgid "Momentary Time Sample"
+msgstr "Mẫu thời gian tức thời"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__review_frequency__monthly
@@ -1366,7 +2274,7 @@ msgstr "Hàng tháng"
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__my_activity_date_deadline
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "Hạn hoạt động của tôi"
+msgstr "Thời hạn hoạt động của tôi"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
@@ -1374,53 +2282,53 @@ msgid "My Goals"
 msgstr "Mục tiêu của tôi"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
-msgid "Mô tả chi tiết kỹ năng ngắn hạn cần đạt..."
-msgstr "Mô tả chi tiết kỹ năng ngắn hạn cần đạt..."
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__name
+msgid "Name"
+msgstr "Tên"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Mô tả chi tiết mục tiêu ngắn hạn cần đạt..."
-msgstr "Mô tả chi tiết mục tiêu ngắn hạn cần đạt..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Mô tả mức độ ban đầu trước can thiệp..."
-msgstr "Mô tả mức độ ban đầu trước can thiệp..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_revision_wizard_form
-msgid "Mô tả ngắn lý do tạo revision và điểm thay đổi chính..."
-msgstr "Mô tả ngắn lý do tạo phiên bản mới và điểm thay đổi chính..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
-msgid "Mô tả tổng quan mục tiêu dài hạn..."
-msgstr "Mô tả tổng quan mục tiêu dài hạn..."
+#: model:educare.iep.teaching.method,name:educare_iep.teaching_net
+msgid "Natural Environment Teaching (NET)"
+msgstr "Dạy học trong môi trường tự nhiên (NET)"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
-msgid "Near Target (>=70%)"
-msgstr "Gần đạt mục tiêu (>=70%)"
+msgid "Near Target (>=80%)"
+msgstr "Gần mục tiêu (>=80%)"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 msgid "Needs Support (<50%)"
-msgstr "Cần hỗ trợ thêm (<50%)"
+msgstr "Cần hỗ trợ (<50%)"
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_reject_wizard__rejection_reason__needs_revision
+msgid "Needs revision"
+msgstr "Cần sửa đổi"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#, python-format
+msgid "New Goal"
+msgstr "Mục tiêu mới"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
-msgid "New goals can only be added while plan is Draft or Ready for Review. Use Revise for Active/Closed plans."
-msgstr "Chỉ có thể thêm mục tiêu mới khi kế hoạch đang ở trạng thái Nháp hoặc Chờ duyệt. Sử dụng Sửa đổi cho kế hoạch Đang thực hiện/Đã đóng."
+msgid ""
+"New goals can only be added while plan is Draft. Use Revise for "
+"Active/Closed plans."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__activity_date_deadline
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "Hạn hoạt động tiếp theo"
+msgstr "Thời hạn hoạt động tiếp theo"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__activity_summary
@@ -1440,39 +2348,106 @@ msgid "Next Review Date"
 msgstr "Ngày xem xét tiếp theo"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "Next: Configure"
+msgstr "Tiếp theo: Cấu hình"
+
+#. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/wizard/plan_revision_wizard.py:0
 #, python-format
 msgid "No IEP plan selected for revision."
-msgstr "Chưa chọn kế hoạch IEP nào để sửa đổi."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/wizard/plan_close_wizard.py:0
 #, python-format
 msgid "No IEP plan selected to close."
-msgstr "Chưa chọn kế hoạch IEP nào để đóng."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/plan_reject_wizard.py:0
+#, python-format
+msgid "No IEP plan selected to reject."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/plan_cancel_revision_wizard.py:0
+#, python-format
+msgid "No IEP plan selected."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_objective_progress
+msgid "No active objectives yet"
+msgstr "Chưa có mục tiêu ngắn hạn đang hoạt động"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/goal_discontinue_wizard.py:0
+#, python-format
+msgid "No goal selected to discontinue."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid ""
+"No goals have been added to this plan\n"
+"                                yet."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "No improvement - consider modifying approach"
-msgstr "Không có cải thiện - cần xem xét thay đổi phương pháp tiếp cận"
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/wizard/objective_discontinue_wizard.py:0
 #, python-format
 msgid "No objective selected to discontinue."
-msgstr "Chưa chọn mục tiêu ngắn hạn nào để ngừng."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/objective_configure_wizard.py:0
+#, python-format
+msgid "No objectives to create."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.prompt.level,description:educare_iep.prompt_independent
+msgid "No prompt needed — learner performs independently."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "No session in the last 2 weeks"
-msgstr "Không có buổi học nào trong 2 tuần qua"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid ""
+"No short-term\n"
+"                                        objectives yet."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,baseline_description:educare_iep.tpl_obj_comm_request_2w
+msgid "No spontaneous 2-word combinations yet."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "No templates found matching the goal's domain."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__status__not_started
@@ -1480,13 +2455,16 @@ msgid "Not Started"
 msgstr "Chưa bắt đầu"
 
 #. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_discontinue_wizard__reason__not_appropriate
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_discontinue_wizard__reason__not_appropriate
 msgid "Not appropriate"
 msgstr "Không phù hợp"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__notes
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__notes
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_close_wizard__closing_notes
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__rejection_notes
 msgid "Notes"
 msgstr "Ghi chú"
 
@@ -1496,11 +2474,24 @@ msgid "Notes / Observations"
 msgstr "Ghi chú / Quan sát"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_reject_wizard_form
+msgid "Notes about the rejection reason..."
+msgstr ""
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_needaction_counter
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__message_needaction_counter
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Số hành động"
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__consecutive_sessions_required
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_quick_wizard__consecutive_sessions_required
+msgid ""
+"Number of consecutive sessions reaching target accuracy to be considered "
+"mastered. Default 3 sessions per ABA standard."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_has_error_counter
@@ -1514,21 +2505,30 @@ msgstr "Số lỗi"
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__message_needaction_counter
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Số tin nhắn cần thực hiện"
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__message_has_error_counter
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__message_has_error_counter
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Số tin nhắn có lỗi gửi"
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__objective_id
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
 msgid "Objective"
 msgstr "Mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_objective.py:0
+#, python-format
+msgid ""
+"Objective \"%s\" cannot be deleted because it has %d session(s) of tracking "
+"data. Use Discontinue instead to deactivate it."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__objective_code
@@ -1536,60 +2536,150 @@ msgid "Objective Code"
 msgstr "Mã mục tiêu ngắn hạn"
 
 #. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_objective_configure_wizard_line
+msgid "Objective Configuration Line"
+msgstr "Dòng cấu hình mục tiêu ngắn hạn"
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__objective_count
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__objective_count
 msgid "Objective Count"
 msgstr "Số mục tiêu ngắn hạn"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__description
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__description
 msgid "Objective Description"
 msgstr "Mô tả mục tiêu ngắn hạn"
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__name
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__name
 msgid "Objective Name"
 msgstr "Tên mục tiêu ngắn hạn"
 
 #. module: educare_iep
-#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_objective_code_unique
-msgid "Objective code must be unique."
-msgstr "Mã mục tiêu ngắn hạn phải là duy nhất."
+#: model:ir.actions.act_window,name:educare_iep.action_objective_progress
+#: model:ir.ui.menu,name:educare_iep.menu_objective_progress
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_objective_graph
+msgid "Objective Progress"
+msgstr "Tiến độ mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_objective_pivot
+msgid "Objective Progress Analysis"
+msgstr "Phân tích tiến độ mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Objective Template"
+msgstr "Mẫu mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_goal_template_select_wizard_line
+msgid "Objective Template Selection Line"
+msgstr "Dòng chọn mẫu mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model:ir.actions.act_window,name:educare_iep.action_iep_objective_template
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__template_ids
+#: model:ir.ui.menu,name:educare_iep.menu_iep_config_objective_template
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_tree
+msgid "Objective Templates"
+msgstr "Các mẫu mục tiêu ngắn hạn"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Objective start date cannot be before goal start date!"
-msgstr "Ngày bắt đầu mục tiêu ngắn hạn không được trước ngày bắt đầu mục tiêu dài hạn!"
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Objective target date cannot be after goal target date!"
-msgstr "Ngày mục tiêu của mục tiêu ngắn hạn không được sau ngày mục tiêu của mục tiêu dài hạn!"
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_iep_objective_template
+msgid ""
+"Objective templates are reusable STO blueprints with SMART components, enrichment\n"
+"                metadata, and suggested defaults."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__prerequisite_objective_ids
+msgid "Objective templates that should be mastered before this one."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Objectives"
-msgstr "Mục tiêu ngắn hạn"
+msgstr "Các mục tiêu ngắn hạn"
 
 #. module: educare_iep
 #: model_terms:ir.actions.act_window,help:educare_iep.action_educare_iep_objective
-msgid "Objectives are linked to goals and used for detailed progress tracking."
-msgstr "Mục tiêu ngắn hạn được liên kết với mục tiêu dài hạn và dùng để theo dõi tiến độ chi tiết."
+msgid ""
+"Objectives are linked to goals and used for detailed progress tracking."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Objectives can be deleted only when the parent plan is in Draft."
-msgstr "Mục tiêu ngắn hạn chỉ có thể xóa khi kế hoạch cha đang ở trạng thái Nháp."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_objective.py:0
+#: code:addons/educare_iep/wizard/objective_discontinue_wizard.py:0
+#, python-format
+msgid "Objectives can only be discontinued when the plan is Active."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_objective.py:0
+#, python-format
+msgid "Objectives can only be marked as mastered when the plan is Active."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_objective.py:0
+#, python-format
+msgid "Objectives can only be paused when the plan is Active."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_objective.py:0
+#, python-format
+msgid "Objectives can only be resumed when the plan is Active."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_objective.py:0
+#, python-format
+msgid "Objectives can only be started when the plan is Active."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard__line_ids
+msgid "Objectives to Create"
+msgstr "Mục tiêu ngắn hạn cần tạo"
+
+#. module: educare_iep
+#: model_terms:ir.actions.act_window,help:educare_iep.action_objective_progress
+msgid ""
+"Objectives will appear here after you create IEP goals and log session data."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
@@ -1602,36 +2692,78 @@ msgstr "Tạm dừng"
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Only Active plans can be closed."
-msgstr "Chỉ có thể đóng các kế hoạch đang Đang thực hiện."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Only Draft or Ready for Review revisions can be cancelled."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Only Draft plans can be submitted for review."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Only one version can be Active in the same IEP revision chain."
-msgstr "Chỉ một phiên bản có thể ở trạng thái Đang thực hiện trong cùng một chuỗi sửa đổi IEP."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#: code:addons/educare_iep/wizard/plan_reject_wizard.py:0
+#, python-format
+msgid "Only plans in Ready for Review can be rejected."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Only plans in Ready for Review can be reset to Draft."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Only the selected supervisor can approve this IEP plan."
-msgstr "Chỉ giám sát viên được chỉ định mới có thể phê duyệt kế hoạch IEP này."
+msgstr ""
 
 #. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__measurement_criteria
+msgid "Optional measurement criteria for tracking goal progress."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_discontinue_wizard__reason__other
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_discontinue_wizard__reason__other
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__closing_reason__other
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__revision_reason__other
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_close_wizard__closing_reason__other
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_reject_wizard__rejection_reason__other
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_revision_wizard__revision_reason__other
 msgid "Other"
-msgstr "Lý do khác"
+msgstr "Khác"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__goal_description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__goal_description
 msgid "Overall Goal Description"
-msgstr "Mô tả tổng quan mục tiêu dài hạn"
+msgstr "Mô tả mục tiêu tổng thể"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Overall Progress"
+msgstr "Tiến độ tổng thể"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__progress_pct
@@ -1639,9 +2771,15 @@ msgid "Overall Progress (%)"
 msgstr "Tiến độ tổng thể (%)"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
+msgid "Overall long-term goal description..."
+msgstr ""
+
+#. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__next_review_date
 msgid "Overall review date for this IEP plan."
-msgstr "Ngày xem xét tổng thể cho kế hoạch IEP này."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__is_overdue
@@ -1650,27 +2788,52 @@ msgid "Overdue"
 msgstr "Quá hạn"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Parent / Guardian Signature"
+msgstr "Chữ ký phụ huynh / người giám hộ"
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__parent_consent
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Parent Consent"
-msgstr "Đồng ý của phụ huynh"
+msgstr "Sự đồng ý của phụ huynh"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__parent_consent_date
 msgid "Parent Consent Date"
-msgstr "Ngày phụ huynh đồng ý"
+msgstr "Ngày đồng ý của phụ huynh"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__goal_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__goal_id
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 msgid "Parent Goal"
-msgstr "Mục tiêu dài hạn cha"
+msgstr "Mục tiêu cha"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Parent consent received. Plan is now Active."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/goal_discontinue_wizard.py:0
+#, python-format
+msgid "Parent goal discontinued: %s"
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,name:educare_iep.collection_partial_interval
+msgid "Partial Interval"
+msgstr "Khoảng một phần"
 
 #. module: educare_iep
 #: model:educare.iep.prompt.level,name:educare_iep.prompt_partial_physical
-msgid "Partial Physical Assist"
-msgstr "Hỗ trợ thể chất một phần"
+msgid "Partial Physical Prompt"
+msgstr "Gợi ý thể chất một phần"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
@@ -1680,7 +2843,7 @@ msgstr "Tạm dừng"
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__status__on_hold
 msgid "Paused"
-msgstr "Đang tạm dừng"
+msgstr "Đã tạm dừng"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
@@ -1690,41 +2853,28 @@ msgstr "Chờ phê duyệt"
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
 msgid "Period"
-msgstr "Kỳ học"
+msgstr "Giai đoạn"
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,description:educare_iep.collection_probe
+msgid "Periodic assessment without teaching trials."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__revision_reason__periodic_review
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_revision_wizard__revision_reason__periodic_review
 msgid "Periodic review update"
-msgstr "Cập nhật xem xét định kỳ"
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,description:educare_iep.measurement_template_frequency_count
-msgid ""
-"Phù hợp mục tiêu giảm/tăng hành vi cần theo dõi tần suất xuất\n"
-"            hiện."
-msgstr ""
-"Phù hợp mục tiêu giảm/tăng hành vi cần theo dõi tần suất xuất\n"
-"            hiện."
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,description:educare_iep.measurement_template_accuracy_trials
-msgid "Phù hợp mục tiêu học kỹ năng mới cần đo theo lần thử chuẩn hóa."
-msgstr "Phù hợp mục tiêu học kỹ năng mới cần đo theo lần thử chuẩn hóa."
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,description:educare_iep.measurement_template_duration_recording
-msgid ""
-"Phù hợp mục tiêu kéo dài thời gian chú ý, ngồi học, hoặc tham gia\n"
-"            hoạt động."
-msgstr ""
-"Phù hợp mục tiêu kéo dài thời gian chú ý, ngồi học, hoặc tham gia\n"
-"            hoạt động."
+msgstr "Cập nhật đánh giá định kỳ"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
 msgid "Plan Context"
-msgstr "Thông tin kế hoạch"
+msgstr "Bối cảnh kế hoạch"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Plan Details"
+msgstr "Chi tiết kế hoạch"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
@@ -1732,32 +2882,82 @@ msgid "Plan Information"
 msgstr "Thông tin kế hoạch"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__plan_status
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__plan_status
+msgid "Plan Status"
+msgstr "Trạng thái kế hoạch"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Plan approved by supervisor %s."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Plan auto-closed: replaced by new version."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Plan closed: %s"
+msgstr ""
+
+#. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Plan must be in Ready for Review before supervisor approval."
-msgstr "Kế hoạch phải ở trạng thái Chờ duyệt trước khi giám sát viên phê duyệt."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Plan must be supervisor approved before parent consent."
-msgstr "Kế hoạch phải được giám sát viên phê duyệt trước khi lấy đồng ý của phụ huynh."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Plan must have at least one goal before approval."
-msgstr "Kế hoạch phải có ít nhất một mục tiêu dài hạn trước khi phê duyệt."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Plan must have at least one goal before parent consent."
-msgstr "Kế hoạch phải có ít nhất một mục tiêu dài hạn trước khi lấy đồng ý của phụ huynh."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid ""
+"Plan must have at least one long-term goal before submitting for review. "
+"Please use the \"Add Goal\" button at the top of the plan to add goals."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Plan reactivated — revision v%s was cancelled."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/plan_reject_wizard.py:0
+#, python-format
+msgid "Plan rejected: %s"
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__closing_reason__plan_revised
@@ -1769,57 +2969,113 @@ msgstr "Kế hoạch đã được sửa đổi"
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
+msgid "Plan submitted for supervisor review."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Plan superseded — goals moved to revision v%s."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Plan withdrawn from review and reset to Draft."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
 msgid "Please assign a supervisor before approving."
-msgstr "Vui lòng chỉ định giám sát viên trước khi phê duyệt."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Please assign a supervisor before submitting for review."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_goal.py:0
 #, python-format
 msgid "Please provide a reason before discontinuing this goal."
-msgstr "Vui lòng cung cấp lý do trước khi ngừng mục tiêu dài hạn này."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Please provide a reason before discontinuing this objective."
-msgstr "Vui lòng cung cấp lý do trước khi ngừng mục tiêu ngắn hạn này."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/goal_template_select_wizard.py:0
+#, python-format
+msgid "Please select at least 1 template to import."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/objective_template_import_wizard.py:0
+#, python-format
+msgid "Please select at least one objective template to import."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.prompt.level,description:educare_iep.prompt_gestural
+msgid "Pointing, nodding, or other gesture to guide learner."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__prerequisite_objective_ids
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Prerequisites"
+msgstr "Điều kiện tiên quyết"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Primary Diagnosis"
+msgstr "Chẩn đoán chính"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Print PDF"
+msgstr "In PDF"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__priority
 msgid "Prioritize among concurrent goals for the same student."
-msgstr "Xác định ưu tiên giữa các mục tiêu song song của cùng một học sinh."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__priority
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__priority
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 msgid "Priority"
-msgstr "Mức ưu tiên"
+msgstr "Độ ưu tiên"
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__probe_method_id
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__name
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_probe_method_form
-msgid "Probe Method"
-msgstr "Phương pháp probe"
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Priority:"
+msgstr ""
 
 #. module: educare_iep
-#: model:ir.actions.act_window,name:educare_iep.action_iep_probe_method
-#: model:ir.ui.menu,name:educare_iep.menu_iep_config_probe_method
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_probe_method_tree
-msgid "Probe Methods"
-msgstr "Phương pháp probe"
+#: model:educare.iep.data.collection.method,name:educare_iep.collection_probe
+msgid "Probe"
+msgstr "Đánh giá thăm dò"
 
 #. module: educare_iep
-#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_probe_method_code_unique
-msgid "Probe method code must be unique."
-msgstr "Mã phương pháp probe phải là duy nhất."
-
-#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_goal_discontinue_wizard__reason__program_changed
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_discontinue_wizard__reason__program_changed
 msgid "Program changed"
-msgstr "Chương trình can thiệp thay đổi"
+msgstr "Chương trình đã thay đổi"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
@@ -1838,34 +3094,39 @@ msgid "Progress Trend"
 msgstr "Xu hướng tiến độ"
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__name
+#: model:ir.model,name:educare_iep.model_educare_iep_prompt_level
+msgid "Prompt / Support Level"
+msgstr "Mức độ gợi ý / hỗ trợ"
+
+#. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_prompt_level_form
 msgid "Prompt Level"
-msgstr "Mức hỗ trợ"
+msgstr "Mức độ gợi ý"
 
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_iep_prompt_level
 #: model:ir.ui.menu,name:educare_iep.menu_iep_config_prompt_level
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_prompt_level_tree
 msgid "Prompt Levels"
-msgstr "Mức hỗ trợ"
-
-#. module: educare_iep
-#: model:ir.model,name:educare_iep.model_educare_iep_prompt_level
-msgid "Prompt Support Level"
-msgstr "Mức hỗ trợ nhắc nhở"
+msgstr "Các mức độ gợi ý"
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_prompt_level_code_unique
 msgid "Prompt level code must be unique."
-msgstr "Mã mức hỗ trợ phải là duy nhất."
+msgstr "Mã mức độ gợi ý phải là duy nhất."
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,description:educare_iep.teaching_errorless
+msgid "Providing immediate prompts to prevent errors during acquisition."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
+#: code:addons/educare_iep/wizard/objective_configure_wizard.py:0
 #: code:addons/educare_iep/wizard/objective_quick_wizard.py:0
 #, python-format
 msgid "Quan sat truc tiep trong buoi hoc."
-msgstr "Quan sát trực tiếp trong buổi học."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__review_frequency__quarterly
@@ -1873,52 +3134,113 @@ msgid "Quarterly"
 msgstr "Hàng quý"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Quick Template"
-msgstr "Mẫu nhanh"
-
-#. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__status__ready_review
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
 msgid "Ready for Review"
-msgstr "Chờ duyệt"
+msgstr "Sẵn sàng xem xét"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_discontinue_wizard__reason
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_discontinue_wizard__reason
 msgid "Reason"
 msgstr "Lý do"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Reason for closing IEP plan, notes for audit trail..."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
+msgid "Reason for permanently discontinuing objective..."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,description:educare_iep.collection_trial_by_trial
+msgid "Record correct/incorrect for each discrete trial."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,description:educare_iep.collection_whole_task
+msgid "Record correct/incorrect steps in a task analysis chain."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,description:educare_iep.collection_momentary_time
+msgid ""
+"Record whether behavior is occurring at the exact moment of\n"
+"            observation."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.data.collection.method,description:educare_iep.collection_partial_interval
+msgid ""
+"Record whether behavior occurred at any point during each\n"
+"            interval."
+msgstr ""
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__framework_id
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
 msgid "Reference Framework"
 msgstr "Khung tham chiếu"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "References"
-msgstr "Tài liệu tham chiếu"
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Reject"
+msgstr "Từ chối"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_reject_wizard_form
+msgid "Reject IEP Plan"
+msgstr "Từ chối kế hoạch IEP"
+
+#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_plan_reject_wizard
+msgid "Reject IEP Plan Wizard"
+msgstr "Trình hướng dẫn từ chối kế hoạch IEP"
+
+#. module: educare_iep
+#: model:ir.actions.act_window,name:educare_iep.action_educare_iep_plan_reject_wizard
+msgid "Reject Plan"
+msgstr "Từ chối kế hoạch"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_reject_wizard__rejection_reason
+msgid "Rejection Reason"
+msgstr "Lý do từ chối"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__weight
-msgid "Relative importance for goal weighted average. Higher = more impact on overall goal progress."
-msgstr "Tầm quan trọng tương đối cho trung bình có trọng số của mục tiêu. Cao hơn = ảnh hưởng nhiều hơn đến tiến độ tổng thể."
+msgid ""
+"Relative importance for goal weighted average. Higher = more impact on "
+"overall goal progress."
+msgstr ""
 
 #. module: educare_iep
-#: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__measurement_criteria
-msgid "Required before moving goal to In Progress."
-msgstr "Bắt buộc trước khi chuyển mục tiêu sang Đang thực hiện."
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__relevant_diagnosis_ids
+msgid "Relevant Diagnoses"
+msgstr "Chẩn đoán liên quan"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,name:educare_iep.tpl_obj_comm_request_1w
+msgid "Request preferred items using 1 word"
+msgstr "Yêu cầu đồ vật yêu thích bằng 1 từ"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__discontinue_reason
 msgid "Required when discontinuing a goal. Provides audit trail."
-msgstr "Bắt buộc khi ngừng mục tiêu. Cung cấp lịch sử kiểm toán."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Reset to Draft"
+msgstr "Đặt lại về Nháp"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__activity_user_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__activity_user_id
 msgid "Responsible User"
-msgstr "Người phụ trách"
+msgstr "Người dùng chịu trách nhiệm"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
@@ -1932,29 +3254,35 @@ msgstr "Tiếp tục"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__review_frequency
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Review Frequency"
-msgstr "Tần suất xem xét"
+msgstr "Tần suất đánh giá"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Revise"
-msgstr "Tạo phiên bản mới"
+msgstr "Sửa đổi"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_revision_wizard_form
 msgid "Revision Details"
-msgstr "Chi tiết phiên bản sửa đổi"
+msgstr "Chi tiết sửa đổi"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__revision_info
+msgid "Revision Info"
+msgstr "Thông tin sửa đổi"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__revision_notes
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_revision_wizard__revision_notes
 msgid "Revision Notes"
-msgstr "Ghi chú phiên bản sửa đổi"
+msgstr "Ghi chú sửa đổi"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__revision_of_id
 msgid "Revision Of"
-msgstr "Sửa đổi từ"
+msgstr "Sửa đổi của"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__revision_reason
@@ -1967,7 +3295,26 @@ msgstr "Lý do sửa đổi"
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Revision Reason is required before creating a new revision."
-msgstr "Lý do sửa đổi là bắt buộc trước khi tạo phiên bản mới."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__closing_reason__revision_cancelled
+msgid "Revision cancelled"
+msgstr "Sửa đổi đã bị hủy"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Revision cancelled by user."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Revision cancelled. Goals restored to v%s."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
@@ -1975,27 +3322,24 @@ msgstr "Lý do sửa đổi là bắt buộc trước khi tạo phiên bản m�
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Revision is allowed only when plan status is Active or Closed."
-msgstr "Chỉ được tạo phiên bản sửa đổi khi kế hoạch đang Đang thực hiện hoặc Đã đóng."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__revision_ids
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
 msgid "Revisions"
-msgstr "Các phiên bản sửa đổi"
+msgstr "Các sửa đổi"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__smart_specific
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__smart_specific
 msgid "S - Specific"
 msgstr "S - Cụ thể"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "S.M.A.R.T."
-msgstr "S.M.A.R.T."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "SMART Goal"
-msgstr "Mục tiêu SMART"
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "SMART Components"
+msgstr "Các thành phần SMART"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__message_has_sms_error
@@ -2005,9 +3349,15 @@ msgid "SMS Delivery error"
 msgstr "Lỗi gửi SMS"
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__search_term
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 msgid "Search IEP Goals"
-msgstr "Tìm kiếm mục tiêu dài hạn IEP"
+msgstr "Tìm kiếm mục tiêu IEP"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
@@ -2015,22 +3365,57 @@ msgid "Search IEP Plans"
 msgstr "Tìm kiếm kế hoạch IEP"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_search
+msgid "Search Objective Templates"
+msgstr "Tìm kiếm mẫu mục tiêu ngắn hạn"
+
+#. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 msgid "Search Short-term Objectives"
 msgstr "Tìm kiếm mục tiêu ngắn hạn"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Select template to auto-fill criteria and condition"
-msgstr "Chọn mẫu để tự động điền tiêu chí và điều kiện"
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "Search by name..."
+msgstr ""
 
 #. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__selected
+msgid "Select"
+msgstr "Chọn"
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_goal.py:0
+#: code:addons/educare_iep/wizard/goal_quick_wizard.py:0
+#, python-format
+msgid "Select Objective Templates"
+msgstr "Chọn mẫu mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "Select Objective Templates (Step 2 of 3)"
+msgstr "Chọn mẫu mục tiêu ngắn hạn (Bước 2/3)"
+
+#. module: educare_iep
+#: model:ir.model,name:educare_iep.model_educare_iep_goal_template_select_wizard
+msgid "Select Objective Templates for IEP Goal (Step 2)"
+msgstr "Chọn mẫu mục tiêu ngắn hạn cho mục tiêu IEP (Bước 2)"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__selected_count
+msgid "Selected"
+msgstr "Đã chọn"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_data_collection_method__sequence
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_framework__sequence
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__sequence
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__sequence
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__sequence
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__sequence
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_probe_method__sequence
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__sequence
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_prompt_level__sequence
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_teaching_method__sequence
 msgid "Sequence"
 msgstr "Thứ tự"
 
@@ -2038,6 +3423,11 @@ msgstr "Thứ tự"
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
 msgid "Session Rules"
 msgstr "Quy tắc buổi học"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
+msgid "Sessions"
+msgstr "Các buổi học"
 
 #. module: educare_iep
 #. odoo-python
@@ -2052,13 +3442,22 @@ msgstr "Mục tiêu ngắn hạn"
 #. module: educare_iep
 #: model:ir.actions.act_window,name:educare_iep.action_educare_iep_objective
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__objective_ids
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__objective_line_ids
 #: model:ir.ui.menu,name:educare_iep.menu_educare_iep_objective
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_tree
 msgid "Short-term Objectives"
-msgstr "Mục tiêu ngắn hạn"
+msgstr "Các mục tiêu ngắn hạn"
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,name:educare_iep.tpl_obj_behavior_sit
+msgid "Sit quietly for 5 consecutive minutes"
+msgstr "Ngồi yên trong 5 phút liên tiếp"
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_goal_template_select_wizard_line__difficulty_level
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__difficulty_level
+msgid "Skill difficulty level from 1 (easiest) to 5 (hardest)."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__slow_progress_alert
@@ -2066,14 +3465,21 @@ msgid "Slow Progress Alert"
 msgstr "Cảnh báo tiến độ chậm"
 
 #. module: educare_iep
-#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective__consecutive_sessions_required
-msgid "So buoi lien tiep dat target accuracy de tinh la mastered. Mac dinh 3 buoi theo chuan ABA."
-msgstr "Số buổi liên tiếp đạt độ chính xác mục tiêu để tính là thành thạo. Mặc định 3 buổi theo chuẩn ABA."
+#: model:educare.iep.objective.template,name:educare_iep.tpl_obj_cognitive_sort_3groups
+msgid "Sort objects into 3 categories"
+msgstr "Phân loại đồ vật vào 3 nhóm"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Specific behavior to be achieved..."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__framework_domain
-msgid "Specific domain or milestone reference within the framework (e.g. VB-MAPP Milestone 3)."
-msgstr "Lĩnh vực cụ thể hoặc mốc tham chiếu trong khung đánh giá (ví dụ: VB-MAPP Milestone 3)."
+msgid ""
+"Specific domain or milestone reference within the framework (e.g. VB-MAPP "
+"Milestone 3)."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__trend__stable
@@ -2083,7 +3489,7 @@ msgstr "Ổn định"
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective__trend__stagnant
 msgid "Stagnant"
-msgstr "Không tiến triển"
+msgstr "Không thay đổi"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
@@ -2095,6 +3501,7 @@ msgstr "Bắt đầu"
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__start_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__start_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__start_date
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Start Date"
 msgstr "Ngày bắt đầu"
 
@@ -2112,6 +3519,7 @@ msgstr "Thống kê"
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__status
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__status
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__status
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
@@ -2127,10 +3535,33 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-"Trạng thái dựa trên hoạt động\n"
-"Quá hạn: Đã qua ngày đến hạn\n"
-"Hôm nay: Ngày hoạt động là hôm nay\n"
-"Đã lên kế hoạch: Hoạt động trong tương lai."
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__implementation_steps
+msgid "Step-by-step teaching instructions or guidelines."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Step-by-step teaching instructions..."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Strength"
+msgstr "Điểm mạnh"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Strengths / Limitations Assessment by Domain"
+msgstr "Đánh giá điểm mạnh / hạn chế theo lĩnh vực"
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,description:educare_iep.teaching_dtt
+msgid ""
+"Structured, repetitive teaching in discrete trials with clear\n"
+"            antecedent, response, and consequence."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__student_id
@@ -2147,17 +3578,22 @@ msgstr "Học sinh"
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__student_center_id
 msgid "Student Center"
-msgstr "Trung tâm của học sinh"
+msgstr "Trung tâm học sinh"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Student Code"
+msgstr "Mã học sinh"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Student Information"
+msgstr "Thông tin học sinh"
 
 #. module: educare_iep
 #: model:ir.model,name:educare_iep.model_educare_student
 msgid "Student Profile"
 msgstr "Hồ sơ học sinh"
-
-#. module: educare_iep
-#: model:educare.iep.prompt.level,description:educare_iep.prompt_independent
-msgid "Student performs the skill without any prompting"
-msgstr "Học sinh thực hiện kỹ năng mà không cần bất kỳ hỗ trợ nào"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__revision_reason__student_change
@@ -2169,19 +3605,113 @@ msgstr "Thay đổi hồ sơ/nhu cầu học sinh"
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__closing_reason__student_transferred
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan_close_wizard__closing_reason__student_transferred
 msgid "Student transferred"
-msgstr "Học sinh chuyển đến nơi khác"
+msgstr "Học sinh chuyển trường"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Submit for Review"
+msgstr "Gửi để xem xét"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_baseline_accuracy_pct
+msgid "Suggested Baseline (%)"
+msgstr "Đường cơ sở đề xuất (%)"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_consecutive_sessions
+msgid "Suggested Consecutive Sessions"
+msgstr "Số buổi liên tiếp đề xuất"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_data_collection_method
+msgid "Suggested Data Collection"
+msgstr "Phương pháp thu thập dữ liệu đề xuất"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Suggested Defaults"
+msgstr "Mặc định đề xuất"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__suggested_prompt_level
+msgid "Suggested Prompt Level"
+msgstr "Mức độ gợi ý đề xuất"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__default_target_accuracy_pct
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_target_accuracy_pct
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_tree
+msgid "Suggested Target (%)"
+msgstr "Mục tiêu đề xuất (%)"
+
+#. module: educare_iep
+#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_template_default_baseline_pct_range
+msgid "Suggested baseline accuracy must be between 0 and 100."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__default_baseline_accuracy_pct
+msgid "Suggested baseline accuracy. Teachers adjust per student."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__default_consecutive_sessions
+msgid "Suggested number of consecutive sessions. Teachers adjust per student."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_template_default_target_pct_range
+msgid "Suggested target accuracy must be between 0 and 100."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_goal_template_select_wizard_line__default_target_accuracy_pct
+#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_template__default_target_accuracy_pct
+msgid "Suggested target accuracy. Teachers adjust per student."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,description:educare_iep.measurement_template_frequency_count
+msgid ""
+"Suitable for behavior reduction/increase goals requiring frequency\n"
+"            occurrence tracking."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,description:educare_iep.measurement_template_duration_recording
+msgid ""
+"Suitable for goals extending attention duration, seated learning,\n"
+"            or activity participation."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.measurement.template,description:educare_iep.measurement_template_accuracy_trials
+msgid ""
+"Suitable for new skill acquisition goals requiring standardized\n"
+"            trial-based measurement."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
 msgid "Summary (Auto-calculated)"
-msgstr "Tóm tắt (Tự động tính)"
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "Superseded by revision v%s."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__supervisor_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__supervisor_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__supervisor_id
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Supervisor"
-msgstr "Giám sát viên"
+msgstr "Giám sát"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
@@ -2191,36 +3721,43 @@ msgstr "Giám sát viên phê duyệt kế hoạch"
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__supervisor_approved
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__status__supervisor_approved
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
 msgid "Supervisor Approved"
-msgstr "Giám sát viên đã duyệt"
+msgstr "Đã được giám sát viên phê duyệt"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Supervisor Signature"
+msgstr "Chữ ký giám sát viên"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/models/iep_plan.py:0
 #, python-format
 msgid "Supervisor approval is required before parent consent."
-msgstr "Cần có phê duyệt của giám sát viên trước khi lấy đồng ý của phụ huynh."
-
-#. module: educare_iep
-#: model:ir.model.fields,help:educare_iep.field_educare_iep_objective_quick_wizard__consecutive_sessions_required
-msgid "Số buổi liên tiếp đạt target accuracy để tính là mastered. Mặc định 3 buổi theo chuẩn ABA."
-msgstr "Số buổi liên tiếp đạt độ chính xác mục tiêu để tính là thành thạo. Mặc định 3 buổi theo chuẩn ABA."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__smart_timebound
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__smart_timebound
 msgid "T - Time-Bound"
 msgstr "T - Có thời hạn"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Target %"
+msgstr "% Mục tiêu"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__target_accuracy_pct
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
 msgid "Target (%)"
 msgstr "Mục tiêu (%)"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__target_accuracy_pct
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__target_accuracy_pct
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__target_accuracy_pct
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__target_accuracy_pct
 msgid "Target Accuracy (%)"
@@ -2231,45 +3768,47 @@ msgstr "Độ chính xác mục tiêu (%)"
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard__target_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__target_date
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__target_date
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Target Date"
 msgstr "Ngày mục tiêu"
 
 #. module: educare_iep
-#. odoo-python
-#: code:addons/educare_iep/wizard/objective_quick_wizard.py:0
-#, python-format
-msgid "Target accuracy (%.1f%%) must be greater than baseline accuracy (%.1f%%)."
-msgstr "Độ chính xác mục tiêu (%.1f%%) phải lớn hơn độ chính xác ban đầu (%.1f%%)."
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Target Date:"
+msgstr "Ngày mục tiêu:"
 
 #. module: educare_iep
-#. odoo-python
-#: code:addons/educare_iep/wizard/goal_quick_wizard.py:0
-#, python-format
-msgid "Target accuracy must be between 0 and 100 for objective \"%s\"."
-msgstr "Độ chính xác mục tiêu phải nằm trong khoảng 0 đến 100 cho mục tiêu \"%s\"."
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__goal_id
+msgid "Target Goal"
+msgstr "Mục tiêu đích"
 
 #. module: educare_iep
 #. odoo-python
 #: code:addons/educare_iep/wizard/objective_quick_wizard.py:0
+#, python-format
+msgid ""
+"Target accuracy (%.1f%%) must be greater than baseline accuracy (%.1f%%)."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/wizard/accuracy_mixin.py:0
+#, python-format
+msgid "Target accuracy must be between 0 and 100%s."
+msgstr ""
+
+#. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_goal_target_accuracy_check
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_target_accuracy_check
-#, python-format
 msgid "Target accuracy must be between 0 and 100."
-msgstr "Độ chính xác mục tiêu phải nằm trong khoảng 0 đến 100."
+msgstr "Độ chính xác mục tiêu phải nằm trong khoảng 0 và 100."
 
 #. module: educare_iep
 #. odoo-python
-#: code:addons/educare_iep/wizard/goal_quick_wizard.py:0
+#: code:addons/educare_iep/wizard/accuracy_mixin.py:0
 #, python-format
-msgid "Target accuracy must be greater than baseline accuracy for objective \"%s\"."
-msgstr "Độ chính xác mục tiêu phải lớn hơn độ chính xác ban đầu cho mục tiêu \"%s\"."
-
-#. module: educare_iep
-#. odoo-python
-#: code:addons/educare_iep/wizard/objective_quick_wizard.py:0
-#, python-format
-msgid "Target accuracy must be greater than baseline accuracy."
-msgstr "Độ chính xác mục tiêu phải lớn hơn độ chính xác ban đầu."
+msgid "Target accuracy must be greater than baseline accuracy%s."
+msgstr ""
 
 #. module: educare_iep
 #. odoo-python
@@ -2277,38 +3816,97 @@ msgstr "Độ chính xác mục tiêu phải lớn hơn độ chính xác ban đ
 #: code:addons/educare_iep/models/iep_objective.py:0
 #, python-format
 msgid "Target date must be after start date!"
-msgstr "Ngày mục tiêu phải sau ngày bắt đầu!"
+msgstr ""
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Target:"
+msgstr "Mục tiêu:"
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,name:educare_iep.teaching_task_analysis
+#: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_objective_template__default_data_collection_method__task_analysis
+msgid "Task Analysis"
+msgstr "Phân tích nhiệm vụ"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_search
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_search
 msgid "Teacher"
 msgstr "Giáo viên"
 
 #. module: educare_iep
-#: model:educare.iep.prompt.level,description:educare_iep.prompt_verbal
-msgid "Teacher provides verbal cues or spoken instructions"
-msgstr "Giáo viên cung cấp gợi ý bằng lời hoặc hướng dẫn nói"
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Teacher Signature"
+msgstr "Chữ ký giáo viên"
 
 #. module: educare_iep
-#: model:educare.iep.prompt.level,description:educare_iep.prompt_gestural
-msgid "Teacher uses gestures, pointing, or visual cues"
-msgstr "Giáo viên sử dụng cử chỉ, chỉ tay, hoặc gợi ý hình ảnh"
+#: model:ir.model,name:educare_iep.model_educare_iep_teaching_method
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_teaching_method_form
+msgid "Teaching Method"
+msgstr "Phương pháp giảng dạy"
 
 #. module: educare_iep
+#: model:ir.actions.act_window,name:educare_iep.action_iep_teaching_method
+#: model:ir.ui.menu,name:educare_iep.menu_iep_config_teaching_method
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_iep_teaching_method_tree
+msgid "Teaching Methods"
+msgstr "Các phương pháp giảng dạy"
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,description:educare_iep.teaching_net
+msgid ""
+"Teaching in natural settings using the learner's motivation and\n"
+"            interests."
+msgstr ""
+
+#. module: educare_iep
+#: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_teaching_method_code_unique
+msgid "Teaching method code must be unique."
+msgstr "Mã phương pháp giảng dạy phải là duy nhất."
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Tel:"
+msgstr "Điện thoại:"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__template_id
+msgid "Template"
+msgstr "Mẫu"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
+msgid "Template Info"
+msgstr "Thông tin mẫu"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__template_id
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_measurement_template__name
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__name
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
 msgid "Template Name"
 msgstr "Tên mẫu"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
-msgid "Thêm Mục tiêu Ngắn hạn"
-msgstr "Thêm Mục tiêu Ngắn hạn"
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard__line_ids
+msgid "Templates"
+msgstr "Mẫu"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
-msgid "Thông tin cơ bản"
-msgstr "Thông tin cơ bản"
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "This plan is not a revision — it cannot be cancelled."
+msgstr ""
+
+#. module: educare_iep
+#. odoo-python
+#: code:addons/educare_iep/models/iep_plan.py:0
+#, python-format
+msgid "This plan is not a revision."
+msgstr ""
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
@@ -2318,18 +3916,13 @@ msgstr "Khung thời gian"
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
 msgid "Timeline"
-msgstr "Thời gian thực hiện"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "Tiêu chí đo lường cụ thể..."
-msgstr "Tiêu chí đo lường cụ thể..."
+msgstr "Dòng thời gian"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__total_sessions
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__total_sessions_worked
 msgid "Total Sessions"
-msgstr "Tổng số buổi học"
+msgstr "Tổng số buổi"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_search
@@ -2337,141 +3930,70 @@ msgid "Trend"
 msgstr "Xu hướng"
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__target_trials
-msgid "Trials per Session"
-msgstr "Số lần thử mỗi buổi"
+#: model:educare.iep.data.collection.method,name:educare_iep.collection_trial_by_trial
+msgid "Trial by Trial"
+msgstr "Từng thử nghiệm"
 
 #. module: educare_iep
-#: model:educare.iep.measurement.template,condition_template:educare_iep.measurement_template_accuracy_trials
-msgid "Trong giờ DTT, prompt tối đa theo kế hoạch can thiệp."
-msgstr "Trong giờ DTT, prompt tối đa theo kế hoạch can thiệp."
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,condition_template:educare_iep.measurement_template_frequency_count
-msgid ""
-"Trong hoạt động học có cấu trúc và hoạt động chơi hướng\n"
-"            dẫn."
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "Try adjusting the search term."
 msgstr ""
-"Trong hoạt động học có cấu trúc và hoạt động chơi hướng\n"
-"            dẫn."
 
 #. module: educare_iep
-#: model:educare.iep.measurement.template,condition_template:educare_iep.measurement_template_duration_recording
-msgid ""
-"Trong phiên NET hoặc hoạt động nhóm nhỏ, ghi nhận bằng đồng\n"
-"            hồ bấm giờ."
-msgstr ""
-"Trong phiên NET hoặc hoạt động nhóm nhỏ, ghi nhận bằng đồng\n"
-"            hồ bấm giờ."
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "Type"
+msgstr "Loại"
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__activity_exception_decoration
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_plan__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "Loại hoạt động ngoại lệ trên bản ghi."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
-msgid "Tên mục tiêu ngắn hạn..."
-msgstr "Tên mục tiêu ngắn hạn..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
-msgid "Tạo Objective"
-msgstr "Tạo mục tiêu ngắn hạn"
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,criteria_template:educare_iep.measurement_template_accuracy_trials
-msgid ""
-"Tỷ lệ đúng = số phản hồi đúng / tổng số cơ hội (trials)\n"
-"            trong buổi."
 msgstr ""
-"Tỷ lệ đúng = số phản hồi đúng / tổng số cơ hội (trials)\n"
-"            trong buổi."
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_specific:educare_iep.tpl_obj_comm_request_1w
+msgid "Use 1 functional word to make requests."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.objective.template,smart_specific:educare_iep.tpl_obj_comm_request_2w
+msgid "Use 2-word phrases in NET and DTT contexts."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,help:educare_iep.field_educare_iep_goal__measurement_template_id
 msgid "Use Quick Template to auto-fill Measurement Criteria and Condition."
-msgstr "Sử dụng Mẫu nhanh để tự động điền Tiêu chí và Điều kiện đo lường."
+msgstr ""
+
+#. module: educare_iep
+#: model:educare.iep.teaching.method,description:educare_iep.teaching_incidental
+msgid "Using naturally occurring opportunities to teach target skills."
+msgstr ""
 
 #. module: educare_iep
 #: model:educare.iep.framework,name:educare_iep.framework_vbmapp
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "VB-MAPP"
 msgstr "VB-MAPP"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: 15/03/2026 - Điều chỉnh target từ 80% xuống 70% do trẻ gặp khó khăn"
-msgstr "VD: 15/03/2026 - Điều chỉnh target từ 80% xuống 70% do trẻ gặp khó khăn"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
-msgid "VD: 2026-H1 hoặc 2026 Semester 1"
-msgstr "VD: 2026-HK1 hoặc 2026 Học kỳ 1"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: Cooper, Heron & Heward (2020). Applied Behavior Analysis, 3rd Ed."
-msgstr "VD: Cooper, Heron & Heward (2020). Applied Behavior Analysis, 3rd Ed."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
-msgid "VD: Nhận dạng 10 từ vựng cơ bản"
-msgstr "VD: Nhận dạng 10 từ vựng cơ bản"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "VD: Số câu trả lời đúng / tổng số lần thử"
-msgstr "VD: Số câu trả lời đúng / tổng số lần thử"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: Trong DTT và structured play"
-msgstr "VD: Trong DTT và structured play"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: Trong vòng 6 tháng"
-msgstr "VD: Trong vòng 6 tháng"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: Trẻ có khả năng tự điều chỉnh trong thời gian ngắn với hỗ trợ. Giảm hành vi giúp trẻ tham gia học tập hiệu quả hơn."
-msgstr "VD: Trẻ có khả năng tự điều chỉnh trong thời gian ngắn với hỗ trợ. Giảm hành vi giúp trẻ tham gia học tập hiệu quả hơn."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm"
-msgstr "VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_quick_wizard_form
-msgid "VD: Tăng khả năng giao tiếp xã hội"
-msgstr "VD: Tăng khả năng giao tiếp xã hội"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: Tăng khả năng giao tiếp xã hội..."
-msgstr "VD: Tăng khả năng giao tiếp xã hội..."
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "VD: Đạt 80% chính xác qua 3 buổi liên tiếp"
-msgstr "VD: Đạt 80% chính xác qua 3 buổi liên tiếp"
-
-#. module: educare_iep
 #: model:educare.iep.framework,description:educare_iep.framework_vbmapp
 msgid "Verbal Behavior Milestones Assessment and Placement Program"
-msgstr "Chương trình Đánh giá và Xếp lớp các Mốc Hành vi Ngôn ngữ"
+msgstr "Chương trình Đánh giá và Xếp lớp Cột mốc Hành vi Ngôn ngữ"
 
 #. module: educare_iep
 #: model:educare.iep.prompt.level,name:educare_iep.prompt_verbal
 msgid "Verbal Prompt"
-msgstr "Lời nhắc bằng lời"
+msgstr "Gợi ý bằng lời nói"
+
+#. module: educare_iep
+#: model:educare.iep.prompt.level,description:educare_iep.prompt_verbal
+msgid "Verbal cue or instruction given to learner."
+msgstr ""
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__version_number
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Version"
 msgstr "Phiên bản"
 
@@ -2483,12 +4005,12 @@ msgstr "Chuỗi phiên bản"
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan__root_plan_id
 msgid "Version Root"
-msgstr "Kế hoạch gốc"
+msgstr "Gốc phiên bản"
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_plan_root_version_unique
 msgid "Version number must be unique in a revision chain."
-msgstr "Số phiên bản phải là duy nhất trong một chuỗi sửa đổi."
+msgstr "Số phiên bản phải là duy nhất trong chuỗi sửa đổi."
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
@@ -2496,11 +4018,9 @@ msgid "Versions"
 msgstr "Các phiên bản"
 
 #. module: educare_iep
-#. odoo-python
-#: code:addons/educare_iep/wizard/goal_quick_wizard.py:0
-#, python-format
-msgid "Vui lòng thêm ít nhất 1 mục tiêu ngắn hạn trước khi tạo Goal."
-msgstr "Vui lòng thêm ít nhất 1 mục tiêu ngắn hạn trước khi tạo mục tiêu dài hạn."
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_student_form_iep_plans
+msgid "View"
+msgstr "Xem"
 
 #. module: educare_iep
 #: model:ir.model.fields.selection,name:educare_iep.selection__educare_iep_plan__review_frequency__weekly
@@ -2508,13 +4028,8 @@ msgid "Weekly"
 msgstr "Hàng tuần"
 
 #. module: educare_iep
-#: model:educare.iep.probe.method,name:educare_iep.probe_weekly
-msgid "Weekly Probe"
-msgstr "Probe hàng tuần"
-
-#. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__weight
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__weight
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__weight
 msgid "Weight"
 msgstr "Trọng số"
 
@@ -2524,52 +4039,51 @@ msgid "Weight must be greater than 0."
 msgstr "Trọng số phải lớn hơn 0."
 
 #. module: educare_iep
-#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_wizard_line__wizard_id
+#: model:educare.iep.data.collection.method,name:educare_iep.collection_whole_task
+msgid "Whole Task"
+msgstr "Toàn bộ nhiệm vụ"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_plan_cancel_revision_wizard__original_plan_id
+msgid "Will Restore"
+msgstr "Sẽ khôi phục"
+
+#. module: educare_iep
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal_template_select_wizard_line__wizard_id
+#: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__wizard_id
 msgid "Wizard"
 msgstr "Trình hướng dẫn"
 
 #. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Xác nhận chuyển trạng thái objective sang In Progress?"
-msgstr "Xác nhận chuyển trạng thái mục tiêu ngắn hạn sang Đang thực hiện?"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Xác nhận chuyển trạng thái objective sang Paused?"
-msgstr "Xác nhận chuyển trạng thái mục tiêu ngắn hạn sang Tạm dừng?"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Xác nhận đánh dấu objective là Mastered?"
-msgstr "Xác nhận đánh dấu mục tiêu ngắn hạn là Thành thạo?"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
-msgid "Xóa Goal"
-msgstr "Xóa mục tiêu dài hạn"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_form
-msgid "Xóa Objective"
-msgstr "Xóa mục tiêu ngắn hạn"
-
-#. module: educare_iep
-#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_form
-msgid "e.g. VB-MAPP Milestone 3 - Tact"
-msgstr "VD: VB-MAPP Milestone 3 - Tact"
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,criteria_template:educare_iep.measurement_template_duration_recording
-msgid "Đo tổng thời gian duy trì hành vi mục tiêu trong mỗi buổi."
-msgstr "Đo tổng thời gian duy trì hành vi mục tiêu trong mỗi buổi."
-
-#. module: educare_iep
-#: model:educare.iep.measurement.template,criteria_template:educare_iep.measurement_template_frequency_count
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
 msgid ""
-"Đếm tần suất hành vi mục tiêu trong thời lượng buổi học đã\n"
-"            xác định."
+"active goal(s)\n"
+"                    and"
 msgstr ""
-"Đếm tần suất hành vi mục tiêu trong thời lượng buổi học đã\n"
-"            xác định."
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_discontinue_wizard_form
+msgid "active objective(s) will also be discontinued."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_close_wizard_form
+msgid ""
+"active objective(s). All non-terminal goals and objectives will be "
+"discontinued."
+msgstr ""
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "months)"
+msgstr "tháng)"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_goal_template_select_wizard_form
+msgid "selected"
+msgstr "đã chọn"
+
+#. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
+msgid "years"
+msgstr "năm"

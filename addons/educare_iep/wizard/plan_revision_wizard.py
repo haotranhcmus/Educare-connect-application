@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -24,6 +24,24 @@ class EducareIepPlanRevisionWizard(models.TransientModel):
         required=True,
     )
     revision_notes = fields.Text(string='Revision Notes')
+    revision_info = fields.Html(
+        string='Revision Info',
+        compute='_compute_revision_info',
+    )
+
+    @api.depends('plan_id')
+    def _compute_revision_info(self):
+        for wizard in self:
+            if not wizard.plan_id:
+                wizard.revision_info = False
+                continue
+            objectives = wizard.plan_id.goal_ids.objective_ids
+            n_goals = len(wizard.plan_id.goal_ids)
+            n_objectives = len(objectives)
+            n_with_data = sum(1 for o in objectives if o.total_sessions_worked > 0)
+            wizard.revision_info = (
+                '<div>  </div>'
+            )
 
     def action_confirm_create_revision(self):
         self.ensure_one()

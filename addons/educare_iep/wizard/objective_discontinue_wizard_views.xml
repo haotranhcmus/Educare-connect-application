@@ -5,6 +5,11 @@
         <field name="model">educare.iep.objective.discontinue.wizard</field>
         <field name="arch" type="xml">
             <form string="Discontinue Objective" create="false" edit="false">
+                <field name="is_last_active_objective" invisible="1" />
+                <div class="alert alert-warning" role="alert"
+                    invisible="not is_last_active_objective">
+                    <strong>Warning:</strong> This is the last active objective in this goal.
+                    Discontinuing it will leave the parent goal with no active objectives. </div>
                 <group>
                     <group>
                         <field name="objective_id" readonly="1" />
@@ -14,15 +19,15 @@
                     <group string="Discontinue Details">
                         <field name="reason" />
                         <field name="notes"
-                               placeholder="Ghi chú thêm về lý do discontinue (tùy chọn)..." />
+                            placeholder="Additional notes about the discontinue reason (optional)..." />
                     </group>
                 </group>
                 <footer>
                     <button string="Cancel" class="btn-secondary" special="cancel" />
                     <button name="action_confirm_discontinue"
-                            string="Confirm"
-                            type="object"
-                            class="btn-primary" />
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary" />
                 </footer>
             </form>
         </field>
@@ -36,4 +41,3 @@
         <field name="target">new</field>
     </record>
 </odoo>
-

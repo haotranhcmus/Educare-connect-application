@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Real login accounts for Educare roles -->
+        <!-- Tai khoan dang nhap mau cho cac vai tro Educare -->
         <record id="user_educare_admin" model="res.users">
-            <field name="name">Educare Admin</field>
+            <field name="name">Quan tri Educare</field>
             <field name="login">admin.educare@example.com</field>
             <field name="email">admin.educare@example.com</field>
             <field name="password">Admin@123</field>
@@ -12,7 +12,7 @@
         </record>
 
         <record id="user_educare_supervisor_hcm" model="res.users">
-            <field name="name">Supervisor HCM</field>
+            <field name="name">Giam sat TP Ho Chi Minh</field>
             <field name="login">supervisor.hcm@example.com</field>
             <field name="email">supervisor.hcm@example.com</field>
             <field name="password">Supervisor@123</field>
@@ -21,7 +21,7 @@
         </record>
 
         <record id="user_educare_supervisor_hanoi" model="res.users">
-            <field name="name">Supervisor Hanoi</field>
+            <field name="name">Giam sat Ha Noi</field>
             <field name="login">supervisor.hanoi@example.com</field>
             <field name="email">supervisor.hanoi@example.com</field>
             <field name="password">Supervisor@123</field>
@@ -30,7 +30,7 @@
         </record>
 
         <record id="user_educare_teacher_01" model="res.users">
-            <field name="name">Teacher HCM 01</field>
+            <field name="name">Giao vien HCM 01</field>
             <field name="login">teacher.hcm01@example.com</field>
             <field name="email">teacher.hcm01@example.com</field>
             <field name="password">Teacher@123</field>
@@ -39,7 +39,7 @@
         </record>
 
         <record id="user_educare_teacher_02" model="res.users">
-            <field name="name">Teacher HCM 02</field>
+            <field name="name">Giao vien HCM 02</field>
             <field name="login">teacher.hcm02@example.com</field>
             <field name="email">teacher.hcm02@example.com</field>
             <field name="password">Teacher@123</field>
@@ -48,7 +48,7 @@
         </record>
 
         <record id="user_educare_teacher_03" model="res.users">
-            <field name="name">Teacher Hanoi 01</field>
+            <field name="name">Giao vien Ha Noi 01</field>
             <field name="login">teacher.hanoi01@example.com</field>
             <field name="email">teacher.hanoi01@example.com</field>
             <field name="password">Teacher@123</field>
@@ -57,7 +57,7 @@
         </record>
 
         <record id="user_educare_teacher_04" model="res.users">
-            <field name="name">Teacher Hanoi 02</field>
+            <field name="name">Giao vien Ha Noi 02</field>
             <field name="login">teacher.hanoi02@example.com</field>
             <field name="email">teacher.hanoi02@example.com</field>
             <field name="password">Teacher@123</field>
@@ -66,7 +66,7 @@
         </record>
 
         <record id="user_educare_parent_01" model="res.users">
-            <field name="name">Parent 01</field>
+            <field name="name">Phu huynh 01</field>
             <field name="login">parent01@example.com</field>
             <field name="email">parent01@example.com</field>
             <field name="password">Parent@123</field>
@@ -75,7 +75,7 @@
         </record>
 
         <record id="user_educare_parent_02" model="res.users">
-            <field name="name">Parent 02</field>
+            <field name="name">Phu huynh 02</field>
             <field name="login">parent02@example.com</field>
             <field name="email">parent02@example.com</field>
             <field name="password">Parent@123</field>
@@ -84,7 +84,7 @@
         </record>
 
         <record id="user_educare_parent_03" model="res.users">
-            <field name="name">Parent 03</field>
+            <field name="name">Phu huynh 03</field>
             <field name="login">parent03@example.com</field>
             <field name="email">parent03@example.com</field>
             <field name="password">Parent@123</field>
@@ -93,7 +93,7 @@
         </record>
 
         <record id="user_educare_parent_04" model="res.users">
-            <field name="name">Parent 04</field>
+            <field name="name">Phu huynh 04</field>
             <field name="login">parent04@example.com</field>
             <field name="email">parent04@example.com</field>
             <field name="password">Parent@123</field>
@@ -101,14 +101,14 @@
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_parent')])]" />
         </record>
 
-        <!-- Profiles (source of truth for role + center in Educare) -->
+        <!-- Ho so (nguon su that cho role + center trong Educare) -->
         <record id="profile_educare_admin" model="educare.user.profile">
             <field name="user_id" ref="educare_security.user_educare_admin" />
             <field name="role">admin</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="job_title">System Administrator</field>
-            <field name="department">Operations</field>
+            <field name="job_title">Quan tri he thong</field>
+            <field name="department">Van hanh</field>
         </record>
 
         <record id="profile_educare_supervisor_hcm" model="educare.user.profile">
@@ -116,8 +116,8 @@
             <field name="role">supervisor</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="job_title">Clinical Supervisor</field>
-            <field name="department">Clinical</field>
+            <field name="job_title">Giam sat chuyen mon</field>
+            <field name="department">Chuyen mon</field>
         </record>
 
         <record id="profile_educare_supervisor_hanoi" model="educare.user.profile">
@@ -125,8 +125,8 @@
             <field name="role">supervisor</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="job_title">Clinical Supervisor</field>
-            <field name="department">Clinical</field>
+            <field name="job_title">Giam sat chuyen mon</field>
+            <field name="department">Chuyen mon</field>
         </record>
 
         <record id="profile_educare_teacher_01" model="educare.user.profile">
@@ -134,8 +134,8 @@
             <field name="role">teacher</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="job_title">Special Education Teacher</field>
-            <field name="department">Intervention</field>
+            <field name="job_title">Giao vien giao duc dac biet</field>
+            <field name="department">Can thiep</field>
         </record>
 
         <record id="profile_educare_teacher_02" model="educare.user.profile">
@@ -143,8 +143,8 @@
             <field name="role">teacher</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hcm" />
-            <field name="job_title">Special Education Teacher</field>
-            <field name="department">Intervention</field>
+            <field name="job_title">Giao vien giao duc dac biet</field>
+            <field name="department">Can thiep</field>
         </record>
 
         <record id="profile_educare_teacher_03" model="educare.user.profile">
@@ -152,8 +152,8 @@
             <field name="role">teacher</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="job_title">Special Education Teacher</field>
-            <field name="department">Intervention</field>
+            <field name="job_title">Giao vien giao duc dac biet</field>
+            <field name="department">Can thiep</field>
         </record>
 
         <record id="profile_educare_teacher_04" model="educare.user.profile">
@@ -161,8 +161,8 @@
             <field name="role">teacher</field>
             <field name="status">active</field>
             <field name="center_id" ref="educare_base.center_hanoi" />
-            <field name="job_title">Special Education Teacher</field>
-            <field name="department">Intervention</field>
+            <field name="job_title">Giao vien giao duc dac biet</field>
+            <field name="department">Can thiep</field>
         </record>
 
         <record id="profile_educare_parent_01" model="educare.user.profile">

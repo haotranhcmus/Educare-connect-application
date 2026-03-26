@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_plan_reject_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.plan.reject.wizard.form</field>
+        <field name="model">educare.iep.plan.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject IEP Plan">
+                <group>
+                    <field name="plan_id" readonly="1" />
+                    <field name="rejection_reason" />
+                    <field name="rejection_notes"
+                        placeholder="Notes about the rejection reason..." />
+                </group>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                    <button name="action_confirm_reject"
+                        string="Confirm Reject"
+                        type="object"
+                        class="btn-danger" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_educare_iep_plan_reject_wizard" model="ir.actions.act_window">
+        <field name="name">Reject Plan</field>
+        <field name="res_model">educare.iep.plan.reject.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_educare_iep_plan_reject_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>

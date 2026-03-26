@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -23,6 +23,31 @@ class EducareIepPlanCloseWizard(models.TransientModel):
         required=True,
     )
     closing_notes = fields.Text(string='Notes')
+    active_goal_count = fields.Integer(
+        string='Active Goals',
+        compute='_compute_active_counts',
+    )
+    active_objective_count = fields.Integer(
+        string='Active Objectives',
+        compute='_compute_active_counts',
+    )
+
+    @api.depends('plan_id')
+    def _compute_active_counts(self):
+        for wiz in self:
+            if not wiz.plan_id:
+                wiz.active_goal_count = 0
+                wiz.active_objective_count = 0
+                continue
+            active_goals = wiz.plan_id.goal_ids.filtered(
+                lambda g: g.status not in ('achieved', 'discontinued')
+            )
+            wiz.active_goal_count = len(active_goals)
+            wiz.active_objective_count = sum(
+                len(g.objective_ids.filtered(
+                    lambda o: o.status not in ('mastered', 'discontinued')
+                )) for g in active_goals
+            )
 
     def action_confirm_close(self):
         self.ensure_one()

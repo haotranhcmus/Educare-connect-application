@@ -1,0 +1,690 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* educare_reporting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-26 01:15+0000\n"
+"PO-Revision-Date: 2026-03-26 01:15+0000\n"
+"Last-Translator: Vietnamese Translation\n"
+"Language-Team: Vietnamese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: vi\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/wizard/generate_report_wizard.py:0
+#, python-format
+msgid "Mastered today: %(objectives)s"
+msgstr "Muc tieu dat trong hom nay: %(objectives)s"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/wizard/generate_report_wizard.py:0
+#, python-format
+msgid "Showing positive progress: %(objectives)s"
+msgstr "Dang co tien bo tich cuc: %(objectives)s"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/wizard/generate_report_wizard.py:0
+#, python-format
+msgid "Today we worked on %(count)s objective(s): %(objectives)s."
+msgstr "Hom nay chung ta da thuc hien %(count)s muc tieu: %(objectives)s."
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "1-2 activities for home..."
+msgstr "1-2 hoạt động để thực hành tại nhà..."
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__parent_action_guide
+msgid "1-2 specific, simple activities to practice at home"
+msgstr "1-2 hoạt động cụ thể, đơn giản để thực hành ở nhà"
+
+#. module: educare_reporting
+#: model:mail.template,body_html:educare_reporting.mail_template_daily_report
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                <p>Dear Parent/Guardian of <strong>\n"
+"                        <t t-out=\"object.student_id.name\"></t>\n"
+"                    </strong>,</p>\n"
+"                <p>Here is the session report for <strong>\n"
+"                        <t t-out=\"object.report_date\"></t>\n"
+"                    </strong>:</p>\n"
+"\n"
+"                <t t-if=\"object.activity_summary\">\n"
+"                    <h3>What did we do today?</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.activity_summary\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"                <t t-if=\"object.achievements\">\n"
+"                    <h3>Achievements</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.achievements\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"                <t t-if=\"object.challenges_noted\">\n"
+"                    <h3>Areas to keep working on</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.challenges_noted\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"                <t t-if=\"object.highlight_moment\">\n"
+"                    <h3>Special moment</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.highlight_moment\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"                <t t-if=\"object.parent_action_guide\">\n"
+"                    <h3>What can parents do at home?</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.parent_action_guide\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"                <t t-if=\"object.next_session_preview\">\n"
+"                    <h3>Next session preview</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.next_session_preview\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"                <t t-if=\"object.teacher_note\">\n"
+"                    <h3>A note from your teacher</h3>\n"
+"                    <p>\n"
+"                        <t t-out=\"object.teacher_note\"></t>\n"
+"                    </p>\n"
+"                </t>\n"
+"\n"
+"                <p>Best regards,<br><t t-out=\"object.teacher_id.name\"></t></p>\n"
+"            </div>\n"
+"        "
+msgstr ""
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "A special moment..."
+msgstr "Một khoảnh khắc đặc biệt..."
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__accuracy_summary
+msgid "Accuracy Summary"
+msgstr "Tóm tắt độ chính xác"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_needaction
+msgid "Action Needed"
+msgstr "Cần hành động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__challenges_noted
+msgid "Areas to keep working on"
+msgstr "Các lĩnh vực cần tiếp tục làm việc"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__teacher_id
+msgid "Author"
+msgstr "Tác giả"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__name
+msgid "Auto-generated: DR-[student_code]-YYYYMMDD"
+msgstr "Tự động tạo: DR-[mã_học_sinh]-YYYYMMDD"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__activity_summary
+msgid "Brief description of session activities in parent-friendly language"
+msgstr "Mô tả ngắn gọn các hoạt động trong buổi học bằng ngôn ngữ thân thiện với phụ huynh"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/models/daily_report.py:0
+#, python-format
+msgid "Cannot transition from '%(from)s' to '%(to)s'."
+msgstr "Không thể chuyển từ '%(from)s' sang '%(to)s'."
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__center_id
+msgid "Center"
+msgstr "Trung tâm"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "Create Report"
+msgstr "Tạo báo cáo"
+
+#. module: educare_reporting
+#: model_terms:ir.actions.act_window,help:educare_reporting.action_daily_report
+msgid "Create your first daily report"
+msgstr "Tạo báo cáo hàng ngày đầu tiên của bạn"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__create_uid
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__create_date
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: educare_reporting
+#: model:ir.model,name:educare_reporting.model_educare_daily_report
+msgid "Daily Parent Report"
+msgstr "Báo cáo hàng ngày cho phụ huynh"
+
+#. module: educare_reporting
+#: model:ir.model.fields.selection,name:educare_reporting.selection__educare_daily_report__report_type__daily
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Daily Report"
+msgstr "Báo cáo hàng ngày"
+
+#. module: educare_reporting
+#: model:mail.template,name:educare_reporting.mail_template_daily_report
+msgid "Daily Report to Parent"
+msgstr "Báo cáo hàng ngày đến phụ huynh"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/models/daily_report.py:0
+#, python-format
+msgid "Daily Report: %(student)s - %(date)s"
+msgstr "Báo cáo hàng ngày: %(student)s - %(date)s"
+
+#. module: educare_reporting
+#: model:ir.actions.act_window,name:educare_reporting.action_daily_report
+#: model:ir.ui.menu,name:educare_reporting.menu_daily_reports
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_tree
+msgid "Daily Reports"
+msgstr "Các báo cáo hàng ngày"
+
+#. module: educare_reporting
+#: model_terms:ir.actions.act_window,help:educare_reporting.action_daily_report
+msgid ""
+"Daily reports help parents understand what their child\n"
+"            did during therapy sessions."
+msgstr ""
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "Describe what the child did today..."
+msgstr "Mô tả những gì trẻ đã làm hôm nay..."
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__display_name
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: educare_reporting
+#: model:ir.model.fields.selection,name:educare_reporting.selection__educare_daily_report__status__draft
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__teacher_note
+msgid "Encouraging personal message for the family"
+msgstr "Tin nhắn cá nhân khích lệ cho gia đình"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ: fa-tasks"
+
+#. module: educare_reporting
+#: model:ir.actions.act_window,name:educare_reporting.action_generate_report_wizard
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "Generate Daily Report"
+msgstr "Tạo báo cáo hàng ngày"
+
+#. module: educare_reporting
+#: model:ir.model,name:educare_reporting.model_educare_generate_report_wizard
+msgid "Generate Daily Report from Session"
+msgstr "Tạo báo cáo hàng ngày từ buổi học"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_session_log_form_inherit_reporting
+msgid "Generate Report"
+msgstr "Tạo báo cáo"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__challenges_noted
+msgid "Honest but positive framing of challenges"
+msgstr "Trình bày những thách thức một cách trung thực nhưng tích cực"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__id
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng chỉ ra một hoạt động ngoại lệ."
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, các tin nhắn mới cần sự chú ý của bạn."
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__message_has_error
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn có lỗi gửi."
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__write_uid
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật bởi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__write_date
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__write_date
+msgid "Last Updated on"
+msgstr "Ngày cập nhật"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Mark Read"
+msgstr "Đánh dấu đã đọc"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Mark Ready"
+msgstr "Đánh dấu sẵn sàng"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Thời hạn hoạt động của tôi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Thời hạn hoạt động tiếp theo"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__next_session_preview
+msgid "Next session preview"
+msgstr "Xem trước buổi học tiếp theo"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số hành động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần hành động"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn có lỗi gửi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__objectives_worked
+msgid "Objectives Worked"
+msgstr "Mục tiêu ngắn hạn đã thực hiện"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__highlight_moment
+msgid "One memorable positive moment from the session"
+msgstr "Một khoảnh khắc tích cực đáng nhớ từ buổi học"
+
+#. module: educare_reporting
+#: model:ir.model.constraint,message:educare_reporting.constraint_educare_daily_report_session_report_unique
+msgid "Only one report can be created per session."
+msgstr "Chỉ có thể tạo một báo cáo cho mỗi buổi học."
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__overall_performance
+msgid "Overall Performance"
+msgstr "Hiệu suất tổng thể"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Parent Report Content"
+msgstr "Nội dung báo cáo cho phụ huynh"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Performance"
+msgstr "Hiệu suất"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "Personal message..."
+msgstr "Tin nhắn cá nhân..."
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__teacher_note
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__teacher_note
+msgid "Personal note from teacher"
+msgstr "Ghi chú cá nhân từ giáo viên"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/models/daily_report.py:0
+#, python-format
+msgid ""
+"Please fill in 'What did we do today?' before marking report '%(name)s' as "
+"ready."
+msgstr ""
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__achievements
+msgid "Positive outcomes tied to IEP goals, in plain language"
+msgstr "Kết quả tích cực liên quan đến mục tiêu IEP, bằng ngôn ngữ đơn giản"
+
+#. module: educare_reporting
+#: model:ir.model.fields.selection,name:educare_reporting.selection__educare_daily_report__status__read
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Read by Parent"
+msgstr "Đã đọc bởi phụ huynh"
+
+#. module: educare_reporting
+#: model:ir.model.fields.selection,name:educare_reporting.selection__educare_daily_report__status__ready
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Ready to Send"
+msgstr "Sẵn sàng gửi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__report_code
+msgid "Report Code"
+msgstr "Mã báo cáo"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "Report Content (edit before saving)"
+msgstr "Nội dung báo cáo (chỉnh sửa trước khi lưu)"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__report_date
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__report_date
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Report Date"
+msgstr "Ngày báo cáo"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__name
+msgid "Report Title"
+msgstr "Tiêu đề báo cáo"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__report_type
+msgid "Report Type"
+msgstr "Loại báo cáo"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/models/daily_report.py:0
+#, python-format
+msgid "Report date cannot be before the session date."
+msgstr "Ngày báo cáo không thể trước ngày buổi học."
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Report title..."
+msgstr "Tiêu đề báo cáo..."
+
+#. module: educare_reporting
+#: model:ir.ui.menu,name:educare_reporting.menu_reporting_root
+msgid "Reports"
+msgstr "Báo cáo"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Reset this report to draft?"
+msgstr "Đặt lại báo cáo này về Nháp?"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Reset to Draft"
+msgstr "Đặt lại về Nháp"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_user_id
+msgid "Responsible User"
+msgstr "Người dùng chịu trách nhiệm"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Search Reports"
+msgstr "Tìm kiếm báo cáo"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Send to Parent"
+msgstr "Gửi cho phụ huynh"
+
+#. module: educare_reporting
+#: model:ir.model.fields.selection,name:educare_reporting.selection__educare_daily_report__status__sent
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__session_log_id
+msgid "Session"
+msgstr "Buổi học"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__session_duration
+msgid "Session Duration (hours)"
+msgstr "Thời lượng buổi học (giờ)"
+
+#. module: educare_reporting
+#: model:mail.template,subject:educare_reporting.mail_template_daily_report
+msgid ""
+"Session Report: {{ object.student_id.name }} - {{ object.report_date\n"
+"            }}"
+msgstr ""
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__session_log_id
+msgid "Source Session"
+msgstr "Buổi học nguồn"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__highlight_moment
+msgid "Special moment"
+msgstr "Khoảnh khắc đặc biệt"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__status
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__student_id
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__student_id
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Student"
+msgstr "Học sinh"
+
+#. module: educare_reporting
+#. odoo-python
+#: code:addons/educare_reporting/models/daily_report.py:0
+#, python-format
+msgid "Student '%(student)s' has no parent email configured."
+msgstr "Học sinh '%(student)s' chưa cấu hình email phụ huynh."
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Teacher"
+msgstr "Giáo viên"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "Technical Summary"
+msgstr "Tóm tắt kỹ thuật"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "This Week"
+msgstr "Tuần này"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_search
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trong hồ sơ."
+
+#. module: educare_reporting
+#: model:ir.model.fields.selection,name:educare_reporting.selection__educare_daily_report__report_type__weekly_summary
+msgid "Weekly Summary"
+msgstr "Tóm tắt hàng tuần"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__parent_action_guide
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__parent_action_guide
+msgid "What can parents do at home?"
+msgstr "Phụ huynh có thể làm gì ở nhà?"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__achievements
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__achievements
+msgid "What did the child achieve?"
+msgstr "Trẻ đã đạt được gì?"
+
+#. module: educare_reporting
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_daily_report__activity_summary
+#: model:ir.model.fields,field_description:educare_reporting.field_educare_generate_report_wizard__activity_summary
+msgid "What did we do today?"
+msgstr "Hôm nay chúng ta đã làm gì?"
+
+#. module: educare_reporting
+#: model:ir.model.fields,help:educare_reporting.field_educare_daily_report__next_session_preview
+msgid "What to expect in the upcoming session"
+msgstr "Những gì sẽ xảy ra trong buổi học tới"
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "What to keep working on..."
+msgstr "Những gì cần tiếp tục thực hành..."
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_generate_report_wizard_form
+msgid "What went well..."
+msgstr "Những gì đã diễn ra tốt..."
+
+#. module: educare_reporting
+#: model_terms:ir.ui.view,arch_db:educare_reporting.view_daily_report_form
+msgid "What's coming next..."
+msgstr "Tiếp theo sẽ là gì..."

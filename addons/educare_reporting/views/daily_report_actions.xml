@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_daily_report" model="ir.actions.act_window">
+        <field name="name">Daily Reports</field>
+        <field name="res_model">educare.daily.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_daily_report_search" />
+        <field name="context">{'search_default_filter_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first daily report
+            </p>
+            <p>Daily reports help parents understand what their child
+            did during therapy sessions.</p>
+        </field>
+    </record>
+</odoo>

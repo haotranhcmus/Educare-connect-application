@@ -8,21 +8,21 @@ class EducareUserProfile(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'educare.audit.mixin']
     _rec_name = 'display_name'
 
-    # ── Nhóm 1: Liên kết User ────────────────────────────────────────────────
+    # Group 1: User Link
     user_id = fields.Many2one(
         'res.users',
         string='User',
         ondelete='cascade',
         index=True,
     )
-    # Dùng khi tạo mới profile (chưa có user_id) — auto tạo res.users
+    # Used when creating a new profile without user_id; auto-creates res.users.
     full_name = fields.Char(
         string='Full Name',
-        help='Nhập tên người dùng. Hệ thống sẽ tự tạo tài khoản khi lưu.',
+        help='Enter user full name. The system will auto-create the account on save.',
     )
     login = fields.Char(
         string='Login (Email)',
-        help='Nhập email/login cho tài khoản mới.',
+        help='Enter email/login for the new account.',
     )
     display_name = fields.Char(
         string='Display Name',
@@ -40,7 +40,7 @@ class EducareUserProfile(models.Model):
         related='user_id.image_128',
     )
 
-    # ── Nhóm 2: Vai trò & Tổ chức ────────────────────────────────────────────
+    # Group 2: Role and Organization
     role = fields.Selection([
         ('admin', 'Admin'),
         ('supervisor', 'Supervisor'),
@@ -58,7 +58,7 @@ class EducareUserProfile(models.Model):
     department = fields.Char(string='Department', size=128)
     employee_code = fields.Char(string='Employee Code', size=20, index=True, copy=False)
 
-    # ── Nhóm 3: Trạng thái & Bảo mật ────────────────────────────────────────
+    # Group 3: Status and Security
     status = fields.Selection([
         ('active', 'Active'),
         ('inactive', 'Inactive'),
@@ -67,7 +67,7 @@ class EducareUserProfile(models.Model):
 
     date_joined = fields.Date(
         string='Date Joined',
-        default=fields.Date.today,   # ← reference, không gọi hàm
+        default=fields.Date.today,   # reference, do not call the function here
     )
     last_login = fields.Datetime(string='Last Login', readonly=True)
     login_count = fields.Integer(string='Login Count', default=0, readonly=True)
@@ -85,7 +85,7 @@ class EducareUserProfile(models.Model):
         string='Two-Factor Auth', default=False
     )
 
-    # ── Nhóm 4: Chuyên môn (Teacher/Supervisor) ──────────────────────────────
+    # Group 4: Expertise (Teacher/Supervisor)
     specialization = fields.Text(string='Specialization')
     certification = fields.Char(
         string='Certifications (BCBA, RBT, etc.)', size=256
@@ -100,7 +100,7 @@ class EducareUserProfile(models.Model):
         compute='_compute_student_count',
     )
 
-    # ── Nhóm 5: Phụ huynh (Parent role) ──────────────────────────────────────
+    # Group 5: Parent Role
     parent_relation = fields.Selection([
         ('father', 'Father'),
         ('mother', 'Mother'),
@@ -129,7 +129,7 @@ class EducareUserProfile(models.Model):
         for rec in self:
             if rec.role in ('teacher', 'supervisor') and not rec.center_id:
                 raise ValidationError(
-                    _('Giáo viên và giám sát viên phải được gán vào một trung tâm.')
+                    _('Teachers and supervisors must be assigned to a center.')
                 )
 
     # ── SQL Constraints ───────────────────────────────────────────────────────
@@ -154,7 +154,7 @@ class EducareUserProfile(models.Model):
                 rec.display_name = name or ''
 
     def _compute_student_count(self):
-        # Placeholder — wire khi educare_student sẵn sàng
+        # Placeholder, will be wired when educare_student is ready.
         for rec in self:
             rec.current_student_count = 0
 
@@ -165,7 +165,7 @@ class EducareUserProfile(models.Model):
 
     # ── Action Methods ────────────────────────────────────────────────────────
     def _sync_security_group(self):
-        """Tự động gán Odoo security group theo role selection (internal use)."""
+        """Automatically sync Odoo security groups based on role (internal use)."""
         group_map = {
             'admin': self.env.ref('educare_security.group_admin'),
             'supervisor': self.env.ref('educare_security.group_supervisor'),
@@ -225,12 +225,12 @@ class EducareUserProfile(models.Model):
                 full_name = (vals.get('full_name') or '').strip()
                 login = (vals.get('login') or '').strip()
                 if not full_name:
-                    raise UserError(_('Vui lòng nhập Full Name để tạo tài khoản người dùng.'))
+                    raise UserError(_('Please enter Full Name to create a user account.'))
                 if not login:
-                    raise UserError(_('Vui lòng nhập Login (Email) để tạo tài khoản người dùng.'))
-                # Kiểm tra login chưa được dùng
+                    raise UserError(_('Please enter Login (Email) to create a user account.'))
+                # Ensure login is unique
                 if self.env['res.users'].sudo().search([('login', '=', login)], limit=1):
-                    raise UserError(_('Login "%s" đã tồn tại. Vui lòng dùng email khác.') % login)
+                    raise UserError(_('Login "%s" already exists. Please use another email.') % login)
                 new_user = self.env['res.users'].sudo().with_context(
                     no_reset_password=True
                 ).create({
@@ -302,7 +302,7 @@ class EducareUserProfile(models.Model):
         for rec in self:
             if rec.role in ('teacher', 'supervisor') and not rec.employee_code:
                 raise ValidationError(
-                    _('Teacher và Supervisor phải có mã nhân viên (Employee Code).')
+                    _('Teacher and Supervisor must have an Employee Code.')
                 )
 
     @api.model

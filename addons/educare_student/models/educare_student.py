@@ -425,7 +425,7 @@ class EducareStudent(models.Model):
         for student in self:
             if student.assigned_teacher_id in student.co_teacher_ids:
                 raise ValidationError(
-                    'Giáo viên chính "%s" không thể đồng thời là giáo viên hỗ trợ.'
+                    'Main teacher "%s" cannot also be assigned as co-teacher.'
                     % student.assigned_teacher_id.name
                 )
 

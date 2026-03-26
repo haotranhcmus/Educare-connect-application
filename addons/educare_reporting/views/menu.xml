@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Reports sub-menu under Sessions root -->
+    <menuitem id="menu_reporting_root"
+        name="Reports"
+        parent="educare_session.menu_session_root"
+        sequence="30"
+        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
+
+    <menuitem id="menu_daily_reports"
+        name="Daily Reports"
+        parent="menu_reporting_root"
+        action="action_daily_report"
+        sequence="10" />
+</odoo>

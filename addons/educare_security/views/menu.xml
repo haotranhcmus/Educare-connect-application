@@ -21,7 +21,7 @@
             sequence="20"
             groups="educare_security.group_admin" />
 
-        <!-- My Profile — dành cho teacher, supervisor, parent tự xem profile của mình -->
+        <!-- My Profile: for teacher, supervisor, and parent to view their own profile -->
         <menuitem id="menu_my_profile"
             name="My Profile"
             parent="educare_base.menu_educare_root"

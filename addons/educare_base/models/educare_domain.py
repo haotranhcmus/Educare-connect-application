@@ -9,7 +9,7 @@ class EducareDomain(models.Model):
     code = fields.Char(string="Domain Code", required=True, index=True)
     active = fields.Boolean(string="Active", default=True)
     description = fields.Text(string="Description", translate=True)
-    color = fields.Integer(string="Color Index", default=0)
+    color = fields.Char(string="Color", default='#cccccc')
     icon = fields.Char(string="Font Awesome Icon", help="Font Awesome icon class (e.g., 'fa-solid fa-school')")
     sequence = fields.Integer(string="Sequence", default=10)
 

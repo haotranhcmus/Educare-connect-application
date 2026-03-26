@@ -7,15 +7,14 @@
             <form string="Long-term IEP Goal">
                 <header>
                     <field name="can_delete" invisible="1" />
-                    <button name="action_delete_goal"
-                        string="Xóa Goal"
+                    <field name="plan_status" invisible="1" />
+                    <button name="action_open_discontinue_goal_wizard" string="Discontinue"
                         type="object"
                         class="btn-danger"
-                        confirm="Bạn chắc chắn muốn xóa mục tiêu dài hạn này? Hành động này không thể hoàn tác."
-                        invisible="not can_delete"
-                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
+                        invisible="status in ('achieved', 'discontinued') or plan_status != 'active'"
+                        groups="educare_security.group_supervisor,educare_security.group_admin" />
                     <field name="status" widget="statusbar"
-                        statusbar_visible="draft,active,achieved" />
+                        statusbar_visible="draft,active,achieved,discontinued" />
                 </header>
 
                 <!-- Alert banner when objective alerts are active -->
@@ -33,7 +32,15 @@
                             class="oe_stat_button"
                             icon="fa-plus"
                             string="Add Objective"
-                            invisible="status in ['achieved', 'discontinued']">
+                            invisible="plan_status != 'draft' or status in ['achieved', 'discontinued']"
+                            groups="educare_security.group_supervisor,educare_security.group_admin">
+                        </button>
+                        <button name="action_open_template_import_wizard"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-download"
+                            string="Import Template"
+                            invisible="plan_status != 'draft' or status in ['achieved', 'discontinued']">
                         </button>
                         <button name="action_open_objectives"
                             type="object"
@@ -48,26 +55,32 @@
                     <div class="oe_title">
                         <label for="name" />
                         <h1>
-                            <field name="name" placeholder="VD: Tăng khả năng giao tiếp xã hội..." />
+                            <field name="name"
+                                placeholder="E.g.: Improve social communication skills..."
+                                readonly="plan_status != 'draft'" />
                         </h1>
-                        <h3>
-                            <field name="goal_code" />
+                        <h3 invisible="not goal_code or goal_code == '/'">
+                            <field name="goal_code" readonly="1" />
                         </h3>
                     </div>
 
                     <!-- Quick Info -->
                     <group>
                         <group string="Information">
-                            <field name="plan_id" />
+                            <field name="plan_id" readonly="1" />
                             <field name="student_id" readonly="1" />
-                            <field name="goal_domain_id" />
-                            <field name="priority" />
+                            <field name="goal_domain_id" readonly="plan_status != 'draft'" />
+                            <field name="priority" readonly="plan_status != 'draft'" />
                             <field name="assigned_teacher_id" readonly="1" />
                             <field name="supervisor_id" readonly="1" />
+                            <field name="goal_description"
+                                placeholder="Overall long-term goal description..."
+                                readonly="plan_status != 'draft'"
+                                colspan="2" />
                         </group>
                         <group string="Time Frame">
                             <field name="start_date" invisible="1" />
-                            <field name="target_date" />
+                            <field name="target_date" readonly="plan_status != 'draft'" />
                             <field name="achieved_date"
                                 invisible="status != 'achieved'" />
                             <field name="discontinue_reason"
@@ -99,9 +112,9 @@
                                     <header>
                                         <button name="action_delete_objective"
                                             type="object"
-                                            string="Xóa Objective"
+                                            string="Delete Objective"
                                             class="btn-link text-danger"
-                                            confirm="Bạn chắc chắn muốn xóa mục tiêu ngắn hạn đã chọn? Hành động này không thể hoàn tác." />
+                                            confirm="Are you sure you want to delete the selected short-term objective? This action cannot be undone." />
                                     </header>
                                     <field name="objective_code" readonly="1"
                                         column_invisible="1" />
@@ -124,44 +137,15 @@
                                     <field name="weight" column_invisible="1" />
                                 </tree>
                             </field>
+                            <div class="align-items-center text-center">
+                                <button name="action_open_template_import_wizard"
+                                    string="Add Objectives"
+                                    type="object"
+                                    class="link-primary"
+                                    invisible="plan_status != 'draft' or status in ['achieved', 'discontinued']" />
+                            </div>
                         </page>
-                        <!-- Tab 2: SMART Goal -->
-                        <page string="SMART Goal" name="smart">
-                            <group>
-                                <field name="goal_description"
-                                    placeholder="Mô tả tổng quan mục tiêu dài hạn..."
-                                    colspan="2" />
-                            </group>
-                            <group col="2">
-                                <group string="S.M.A.R.T.">
-                                    <field name="smart_specific"
-                                        placeholder="Hành vi cụ thể cần đạt được..." />
-                                    <field name="smart_measurable"
-                                        placeholder="VD: Đạt 80% chính xác qua 3 buổi liên tiếp" />
-                                    <field name="smart_timebound"
-                                        placeholder="VD: Trong vòng 6 tháng" />
-                                    <field name="smart_analysis"
-                                        placeholder="VD: Trẻ có khả năng tự điều chỉnh trong thời gian ngắn với hỗ trợ. Giảm hành vi giúp trẻ tham gia học tập hiệu quả hơn." />
-                                </group>
-
-                                <group string="Measurement Setup">
-                                    <field name="baseline_description"
-                                        placeholder="Mô tả mức độ ban đầu trước can thiệp..." />
-                                    <field name="baseline_accuracy_pct" />
-                                    <field name="target_accuracy_pct" />
-                                    <field name="measurement_template_id"
-                                        string="Quick Template"
-                                        options="{'no_create': True}"
-                                        placeholder="Select template to auto-fill criteria and condition" />
-                                    <field name="measurement_criteria"
-                                        placeholder="Tiêu chí đo lường cụ thể..." />
-                                    <field name="measurement_condition"
-                                        placeholder="VD: Trong DTT và structured play" />
-                                </group>
-                            </group>
-                        </page>
-
-                        <!-- Tab 3: Progress -->
+                        <!-- Tab 2: Progress -->
                         <page string="Progress" name="progress">
                             <group>
                                 <group string="Summary (Auto-calculated)">
@@ -172,24 +156,7 @@
                             </group>
                             <group>
                                 <field name="modification_history"
-                                    placeholder="VD: 15/03/2026 - Điều chỉnh target từ 80% xuống 70% do trẻ gặp khó khăn" />
-                            </group>
-                        </page>
-                        <!-- Tab 4: Framework -->
-                        <page string="Framework" name="framework">
-                            <group>
-                                <group string="Reference Framework">
-                                    <field name="framework_id" />
-                                    <field name="framework_code" />
-                                    <field name="framework_domain"
-                                        placeholder="e.g. VB-MAPP Milestone 3 - Tact" />
-                                </group>
-                                <group string="References">
-                                    <field name="literature_ref"
-                                        placeholder="VD: Cooper, Heron &amp; Heward (2020). Applied Behavior Analysis, 3rd Ed." />
-                                    <field name="notes"
-                                        placeholder="VD: Trẻ thực hiện tốt hơn vào buổi sáng, cần theo dõi thêm" />
-                                </group>
+                                    placeholder="E.g.: 03/15/2026 - Adjusted target from 80% to 70% due to student difficulty" />
                             </group>
                         </page>
                     </notebook>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_result_search" model="ir.ui.view">
+        <field name="name">educare.session.result.search</field>
+        <field name="model">educare.session.result</field>
+        <field name="arch" type="xml">
+            <search string="Search Results">
+                <field name="session_id" />
+                <field name="objective_id" />
+                <filter name="mastered" string="Mastery Achieved"
+                    domain="[('mastery_achieved', '=', True)]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_session" string="Session"
+                        context="{'group_by': 'session_id'}" />
+                    <filter name="group_objective" string="Objective"
+                        context="{'group_by': 'objective_id'}" />
+                    <filter name="group_phase" string="Phase"
+                        context="{'group_by': 'phase'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

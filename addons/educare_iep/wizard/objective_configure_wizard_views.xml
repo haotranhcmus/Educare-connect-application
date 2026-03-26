@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_educare_iep_objective_configure_wizard_form" model="ir.ui.view">
+        <field name="name">educare.iep.objective.configure.wizard.form</field>
+        <field name="model">educare.iep.objective.configure.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Configure Objectives (Step 3 of 3)">
+                <sheet>
+                    <!-- Goal banner -->
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-3 py-2"
+                        role="alert">
+                        <i class="fa fa-bullseye fa-lg text-info" />
+                        <span>
+                            <strong>Goal:</strong>
+                            <field name="goal_name" readonly="1" nolabel="1"
+                                class="ms-1 fw-semibold" />
+                        </span>
+                    </div>
+
+                    <div class="text-muted small mb-3">
+                        <i class="fa fa-info-circle me-1" /> Adjust baseline, target, weight, and
+                        consecutive sessions for each objective before importing. </div>
+
+                    <!-- Objective configuration lines -->
+                    <field name="line_ids" nolabel="1">
+                        <tree editable="bottom" create="false" delete="true">
+                            <field name="name" readonly="1" />
+                            <field name="baseline_accuracy_pct" string="Baseline (%)" />
+                            <field name="target_accuracy_pct" string="Target (%)" />
+                            <field name="consecutive_sessions_required" string="Sessions" />
+                            <field name="weight" />
+                            <field name="template_id" column_invisible="1" />
+                        </tree>
+                    </field>
+                </sheet>
+
+                <footer>
+                    <button name="action_confirm"
+                        string="Import Objectives"
+                        type="object"
+                        class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

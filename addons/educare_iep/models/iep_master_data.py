@@ -17,42 +17,6 @@ class EducareIepFramework(models.Model):
     ]
 
 
-class EducareIepPromptLevel(models.Model):
-    _name = 'educare.iep.prompt.level'
-    _description = 'Prompt Support Level'
-    _order = 'sequence'
-
-    name = fields.Char(string='Prompt Level', required=True, translate=True)
-    code = fields.Char(string='Code', required=True, size=32)
-    description = fields.Text(string='Description', translate=True)
-    sequence = fields.Integer(
-        string='Sequence',
-        default=10,
-        help='Lower = more independent; higher = more support needed',
-    )
-    active = fields.Boolean(string='Active', default=True)
-
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Prompt level code must be unique.'),
-    ]
-
-
-class EducareIepProbeMethod(models.Model):
-    _name = 'educare.iep.probe.method'
-    _description = 'Data Collection Probe Method'
-    _order = 'sequence, name'
-
-    name = fields.Char(string='Probe Method', required=True, translate=True)
-    code = fields.Char(string='Code', required=True, size=32)
-    description = fields.Text(string='Description', translate=True)
-    sequence = fields.Integer(string='Sequence', default=10)
-    active = fields.Boolean(string='Active', default=True)
-
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Probe method code must be unique.'),
-    ]
-
-
 class EducareIepMeasurementTemplate(models.Model):
     _name = 'educare.iep.measurement.template'
     _description = 'Goal Measurement Template'
@@ -75,4 +39,52 @@ class EducareIepMeasurementTemplate(models.Model):
 
     _sql_constraints = [
         ('mt_code_unique', 'UNIQUE(code)', 'Measurement template code must be unique.'),
+    ]
+
+
+class EducareIepPromptLevel(models.Model):
+    _name = 'educare.iep.prompt.level'
+    _description = 'Prompt / Support Level'
+    _order = 'sequence, name'
+
+    name = fields.Char(string='Name', required=True, translate=True)
+    code = fields.Char(string='Code', required=True, size=32)
+    description = fields.Text(string='Description', translate=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+    active = fields.Boolean(string='Active', default=True)
+
+    _sql_constraints = [
+        ('code_unique', 'UNIQUE(code)', 'Prompt level code must be unique.'),
+    ]
+
+
+class EducareIepTeachingMethod(models.Model):
+    _name = 'educare.iep.teaching.method'
+    _description = 'Teaching Method'
+    _order = 'sequence, name'
+
+    name = fields.Char(string='Name', required=True, translate=True)
+    code = fields.Char(string='Code', required=True, size=32)
+    description = fields.Text(string='Description', translate=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+    active = fields.Boolean(string='Active', default=True)
+
+    _sql_constraints = [
+        ('code_unique', 'UNIQUE(code)', 'Teaching method code must be unique.'),
+    ]
+
+
+class EducareIepDataCollectionMethod(models.Model):
+    _name = 'educare.iep.data.collection.method'
+    _description = 'Data Collection Method'
+    _order = 'sequence, name'
+
+    name = fields.Char(string='Name', required=True, translate=True)
+    code = fields.Char(string='Code', required=True, size=32)
+    description = fields.Text(string='Description', translate=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+    active = fields.Boolean(string='Active', default=True)
+
+    _sql_constraints = [
+        ('code_unique', 'UNIQUE(code)', 'Data collection method code must be unique.'),
     ]

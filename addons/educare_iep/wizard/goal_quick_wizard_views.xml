@@ -6,26 +6,21 @@
         <field name="arch" type="xml">
             <form string="Add Long-term Goal">
                 <sheet>
-                    <!--
-                        ╔══════════════════════════════════════════╗
-                        ║  PHẦN TRÊN: 2 group nằm ngang           ║
-                        ║  [Goal Information]  [Plan Context]      ║
-                        ╚══════════════════════════════════════════╝
-                    -->
                     <group col="2">
-                        <!-- ─── Group trái: Goal Information (editable) ─── -->
+                        <!-- ─── Left Group: Goal Information (editable) ─── -->
                         <group string="Goal Information">
                             <field name="name"
-                                placeholder="VD: Tăng khả năng giao tiếp xã hội" />
+                                placeholder="E.g.: Improve social communication skills" />
                             <field name="goal_domain_id"
                                 options="{'no_create': True}" />
                             <field name="target_date" />
+                            <field name="priority" />
                             <field name="goal_description"
-                                placeholder="Mô tả tổng quan mục tiêu dài hạn..."
+                                placeholder="Overall long-term goal description..."
                                 colspan="2" />
                         </group>
 
-                        <!-- ─── Group phải: Plan Context (readonly) ─── -->
+                        <!-- ─── Right Group: Plan Context (readonly) ─── -->
                         <group string="Plan Context">
                             <field name="plan_id" readonly="1" />
                             <field name="student_id" readonly="1" />
@@ -34,40 +29,8 @@
                         </group>
                     </group>
 
-                    <!--
-                        ╔══════════════════════════════════════════╗
-                        ║  PHẦN DƯỚI: Notebook                     ║
-                        ║  → Tab: Short-term Objectives            ║
-                        ╚══════════════════════════════════════════╝
-                    -->
-                    <notebook>
-                        <page string="Short-term Objectives" name="objectives">
-                            <field name="objective_line_ids" nolabel="1">
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle" />
-                                    <field name="name"
-                                        placeholder="Tên mục tiêu ngắn hạn..."
-                                        string="Objective" />
-                                    <field name="baseline_accuracy_pct"
-                                        string="Baseline (%)" />
-                                    <field name="target_accuracy_pct"
-                                        string="Target (%)" />
-                                </tree>
-                            </field>
-                            <div class="text-muted small mt-2">
-                                <i class="fa fa-info-circle me-1" /> Thêm ít nhất 1 mục tiêu ngắn
-                                hạn trước khi tạo Goal. Các chi tiết nâng cao có thể điền sau trong
-                                form Objective. </div>
-                        </page>
-                    </notebook>
                 </sheet>
 
-                <!--
-                    ╔══════════════════════════════════════════╗
-                    ║  FOOTER                                  ║
-                    ║  [Cancel]           [Create Goal]         ║
-                    ╚══════════════════════════════════════════╝
-                -->
                 <footer>
                     <button name="action_create_goal"
                         string="Create Goal"
@@ -76,7 +39,6 @@
                     <button string="Cancel"
                         special="cancel"
                         class="btn-secondary" />
-
                 </footer>
             </form>
         </field>

@@ -14,9 +14,3 @@ access_diagnosis_teacher,diagnosis.teacher,educare_base.model_educare_diagnosis,
 access_domain_admin,domain.admin,educare_base.model_educare_domain,educare_security.group_admin,1,1,1,1
 access_domain_supervisor,domain.supervisor,educare_base.model_educare_domain,educare_security.group_supervisor,1,0,0,0
 access_domain_teacher,domain.teacher,educare_base.model_educare_domain,educare_security.group_teacher,1,0,0,0
-access_template_admin,template.admin,educare_base.model_educare_lesson_template,educare_security.group_admin,1,1,1,1
-access_template_supervisor,template.supervisor,educare_base.model_educare_lesson_template,educare_security.group_supervisor,1,1,0,0
-access_template_teacher,template.teacher,educare_base.model_educare_lesson_template,educare_security.group_teacher,1,0,0,0
-access_template_activity_admin,template.activity.admin,educare_base.model_educare_lesson_template_activity,educare_security.group_admin,1,1,1,1
-access_template_activity_supervisor,template.activity.supervisor,educare_base.model_educare_lesson_template_activity,educare_security.group_supervisor,1,1,0,0
-access_template_activity_teacher,template.activity.teacher,educare_base.model_educare_lesson_template_activity,educare_security.group_teacher,1,0,0,0

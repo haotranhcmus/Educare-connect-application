@@ -1,4 +1,5 @@
 from . import iep_master_data
+from . import iep_template
 from . import iep_plan
 from . import iep_goal
 from . import iep_objective

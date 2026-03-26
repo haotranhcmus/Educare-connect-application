@@ -2,133 +2,173 @@
 <odoo noupdate="1">
 
     <!-- ============================= -->
-    <!-- Assessment Framework Records  -->
+    <!-- Du lieu bo khung danh gia -->
     <!-- ============================= -->
     <record id="framework_vbmapp" model="educare.iep.framework">
         <field name="name">VB-MAPP</field>
         <field name="code">vbmapp</field>
-        <field name="description">Verbal Behavior Milestones Assessment and Placement Program</field>
+        <field name="description">Bo cong cu danh gia cot moc hanh vi ngon ngu va goi y xep chuong trinh</field>
         <field name="sequence">10</field>
     </record>
 
     <record id="framework_ablls_r" model="educare.iep.framework">
         <field name="name">ABLLS-R</field>
         <field name="code">ablls_r</field>
-        <field name="description">Assessment of Basic Language and Learning Skills - Revised</field>
+        <field name="description">Danh gia ky nang ngon ngu va hoc tap co ban - ban cap nhat</field>
         <field name="sequence">20</field>
     </record>
 
     <record id="framework_icf" model="educare.iep.framework">
         <field name="name">ICF (WHO)</field>
         <field name="code">icf</field>
-        <field name="description">International Classification of Functioning, Disability and Health
-            (World Health Organization)</field>
+        <field name="description">Bang phan loai quoc te ve chuc nang, khuyet tat va suc khoe
+            (To chuc Y te The gioi)</field>
         <field name="sequence">30</field>
     </record>
 
     <record id="framework_custom" model="educare.iep.framework">
-        <field name="name">Custom</field>
+        <field name="name">Tuy bien</field>
         <field name="code">custom</field>
-        <field name="description">Center-defined custom framework</field>
+        <field name="description">Khung danh gia tuy bien do trung tam xay dung</field>
         <field name="sequence">99</field>
     </record>
 
     <!-- ============================= -->
-    <!-- Prompt Support Levels         -->
-    <!-- ============================= -->
-    <record id="prompt_independent" model="educare.iep.prompt.level">
-        <field name="name">Independent</field>
-        <field name="code">independent</field>
-        <field name="description">Student performs the skill without any prompting</field>
-        <field name="sequence">10</field>
-    </record>
-
-    <record id="prompt_verbal" model="educare.iep.prompt.level">
-        <field name="name">Verbal Prompt</field>
-        <field name="code">verbal_prompt</field>
-        <field name="description">Teacher provides verbal cues or spoken instructions</field>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="prompt_gestural" model="educare.iep.prompt.level">
-        <field name="name">Gestural Prompt</field>
-        <field name="code">gestural_prompt</field>
-        <field name="description">Teacher uses gestures, pointing, or visual cues</field>
-        <field name="sequence">30</field>
-    </record>
-
-    <record id="prompt_partial_physical" model="educare.iep.prompt.level">
-        <field name="name">Partial Physical Assist</field>
-        <field name="code">partial_physical</field>
-        <field name="description">Light physical guidance to initiate the behavior</field>
-        <field name="sequence">40</field>
-    </record>
-
-    <record id="prompt_full_physical" model="educare.iep.prompt.level">
-        <field name="name">Full Physical Assist</field>
-        <field name="code">full_physical</field>
-        <field name="description">Hand-over-hand full physical guidance</field>
-        <field name="sequence">50</field>
-    </record>
-
-    <!-- ============================= -->
-    <!-- Data Collection Probe Methods -->
-    <!-- ============================= -->
-    <record id="probe_daily" model="educare.iep.probe.method">
-        <field name="name">Daily Probe</field>
-        <field name="code">daily_probe</field>
-        <field name="description">Data collected at every session</field>
-        <field name="sequence">10</field>
-    </record>
-
-    <record id="probe_weekly" model="educare.iep.probe.method">
-        <field name="name">Weekly Probe</field>
-        <field name="code">weekly_probe</field>
-        <field name="description">Data collected once per week (probe session)</field>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="probe_mixed" model="educare.iep.probe.method">
-        <field name="name">Mixed</field>
-        <field name="code">mixed</field>
-        <field name="description">Combination of daily teaching trials and weekly probes</field>
-        <field name="sequence">30</field>
-    </record>
-
-    <!-- ============================= -->
-    <!-- Measurement Templates         -->
+    <!-- Mau do luong -->
     <!-- ============================= -->
     <record id="measurement_template_accuracy_trials" model="educare.iep.measurement.template">
-        <field name="name">Accuracy by Trials</field>
+        <field name="name">Do do chinh xac theo lan thu</field>
         <field name="code">accuracy_trials</field>
-        <field name="criteria_template">Tỷ lệ đúng = số phản hồi đúng / tổng số cơ hội (trials)
-            trong buổi.</field>
-        <field name="condition_template">Trong giờ DTT, prompt tối đa theo kế hoạch can thiệp.</field>
-        <field name="description">Phù hợp mục tiêu học kỹ năng mới cần đo theo lần thử chuẩn hóa.</field>
+        <field name="criteria_template">Ty le chinh xac = so phan hoi dung / tong co hoi
+            (trials) trong moi buoi.</field>
+        <field name="condition_template">Ap dung trong buoi DTT, voi muc prompt toi da theo ke hoach
+            can thiep.</field>
+        <field name="description">Phu hop voi muc tieu hoc ky nang moi can do luong chuan hoa
+            theo tung trial.</field>
         <field name="sequence">10</field>
     </record>
 
     <record id="measurement_template_frequency_count" model="educare.iep.measurement.template">
-        <field name="name">Frequency Count</field>
+        <field name="name">Dem tan suat</field>
         <field name="code">frequency_count</field>
-        <field name="criteria_template">Đếm tần suất hành vi mục tiêu trong thời lượng buổi học đã
-            xác định.</field>
-        <field name="condition_template">Trong hoạt động học có cấu trúc và hoạt động chơi hướng
-            dẫn.</field>
-        <field name="description">Phù hợp mục tiêu giảm/tăng hành vi cần theo dõi tần suất xuất
-            hiện.</field>
+        <field name="criteria_template">Dem tan suat hanh vi muc tieu trong khoang thoi gian buoi hoc
+            da xac dinh.</field>
+        <field name="condition_template">Ap dung trong hoat dong hoc co cau truc va choi co huong dan.</field>
+        <field name="description">Phu hop voi muc tieu giam/tang hanh vi can theo doi tan suat xuat hien.</field>
         <field name="sequence">20</field>
     </record>
 
     <record id="measurement_template_duration_recording" model="educare.iep.measurement.template">
-        <field name="name">Duration Recording</field>
+        <field name="name">Do thoi luong</field>
         <field name="code">duration_recording</field>
-        <field name="criteria_template">Đo tổng thời gian duy trì hành vi mục tiêu trong mỗi buổi.</field>
-        <field name="condition_template">Trong phiên NET hoặc hoạt động nhóm nhỏ, ghi nhận bằng đồng
-            hồ bấm giờ.</field>
-        <field name="description">Phù hợp mục tiêu kéo dài thời gian chú ý, ngồi học, hoặc tham gia
-            hoạt động.</field>
+        <field name="criteria_template">Do tong thoi gian duy tri hanh vi muc tieu trong moi buoi.</field>
+        <field name="condition_template">Ap dung trong buoi NET hoac hoat dong nhom nho, ghi nhan bang dong ho bam gio.</field>
+        <field name="description">Phu hop voi muc tieu keo dai thoi gian chu y, ngoi hoc, hoac tham gia hoat dong.</field>
         <field name="sequence">30</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- Muc prompt / ho tro -->
+    <!-- ============================= -->
+    <record id="prompt_independent" model="educare.iep.prompt.level">
+        <field name="name">Doc lap</field>
+        <field name="code">independent</field>
+        <field name="description">Khong can prompt - nguoi hoc tu thuc hien doc lap.</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="prompt_verbal" model="educare.iep.prompt.level">
+        <field name="name">Prompt bang loi</field>
+        <field name="code">verbal_prompt</field>
+        <field name="description">Dung goi y hoac huong dan bang loi cho nguoi hoc.</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="prompt_gestural" model="educare.iep.prompt.level">
+        <field name="name">Prompt bang cu chi</field>
+        <field name="code">gestural_prompt</field>
+        <field name="description">Chi tay, gat dau hoac cu chi khac de huong dan nguoi hoc.</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="prompt_partial_physical" model="educare.iep.prompt.level">
+        <field name="name">Prompt ho tro mot phan</field>
+        <field name="code">partial_physical</field>
+        <field name="description">Ho tro the chat nhe de khoi dau hoac hoan thanh phan hoi.</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="prompt_full_physical" model="educare.iep.prompt.level">
+        <field name="name">Prompt ho tro toan phan</field>
+        <field name="code">full_physical</field>
+        <field name="description">Dan dat tay-tren-tay trong toan bo phan hoi.</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- Phuong phap day hoc -->
+    <!-- ============================= -->
+    <record id="teaching_dtt" model="educare.iep.teaching.method">
+        <field name="name">Discrete Trial Training (DTT)</field>
+        <field name="code">dtt</field>
+        <field name="description">Day hoc co cau truc, lap lai theo trial roi rac voi tien de,
+            phan hoi va he qua ro rang.</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="teaching_net" model="educare.iep.teaching.method">
+        <field name="name">Natural Environment Teaching (NET)</field>
+        <field name="code">net</field>
+        <field name="description">Day hoc trong boi canh tu nhien dua tren dong luc va so thich cua tre.</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="teaching_task_analysis" model="educare.iep.teaching.method">
+        <field name="name">Phan tich nhiem vu</field>
+        <field name="code">task_analysis</field>
+        <field name="description">Chia nho ky nang phuc tap thanh cac buoc lien tiep de day hoc.</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="teaching_incidental" model="educare.iep.teaching.method">
+        <field name="name">Day hoc ngau nhien</field>
+        <field name="code">incidental</field>
+        <field name="description">Tan dung co hoi xay ra tu nhien de day ky nang muc tieu.</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="teaching_errorless" model="educare.iep.teaching.method">
+        <field name="name">Hoc khong loi</field>
+        <field name="code">errorless</field>
+        <field name="description">Cung cap prompt ngay lap tuc de han che loi trong giai doan tiep thu ky nang.</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- Phuong phap thu thap du lieu -->
+    <!-- ============================= -->
+    <record id="collection_trial_by_trial" model="educare.iep.data.collection.method">
+        <field name="name">Ghi theo tung trial</field>
+        <field name="code">trial_by_trial</field>
+        <field name="description">Ghi dung/sai cho moi trial roi rac.</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="collection_probe" model="educare.iep.data.collection.method">
+        <field name="name">Do tham do</field>
+        <field name="code">probe</field>
+        <field name="description">Danh gia dinh ky khong kem day hoc trial.</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="collection_whole_task" model="educare.iep.data.collection.method">
+        <field name="name">Toan bo nhiem vu</field>
+        <field name="code">whole_task</field>
+        <field name="description">Ghi dung/sai theo tung buoc trong chuoi phan tich nhiem vu.</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="collection_partial_interval" model="educare.iep.data.collection.method">
+        <field name="name">Khoang mot phan</field>
+        <field name="code">partial_interval</field>
+        <field name="description">Ghi nhan hanh vi co xuat hien tai bat ky thoi diem nao trong moi
+            khoang quan sat.</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="collection_momentary_time" model="educare.iep.data.collection.method">
+        <field name="name">Lay mau thoi diem</field>
+        <field name="code">momentary_time_sample</field>
+        <field name="description">Ghi nhan hanh vi co dang xay ra tai dung thoi diem quan sat hay khong.</field>
+        <field name="sequence">50</field>
     </record>
 
 </odoo>

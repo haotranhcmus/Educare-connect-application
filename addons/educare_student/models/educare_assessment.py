@@ -1,25 +1,25 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 ASSESSMENT_TYPES = [
-    ('initial', 'Đánh giá ban đầu'),
-    ('progress', 'Đánh giá tiến độ'),
-    ('annual', 'Đánh giá thường niên'),
-    ('re_evaluation', 'Đánh giá lại'),
+    ('initial', 'Initial Assessment'),
+    ('progress', 'Progress Assessment'),
+    ('annual', 'Annual Assessment'),
+    ('re_evaluation', 'Re-assessment'),
 ]
 
 OVERALL_PROGRESS = [
-    ('regression', 'Thoái lui'),
-    ('plateau', 'Bình nguyên'),
-    ('slow', 'Tiến bộ chậm'),
-    ('steady', 'Tiến bộ đều đặn'),
-    ('rapid', 'Tiến bộ nhanh'),
+    ('regression', 'Regression'),
+    ('plateau', 'Plateau'),
+    ('slow', 'Slow Progress'),
+    ('steady', 'Steady Progress'),
+    ('rapid', 'Rapid Progress'),
 ]
 
 CLASSIFICATION = [
-    ('level_1', 'Cấp độ 1 — Nhẹ'),
-    ('level_2', 'Cấp độ 2 — Trung bình'),
-    ('level_3', 'Cấp độ 3 — Nặng'),
+    ('level_1', 'Level 1 - Mild'),
+    ('level_2', 'Level 2 - Moderate'),
+    ('level_3', 'Level 3 - Severe'),
 ]
 
 
@@ -40,18 +40,20 @@ class EducareAssessment(models.Model):
     assessment_date = fields.Date(
         string='Assessment Date',
         required=True,
+        default=fields.Date.context_today,
         index=True,
     )
     assessment_type = fields.Selection(
         selection=ASSESSMENT_TYPES,
         string='Assessment Type',
         required=True,
-        default='progress',
+        default='initial',
     )
     assessor_id = fields.Many2one(
         'res.users',
         string='Assessor',
         ondelete='set null',
+        default=lambda self: self.env.user,
     )
     vbmapp_score = fields.Float(
         string='VB-MAPP Score',
@@ -67,11 +69,17 @@ class EducareAssessment(models.Model):
         selection=OVERALL_PROGRESS,
         string='Overall Progress',
         tracking=True,
+        help='Only fill for progress, annual, or re-assessment records.',
     )
     classification = fields.Selection(
         selection=CLASSIFICATION,
-        string='Classification',
+        string='Severity Classification',
         tracking=True,
+    )
+    line_ids = fields.One2many(
+        'educare.assessment.line',
+        'assessment_id',
+        string='Detail Lines',
     )
     notes = fields.Text(string='Notes')
 

@@ -7,8 +7,8 @@
     ══════════════════════════════════════════════════════ -->
 
         <!--
-      Parent: chỉ đọc profile của chính mình
-      perm_write/create/unlink = False → những op này kiểm soát bởi ACL, không phải rule
+      Parent: read own profile only
+      perm_write/create/unlink = False -> these operations are controlled by ACL, not rule
     -->
         <record id="rule_user_profile_parent" model="ir.rule">
             <field name="name">User Profile: Parent sees own</field>
@@ -22,8 +22,8 @@
         </record>
 
         <!--
-      Teacher: thấy profile mình + tất cả profiles cùng center
-      OR logic: user_id = mình HOẶC center_id thuộc centers của mình
+      Teacher: sees own profile + all profiles in the same center
+      OR logic: user_id = self OR center_id in own centers
     -->
         <record id="rule_user_profile_teacher" model="ir.rule">
             <field name="name">User Profile: Teacher sees same center</field>
@@ -40,8 +40,8 @@
         </record>
 
         <!--
-      Supervisor: thấy tất cả profiles trong center của mình
-      Không khai báo perm_* → mặc định True cho tất cả operations
+      Supervisor: sees all profiles in own center
+      perm_* not declared -> defaults to True for all operations
     -->
         <record id="rule_user_profile_supervisor" model="ir.rule">
             <field name="name">User Profile: Supervisor sees all in center</field>
@@ -51,7 +51,7 @@
         </record>
 
         <!--
-      Admin: thấy tất cả — domain (1=1) luôn True
+      Admin: sees all profiles - domain (1=1) is always True
     -->
         <record id="rule_user_profile_admin" model="ir.rule">
             <field name="name">User Profile: Admin sees all</field>
@@ -66,9 +66,9 @@
     ══════════════════════════════════════════════════════ -->
 
         <!--
-      Supervisor: chỉ thấy audit log của center mình
-      Teacher và Parent không có rule → không thấy audit log gì cả
-      (được kiểm soát ở tầng ACL — không có perm_read cho group_teacher/parent)
+      Supervisor: sees only audit logs from own center
+      Teacher and Parent have no rule -> they cannot see any audit logs
+      (controlled by ACL layer - no perm_read for teacher/parent groups)
     -->
         <record id="rule_audit_log_supervisor" model="ir.rule">
             <field name="name">Audit Log: Supervisor sees center logs</field>
@@ -78,7 +78,7 @@
         </record>
 
         <!--
-      Admin: thấy tất cả audit logs
+      Admin: sees all audit logs
     -->
         <record id="rule_audit_log_admin" model="ir.rule">
             <field name="name">Audit Log: Admin sees all</field>

@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -161,6 +162,7 @@ class EducareIepPlan(models.Model):
             ('completed_period', 'Completed period'),
             ('student_transferred', 'Student transferred'),
             ('plan_revised', 'Plan revised'),
+            ('revision_cancelled', 'Revision cancelled'),
             ('other', 'Other'),
         ],
         string='Closing Reason',
@@ -187,6 +189,12 @@ class EducareIepPlan(models.Model):
         string='Revision Notes',
         tracking=True,
         copy=False,
+    )
+
+    goal_snapshot_json = fields.Text(
+        string='Goal Snapshot (JSON)',
+        copy=False,
+        help='Internal: JSON snapshot of goals/objectives at revision creation time for rollback.',
     )
 
     goal_ids = fields.One2many(
@@ -235,6 +243,8 @@ class EducareIepPlan(models.Model):
 
     @api.constrains('status', 'root_plan_id')
     def _check_single_active_version(self):
+        if self.env.context.get('install_module'):
+            return
         for plan in self:
             if plan.status != 'active':
                 continue
@@ -266,6 +276,8 @@ class EducareIepPlan(models.Model):
 
     @api.constrains('status', 'supervisor_approved', 'parent_consent', 'goal_ids')
     def _check_plan_active_gate(self):
+        if self.env.context.get('install_module'):
+            return
         for plan in self:
             if plan.status != 'active':
                 continue
@@ -326,7 +338,7 @@ class EducareIepPlan(models.Model):
 
     def action_open_goals(self):
         self.ensure_one()
-        action = self.env.ref('educare_iep.action_educare_iep_goal').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_goal').sudo().read()[0]
         action['domain'] = [('plan_id', '=', self.id)]
         action['context'] = {
             'default_plan_id': self.id,
@@ -336,11 +348,11 @@ class EducareIepPlan(models.Model):
 
     def action_open_goal_wizard(self):
         self.ensure_one()
-        if self.status not in ('draft', 'ready_review'):
+        if self.status != 'draft':
             raise ValidationError(
-                _('New goals can only be added while plan is Draft or Ready for Review. Use Revise for Active/Closed plans.')
+                _('New goals can only be added while plan is Draft. Use Revise for Active/Closed plans.')
             )
-        action = self.env.ref('educare_iep.action_educare_goal_quick_wizard').read()[0]
+        action = self.env.ref('educare_iep.action_educare_goal_quick_wizard').sudo().read()[0]
         action['context'] = {
             'default_plan_id': self.id,
         }
@@ -350,7 +362,7 @@ class EducareIepPlan(models.Model):
         self.ensure_one()
         self._ensure_root_link()
         root = self.root_plan_id or self
-        action = self.env.ref('educare_iep.action_educare_iep_plan').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_plan').sudo().read()[0]
         action['name'] = _('IEP Plan Versions')
         action['domain'] = [('root_plan_id', '=', root.id)]
         action['context'] = {
@@ -383,6 +395,11 @@ class EducareIepPlan(models.Model):
             'approved_date': fields.Date.today(),
             'status': 'supervisor_approved',
         })
+        self.message_post(
+            body=_('Plan approved by supervisor %s.', self.supervisor_id.name),
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
 
     def action_parent_consent(self):
         self.ensure_one()
@@ -398,12 +415,18 @@ class EducareIepPlan(models.Model):
             raise ValidationError(
                 _('Plan must have at least one goal before parent consent.')
             )
-        self._close_other_active_versions()
-        self.write({
+        plan_sudo = self.sudo()
+        plan_sudo._close_other_active_versions()
+        plan_sudo.write({
             'parent_consent': True,
             'parent_consent_date': fields.Date.today(),
             'status': 'active',
         })
+        plan_sudo.message_post(
+            body=_('Parent consent received. Plan is now Active.'),
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
 
     def _close_other_active_versions(self):
         for plan in self:
@@ -414,26 +437,79 @@ class EducareIepPlan(models.Model):
                 ('status', '=', 'active'),
             ])
             if other_active:
-                other_active.with_context(skip_auto_status_flow=True).write({'status': 'closed'})
+                other_active.with_context(
+                    skip_auto_status_flow=True,
+                    skip_status_transition_check=True,
+                ).write({
+                    'status': 'closed',
+                    'closing_reason': 'plan_revised',
+                })
+                for old_plan in other_active:
+                    old_plan.message_post(
+                        body=_('Plan auto-closed: replaced by new version.'),
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_note',
+                    )
 
     def _auto_move_to_ready_review_if_ready(self):
+        """Only handle backward transition: ready_review → draft when all goals are removed."""
         for plan in self:
             if (
-                plan.status == 'draft'
-                and bool(plan.goal_ids)
-            ):
-                plan.with_context(skip_auto_status_flow=True).write({'status': 'ready_review'})
-            elif (
                 plan.status == 'ready_review'
                 and not bool(plan.goal_ids)
             ):
                 plan.with_context(skip_auto_status_flow=True).write({'status': 'draft'})
 
+    def action_reset_to_draft(self):
+        """Teacher withdraws a Ready for Review plan back to Draft."""
+        self.ensure_one()
+        if self.status != 'ready_review':
+            raise ValidationError(
+                _('Only plans in Ready for Review can be reset to Draft.')
+            )
+        self.with_context(
+            skip_status_transition_check=True,
+            skip_auto_status_flow=True,
+        ).write({'status': 'draft'})
+        self.message_post(
+            body=_('Plan withdrawn from review and reset to Draft.'),
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
+
+    def action_submit_for_review(self):
+        self.ensure_one()
+        if self.status != 'draft':
+            raise ValidationError(
+                _('Only Draft plans can be submitted for review.')
+            )
+        if not self.supervisor_id:
+            raise ValidationError(
+                _('Please assign a supervisor before submitting for review.')
+            )
+        if not self.goal_ids:
+            raise ValidationError(
+                _('Plan must have at least one long-term goal before submitting for review. '
+                  'Please use the "Add Goal" button at the top of the plan to add goals.')
+            )
+        goals_without_objectives = self.goal_ids.filtered(lambda g: not g.objective_ids)
+        if goals_without_objectives:
+            raise ValidationError(
+                _('All goals must have at least one objective before submitting. '
+                  'Goals missing objectives: %s',
+                  ', '.join(goals_without_objectives.mapped('name')))
+            )
+        self.with_context(skip_auto_status_flow=True).write({'status': 'ready_review'})
+        self.message_post(
+            body=_('Plan submitted for supervisor review.'),
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
+
     def action_close(self, closing_reason=False, closing_notes=False):
         """Close plan from wizard with explicit reason/notes.
 
-        Kept as a server-side action so that future flows (e.g. API)
-        can reuse the same behavior instead of writing status directly.
+        Cascades: discontinue all non-terminal goals and objectives.
         """
         for plan in self:
             if plan.status != 'active':
@@ -448,7 +524,38 @@ class EducareIepPlan(models.Model):
             values['closing_notes'] = closing_notes
 
         # Skip transition guard because wizard already enforces flow.
-        return self.with_context(skip_status_transition_check=True).write(values)
+        result = self.with_context(skip_status_transition_check=True).write(values)
+
+        # Cascade: discontinue active goals and their non-terminal objectives
+        reason_label = dict(self._fields['closing_reason'].selection).get(
+            closing_reason, closing_reason or 'Plan closed'
+        )
+        cascade_reason = _('Plan closed: %s') % reason_label
+        for plan in self:
+            non_terminal_goals = plan.goal_ids.filtered(
+                lambda g: g.status not in ('achieved', 'discontinued')
+            )
+            if non_terminal_goals:
+                non_terminal_goals.with_context(
+                    skip_auto_goal_status_sync=True,
+                ).write({
+                    'status': 'discontinued',
+                    'discontinue_reason': cascade_reason,
+                })
+                for goal in non_terminal_goals:
+                    non_terminal_objs = goal.objective_ids.filtered(
+                        lambda o: o.status not in ('mastered', 'discontinued')
+                    )
+                    if non_terminal_objs:
+                        non_terminal_objs.with_context(
+                            skip_auto_objective_status_sync=True,
+                            skip_goal_sync=True,
+                        ).write({
+                            'status': 'discontinued',
+                            'discontinued_reason': cascade_reason,
+                        })
+
+        return result
 
     def action_open_close_wizard(self):
         """Open Close IEP Plan wizard instead of inline scrolling."""
@@ -457,7 +564,7 @@ class EducareIepPlan(models.Model):
             raise ValidationError(
                 _('Only Active plans can be closed.')
             )
-        action = self.env.ref('educare_iep.action_educare_iep_plan_close_wizard').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_plan_close_wizard').sudo().read()[0]
         action['context'] = {
             'default_plan_id': self.id,
             'default_closing_reason': self.closing_reason or False,
@@ -465,47 +572,65 @@ class EducareIepPlan(models.Model):
         }
         return action
 
-    def _copy_goals_to_revision(self, revision):
-        """Clone current plan goals/objectives into a new revision plan."""
+    def _snapshot_goals(self):
+        """Serialize current goals and objectives to JSON for rollback on cancel."""
         self.ensure_one()
-        Goal = self.env['educare.iep.goal']
-        Objective = self.env['educare.iep.objective']
-
+        snapshot = []
         for goal in self.goal_ids:
-            new_goal = goal.copy({
-                'plan_id': revision.id,
-                'objective_ids': [(5, 0, 0)],
-                'status': 'draft',
-                'achieved_date': False,
-            })
-
-            for objective in goal.objective_ids:
-                Objective.create({
-                    'goal_id': new_goal.id,
-                    'sequence': objective.sequence,
-                    'name': objective.name,
-                    'description': objective.description,
-                    'start_date': objective.start_date,
-                    'target_date': objective.target_date,
-                    'baseline_accuracy_pct': objective.baseline_accuracy_pct,
-                    'target_accuracy_pct': objective.target_accuracy_pct,
-                    'target_trials': objective.target_trials,
-                    'consecutive_sessions_required': objective.consecutive_sessions_required,
-                    'prompt_level_id': objective.prompt_level_id.id,
-                    'measurement_method': objective.measurement_method,
-                    'probe_method_id': objective.probe_method_id.id,
-                    'weight': objective.weight,
-                    'status': 'not_started',
-                    'mastery_date': False,
-                    'discontinued_reason': False,
-                    'notes': objective.notes,
+            obj_data = []
+            for obj in goal.objective_ids:
+                obj_data.append({
+                    'id': obj.id,
+                    'name': obj.name,
+                    'description': obj.description,
+                    'sequence': obj.sequence,
+                    'status': obj.status,
+                    'start_date': str(obj.start_date) if obj.start_date else False,
+                    'target_date': str(obj.target_date) if obj.target_date else False,
+                    'baseline_accuracy_pct': obj.baseline_accuracy_pct,
+                    'target_accuracy_pct': obj.target_accuracy_pct,
+                    'consecutive_sessions_required': obj.consecutive_sessions_required,
+                    'weight': obj.weight,
+                    'measurement_method': obj.measurement_method,
+                    'discontinued_reason': obj.discontinued_reason,
                 })
+            snapshot.append({
+                'id': goal.id,
+                'name': goal.name,
+                'goal_description': goal.goal_description,
+                'goal_domain_id': goal.goal_domain_id.id,
+                'priority': goal.priority,
+                'status': goal.status,
+                'start_date': str(goal.start_date) if goal.start_date else False,
+                'target_date': str(goal.target_date) if goal.target_date else False,
+                'baseline_accuracy_pct': goal.baseline_accuracy_pct,
+                'target_accuracy_pct': goal.target_accuracy_pct,
+                'discontinue_reason': goal.discontinue_reason,
+                'objectives': obj_data,
+            })
+        return json.dumps(snapshot, ensure_ascii=False)
 
-        # Keep the revision in Draft after structure clone.
-        revision.goal_ids.with_context(skip_auto_goal_status_sync=True).write({
-            'status': 'draft',
-            'achieved_date': False,
-        })
+    def _move_goals_to_revision(self, revision):
+        """Move goals and objectives to the revision plan, preserving all session tracking data.
+
+        Instead of copying records (which creates new IDs that break session_result FK links),
+        we reassign plan_id on existing goal records. All session_result records remain linked
+        via the same objective IDs so that current_accuracy_pct, progress_pct, consecutive,
+        and trend all continue from real measurement history — progress is NOT reset to zero.
+
+        The original plan has its goals removed and is closed immediately as superseded.
+        During the revision draft period teachers can edit goal info and objective parameters
+        (baseline, target accuracy, consecutive sessions required, weight, etc.).
+        Objectives with session tracking data cannot be deleted — use Discontinue instead.
+        """
+        self.ensure_one()
+        for goal in self.goal_ids:
+            # Pass start_date explicitly to prevent goal.write() from overwriting it
+            # with the new revision plan's start_date (goals retain their original start_date).
+            goal.with_context(skip_auto_goal_status_sync=True).write({
+                'plan_id': revision.id,
+                'start_date': goal.start_date,
+            })
 
     def action_create_revision(self, revision_reason=False, revision_notes=False):
         self.ensure_one()
@@ -540,7 +665,32 @@ class EducareIepPlan(models.Model):
             'goal_ids': [(5, 0, 0)],
         })
 
-        self._copy_goals_to_revision(revision)
+        # Snapshot goals BEFORE moving — used for rollback if revision is cancelled.
+        revision.with_context(skip_auto_status_flow=True).write({
+            'goal_snapshot_json': self._snapshot_goals(),
+        })
+
+        # Move goals (and their objectives) to the revision plan instead of copying.
+        # This preserves all session tracking data via unchanged record IDs.
+        self._move_goals_to_revision(revision)
+
+        # Close the current plan immediately — it is superseded by this revision.
+        # Goals have been moved, so the original plan now serves as a metadata record only.
+        if self.status == 'active':
+            self.with_context(
+                skip_auto_status_flow=True,
+                skip_status_transition_check=True,
+            ).write({
+                'status': 'closed',
+                'closing_reason': 'plan_revised',
+                'closing_notes': _('Superseded by revision v%s.', next_version),
+            })
+            self.message_post(
+                body=_('Plan superseded — goals moved to revision v%s.', next_version),
+                message_type='comment',
+                subtype_xmlid='mail.mt_note',
+            )
+
         (self | revision)._sync_latest_version_flag()
 
         return {
@@ -558,11 +708,178 @@ class EducareIepPlan(models.Model):
             raise ValidationError(
                 _('Revision is allowed only when plan status is Active or Closed.')
             )
-        action = self.env.ref('educare_iep.action_educare_iep_plan_revision_wizard').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_plan_revision_wizard').sudo().read()[0]
         action['context'] = {
             'default_plan_id': self.id,
         }
         return action
+
+    def action_open_reject_wizard(self):
+        self.ensure_one()
+        if self.status != 'ready_review':
+            raise ValidationError(
+                _('Only plans in Ready for Review can be rejected.')
+            )
+        action = self.env.ref('educare_iep.action_educare_iep_plan_reject_wizard').sudo().read()[0]
+        action['context'] = {
+            'default_plan_id': self.id,
+        }
+        return action
+
+    # ── Cancel Revision ───────────────────────────────────────────────────────
+
+    def action_cancel_revision(self, cancel_reason=False):
+        """Cancel a draft/ready_review revision and restore goals to the original plan."""
+        self.ensure_one()
+        if not self.revision_of_id:
+            raise ValidationError(_('This plan is not a revision — it cannot be cancelled.'))
+        if self.status not in ('draft', 'ready_review'):
+            raise ValidationError(
+                _('Only Draft or Ready for Review revisions can be cancelled.')
+            )
+        # Block if a newer version already depends on this one
+        newer = self.search([
+            ('revision_of_id', '=', self.id),
+        ], limit=1)
+        if newer:
+            raise ValidationError(
+                _('Cannot cancel: a newer revision (v%s) already depends on this plan.',
+                  newer.version_number)
+            )
+        if not self.goal_snapshot_json:
+            raise ValidationError(
+                _('Cannot cancel: no goal snapshot available for rollback.')
+            )
+
+        snapshot = json.loads(self.goal_snapshot_json)
+        original_plan = self.revision_of_id
+        snapshot_goal_ids = {g['id'] for g in snapshot}
+        snapshot_obj_ids = set()
+        for g in snapshot:
+            for o in g.get('objectives', []):
+                snapshot_obj_ids.add(o['id'])
+
+        Goal = self.env['educare.iep.goal']
+        Objective = self.env['educare.iep.objective']
+
+        # 1. Delete NEW goals/objectives created during revision (not in snapshot)
+        for goal in self.goal_ids:
+            new_objs = goal.objective_ids.filtered(lambda o: o.id not in snapshot_obj_ids)
+            if new_objs:
+                new_objs.unlink()
+            if goal.id not in snapshot_goal_ids:
+                goal.unlink()
+
+        # 2. Restore snapshot field values on existing goals/objectives
+        for gdata in snapshot:
+            goal = Goal.browse(gdata['id'])
+            if not goal.exists():
+                continue
+            goal.with_context(skip_auto_goal_status_sync=True).write({
+                'plan_id': original_plan.id,
+                'name': gdata['name'],
+                'goal_description': gdata['goal_description'],
+                'goal_domain_id': gdata['goal_domain_id'],
+                'priority': gdata['priority'],
+                'status': gdata['status'],
+                'start_date': gdata['start_date'] or False,
+                'target_date': gdata['target_date'],
+                'baseline_accuracy_pct': gdata['baseline_accuracy_pct'],
+                'target_accuracy_pct': gdata['target_accuracy_pct'],
+                'discontinue_reason': gdata['discontinue_reason'],
+            })
+            for odata in gdata.get('objectives', []):
+                obj = Objective.browse(odata['id'])
+                if not obj.exists():
+                    continue
+                obj.with_context(
+                    skip_auto_objective_status_sync=True,
+                    skip_goal_sync=True,
+                ).write({
+                    'name': odata['name'],
+                    'description': odata['description'],
+                    'sequence': odata['sequence'],
+                    'status': odata['status'],
+                    'start_date': odata['start_date'] or False,
+                    'target_date': odata['target_date'] or False,
+                    'baseline_accuracy_pct': odata['baseline_accuracy_pct'],
+                    'target_accuracy_pct': odata['target_accuracy_pct'],
+                    'consecutive_sessions_required': odata['consecutive_sessions_required'],
+                    'weight': odata['weight'],
+                    'measurement_method': odata['measurement_method'],
+                    'discontinued_reason': odata['discontinued_reason'],
+                })
+
+        # 3. Reopen original plan if it was auto-closed by the revision
+        if original_plan.status == 'closed' and original_plan.closing_reason == 'plan_revised':
+            original_plan.with_context(
+                skip_auto_status_flow=True,
+                skip_status_transition_check=True,
+            ).write({
+                'status': 'active',
+                'closing_reason': False,
+                'closing_notes': False,
+            })
+            original_plan.message_post(
+                body=_('Plan reactivated — revision v%s was cancelled.', self.version_number),
+                message_type='comment',
+                subtype_xmlid='mail.mt_note',
+            )
+
+        # 4. Close the cancelled revision (mark as closed, not archived)
+        self.with_context(
+            skip_auto_status_flow=True,
+            skip_status_transition_check=True,
+        ).write({
+            'status': 'closed',
+            'closing_reason': 'revision_cancelled',
+            'closing_notes': cancel_reason or _('Revision cancelled by user.'),
+        })
+        self.message_post(
+            body=_('Revision cancelled. Goals restored to v%s.', original_plan.version_number),
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
+
+        # 5. Re-sync latest version flags
+        (self | original_plan)._sync_latest_version_flag()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('IEP Plan'),
+            'res_model': 'educare.iep.plan',
+            'res_id': original_plan.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_open_cancel_revision_wizard(self):
+        self.ensure_one()
+        if not self.revision_of_id:
+            raise ValidationError(_('This plan is not a revision.'))
+        if self.status not in ('draft', 'ready_review'):
+            raise ValidationError(
+                _('Only Draft or Ready for Review revisions can be cancelled.')
+            )
+        action = self.env.ref('educare_iep.action_educare_iep_plan_cancel_revision_wizard').sudo().read()[0]
+        action['context'] = {
+            'default_plan_id': self.id,
+        }
+        return action
+
+    # ── Navigation ────────────────────────────────────────────────────────────
+
+    def action_open_plan_form(self):
+        """Navigate to the IEP plan detail form (used from student inline tree)."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('IEP Plan'),
+            'res_model': 'educare.iep.plan',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     @api.onchange('student_id')
     def _onchange_student_id(self):
@@ -603,7 +920,13 @@ class EducareIepPlan(models.Model):
         vals = dict(vals)
         today = fields.Date.today()
 
-        if 'status' in vals and not self.env.context.get('skip_status_transition_check'):
+        if 'status' in vals \
+                and not self.env.context.get('skip_status_transition_check') \
+                and not self.env.context.get('install_module'):
+            # 'install_module' is set by Odoo's XML data loader (convert.py) — skip the guard
+            # during data file loading (demo data, seeds, migrations) so that
+            # records with noupdate=False in ir.model.data can be re-written
+            # without triggering the workflow transition error.
             target_status = vals['status']
             for plan in self:
                 current_status = plan.status

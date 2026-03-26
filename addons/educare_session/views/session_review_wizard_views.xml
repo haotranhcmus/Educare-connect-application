@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_review_wizard_form" model="ir.ui.view">
+        <field name="name">educare.session.review.wizard.form</field>
+        <field name="model">educare.session.review.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Review Session">
+                <group>
+                    <field name="session_id" readonly="1" />
+                </group>
+                <separator string="Evaluate Each Objective" />
+                <field name="line_ids">
+                    <tree editable="bottom">
+                        <field name="sequence" readonly="1" column_invisible="1" />
+                        <field name="objective_id" readonly="1" />
+                        <field name="result_type" readonly="1" />
+                        <field name="phase" readonly="1" />
+                        <field name="correct_trials" />
+                        <field name="total_trials" />
+                        <field name="prompt_level_used" />
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_save_review" string="Save Review"
+                        type="object" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

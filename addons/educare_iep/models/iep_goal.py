@@ -1,5 +1,10 @@
+import logging
+import uuid
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 GOAL_STATUS = [
     ('draft', 'Draft'),
@@ -32,7 +37,7 @@ class EducareIepGoal(models.Model):
     goal_code = fields.Char(
         string='Goal Code',
         size=32,
-        default='/',
+        default=False,
         index=True,
         copy=False,
         readonly=True,
@@ -44,6 +49,11 @@ class EducareIepGoal(models.Model):
         ondelete='cascade',
         index=True,
         tracking=True,
+    )
+    plan_status = fields.Selection(
+        related='plan_id.status',
+        string='Plan Status',
+        store=False,
     )
     student_id = fields.Many2one(
         'educare.student',
@@ -105,7 +115,6 @@ class EducareIepGoal(models.Model):
     # Tab 2: SMART Goal Content
     goal_description = fields.Text(
         string='Overall Goal Description',
-        required=True,
     )
     smart_specific = fields.Text(
         string='S - Specific',
@@ -217,8 +226,6 @@ class EducareIepGoal(models.Model):
 
     # SQL constraints
     _sql_constraints = [
-        ('goal_code_unique', 'UNIQUE(goal_code)',
-         'Goal code must be unique.'),
         ('baseline_pct_range',
          'CHECK(baseline_accuracy_pct >= 0 AND baseline_accuracy_pct <= 100)',
          'Baseline accuracy must be between 0 and 100.'),
@@ -226,6 +233,24 @@ class EducareIepGoal(models.Model):
          'CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)',
          'Target accuracy must be between 0 and 100.'),
     ]
+
+    def init(self):
+        """Create partial unique index: goal_code must be unique when set and not '/'."""
+        self.env.cr.execute("""
+            ALTER TABLE educare_iep_goal
+            DROP CONSTRAINT IF EXISTS educare_iep_goal_goal_code_unique;
+        """)
+        self.env.cr.execute("""
+            DROP INDEX IF EXISTS educare_iep_goal_goal_code_unique;
+        """)
+        self.env.cr.execute("""
+            DROP INDEX IF EXISTS educare_iep_goal_code_unique_nonempty;
+        """)
+        self.env.cr.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS educare_iep_goal_code_unique_nonempty
+            ON educare_iep_goal (goal_code)
+            WHERE goal_code IS NOT NULL AND goal_code != '/';
+        """)
 
     
 
@@ -256,7 +281,7 @@ class EducareIepGoal(models.Model):
                 )
 
     # Computed fields
-    @api.depends('objective_ids.progress_pct', 'objective_ids.status')
+    @api.depends('objective_ids.progress_pct', 'objective_ids.status', 'objective_ids.weight')
     def _compute_progress(self):
         """Weighted average progress from non-discontinued objectives."""
         for goal in self:
@@ -266,46 +291,60 @@ class EducareIepGoal(models.Model):
             if objectives:
                 total_weight = sum(objectives.mapped('weight'))
                 if total_weight > 0:
-                    weighted_sum = sum(
-                        obj.progress_pct * obj.weight
-                        for obj in objectives
-                    )
-                    goal.progress_pct = weighted_sum / total_weight
+                    goal.progress_pct = sum(
+                        o.progress_pct * o.weight for o in objectives
+                    ) / total_weight
                 else:
                     goal.progress_pct = 0.0
             else:
                 goal.progress_pct = 0.0
 
-    @api.depends('objective_ids.current_accuracy_pct', 'objective_ids.status')
+    @api.depends('objective_ids.current_accuracy_pct', 'objective_ids.status', 'objective_ids.weight')
     def _compute_current_accuracy(self):
-        """Average accuracy from active objectives."""
+        """Weighted average accuracy from active objectives (consistent with progress)."""
         for goal in self:
             objectives = goal.objective_ids.filtered(
                 lambda o: o.status not in ('discontinued', 'not_started')
             )
             if objectives:
-                goal.current_accuracy_pct = (
-                    sum(objectives.mapped('current_accuracy_pct')) / len(objectives)
-                )
+                total_weight = sum(objectives.mapped('weight'))
+                if total_weight > 0:
+                    goal.current_accuracy_pct = sum(
+                        o.current_accuracy_pct * o.weight for o in objectives
+                    ) / total_weight
+                else:
+                    goal.current_accuracy_pct = 0.0
             else:
                 goal.current_accuracy_pct = 0.0
 
-    @api.depends('objective_ids.total_sessions_worked')
+    @api.depends('objective_ids.total_sessions_worked', 'objective_ids.status')
     def _compute_session_stats(self):
-        """Sum of sessions worked across all objectives."""
+        """Sum of sessions worked across non-discontinued objectives."""
         for goal in self:
+            objectives = goal.objective_ids.filtered(
+                lambda o: o.status != 'discontinued'
+            )
             goal.total_sessions = sum(
-                goal.objective_ids.mapped('total_sessions_worked')
+                objectives.mapped('total_sessions_worked')
             )
 
     def _compute_objective_count(self):
         for goal in self:
             goal.objective_count = len(goal.objective_ids)
 
-    @api.depends('plan_id.status')
+    @api.depends('plan_id.status', 'status', 'objective_ids.status')
     def _compute_can_delete(self):
         for goal in self:
-            goal.can_delete = bool(goal.plan_id and goal.plan_id.status == 'draft')
+            if not (goal.plan_id and goal.plan_id.status == 'draft'):
+                goal.can_delete = False
+                continue
+            if goal.status != 'draft':
+                goal.can_delete = False
+                continue
+            tracked = goal.objective_ids.filtered(
+                lambda o: o.status != 'not_started'
+            )
+            goal.can_delete = not bool(tracked)
 
     slow_progress_alert = fields.Boolean(
         string='Slow Progress Alert',
@@ -326,14 +365,15 @@ class EducareIepGoal(models.Model):
                 and plan_next_review <= today
             )
 
-    def name_get(self):
-        result = []
+    # Display name
+    def _compute_display_name(self):
         for goal in self:
-            if goal.goal_code:
-                result.append((goal.id, f"[{goal.goal_code}] {goal.name}"))
+            name = goal.name or _('New Goal')
+            code = goal.goal_code
+            if code and code != '/':
+                goal.display_name = f"[{code}] {name}"
             else:
-                result.append((goal.id, goal.name or ''))
-        return result
+                goal.display_name = name
 
     def _auto_update_status_from_workflow(self):
         if self.env.context.get('skip_auto_goal_status_sync'):
@@ -342,6 +382,10 @@ class EducareIepGoal(models.Model):
         today = fields.Date.today()
         for goal in self:
             if not goal.plan_id:
+                continue
+
+            # No auto-transition on closed plans.
+            if goal.plan_id.status == 'closed':
                 continue
 
             active_objectives = goal.objective_ids.filtered(
@@ -370,6 +414,24 @@ class EducareIepGoal(models.Model):
                 goal.with_context(skip_auto_goal_status_sync=True).write(vals)
 
     # ORM overrides
+    def _next_goal_code(self):
+        """Generate next goal code with collision detection and UUID fallback."""
+        sequence_model = self.env['ir.sequence'].sudo()
+        for _attempt in range(100):
+            code = sequence_model.next_by_code('educare.iep.goal')
+            if not code:
+                seq = sequence_model.search([('code', '=', 'educare.iep.goal')], limit=1)
+                if seq:
+                    code = seq.next_by_id()
+            if not code:
+                break
+            if not self.sudo().search_count([('goal_code', '=', code)]):
+                return code
+        year = fields.Date.today().year
+        code = f"LTG-{year}-{uuid.uuid4().hex[:8].upper()}"
+        _logger.warning('Goal sequence exhausted or unavailable, generated fallback code: %s', code)
+        return code
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -378,12 +440,9 @@ class EducareIepGoal(models.Model):
                 if plan.exists() and plan.start_date:
                     vals['start_date'] = plan.start_date
             if not vals.get('goal_code') or vals['goal_code'] == '/':
-                vals['goal_code'] = (
-                    self.env['ir.sequence'].next_by_code('educare.iep.goal') or '/'
-                )
+                vals['goal_code'] = self._next_goal_code()
         goals = super().create(vals_list)
         goals._auto_update_status_from_workflow()
-        goals.mapped('plan_id')._auto_move_to_ready_review_if_ready()
         return goals
 
     def write(self, vals):
@@ -400,7 +459,6 @@ class EducareIepGoal(models.Model):
             'plan_id', 'objective_ids', 'status'
         }.intersection(vals):
             self._auto_update_status_from_workflow()
-        (old_plans | self.mapped('plan_id'))._auto_move_to_ready_review_if_ready()
         return res
 
     def unlink(self):
@@ -408,6 +466,24 @@ class EducareIepGoal(models.Model):
             if goal.plan_id and goal.plan_id.status != 'draft':
                 raise ValidationError(
                     _('Goals can be deleted only when the parent plan is in Draft.')
+                )
+            if goal.status != 'draft':
+                raise ValidationError(
+                    _('Goal "%s" cannot be deleted because it has already been started. '
+                      'Use Discontinue or Close instead.', goal.name)
+                )
+            tracked = goal.objective_ids.filtered(lambda o: o.status != 'not_started')
+            if tracked:
+                raise ValidationError(
+                    _('Goal "%s" cannot be deleted because %d objective(s) already have '
+                      'tracking data. Close the goal instead.', goal.name, len(tracked))
+                )
+            objectives_with_data = goal.objective_ids.filtered(lambda o: o.total_sessions_worked > 0)
+            if objectives_with_data:
+                raise ValidationError(
+                    _('Goal "%s" cannot be deleted because %d objective(s) have session '
+                      'tracking data. Use Discontinue instead.',
+                      goal.name, len(objectives_with_data))
                 )
         plans = self.mapped('plan_id')
         result = super().unlink()
@@ -437,7 +513,7 @@ class EducareIepGoal(models.Model):
 
     def action_open_objectives(self):
         self.ensure_one()
-        action = self.env.ref('educare_iep.action_educare_iep_objective').read()[0]
+        action = self.env.ref('educare_iep.action_educare_iep_objective').sudo().read()[0]
         action['domain'] = [('goal_id', '=', self.id)]
         action['context'] = {
             'default_goal_id': self.id,
@@ -446,7 +522,7 @@ class EducareIepGoal(models.Model):
 
     def action_open_objective_wizard(self):
         self.ensure_one()
-        action = self.env.ref('educare_iep.action_educare_objective_quick_wizard').read()[0]
+        action = self.env.ref('educare_iep.action_educare_objective_quick_wizard').sudo().read()[0]
         action['context'] = {
             'default_goal_id': self.id,
             'default_start_date': self.start_date,
@@ -454,12 +530,71 @@ class EducareIepGoal(models.Model):
         }
         return action
 
+    def action_open_discontinue_goal_wizard(self):
+        """Open Discontinue Goal wizard."""
+        self.ensure_one()
+        if self.status in ('achieved', 'discontinued'):
+            raise ValidationError(
+                _('Cannot discontinue a goal that is already Achieved or Discontinued.')
+            )
+        if self.plan_id.status != 'active':
+            raise ValidationError(
+                _('Goals can only be discontinued when the plan is Active.')
+            )
+        action = self.env.ref('educare_iep.action_educare_iep_goal_discontinue_wizard').sudo().read()[0]
+        action['context'] = {
+            'default_goal_id': self.id,
+            'default_reason': False,
+            'default_notes': '',
+        }
+        return action
+
+    def action_open_template_import_wizard(self):
+        self.ensure_one()
+        wizard = self.env['educare.iep.goal.template.select.wizard'].create({
+            'goal_id': self.id,
+            'plan_id': self.plan_id.id,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Select Objective Templates'),
+            'res_model': 'educare.iep.goal.template.select.wizard',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'view_id': self.env.ref(
+                'educare_iep.view_educare_iep_goal_template_select_wizard_form'
+            ).id,
+            'target': 'new',
+        }
+
     def action_delete_goal(self):
         self.ensure_one()
+        from odoo.exceptions import UserError
+        if self.plan_id and self.plan_id.status != 'draft':
+            raise UserError(
+                _('Cannot delete a goal when the plan is not in Draft state.')
+            )
+        if self.status != 'draft':
+            raise UserError(
+                _('Cannot delete a goal that has already been started or activated. '
+                  'Use Discontinue or Close instead.')
+            )
+        tracked = self.objective_ids.filtered(lambda o: o.status != 'not_started')
+        if tracked:
+            raise UserError(
+                _('Cannot delete this goal because %d objective(s) already have tracking data. '
+                  'Close the goal instead.', len(tracked))
+            )
         plan = self.plan_id
+        plan_id = plan.id if plan else False
         self.unlink()
-
-        action = self.env.ref('educare_iep.action_educare_iep_goal').read()[0]
-        if plan:
-            action['domain'] = [('plan_id', '=', plan.id)]
+        if plan_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'educare.iep.plan',
+                'res_id': plan_id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
+        action = self.env.ref('educare_iep.action_educare_iep_goal').sudo().read()[0]
         return action
