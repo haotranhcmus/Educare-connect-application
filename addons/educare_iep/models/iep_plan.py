@@ -221,14 +221,16 @@ class EducareIepPlan(models.Model):
         ),
     ]
 
-    @api.depends('student_id.name', 'iep_period', 'version_number')
-    def _compute_display_name(self):
+    def name_get(self):
+        result = []
         for plan in self:
             student = plan.student_id.name or ''
             period = plan.iep_period or ''
             version = plan.version_number or 1
             label = f"{period} v{version}" if period else f"v{version}"
-            plan.display_name = f"{student} - {label}" if student else label
+            name = f"{student} - {label}" if student else label
+            result.append((plan.id, name))
+        return result
 
     @api.depends('start_date')
     def _compute_iep_period(self):
@@ -255,6 +257,21 @@ class EducareIepPlan(models.Model):
             if active_versions:
                 raise ValidationError(
                     _('Only one version can be Active in the same IEP revision chain.')
+                )
+
+    @api.constrains('status', 'student_id')
+    def _check_single_active_plan_per_student(self):
+        for plan in self:
+            if plan.status != 'active' or not plan.student_id:
+                continue
+            duplicate = self.search_count([
+                ('id', '!=', plan.id),
+                ('student_id', '=', plan.student_id.id),
+                ('status', '=', 'active'),
+            ])
+            if duplicate:
+                raise ValidationError(
+                    _('A student can only have one Active IEP plan at a time.')
                 )
 
     @api.constrains('status', 'supervisor_approved', 'parent_consent', 'goal_ids')
