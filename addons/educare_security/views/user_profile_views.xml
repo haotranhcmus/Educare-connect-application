@@ -39,14 +39,11 @@
                                 <field name="user_id"
                                     invisible="not user_id"
                                     readonly="1" />
-                                <field name="role" required="1"
-                                    readonly="context.get('lock_role', False)" />
+                                <field name="role" required="1" />
                                 <field name="center_id"
-                                    invisible="role in ('parent', 'admin')"
+                                    invisible="role == 'parent'"
                                     required="role in ('teacher', 'supervisor')" />
-                                <field name="employee_code"
-                                    invisible="role in ('parent', 'admin')"
-                                    readonly="1" />
+                                <field name="employee_code" invisible="role == 'parent'" />
                             </group>
                         </div>
 
@@ -215,30 +212,21 @@
             </field>
         </record>
 
-        <!-- ==================== MY PROFILE VIEW ==================== -->
-
-        <!-- Dedicated form view for My Profile: no New / no Delete button -->
-        <record id="educare_user_profile_my_profile_form" model="ir.ui.view">
-            <field name="name">Educare User Profile My Profile Form</field>
-            <field name="model">educare.user.profile</field>
-            <field name="inherit_id" ref="educare_user_profile_form_view" />
-            <field name="mode">primary</field>
-            <field name="arch" type="xml">
-                <form position="attributes">
-                    <attribute name="create">0</attribute>
-                    <attribute name="delete">0</attribute>
-                </form>
-            </field>
-        </record>
-
         <!-- ==================== ACTION ==================== -->
 
-        <!-- Action: My Profile — auto-create profile for current user then open it -->
-        <record id="action_my_profile_server" model="ir.actions.server">
+        <!-- Action: My Profile — dành cho teacher/supervisor/parent tự xem profile của mình -->
+        <record id="action_my_profile" model="ir.actions.act_window">
             <field name="name">My Profile</field>
-            <field name="model_id" ref="model_educare_user_profile" />
-            <field name="state">code</field>
-            <field name="code">action = model.action_open_my_profile()</field>
+            <field name="res_model">educare.user.profile</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[("user_id", "=", uid)]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Your user profile was not found. This may be because your account has not been
+                    set up yet.
+                </p>
+                <p>Contact Admin to have your user profile created.</p>
+            </field>
         </record>
 
         <record id="action_educare_user_profile" model="ir.actions.act_window">
