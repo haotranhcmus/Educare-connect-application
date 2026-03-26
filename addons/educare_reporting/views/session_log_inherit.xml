@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Inherit session log form to add Generate Report button -->
+    <record id="view_session_log_form_inherit_reporting" model="ir.ui.view">
+        <field name="name">educare.session.log.form.inherit.reporting</field>
+        <field name="model">educare.session.log</field>
+        <field name="inherit_id" ref="educare_session.view_session_log_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(educare_reporting.action_generate_report_wizard)d"
+                    type="action"
+                    string="Generate Report"
+                    class="btn-primary"
+                    invisible="status != 'done'" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

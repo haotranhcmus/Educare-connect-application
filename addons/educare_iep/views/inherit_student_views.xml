@@ -26,7 +26,8 @@
                 <xpath expr="//notebook" position="inside">
                     <page string="IEP Plans" name="iep_plans">
                         <field name="iep_plan_ids" context="{'default_student_id': id}">
-                            <tree string="IEP Plans" default_order="start_date desc">
+                            <tree string="IEP Plans" default_order="start_date desc"
+                                create="false" edit="false" delete="false">
                                 <field name="iep_period" readonly="1" />
                                 <field name="assigned_teacher_id" />
                                 <field name="supervisor_id" />
@@ -36,6 +37,11 @@
                                     decoration-warning="status == 'draft'"
                                     decoration-success="status == 'active'"
                                     decoration-muted="status == 'closed'" />
+                                <button name="action_open_plan_form"
+                                    type="object"
+                                    icon="fa-external-link"
+                                    string="View"
+                                    class="btn-link" />
                             </tree>
                         </field>
                     </page>

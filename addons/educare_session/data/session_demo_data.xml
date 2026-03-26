@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Session Demo Data
-    =================
-    Creates 8 reviewed sessions for Student An + 4 for Student Binh.
-    All sessions are set to status='done' so their results are picked up by
-    current_accuracy_pct, progress_pct, trend, and consecutive computations.
+    Du lieu demo buoi hoc
+    =====================
+    Tao 8 buoi da danh gia cho hoc sinh An + 4 buoi cho hoc sinh Binh.
+    Tat ca buoi hoc dat status='done' de ket qua duoc tinh vao
+    current_accuracy_pct, progress_pct, trend va consecutive.
 
-    Resulting progress after this data:
+    Tien do sau khi nap du lieu:
 
-    Student An – Plan active
-      obj_01_01 (Communication, target=80%, weight=3):
-        Sessions: 30/40/50/50/60/60/70/70 %
-        current = avg(60,70,70) = 66.7 %  |  progress ≈ 79 %  |  trend = improving
+    Hoc sinh An – Ke hoach dang active
+      obj_01_01 (Giao tiep, muc tieu=80%, trong so=3):
+        Cac buoi: 30/40/50/50/60/60/70/70 %
+        do chinh xac hien tai = avg(60,70,70) = 66.7 %  |  tien do ≈ 79 %  |  xu huong = cai thien
 
-      obj_02_01 (Behavior - sit still, target=80%, weight=2):
-        Sessions: 30/40/40/50 %
-        current = avg(40,40,50) = 43 %  |  progress ≈ 47 %  |  trend = improving
+      obj_02_01 (Hanh vi - ngoi yen, muc tieu=80%, trong so=2):
+        Cac buoi: 30/40/40/50 %
+        do chinh xac hien tai = avg(40,40,50) = 43 %  |  tien do ≈ 47 %  |  xu huong = cai thien
 
-      Goal 01 weighted progress = (79%×3 + 0%×1) / 4 ≈ 59 %
-      Goal 02 weighted progress = 47 %
+      Tien do co trong so muc tieu 01 = (79%×3 + 0%×1) / 4 ≈ 59 %
+      Tien do co trong so muc tieu 02 = 47 %
 -->
 <odoo noupdate="1">
 
     <!-- ============================================================ -->
-    <!-- STUDENT AN – 8 sessions                                       -->
-    <!--   Sessions AN-01 … AN-04: obj_01_01 + obj_02_01              -->
-    <!--   Sessions AN-05 … AN-08: obj_01_01 only                     -->
+    <!-- HOC SINH AN – 8 buoi                                          -->
+    <!--   Buoi AN-01 … AN-04: obj_01_01 + obj_02_01                  -->
+    <!--   Buoi AN-05 … AN-08: chi obj_01_01                          -->
     <!-- ============================================================ -->
 
-    <!-- Session AN-01  (day -56)  obj_01_01=3/10  obj_02_01=3/10 -->
+    <!-- Buoi AN-01  (ngay -56)  obj_01_01=3/10  obj_02_01=3/10 -->
     <record id="demo_session_an_01" model="educare.session.log">
         <field name="name">SES-DEMO-AN-01</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -42,8 +42,7 @@
         <field name="mood">neutral</field>
         <field name="energy_level">normal</field>
         <field name="engagement_level">somewhat_engaged</field>
-        <field name="notes">Week 1. Child requires heavy prompting. Establishing routine and
-            rapport.</field>
+        <field name="notes">Tuan 1. Tre can nhieu goi y ho tro. Dang thiet lap nep hoc va moi quan he voi giao vien.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -56,7 +55,7 @@
         <field name="phase">intervention</field>
         <field name="prompt_level_used">gestural_prompt</field>
         <field name="teaching_method">dtt</field>
-        <field name="notes">Child responded only with gestural prompt. 3/10 independent mands.</field>
+        <field name="notes">Tre chi dap ung khi co goi y bang cu chi. Co 3/10 lan yeu cau doc lap.</field>
     </record>
     <record id="demo_result_an_01_b" model="educare.session.result">
         <field name="session_id" ref="demo_session_an_01" />
@@ -67,10 +66,10 @@
         <field name="phase">intervention</field>
         <field name="prompt_level_used">partial_physical</field>
         <field name="teaching_method">dtt</field>
-        <field name="notes">High frequency of self-stimulatory behavior. Baseline confirmed.</field>
+        <field name="notes">Tan suat hanh vi tu kich thich cao. Da xac nhan baseline.</field>
     </record>
 
-    <!-- Session AN-02  (day -49)  obj_01_01=4/10  obj_02_01=4/10 -->
+    <!-- Buoi AN-02  (ngay -49)  obj_01_01=4/10  obj_02_01=4/10 -->
     <record id="demo_session_an_02" model="educare.session.log">
         <field name="name">SES-DEMO-AN-02</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -84,7 +83,7 @@
         <field name="mood">good</field>
         <field name="energy_level">normal</field>
         <field name="engagement_level">engaged</field>
-        <field name="notes">Improved motivation with token board. Slight gains in both objectives.</field>
+        <field name="notes">Dong luc hoc cai thien nho bang bang thuong. Ca hai muc tieu deu tien bo nhe.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -109,7 +108,7 @@
         <field name="teaching_method">dtt</field>
     </record>
 
-    <!-- Session AN-03  (day -42)  obj_01_01=5/10  obj_02_01=4/10 -->
+    <!-- Buoi AN-03  (ngay -42)  obj_01_01=5/10  obj_02_01=4/10 -->
     <record id="demo_session_an_03" model="educare.session.log">
         <field name="name">SES-DEMO-AN-03</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -123,7 +122,7 @@
         <field name="mood">good</field>
         <field name="energy_level">high</field>
         <field name="engagement_level">engaged</field>
-        <field name="notes">Noticeable improvement. Child initiating more without prompting.</field>
+        <field name="notes">Tien bo ro ret. Tre chu dong khoi xuong nhieu hon ma khong can prompt.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -148,7 +147,7 @@
         <field name="teaching_method">dtt</field>
     </record>
 
-    <!-- Session AN-04  (day -35)  obj_01_01=5/10  obj_02_01=5/10 -->
+    <!-- Buoi AN-04  (ngay -35)  obj_01_01=5/10  obj_02_01=5/10 -->
     <record id="demo_session_an_04" model="educare.session.log">
         <field name="name">SES-DEMO-AN-04</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -162,7 +161,7 @@
         <field name="mood">good</field>
         <field name="energy_level">high</field>
         <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Consistent progress on both objectives. Prompt fading beginning.</field>
+        <field name="notes">Tien bo on dinh o ca hai muc tieu. Bat dau giai doan giam goi y.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -187,7 +186,7 @@
         <field name="teaching_method">dtt</field>
     </record>
 
-    <!-- Session AN-05  (day -28)  obj_01_01=6/10 only -->
+    <!-- Buoi AN-05  (ngay -28)  chi obj_01_01=6/10 -->
     <record id="demo_session_an_05" model="educare.session.log">
         <field name="name">SES-DEMO-AN-05</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -201,7 +200,7 @@
         <field name="mood">good</field>
         <field name="energy_level">high</field>
         <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Strong communication session. Child leading DTT trials independently.</field>
+        <field name="notes">Buoi giao tiep rat tot. Tre chu dong thuc hien cac lan thu DTT doc lap.</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_05_c" model="educare.session.result">
@@ -215,7 +214,7 @@
         <field name="teaching_method">dtt</field>
     </record>
 
-    <!-- Session AN-06  (day -21)  obj_01_01=6/10 -->
+    <!-- Buoi AN-06  (ngay -21)  obj_01_01=6/10 -->
     <record id="demo_session_an_06" model="educare.session.log">
         <field name="name">SES-DEMO-AN-06</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -229,7 +228,7 @@
         <field name="mood">good</field>
         <field name="energy_level">high</field>
         <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Excellent session. Transitioning to NET environment training.</field>
+        <field name="notes">Buoi hoc rat tot. Dang chuyen dan sang boi canh NET.</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_06_c" model="educare.session.result">
@@ -243,7 +242,7 @@
         <field name="teaching_method">net</field>
     </record>
 
-    <!-- Session AN-07  (day -14)  obj_01_01=7/10 -->
+    <!-- Buoi AN-07  (ngay -14)  obj_01_01=7/10 -->
     <record id="demo_session_an_07" model="educare.session.log">
         <field name="name">SES-DEMO-AN-07</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -257,8 +256,7 @@
         <field name="mood">good</field>
         <field name="energy_level">high</field>
         <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Child spontaneously initiated 2 mands without prompting. Great
-            milestone!</field>
+        <field name="notes">Tre tu phat khoi xuong 2 mand khong can prompt. Cot moc rat tot!</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_07_c" model="educare.session.result">
@@ -271,10 +269,10 @@
         <field name="prompt_level_used">verbal_prompt</field>
         <field name="prompt_fading_noted" eval="True" />
         <field name="teaching_method">net</field>
-        <field name="notes">Prompt fading noted. Ready to reduce prompt level next session.</field>
+        <field name="notes">Da ghi nhan giam goi y. San sang ha muc goi y o buoi tiep theo.</field>
     </record>
 
-    <!-- Session AN-08  (day -7)  obj_01_01=7/10 -->
+    <!-- Buoi AN-08  (ngay -7)  obj_01_01=7/10 -->
     <record id="demo_session_an_08" model="educare.session.log">
         <field name="name">SES-DEMO-AN-08</field>
         <field name="student_id" ref="educare_iep.demo_student_an" />
@@ -288,7 +286,7 @@
         <field name="mood">good</field>
         <field name="energy_level">high</field>
         <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Sustained progress. Approaching 80% target. Plan review scheduled.</field>
+        <field name="notes">Tien bo duoc duy tri. Dang tien sat muc tieu 80%. Da len lich review plan.</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_08_c" model="educare.session.result">

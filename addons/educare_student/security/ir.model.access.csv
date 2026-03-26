@@ -11,3 +11,11 @@ access_transfer_admin,educare.transfer admin,model_educare_transfer,educare_secu
 access_transfer_supervisor,educare.transfer supervisor,model_educare_transfer,educare_security.group_supervisor,1,1,1,0
 access_transfer_teacher,educare.transfer teacher,model_educare_transfer,educare_security.group_teacher,1,0,0,0
 access_transfer_parent,educare.transfer parent,model_educare_transfer,educare_security.group_parent,1,0,0,0
+access_assessment_item_admin,educare.assessment.item admin,model_educare_assessment_item,educare_security.group_admin,1,1,1,1
+access_assessment_item_supervisor,educare.assessment.item supervisor,model_educare_assessment_item,educare_security.group_supervisor,1,1,1,0
+access_assessment_item_teacher,educare.assessment.item teacher,model_educare_assessment_item,educare_security.group_teacher,1,1,1,0
+access_assessment_item_parent,educare.assessment.item parent,model_educare_assessment_item,educare_security.group_parent,1,0,0,0
+access_assessment_line_admin,educare.assessment.line admin,model_educare_assessment_line,educare_security.group_admin,1,1,1,1
+access_assessment_line_supervisor,educare.assessment.line supervisor,model_educare_assessment_line,educare_security.group_supervisor,1,1,1,0
+access_assessment_line_teacher,educare.assessment.line teacher,model_educare_assessment_line,educare_security.group_teacher,1,1,1,0
+access_assessment_line_parent,educare.assessment.line parent,model_educare_assessment_line,educare_security.group_parent,1,0,0,0

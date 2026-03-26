@@ -2,13 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* educare_security
 #
+# Translators:
+# Vietnamese Translation
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 09:16+0000\n"
-"PO-Revision-Date: 2026-03-11 09:16+0000\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2026-03-26 01:13+0000\n"
+"PO-Revision-Date: 2026-03-26 08:00+0700\n"
+"Last-Translator: Educare Vietnam\n"
 "Language-Team: Vietnamese\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
@@ -32,12 +35,12 @@ msgstr "Tài khoản bị khóa"
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
 msgid "Action"
-msgstr "Thao tác"
+msgstr "Hành động"
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_form_view
 msgid "Action Information"
-msgstr "Thông tin thao tác"
+msgstr "Thông tin hành động"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_needaction
@@ -58,7 +61,7 @@ msgstr "Hoạt động"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "Trang trí ngoại lệ hoạt động"
+msgstr "Hiển thị ngoại lệ hoạt động"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_state
@@ -80,7 +83,7 @@ msgstr "Quản trị viên"
 #. module: educare_security
 #: model:res.groups,comment:educare_security.group_admin
 msgid "Admin — full system access across all centers"
-msgstr "Quản trị viên — toàn quyền truy cập hệ thống trên tất cả các trung tâm"
+msgstr "Quản trị viên — toàn quyền truy cập hệ thống trên tất cả trung tâm"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_attachment_count
@@ -107,9 +110,7 @@ msgstr "Mixin nhật ký kiểm tra"
 msgid ""
 "Audit logs are automatically recorded when create/update/delete operations are\n"
 "                    performed on the system."
-msgstr ""
-"Nhật ký kiểm tra được ghi lại tự động khi các thao tác tạo/cập nhật/xóa\n"
-"                    được thực hiện trên hệ thống."
+msgstr "Nhật ký kiểm tra được tự động ghi lại khi thực hiện các thao tác tạo/cập nhật/xóa trên hệ thống."
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__avatar
@@ -139,11 +140,6 @@ msgstr "Chứng chỉ (BCBA, RBT, v.v.)"
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
-msgid "Child's Center"
-msgstr "Trung tâm của trẻ"
-
-#. module: educare_security
-#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
 msgid "Contact & Work"
 msgstr "Liên hệ & Công việc"
 
@@ -152,6 +148,14 @@ msgstr "Liên hệ & Công việc"
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
 msgid "Create"
 msgstr "Tạo mới"
+
+#. module: educare_security
+#: model_terms:ir.actions.act_window,help:educare_security.action_educare_user_profile
+msgid ""
+"Create a new profile by entering Full Name, Login (Email), and Role.\n"
+"                    The system will automatically create an Odoo account and assign matching access rights.\n"
+"                    All changes are logged in the Audit Log."
+msgstr "Tạo hồ sơ mới bằng cách nhập Họ tên đầy đủ, Đăng nhập (Email) và Vai trò.\n                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền truy cập tương ứng.\n                    Tất cả thay đổi được ghi lại trong Nhật ký kiểm tra."
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__create_uid
@@ -196,7 +200,7 @@ msgstr "Tên hiển thị"
 #. module: educare_security
 #: model:ir.model.constraint,message:educare_security.constraint_educare_user_profile_unique_user
 msgid "Each user can only have one profile!"
-msgstr "Mỗi người dùng chỉ được có một hồ sơ!"
+msgstr "Mỗi người dùng chỉ có thể có một hồ sơ!"
 
 #. module: educare_security
 #: model:ir.module.category,name:educare_security.module_category_educare
@@ -238,6 +242,16 @@ msgid "Employee code must be unique!"
 msgstr "Mã nhân viên phải là duy nhất!"
 
 #. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__login
+msgid "Enter email/login for the new account."
+msgstr "Nhập email/đăng nhập cho tài khoản mới."
+
+#. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__full_name
+msgid "Enter user full name. The system will auto-create the account on save."
+msgstr "Nhập họ tên đầy đủ của người dùng. Hệ thống sẽ tự động tạo tài khoản khi lưu."
+
+#. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
 msgid "Expertise"
 msgstr "Chuyên môn"
@@ -265,7 +279,7 @@ msgstr "Người theo dõi"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Người theo dõi (Đối tác)"
+msgstr "Người theo dõi (đối tác)"
 
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_type_icon
@@ -312,17 +326,17 @@ msgstr "Biểu tượng"
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "Biểu tượng chỉ thị hoạt động ngoại lệ."
+msgstr "Biểu tượng chỉ hoạt động ngoại lệ."
 
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Nếu được đánh dấu, tin nhắn mới cần bạn chú ý."
+msgstr "Nếu được chọn, có tin nhắn mới cần xử lý."
 
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Nếu được đánh dấu, một số tin nhắn gặp lỗi khi gửi."
+msgstr "Nếu được chọn, một số tin nhắn gặp lỗi gửi."
 
 #. module: educare_security
 #: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__status__inactive
@@ -348,12 +362,12 @@ msgstr "Chức danh"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__last_failed_login
 msgid "Last Failed Login"
-msgstr "Lần đăng nhập thất bại gần nhất"
+msgstr "Lần đăng nhập thất bại cuối"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__last_login
 msgid "Last Login"
-msgstr "Lần đăng nhập gần nhất"
+msgstr "Lần đăng nhập cuối"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__write_uid
@@ -368,6 +382,11 @@ msgid "Last Updated on"
 msgstr "Ngày cập nhật lần cuối"
 
 #. module: educare_security
+#: model:ir.model.fields,help:educare_security.field_educare_user_profile__student_ids
+msgid "List of students linked to this parent account."
+msgstr "Danh sách học sinh liên kết với tài khoản phụ huynh này."
+
+#. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__lock_reason
 msgid "Lock Reason"
 msgstr "Lý do khóa"
@@ -376,8 +395,8 @@ msgstr "Lý do khóa"
 #. odoo-python
 #: code:addons/educare_security/models/user_profile.py:0
 #, python-format
-msgid "Login \"%s\" đã tồn tại. Vui lòng dùng email khác."
-msgstr "Login \"%s\" đã tồn tại. Vui lòng dùng email khác."
+msgid "Login \"%s\" already exists. Please use another email."
+msgstr "Đăng nhập \"%s\" đã tồn tại. Vui lòng sử dụng email khác."
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__login
@@ -397,7 +416,7 @@ msgstr "Thông tin đăng nhập"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__max_students
 msgid "Max Students Capacity"
-msgstr "Sức chứa học sinh tối đa"
+msgstr "Số học sinh tối đa"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_has_error
@@ -414,7 +433,7 @@ msgstr "Tin nhắn"
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_tree_view
 msgid "Model"
-msgstr "Model"
+msgstr "Mô hình"
 
 #. module: educare_security
 #: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__parent_relation__mother
@@ -425,6 +444,15 @@ msgstr "Mẹ"
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "Hạn chót hoạt động của tôi"
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#: model:ir.actions.server,name:educare_security.action_my_profile_server
+#: model:ir.ui.menu,name:educare_security.menu_my_profile
+#, python-format
+msgid "My Profile"
+msgstr "Hồ sơ của tôi"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__new_values
@@ -448,16 +476,6 @@ msgid "Next Activity Type"
 msgstr "Loại hoạt động tiếp theo"
 
 #. module: educare_security
-#: model:ir.model.fields,help:educare_security.field_educare_user_profile__login
-msgid "Nhập email/login cho tài khoản mới."
-msgstr "Nhập email/login cho tài khoản mới."
-
-#. module: educare_security
-#: model:ir.model.fields,help:educare_security.field_educare_user_profile__full_name
-msgid "Nhập tên người dùng. Hệ thống sẽ tự tạo tài khoản khi lưu."
-msgstr "Nhập tên người dùng. Hệ thống sẽ tự tạo tài khoản khi lưu."
-
-#. module: educare_security
 #: model_terms:ir.actions.act_window,help:educare_security.action_educare_audit_log
 msgid "No audit log found."
 msgstr "Không tìm thấy nhật ký kiểm tra."
@@ -476,7 +494,7 @@ msgstr "Ghi chú"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_needaction_counter
 msgid "Number of Actions"
-msgstr "Số lượng thao tác"
+msgstr "Số hành động"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__message_has_error_counter
@@ -486,12 +504,12 @@ msgstr "Số lỗi"
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Số tin nhắn cần thực hiện"
+msgstr "Số tin nhắn cần xử lý"
 
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Số tin nhắn gặp lỗi khi gửi"
+msgstr "Số tin nhắn gặp lỗi gửi"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__old_values
@@ -513,14 +531,9 @@ msgid "Parent"
 msgstr "Phụ huynh"
 
 #. module: educare_security
-#: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
-msgid "Parent Information"
-msgstr "Thông tin phụ huynh"
-
-#. module: educare_security
 #: model:res.groups,comment:educare_security.group_parent
 msgid "Parent — read-only access to own child's information"
-msgstr "Phụ huynh — chỉ được xem thông tin của con mình"
+msgstr "Phụ huynh — chỉ xem thông tin của con mình"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__phone
@@ -530,19 +543,28 @@ msgid "Phone"
 msgstr "Điện thoại"
 
 #. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Please enter Full Name to create a user account."
+msgstr "Vui lòng nhập Họ tên đầy đủ để tạo tài khoản người dùng."
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Please enter Login (Email) to create a user account."
+msgstr "Vui lòng nhập Đăng nhập (Email) để tạo tài khoản người dùng."
+
+#. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__preferred_contact
 msgid "Preferred Contact"
-msgstr "Phương thức liên lạc ưa thích"
+msgstr "Liên hệ ưu tiên"
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
 msgid "Professional Skills"
 msgstr "Kỹ năng chuyên môn"
-
-#. module: educare_security
-#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__rating_ids
-msgid "Ratings"
-msgstr "Đánh giá"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__receive_notifications
@@ -573,7 +595,7 @@ msgstr "Tên bản ghi"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__parent_relation
 msgid "Relationship"
-msgstr "Quan hệ"
+msgstr "Mối quan hệ"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__activity_user_id
@@ -586,6 +608,13 @@ msgstr "Người phụ trách"
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_tree_view
 msgid "Role"
 msgstr "Vai trò"
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Role is locked to Supervisor in this flow."
+msgstr "Vai trò bị khóa thành Giám sát viên trong quy trình này."
 
 #. module: educare_security
 #: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__preferred_contact__sms
@@ -610,7 +639,7 @@ msgstr "Bảo mật"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__specialization
 msgid "Specialization"
-msgstr "Chuyên ngành"
+msgstr "Chuyên môn hóa"
 
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__status
@@ -626,11 +655,7 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
-msgstr ""
-"Trạng thái dựa trên hoạt động\n"
-"Quá hạn: Đã qua ngày đến hạn\n"
-"Hôm nay: Ngày hoạt động là hôm nay\n"
-"Đã lên kế hoạch: Hoạt động trong tương lai."
+msgstr "Trạng thái dựa trên hoạt động\nQuá hạn: Ngày đến hạn đã qua\nHôm nay: Ngày hoạt động là hôm nay\nĐã lên kế hoạch: Hoạt động trong tương lai."
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
@@ -638,6 +663,7 @@ msgid "Student List"
 msgstr "Danh sách học sinh"
 
 #. module: educare_security
+#: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__student_ids
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
 msgid "Students"
 msgstr "Học sinh"
@@ -652,13 +678,13 @@ msgstr "Giám sát viên"
 #. module: educare_security
 #: model:res.groups,comment:educare_security.group_supervisor
 msgid "Supervisor (BCBA) — oversees all operations within a center"
-msgstr "Giám sát viên (BCBA) — giám sát toàn bộ hoạt động trong một trung tâm"
+msgstr "Giám sát viên (BCBA) — giám sát toàn bộ hoạt động trong trung tâm"
 
 #. module: educare_security
 #: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__status__suspended
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
 msgid "Suspended"
-msgstr "Tạm ngừng"
+msgstr "Đình chỉ"
 
 #. module: educare_security
 #: model:ir.actions.act_window,name:educare_security.action_educare_audit_log
@@ -672,11 +698,6 @@ msgid "System Log"
 msgstr "Nhật ký hệ thống"
 
 #. module: educare_security
-#: model:ir.ui.menu,name:educare_security.menu_my_profile
-msgid "User Profile"
-msgstr "Hồ sơ người dùng"
-
-#. module: educare_security
 #: model:ir.model.fields.selection,name:educare_security.selection__educare_user_profile__role__teacher
 #: model:res.groups,name:educare_security.group_teacher
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_search_view
@@ -684,9 +705,23 @@ msgid "Teacher"
 msgstr "Giáo viên"
 
 #. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Teacher and Supervisor must have an Employee Code."
+msgstr "Giáo viên và Giám sát viên phải có Mã nhân viên."
+
+#. module: educare_security
 #: model:res.groups,comment:educare_security.group_teacher
 msgid "Teacher — manages assigned student records"
 msgstr "Giáo viên — quản lý hồ sơ học sinh được phân công"
+
+#. module: educare_security
+#. odoo-python
+#: code:addons/educare_security/models/user_profile.py:0
+#, python-format
+msgid "Teachers and supervisors must be assigned to a center."
+msgstr "Giáo viên và giám sát viên phải được phân công vào một trung tâm."
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
@@ -712,23 +747,12 @@ msgstr "Hôm nay"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_user_profile__two_factor_enabled
 msgid "Two-Factor Auth"
-msgstr "Xác thực hai bước"
+msgstr "Xác thực hai yếu tố"
 
 #. module: educare_security
 #: model:ir.model.fields,help:educare_security.field_educare_user_profile__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "Loại hoạt động ngoại lệ được ghi nhận."
-
-#. module: educare_security
-#: model_terms:ir.actions.act_window,help:educare_security.action_educare_user_profile
-msgid ""
-"Tạo profile mới: nhập Full Name, Login (Email) và Role.\n"
-"                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền tương ứng.\n"
-"                    Mọi thay đổi được ghi lại trong Audit Log."
-msgstr ""
-"Tạo hồ sơ mới: nhập Họ và tên, Đăng nhập (Email) và Vai trò.\n"
-"                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền tương ứng.\n"
-"                    Mọi thay đổi được ghi lại trong Nhật ký kiểm tra."
 
 #. module: educare_security
 #: model:ir.model,name:educare_security.model_res_users
@@ -744,7 +768,7 @@ msgstr "Người dùng"
 #. module: educare_security
 #: model:ir.model.fields,field_description:educare_security.field_educare_audit_log__user_agent
 msgid "User Agent"
-msgstr "Trình duyệt người dùng"
+msgstr "Tác nhân người dùng"
 
 #. module: educare_security
 #: model:ir.ui.menu,name:educare_security.menu_educare_user_management
@@ -764,20 +788,6 @@ msgid "User Profiles"
 msgstr "Hồ sơ người dùng"
 
 #. module: educare_security
-#. odoo-python
-#: code:addons/educare_security/models/user_profile.py:0
-#, python-format
-msgid "Vui lòng nhập Full Name để tạo tài khoản người dùng."
-msgstr "Vui lòng nhập Họ và tên để tạo tài khoản người dùng."
-
-#. module: educare_security
-#. odoo-python
-#: code:addons/educare_security/models/user_profile.py:0
-#, python-format
-msgid "Vui lòng nhập Login (Email) để tạo tài khoản người dùng."
-msgstr "Vui lòng nhập Đăng nhập (Email) để tạo tài khoản người dùng."
-
-#. module: educare_security
 #: model:ir.model.fields.selection,name:educare_security.selection__educare_audit_log__action__write
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_audit_log_search_view
 msgid "Write"
@@ -795,10 +805,10 @@ msgstr "Zalo"
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
-msgid "e.g. Nguyễn Văn A"
-msgstr "vd: Nguyễn Văn A"
+msgid "e.g. John Doe"
+msgstr "ví dụ: Nguyễn Văn A"
 
 #. module: educare_security
 #: model_terms:ir.ui.view,arch_db:educare_security.educare_user_profile_form_view
 msgid "e.g. nguyenvana@example.com"
-msgstr "vd: nguyenvana@example.com"
+msgstr "ví dụ: nguyenvana@example.com"

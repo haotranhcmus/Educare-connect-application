@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_daily_report_tree" model="ir.ui.view">
+        <field name="name">educare.daily.report.tree</field>
+        <field name="model">educare.daily.report</field>
+        <field name="arch" type="xml">
+            <tree string="Daily Reports"
+                decoration-muted="status == 'draft'"
+                decoration-info="status == 'ready'"
+                decoration-success="status == 'sent'"
+                decoration-bf="status == 'read'">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="report_date" />
+                <field name="teacher_id" />
+                <field name="overall_performance" widget="badge"
+                    decoration-success="overall_performance == 'excellent'"
+                    decoration-info="overall_performance == 'good'"
+                    decoration-warning="overall_performance == 'fair'"
+                    decoration-danger="overall_performance == 'poor'" />
+                <field name="status" widget="badge"
+                    decoration-info="status == 'draft'"
+                    decoration-warning="status == 'ready'"
+                    decoration-success="status in ('sent', 'read')" />
+                <field name="report_type" optional="hide" />
+            </tree>
+        </field>
+    </record>
+</odoo>

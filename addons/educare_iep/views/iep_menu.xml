@@ -28,6 +28,13 @@
         action="action_educare_iep_objective"
         sequence="30" />
 
+    <!-- Level 2: Objective Progress (Kanban + Graph + Pivot) -->
+    <menuitem id="menu_objective_progress"
+        name="Objective Progress"
+        parent="menu_educare_iep_root"
+        action="action_objective_progress"
+        sequence="35" />
+
     <!-- Level 2: Configuration (admin only) -->
     <menuitem id="menu_educare_iep_config"
         name="Configuration"
@@ -41,29 +48,29 @@
         action="action_iep_framework"
         sequence="10" />
 
-    <menuitem id="menu_iep_config_prompt_level"
-        name="Prompt Levels"
-        parent="menu_educare_iep_config"
-        action="action_iep_prompt_level"
-        sequence="30" />
-
-    <menuitem id="menu_iep_config_probe_method"
-        name="Probe Methods"
-        parent="menu_educare_iep_config"
-        action="action_iep_probe_method"
-        sequence="40" />
-
     <menuitem id="menu_iep_config_measurement_template"
         name="Measurement Templates"
         parent="menu_educare_iep_config"
         action="action_iep_measurement_template"
         sequence="50" />
 
-    <menuitem id="menu_iep_config_goal_template"
-        name="Goal Templates"
+    <menuitem id="menu_iep_config_prompt_level"
+        name="Prompt Levels"
         parent="menu_educare_iep_config"
-        action="action_iep_goal_template"
+        action="action_iep_prompt_level"
+        sequence="55" />
+
+    <menuitem id="menu_iep_config_teaching_method"
+        name="Teaching Methods"
+        parent="menu_educare_iep_config"
+        action="action_iep_teaching_method"
         sequence="60" />
+
+    <menuitem id="menu_iep_config_data_collection_method"
+        name="Data Collection Methods"
+        parent="menu_educare_iep_config"
+        action="action_iep_data_collection_method"
+        sequence="65" />
 
     <menuitem id="menu_iep_config_objective_template"
         name="Objective Templates"

@@ -32,4 +32,19 @@
         action="action_educare_student"
         sequence="10" />
 
+    <!-- Menu: Configuration -->
+    <menuitem
+        id="menu_student_config"
+        name="Configuration"
+        parent="menu_student_parent"
+        sequence="90"
+        groups="educare_security.group_admin" />
+
+    <menuitem
+        id="menu_assessment_items"
+        name="Assessment Items"
+        parent="menu_student_config"
+        action="action_educare_assessment_item"
+        sequence="10" />
+
 </odoo>

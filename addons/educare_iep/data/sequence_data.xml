@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
         <record id="seq_educare_iep_goal" model="ir.sequence">
-            <field name="name">Educare IEP Goal Sequence</field>
+            <field name="name">So thu tu muc tieu dai han IEP</field>
             <field name="code">educare.iep.goal</field>
             <field name="prefix">LTG-%(year)s-</field>
             <field name="padding">4</field>
@@ -11,7 +11,7 @@
         </record>
 
         <record id="seq_educare_iep_objective" model="ir.sequence">
-            <field name="name">Educare IEP Objective Sequence</field>
+            <field name="name">So thu tu muc tieu ngan han IEP</field>
             <field name="code">educare.iep.objective</field>
             <field name="prefix">STO-%(year)s-</field>
             <field name="padding">4</field>

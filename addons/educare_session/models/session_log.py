@@ -10,6 +10,7 @@ from ..constants import (
     PERFORMANCE_LEVELS,
     LOCATIONS,
     SESSION_TYPES,
+    SESSION_PURPOSES,
 )
 
 
@@ -87,6 +88,13 @@ class EducareSessionLog(models.Model):
         default='individual',
         required=True,
     )
+    session_purpose = fields.Selection(
+        SESSION_PURPOSES,
+        string='Session Purpose',
+        default='intervention',
+        required=True,
+        tracking=True,
+    )
 
     # ── Status ────────────────────────────────────────────────────
     status = fields.Selection(
@@ -105,6 +113,12 @@ class EducareSessionLog(models.Model):
         'session_id',
         'objective_id',
         string='Session Objectives',
+    )
+    available_objective_ids = fields.Many2many(
+        'educare.iep.objective',
+        compute='_compute_available_objective_ids',
+        string='Available Objectives',
+        store=False,
     )
     result_line_ids = fields.One2many(
         'educare.session.result',
@@ -148,6 +162,60 @@ class EducareSessionLog(models.Model):
          'End time must be after start time.'),
     ]
 
+    # ── Schedule Overlap Check ────────────────────────────────────
+
+    @api.constrains('teacher_id', 'student_id', 'session_date', 'start_time', 'end_time', 'status')
+    def _check_schedule_overlap(self):
+        for rec in self:
+            if rec.status == 'draft':
+                continue
+            # Teacher overlap
+            teacher_overlap = self.search([
+                ('id', '!=', rec.id),
+                ('teacher_id', '=', rec.teacher_id.id),
+                ('session_date', '=', rec.session_date),
+                ('status', '!=', 'draft'),
+                ('start_time', '<', rec.end_time),
+                ('end_time', '>', rec.start_time),
+            ], limit=1)
+            if teacher_overlap:
+                raise ValidationError(
+                    _('Teacher %(teacher)s already has a session on %(date)s '
+                      'from %(start).2f to %(end).2f (%(code)s). '
+                      'Please choose a different time slot.',
+                      teacher=rec.teacher_id.name,
+                      date=rec.session_date,
+                      start=teacher_overlap.start_time,
+                      end=teacher_overlap.end_time,
+                      code=teacher_overlap.name,
+                    )
+                )
+            # Student overlap
+            student_overlap = self.search([
+                ('id', '!=', rec.id),
+                ('student_id', '=', rec.student_id.id),
+                ('session_date', '=', rec.session_date),
+                ('status', '!=', 'draft'),
+                ('start_time', '<', rec.end_time),
+                ('end_time', '>', rec.start_time),
+            ], limit=1)
+            if student_overlap:
+                raise ValidationError(
+                    _('Student %(student)s already has a session on %(date)s '
+                      'from %(start).2f to %(end).2f (%(code)s). '
+                      'Please choose a different time slot.',
+                      student=rec.student_id.name,
+                      date=rec.session_date,
+                      start=student_overlap.start_time,
+                      end=student_overlap.end_time,
+                      code=student_overlap.name,
+                    )
+                )
+
+    @api.constrains('session_purpose', 'objective_ids')
+    def _check_objective_selection_policy(self):
+        self._validate_objective_selection_policy()
+
     # ── Computed ──────────────────────────────────────────────────
 
     @api.depends('start_time', 'end_time')
@@ -171,17 +239,102 @@ class EducareSessionLog(models.Model):
                 rec.avg_accuracy = 0.0
             rec.all_reviewed = bool(results) and len(reviewed) == len(results)
 
+    @api.depends('student_id', 'session_purpose')
+    def _compute_available_objective_ids(self):
+        Objective = self.env['educare.iep.objective']
+        for rec in self:
+            if not rec.student_id:
+                rec.available_objective_ids = [(6, 0, [])]
+                continue
+
+            purpose = rec.session_purpose or 'intervention'
+            domain = [('student_id', '=', rec.student_id.id)]
+
+            if purpose == 'intervention':
+                domain.append(('status', 'in', ['not_started', 'in_progress']))
+            elif purpose in ('maintenance_probe', 'generalization_probe'):
+                domain.append(('status', '=', 'mastered'))
+            else:
+                # parent_training: no objective tracking in this session type
+                domain.append(('id', '=', 0))
+
+            rec.available_objective_ids = [(6, 0, Objective.search(domain).ids)]
+
     # ── ORM Overrides ─────────────────────────────────────────────
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', '/') == '/':
-                vals['name'] = (
-                    self.env['ir.sequence'].next_by_code('educare.session.log')
-                    or '/'
-                )
-        return super().create(vals_list)
+                code = self._next_session_code()
+                vals['name'] = code or '/'
+        records = super().create(vals_list)
+        records._validate_objective_selection_policy()
+        return records
+
+    def _next_session_code(self):
+        """Generate next session code with collision detection."""
+        for _attempt in range(100):
+            code = self.env['ir.sequence'].next_by_code('educare.session.log')
+            if not code:
+                return None
+            if not self.sudo().search_count([('name', '=', code)]):
+                return code
+        return None
+
+    def _validate_objective_selection_policy(self):
+        for rec in self:
+            purpose = rec.session_purpose or 'intervention'
+            objectives = rec.objective_ids
+
+            if purpose == 'parent_training':
+                if objectives:
+                    raise ValidationError(
+                        _('Parent Training sessions do not track IEP objectives. Please remove selected objectives.')
+                    )
+                continue
+
+            if not objectives:
+                continue
+
+            if purpose == 'intervention':
+                invalid = objectives.filtered(lambda o: o.status not in ('not_started', 'in_progress'))
+                if invalid:
+                    raise ValidationError(
+                        _('Intervention sessions only allow objectives in Not Started/In Progress. Invalid objectives: %s',
+                          ', '.join(invalid.mapped('name')))
+                    )
+            elif purpose in ('maintenance_probe', 'generalization_probe'):
+                invalid = objectives.filtered(lambda o: o.status != 'mastered')
+                if invalid:
+                    raise ValidationError(
+                        _('Maintenance/Generalization sessions only allow Mastered objectives. Invalid objectives: %s',
+                          ', '.join(invalid.mapped('name')))
+                    )
+
+    @api.onchange('session_purpose', 'student_id')
+    def _onchange_session_purpose(self):
+        self.ensure_one()
+        if not self.objective_ids:
+            return
+
+        purpose = self.session_purpose or 'intervention'
+        if purpose == 'intervention':
+            allowed = self.objective_ids.filtered(lambda o: o.status in ('not_started', 'in_progress'))
+        elif purpose in ('maintenance_probe', 'generalization_probe'):
+            allowed = self.objective_ids.filtered(lambda o: o.status == 'mastered')
+        else:
+            allowed = self.env['educare.iep.objective']
+
+        removed = self.objective_ids - allowed
+        if removed:
+            self.objective_ids = [(6, 0, allowed.ids)]
+            return {
+                'warning': {
+                    'title': _('Objective selection adjusted'),
+                    'message': _('Some objectives were removed because they do not match the selected session purpose.'),
+                }
+            }
 
     # ── Helpers ───────────────────────────────────────────────────
 
@@ -219,12 +372,19 @@ class EducareSessionLog(models.Model):
         for rec in self:
             if rec.status != 'draft':
                 raise ValidationError(_('Only draft sessions can be scheduled.'))
-            if not rec.objective_ids:
+            if rec.session_purpose != 'parent_training' and not rec.objective_ids:
                 raise ValidationError(
                     _('Please select at least one objective before scheduling.')
                 )
+            rec._validate_objective_selection_policy()
             rec._populate_result_lines()
             rec.status = 'scheduled'
+
+    def write(self, vals):
+        res = super().write(vals)
+        if {'session_purpose', 'objective_ids'}.intersection(vals):
+            self._validate_objective_selection_policy()
+        return res
 
     def action_complete(self):
         """Scheduled → Completed: teacher marks lesson done."""
@@ -241,7 +401,9 @@ class EducareSessionLog(models.Model):
         if self.status != 'completed':
             raise ValidationError(_('Session must be completed before submitting review.'))
 
-        unevaluated = self.result_line_ids.filtered(lambda r: r.total_trials == 0)
+        unevaluated = self.result_line_ids.filtered(
+            lambda r: r.total_trials == 0 and r.objective_id.status != 'discontinued'
+        )
         if unevaluated:
             obj_details = '\n'.join(
                 f"• [{r.objective_id.objective_code}] {r.objective_id.name}"

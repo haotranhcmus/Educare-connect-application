@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_generate_report_wizard_form" model="ir.ui.view">
+        <field name="name">educare.generate.report.wizard.form</field>
+        <field name="model">educare.generate.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Daily Report">
+                <group>
+                    <field name="session_log_id" readonly="1" />
+                    <field name="student_id" />
+                    <field name="report_date" />
+                </group>
+                <separator string="Report Content (edit before saving)" />
+                <group>
+                    <field name="activity_summary"
+                        placeholder="Describe what the child did today..." />
+                    <field name="achievements"
+                        placeholder="What went well..." />
+                    <field name="parent_action_guide"
+                        placeholder="1-2 activities for home..." />
+                    <field name="teacher_note"
+                        placeholder="Personal message..." />
+                </group>
+                <footer>
+                    <button name="action_generate_report" type="object"
+                        string="Create Report" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary"
+                        special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_generate_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Daily Report</field>
+        <field name="res_model">educare.generate.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="educare_session.model_educare_session_log" />
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>

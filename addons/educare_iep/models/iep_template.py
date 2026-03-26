@@ -1,72 +1,4 @@
-from odoo import api, fields, models
-
-
-class EducareIepGoalTemplate(models.Model):
-    _name = 'educare.iep.goal.template'
-    _description = 'IEP Goal Template Library'
-    _order = 'sequence, name'
-
-    name = fields.Char(
-        string='Template Name',
-        required=True,
-        translate=True,
-    )
-    code = fields.Char(
-        string='Code',
-        required=True,
-        size=32,
-        default='/',
-        index=True,
-        copy=False,
-    )
-    sequence = fields.Integer(string='Sequence', default=10)
-    template_domain_id = fields.Many2one(
-        'educare.domain',
-        string='Development Domain',
-        required=True,
-        ondelete='restrict',
-        index=True,
-    )
-    priority = fields.Selection(
-        selection=[
-            ('low', 'Low'),
-            ('medium', 'Medium'),
-            ('high', 'High'),
-            ('critical', 'Critical'),
-        ],
-        string='Priority',
-        required=True,
-        default='medium',
-    )
-    goal_summary = fields.Text(
-        string='Goal Summary',
-        required=True,
-        translate=True,
-        help='Copied into goal_description when importing this template.',
-    )
-    note = fields.Text(string='Internal Notes', translate=True)
-    active = fields.Boolean(string='Active', default=True)
-    objective_template_ids = fields.Many2many(
-        'educare.iep.objective.template',
-        'educare_iep_goal_obj_template_rel',
-        'goal_template_id',
-        'objective_template_id',
-        string='Objective Templates',
-    )
-    objective_template_count = fields.Integer(
-        string='Objective Count',
-        compute='_compute_objective_template_count',
-        store=False,
-    )
-
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Goal template code must be unique.'),
-    ]
-
-    @api.depends('objective_template_ids')
-    def _compute_objective_template_count(self):
-        for rec in self:
-            rec.objective_template_count = len(rec.objective_template_ids)
+from odoo import fields, models
 
 
 class EducareIepObjectiveTemplate(models.Model):
@@ -74,69 +6,129 @@ class EducareIepObjectiveTemplate(models.Model):
     _description = 'IEP Objective Template Library'
     _order = 'sequence, name'
 
-    template_domain_id = fields.Many2one(
-        'educare.domain',
-        string='Development Domain',
-        required=True,
-        ondelete='restrict',
-        index=True,
-    )
+    # --- Core template info ---
     name = fields.Char(
         string='Template Name',
         required=True,
         translate=True,
     )
     sequence = fields.Integer(string='Sequence', default=10)
+    template_domain_ids = fields.Many2many(
+        'educare.domain',
+        'educare_iep_obj_tpl_domain_rel',
+        'template_id',
+        'domain_id',
+        string='Development Domains',
+        required=True,
+    )
     description = fields.Text(
         string='Objective Description',
         required=True,
         translate=True,
     )
+    active = fields.Boolean(string='Active', default=True)
+
+    # --- SMART components ---
     smart_specific = fields.Text(string='S - Specific', translate=True)
     smart_measurable = fields.Char(string='M - Measurable', size=256, translate=True)
     smart_analysis = fields.Text(string='A/R - Achievable & Relevant', translate=True)
     smart_timebound = fields.Char(string='T - Time-Bound', size=128, translate=True)
     baseline_description = fields.Text(string='Baseline Description', translate=True)
-    baseline_accuracy_pct = fields.Float(
-        string='Baseline Accuracy (%)',
+
+    # --- Suggested defaults (hints for student-specific values) ---
+    default_baseline_accuracy_pct = fields.Float(
+        string='Suggested Baseline (%)',
         digits=(5, 2),
-        required=True,
         default=0.0,
+        help='Suggested baseline accuracy. Teachers adjust per student.',
     )
-    target_accuracy_pct = fields.Float(
-        string='Target Accuracy (%)',
+    default_target_accuracy_pct = fields.Float(
+        string='Suggested Target (%)',
         digits=(5, 2),
-        required=True,
         default=80.0,
+        help='Suggested target accuracy. Teachers adjust per student.',
     )
-    target_trials = fields.Integer(
-        string='Trials per Session',
-        default=10,
-    )
-    consecutive_sessions_required = fields.Integer(
-        string='Consecutive Sessions Required',
-        required=True,
+    default_consecutive_sessions = fields.Integer(
+        string='Suggested Consecutive Sessions',
         default=3,
+        help='Suggested number of consecutive sessions. Teachers adjust per student.',
     )
-    weight = fields.Float(
-        string='Weight',
-        digits=(5, 2),
-        required=True,
-        default=1.0,
+
+    # --- Enrichment metadata ---
+    age_min_months = fields.Integer(
+        string='Min Age (months)',
+        help='Minimum recommended age in months.',
     )
-    active = fields.Boolean(string='Active', default=True)
+    age_max_months = fields.Integer(
+        string='Max Age (months)',
+        help='Maximum recommended age in months.',
+    )
+    difficulty_level = fields.Integer(
+        string='Difficulty Level',
+        default=1,
+        help='Skill difficulty level from 1 (easiest) to 5 (hardest).',
+    )
+    prerequisite_objective_ids = fields.Many2many(
+        'educare.iep.objective.template',
+        'educare_iep_obj_tpl_prerequisite_rel',
+        'template_id',
+        'prerequisite_id',
+        string='Prerequisites',
+        help='Objective templates that should be mastered before this one.',
+    )
+    relevant_diagnosis_ids = fields.Many2many(
+        'educare.diagnosis',
+        'educare_iep_obj_tpl_diagnosis_rel',
+        'template_id',
+        'diagnosis_id',
+        string='Relevant Diagnoses',
+        help='Diagnoses for which this template is particularly relevant.',
+    )
+    suggested_prompt_level = fields.Many2one(
+        'educare.iep.prompt.level',
+        string='Suggested Prompt Level',
+        ondelete='set null',
+    )
+    measurement_template_id = fields.Many2one(
+        'educare.iep.measurement.template',
+        string='Measurement Template',
+        ondelete='set null',
+    )
+    default_data_collection_method = fields.Selection(
+        selection=[
+            ('discrete_trial', 'Discrete Trial'),
+            ('frequency', 'Frequency Count'),
+            ('duration', 'Duration'),
+            ('interval', 'Interval Recording'),
+            ('task_analysis', 'Task Analysis'),
+            ('anecdotal', 'Anecdotal'),
+        ],
+        string='Suggested Data Collection',
+    )
+
+    # --- Implementation guidance ---
+    materials_needed = fields.Text(
+        string='Materials Needed',
+        translate=True,
+        help='List of materials/supplies required for this objective.',
+    )
+    implementation_steps = fields.Text(
+        string='Implementation Steps',
+        translate=True,
+        help='Step-by-step teaching instructions or guidelines.',
+    )
 
     _sql_constraints = [
-        ('baseline_pct_range',
-         'CHECK(baseline_accuracy_pct >= 0 AND baseline_accuracy_pct <= 100)',
-         'Baseline accuracy must be between 0 and 100.'),
-        ('target_pct_range',
-         'CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)',
-         'Target accuracy must be between 0 and 100.'),
-        ('baseline_lt_target',
-         'CHECK(baseline_accuracy_pct < target_accuracy_pct)',
-         'Baseline accuracy must be less than target accuracy.'),
-        ('weight_positive',
-         'CHECK(weight > 0)',
-         'Weight must be greater than 0.'),
+        ('age_range_check',
+         'CHECK(age_min_months IS NULL OR age_max_months IS NULL OR age_min_months <= age_max_months)',
+         'Minimum age must be less than or equal to maximum age.'),
+        ('difficulty_range',
+         'CHECK(difficulty_level >= 1 AND difficulty_level <= 5)',
+         'Difficulty level must be between 1 and 5.'),
+        ('default_baseline_pct_range',
+         'CHECK(default_baseline_accuracy_pct >= 0 AND default_baseline_accuracy_pct <= 100)',
+         'Suggested baseline accuracy must be between 0 and 100.'),
+        ('default_target_pct_range',
+         'CHECK(default_target_accuracy_pct >= 0 AND default_target_accuracy_pct <= 100)',
+         'Suggested target accuracy must be between 0 and 100.'),
     ]

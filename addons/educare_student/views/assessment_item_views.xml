@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ══ Assessment Item: Tree View ══ -->
+        <record id="view_educare_assessment_item_tree" model="ir.ui.view">
+            <field name="name">educare.assessment.item.tree</field>
+            <field name="model">educare.assessment.item</field>
+            <field name="arch" type="xml">
+                <tree string="Assessment Items" default_order="domain_id, sequence">
+                    <field name="sequence" widget="handle" />
+                    <field name="name" string="Item Name" />
+                    <field name="domain_color" column_invisible="1" />
+                    <field name="domain_id" string="Domain"
+                        widget="domain_color_badge"
+                        options='{"color_field": "domain_color"}' />
+                    <field name="description" optional="hide" />
+                    <field name="active" widget="boolean" optional="hide" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- ══ Assessment Item: Form View ══ -->
+        <record id="view_educare_assessment_item_form" model="ir.ui.view">
+            <field name="name">educare.assessment.item.form</field>
+            <field name="model">educare.assessment.item</field>
+            <field name="arch" type="xml">
+                <form string="Assessment Item">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                                <field name="domain_id" />
+                                <field name="sequence" />
+                                <field name="active" />
+                            </group>
+                            <group>
+                                <field name="description" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══ Assessment Item: Search View ══ -->
+        <record id="view_educare_assessment_item_search" model="ir.ui.view">
+            <field name="name">educare.assessment.item.search</field>
+            <field name="model">educare.assessment.item</field>
+            <field name="arch" type="xml">
+                <search string="Assessment Items">
+                    <field name="name" />
+                    <field name="domain_id" />
+                    <separator />
+                    <filter name="filter_active" string="Active" domain="[('active', '=', True)]" />
+                    <filter name="filter_archived" string="Archived"
+                        domain="[('active', '=', False)]" />
+                    <separator />
+                    <group string="Group By">
+                        <filter name="group_domain" string="Domain"
+                            context="{'group_by': 'domain_id'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ══ Assessment Item: Action ══ -->
+        <record id="action_educare_assessment_item" model="ir.actions.act_window">
+            <field name="name">Assessment Items</field>
+            <field name="res_model">educare.assessment.item</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_educare_assessment_item_search" />
+            <field name="context">{'search_default_filter_active': 1, 'search_default_group_domain':
+                1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first assessment evaluation item!
+                </p>
+                <p>Assessment items define what areas to evaluate for each student (e.g., Receptive
+                    Language, Attention, Balance).</p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

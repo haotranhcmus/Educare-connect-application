@@ -1,5 +1,10 @@
+import logging
+import uuid
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 GOAL_STATUS = [
     ('draft', 'Draft'),
@@ -32,7 +37,7 @@ class EducareIepGoal(models.Model):
     goal_code = fields.Char(
         string='Goal Code',
         size=32,
-        default='/',
+        default=False,
         index=True,
         copy=False,
         readonly=True,
@@ -221,8 +226,6 @@ class EducareIepGoal(models.Model):
 
     # SQL constraints
     _sql_constraints = [
-        ('goal_code_unique', 'UNIQUE(goal_code)',
-         'Goal code must be unique.'),
         ('baseline_pct_range',
          'CHECK(baseline_accuracy_pct >= 0 AND baseline_accuracy_pct <= 100)',
          'Baseline accuracy must be between 0 and 100.'),
@@ -230,6 +233,24 @@ class EducareIepGoal(models.Model):
          'CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)',
          'Target accuracy must be between 0 and 100.'),
     ]
+
+    def init(self):
+        """Create partial unique index: goal_code must be unique when set and not '/'."""
+        self.env.cr.execute("""
+            ALTER TABLE educare_iep_goal
+            DROP CONSTRAINT IF EXISTS educare_iep_goal_goal_code_unique;
+        """)
+        self.env.cr.execute("""
+            DROP INDEX IF EXISTS educare_iep_goal_goal_code_unique;
+        """)
+        self.env.cr.execute("""
+            DROP INDEX IF EXISTS educare_iep_goal_code_unique_nonempty;
+        """)
+        self.env.cr.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS educare_iep_goal_code_unique_nonempty
+            ON educare_iep_goal (goal_code)
+            WHERE goal_code IS NOT NULL AND goal_code != '/';
+        """)
 
     
 
@@ -278,26 +299,33 @@ class EducareIepGoal(models.Model):
             else:
                 goal.progress_pct = 0.0
 
-    @api.depends('objective_ids.current_accuracy_pct', 'objective_ids.status')
+    @api.depends('objective_ids.current_accuracy_pct', 'objective_ids.status', 'objective_ids.weight')
     def _compute_current_accuracy(self):
-        """Average accuracy from active objectives."""
+        """Weighted average accuracy from active objectives (consistent with progress)."""
         for goal in self:
             objectives = goal.objective_ids.filtered(
                 lambda o: o.status not in ('discontinued', 'not_started')
             )
             if objectives:
-                goal.current_accuracy_pct = (
-                    sum(objectives.mapped('current_accuracy_pct')) / len(objectives)
-                )
+                total_weight = sum(objectives.mapped('weight'))
+                if total_weight > 0:
+                    goal.current_accuracy_pct = sum(
+                        o.current_accuracy_pct * o.weight for o in objectives
+                    ) / total_weight
+                else:
+                    goal.current_accuracy_pct = 0.0
             else:
                 goal.current_accuracy_pct = 0.0
 
-    @api.depends('objective_ids.total_sessions_worked')
+    @api.depends('objective_ids.total_sessions_worked', 'objective_ids.status')
     def _compute_session_stats(self):
-        """Sum of sessions worked across all objectives."""
+        """Sum of sessions worked across non-discontinued objectives."""
         for goal in self:
+            objectives = goal.objective_ids.filtered(
+                lambda o: o.status != 'discontinued'
+            )
             goal.total_sessions = sum(
-                goal.objective_ids.mapped('total_sessions_worked')
+                objectives.mapped('total_sessions_worked')
             )
 
     def _compute_objective_count(self):
@@ -356,6 +384,10 @@ class EducareIepGoal(models.Model):
             if not goal.plan_id:
                 continue
 
+            # No auto-transition on closed plans.
+            if goal.plan_id.status == 'closed':
+                continue
+
             active_objectives = goal.objective_ids.filtered(
                 lambda objective: objective.status != 'discontinued'
             )
@@ -382,6 +414,24 @@ class EducareIepGoal(models.Model):
                 goal.with_context(skip_auto_goal_status_sync=True).write(vals)
 
     # ORM overrides
+    def _next_goal_code(self):
+        """Generate next goal code with collision detection and UUID fallback."""
+        sequence_model = self.env['ir.sequence'].sudo()
+        for _attempt in range(100):
+            code = sequence_model.next_by_code('educare.iep.goal')
+            if not code:
+                seq = sequence_model.search([('code', '=', 'educare.iep.goal')], limit=1)
+                if seq:
+                    code = seq.next_by_id()
+            if not code:
+                break
+            if not self.sudo().search_count([('goal_code', '=', code)]):
+                return code
+        year = fields.Date.today().year
+        code = f"LTG-{year}-{uuid.uuid4().hex[:8].upper()}"
+        _logger.warning('Goal sequence exhausted or unavailable, generated fallback code: %s', code)
+        return code
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -390,9 +440,7 @@ class EducareIepGoal(models.Model):
                 if plan.exists() and plan.start_date:
                     vals['start_date'] = plan.start_date
             if not vals.get('goal_code') or vals['goal_code'] == '/':
-                vals['goal_code'] = (
-                    self.env['ir.sequence'].next_by_code('educare.iep.goal') or '/'
-                )
+                vals['goal_code'] = self._next_goal_code()
         goals = super().create(vals_list)
         goals._auto_update_status_from_workflow()
         return goals
@@ -506,7 +554,6 @@ class EducareIepGoal(models.Model):
         wizard = self.env['educare.iep.goal.template.select.wizard'].create({
             'goal_id': self.id,
             'plan_id': self.plan_id.id,
-            'filter_domain_id': self.goal_domain_id.id or False,
         })
         return {
             'type': 'ir.actions.act_window',

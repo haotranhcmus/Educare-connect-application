@@ -39,7 +39,7 @@ class EducareIepObjectiveSession(models.Model):
         'target_accuracy_pct',
     )
     def _compute_consecutive(self):
-        """Count consecutive reviewed sessions meeting target accuracy (most recent first)."""
+        """Count consecutive reviewed sessions achieving mastery (most recent first)."""
         Result = self.env['educare.session.result']
         for obj in self:
             results = Result.search([
@@ -49,7 +49,7 @@ class EducareIepObjectiveSession(models.Model):
             ], order='session_date desc, id desc')
             consecutive = 0
             for r in results:
-                if r.accuracy_pct >= obj.target_accuracy_pct:
+                if r.mastery_achieved:
                     consecutive += 1
                 else:
                     break

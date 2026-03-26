@@ -1,5 +1,6 @@
 {
     'name': 'Educare IEP',
+
     'version': '17.0.2.0.0',
     'category': 'Education',
     'summary': 'IEP Goals & Objectives - SMART Goal Framework',
@@ -13,8 +14,10 @@
         'data/iep_master_data.xml',
         'reports/iep_plan_report.xml',
         'reports/iep_plan_report_templates.xml',
+        'views/iep_objective_graph.xml',
+        'views/iep_objective_pivot.xml',
+        'views/iep_objective_kanban.xml',
         'views/iep_master_data_views.xml',
-        'views/iep_template_library_views.xml',
         'views/iep_objective_template_library_views.xml',
         'views/iep_plan_views.xml',
         'views/iep_goal_form.xml',
@@ -34,12 +37,15 @@
         'wizard/objective_discontinue_wizard_views.xml',
         'wizard/goal_discontinue_wizard_views.xml',
         'wizard/objective_template_import_wizard_views.xml',
+        'wizard/objective_configure_wizard_views.xml',
+        'wizard/plan_cancel_revision_wizard_views.xml',
         'views/iep_actions.xml',
         'views/iep_menu.xml',
         'data/iep_template_seed_data.xml',
+    ],
+    'demo': [
         'data/iep_demo_data.xml',
     ],
-    'demo': [],
     'installable': True,
     'license': 'LGPL-3',
 }

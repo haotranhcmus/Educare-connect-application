@@ -35,10 +35,13 @@
                     <group>
                         <group string="Session Info">
                             <field name="student_id"
-                                readonly="status != 'draft'" />
+                                readonly="status != 'draft'"
+                                domain="[('iep_plan_ids.status', '=', 'active')]" />
                             <field name="teacher_id"
                                 readonly="status != 'draft'" />
                             <field name="center_id" />
+                            <field name="session_purpose"
+                                readonly="status != 'draft'" />
                             <field name="session_type"
                                 readonly="status not in ('draft', 'scheduled')" />
                         </group>
@@ -58,9 +61,9 @@
                         <page string="Objectives" name="objectives">
                             <!-- Draft/Scheduled phase: select objectives from list -->
                             <field name="objective_ids"
-                                invisible="status not in ('draft', 'scheduled')"
+                                invisible="status not in ('draft', 'scheduled') or session_purpose == 'parent_training'"
                                 readonly="status != 'draft'"
-                                domain="[('student_id', '=', student_id), ('status', 'in', ['in_progress', 'not_started'])]"
+                                domain="[('id', 'in', available_objective_ids)]"
                                 options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}">
                                 <tree create="0" delete="0">
                                     <field name="objective_code" readonly="1" />
@@ -74,6 +77,7 @@
                                     <field name="current_accuracy_pct" readonly="1" />
                                 </tree>
                             </field>
+                            <field name="available_objective_ids" invisible="1" />
                             <!-- Completed/Done phase: view evaluation results -->
                             <field name="result_line_ids"
                                 invisible="status in ('draft', 'scheduled')"

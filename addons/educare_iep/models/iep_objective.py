@@ -1,7 +1,11 @@
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from datetime import timedelta 
 import uuid
+
+_logger = logging.getLogger(__name__)
 
 
 # Module-level selection constants
@@ -38,8 +42,7 @@ class EducareIepObjective(models.Model):
     objective_code = fields.Char(
         string='Objective Code',
         size=32,
-        default='/',
-        required=True,
+        default=False,
         index=True,
         copy=False,
         readonly=True,
@@ -64,6 +67,14 @@ class EducareIepObjective(models.Model):
         related='goal_id.student_id',
         store=True,
         index=True,
+    )
+    domain_ids = fields.Many2many(
+        'educare.domain',
+        'educare_iep_objective_domain_rel',
+        'objective_id',
+        'domain_id',
+        string='Domains',
+        help='Development domains for this objective. Defaults to goal domain.',
     )
     sequence = fields.Integer(
         string='Sequence',
@@ -110,10 +121,6 @@ class EducareIepObjective(models.Model):
         default=80.0,
         required=True,
     )
-    target_trials = fields.Integer(
-        string='Trials per Session',
-        default=10,
-    )
     consecutive_sessions_required = fields.Integer(
         string='Consecutive Sessions Required',
         default=3,
@@ -125,20 +132,10 @@ class EducareIepObjective(models.Model):
         compute='_compute_consecutive',
         store=True,
     )
-    prompt_level_id = fields.Many2one(
-        'educare.iep.prompt.level',
-        string='Max Prompt Level',
-        ondelete='set null',
-    )
     measurement_method = fields.Text(
         string='Data Collection Method',
         default='Direct observation during session.',
         required=True,
-    )
-    probe_method_id = fields.Many2one(
-        'educare.iep.probe.method',
-        string='Probe Method',
-        ondelete='set null',
     )
     weight = fields.Float(
         string='Weight',
@@ -208,8 +205,6 @@ class EducareIepObjective(models.Model):
 
     # SQL constraints
     _sql_constraints = [
-        ('objective_code_unique', 'UNIQUE(objective_code)',
-         'Objective code must be unique.'),
         ('target_accuracy_check',
          'CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)',
          'Target accuracy must be between 0 and 100.'),
@@ -226,6 +221,24 @@ class EducareIepObjective(models.Model):
          'CHECK(weight > 0)',
          'Weight must be greater than 0.'),
     ]
+
+    def init(self):
+        """Create partial unique index: objective_code must be unique when set and not '/'."""
+        self.env.cr.execute("""
+            ALTER TABLE educare_iep_objective
+            DROP CONSTRAINT IF EXISTS educare_iep_objective_objective_code_unique;
+        """)
+        self.env.cr.execute("""
+            DROP INDEX IF EXISTS educare_iep_objective_objective_code_unique;
+        """)
+        self.env.cr.execute("""
+            DROP INDEX IF EXISTS educare_iep_objective_code_unique_nonempty;
+        """)
+        self.env.cr.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS educare_iep_objective_code_unique_nonempty
+            ON educare_iep_objective (objective_code)
+            WHERE objective_code IS NOT NULL AND objective_code != '/';
+        """)
 
     # Python constraints
     @api.constrains('start_date', 'target_date', 'goal_id')
@@ -282,7 +295,10 @@ class EducareIepObjective(models.Model):
             if objective.status in ('on_hold', 'discontinued', 'mastered'):
                 continue
 
+            # No auto-transition if goal is not active or plan is closed.
             if objective.goal_id.status != 'active':
+                continue
+            if objective.goal_id.plan_id.status == 'closed':
                 continue
 
             vals = {}
@@ -308,15 +324,21 @@ class EducareIepObjective(models.Model):
 
     # ORM overrides
     def _next_objective_code(self):
+        """Generate next objective code with collision detection and UUID fallback."""
         sequence_model = self.env['ir.sequence'].sudo()
-        code = sequence_model.next_by_code('educare.iep.objective')
-        if not code:
-            seq = sequence_model.search([('code', '=', 'educare.iep.objective')], limit=1)
-            if seq:
-                code = seq.next_by_id()
-        if not code:
-            year = fields.Date.today().year
-            code = f"STO-{year}-{uuid.uuid4().hex[:8].upper()}"
+        for _attempt in range(100):
+            code = sequence_model.next_by_code('educare.iep.objective')
+            if not code:
+                seq = sequence_model.search([('code', '=', 'educare.iep.objective')], limit=1)
+                if seq:
+                    code = seq.next_by_id()
+            if not code:
+                break
+            if not self.sudo().search_count([('objective_code', '=', code)]):
+                return code
+        year = fields.Date.today().year
+        code = f"STO-{year}-{uuid.uuid4().hex[:8].upper()}"
+        _logger.warning('Objective sequence exhausted or unavailable, generated fallback code: %s', code)
         return code
 
     def _prepare_dates_from_goal(self, vals):
@@ -396,25 +418,66 @@ class EducareIepObjective(models.Model):
         for obj in self:
             obj.current_accuracy_pct = 0.0
 
-    @api.depends('current_accuracy_pct', 'target_accuracy_pct', 'baseline_accuracy_pct')
+    @api.depends(
+        'current_accuracy_pct',
+        'target_accuracy_pct',
+        'baseline_accuracy_pct',
+        'consecutive_sessions_achieved',
+        'consecutive_sessions_required',
+    )
     def _compute_progress(self):
-        """Progress = (Current - Baseline) / (Target - Baseline) * 100.
-        IEP/ABA standard formula: reflects real improvement from baseline,
-        not just current/target ratio.
-        Example: baseline=20, current=50, target=80
-        -> progress = (50-20)/(80-20) = 50% (actual improvement)
-        vs naive 50/80 = 62.5% (misleading).
+        """Two-phase progress: accuracy-building then mastery-verification.
+
+        Most ABA software tracks accuracy and consecutive mastery as separate
+        metrics. This field combines both into one meaningful number by splitting
+        the 0-100 % scale into two phases:
+
+        Phase 1 - Accuracy-building (0 - 80 %):
+            While current_accuracy < target_accuracy, progress reflects how much
+            of the accuracy gap has been closed:
+                progress = (current - baseline) / (target - baseline) * 80
+
+        Phase 2 - Mastery-verification (80 - 100 %):
+            Once current_accuracy ≥ target_accuracy, the child has demonstrated
+            the skill but ABA requires consecutive-session evidence of mastery.
+            Progress advances from 80 -> 100 based on consecutive sessions:
+                progress = 80 + (consecutive_achieved / consecutive_required) * 20
+
+        Fully mastered (100 %):
+            Both accuracy ≥ target AND consecutive ≥ required.
+
+        This avoids the misleading "99 %" clamp (consecutive=1/3 ≠ 99 % done)
+        while keeping a single, honest number that grows monotonically toward 100.
+
+        Examples
+        --------
+        A - accuracy below target:
+            baseline=15, current=50, target=80, consecutive=0/3
+            -> phase 1 -> (50-15)/(80-15) * 80 = 43.1 %
+
+        B - accuracy above target, mastery in progress:
+            baseline=0, current=80, target=70, consecutive=1/3
+            -> phase 2 -> 80 + (1/3) * 20 = 86.7 %
+
+        C - fully mastered:
+            baseline=0, current=80, target=70, consecutive=3/3
+            → 100 %
         """
         for obj in self:
             denominator = obj.target_accuracy_pct - obj.baseline_accuracy_pct
-            if denominator > 0:
-                raw = (
-                    (obj.current_accuracy_pct - obj.baseline_accuracy_pct)
-                    / denominator
-                ) * 100
-                obj.progress_pct = min(100.0, max(0.0, raw))
-            else:
+            if denominator <= 0:
                 obj.progress_pct = 0.0
+                continue
+
+            if obj.current_accuracy_pct < obj.target_accuracy_pct:
+                # Phase 1: accuracy-building, scaled to 0-80 %
+                accuracy_ratio = max(0.0, obj.current_accuracy_pct - obj.baseline_accuracy_pct) / denominator
+                obj.progress_pct = min(80.0, accuracy_ratio * 80.0)
+            else:
+                # Phase 2: accuracy reached/exceeded, mastery evidence collection
+                required = obj.consecutive_sessions_required or 1
+                consecutive_ratio = min(1.0, obj.consecutive_sessions_achieved / required)
+                obj.progress_pct = 80.0 + consecutive_ratio * 20.0
 
     @api.depends()  # TODO: add 'session_result_ids.accuracy_pct'
     def _compute_trend(self):

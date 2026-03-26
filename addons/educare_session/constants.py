@@ -111,6 +111,14 @@ SESSION_TYPES = [
     ('consultation', 'Consultation'),
 ]
 
+# Session purpose controls objective selection policy.
+SESSION_PURPOSES = [
+    ('intervention', 'Intervention'),
+    ('maintenance_probe', 'Maintenance Probe'),
+    ('generalization_probe', 'Generalization Probe'),
+    ('parent_training', 'Parent Training'),
+]
+
 HOME_PRACTICE_STATUS = [
     ('yes', 'Completed Fully'),
     ('partial', 'Completed Partially'),

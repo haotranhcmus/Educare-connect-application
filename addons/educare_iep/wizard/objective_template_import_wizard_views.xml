@@ -10,15 +10,16 @@
                     <field name="goal_domain_id" invisible="1" />
                 </group>
                 <field name="template_ids" nolabel="1"
-                    domain="[('template_domain_id', '=', goal_domain_id)]"
+                    domain="[('template_domain_ids', 'in', goal_domain_id)]"
                     options="{'no_create': True}">
                     <tree>
                         <field name="sequence" optional="hide" />
                         <field name="name" />
-                        <field name="template_domain_id" string="Domain" />
+                        <field name="template_domain_ids" string="Domains"
+                            widget="many2many_tags" />
                         <field name="description" optional="show" />
-                        <field name="baseline_accuracy_pct" string="Baseline (%)" optional="hide" />
-                        <field name="target_accuracy_pct" string="Target (%)" optional="show" />
+                        <field name="default_target_accuracy_pct" string="Suggested Target (%)"
+                            optional="show" />
                     </tree>
                 </field>
                 <div class="text-muted small mt-2">

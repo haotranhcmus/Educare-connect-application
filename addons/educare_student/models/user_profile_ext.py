@@ -83,17 +83,17 @@ class EducareUserProfileExt(models.Model):
     @api.onchange('role')
     def _onchange_role_check_students(self):
         """
-        Lớp bảo vệ thứ 1 (UI): cảnh báo ngay khi người dùng đổi role trên form.
+        First protection layer (UI): warn immediately when changing role on the form.
 
-        LÝ DO DÙNG _origin VÀ QUERY TRỰC TIẾP:
-        - Khi onchange chạy, self.role đã = giá trị mới.
-        - Các computed field student_ids / current_student_count đều @api.depends('role'),
-          nên chúng đã recompute với role mới → luôn rỗng/0. Không thể dùng.
-        - Phải lấy old_role từ self._origin.role và query thẳng DB.
+        Why use _origin and direct DB queries:
+        - During onchange, self.role is already the new value.
+        - Computed fields student_ids/current_student_count depend on role,
+          so they are recomputed with the new role and may become empty/0.
+        - We must read old_role from self._origin.role and query the DB directly.
         """
         old_role = self._origin.role
         new_role = self.role
-        # self._origin.user_id an toàn hơn self.user_id trong onchange context
+        # self._origin.user_id is safer than self.user_id in onchange context
         user = self._origin.user_id
         if not old_role or old_role == new_role or not user:
             return
@@ -103,20 +103,20 @@ class EducareUserProfileExt(models.Model):
         Student = self.env['educare.student']
         msgs = []
 
-        # Parent → role khác: query trực tiếp vì student_ids đã recompute thành rỗng
+        # Parent -> another role: direct query because student_ids was recomputed
         if old_role == 'parent' and new_role != 'parent':
             linked = Student.search([('parent_user_id', '=', uid)], limit=4)
             if linked:
                 sample = ', '.join(linked.mapped('name')[:3])
                 total = Student.search_count([('parent_user_id', '=', uid)])
-                extra = _(' và %d em khác') % (total - 3) if total > 3 else ''
+                extra = _(' and %d more') % (total - 3) if total > 3 else ''
                 msgs.append(
-                    _('"%s" đang là phụ huynh của %d học sinh (%s%s).')
+                    _('"%s" is currently linked as parent of %d students (%s%s).')
                     % (name, total, sample, extra)
                 )
 
-        # Teacher/Supervisor/Admin → role không còn là staff
-        # Query trực tiếp vì current_student_count đã recompute thành 0
+        # Teacher/Supervisor/Admin -> non-staff role
+        # Direct query because current_student_count was recomputed to 0
         if old_role in ('teacher', 'supervisor', 'admin') \
                 and new_role not in ('teacher', 'admin', 'supervisor'):
             assigned = Student.search_count([
@@ -125,31 +125,31 @@ class EducareUserProfileExt(models.Model):
             ])
             if assigned:
                 msgs.append(
-                    _('"%s" đang là giáo viên chính của %d học sinh đang hoạt động.')
+                    _('"%s" is currently the main teacher of %d active students.')
                     % (name, assigned)
                 )
             co_count = Student.search_count([('co_teacher_ids', 'in', [uid])])
             if co_count:
                 msgs.append(
-                    _('"%s" đang là đồng giáo viên của %d học sinh.')
+                    _('"%s" is currently co-teacher of %d students.')
                     % (name, co_count)
                 )
 
-        # Supervisor/Admin → không còn là supervisor/admin
+        # Supervisor/Admin -> no longer supervisor/admin
         if old_role in ('supervisor', 'admin') \
                 and new_role not in ('supervisor', 'admin'):
             sup_count = Student.search_count([('supervisor_id', '=', uid)])
             if sup_count:
                 msgs.append(
-                    _('"%s" đang giám sát %d học sinh.')
+                    _('"%s" is currently supervising %d students.')
                     % (name, sup_count)
                 )
 
         if msgs:
             raise ValidationError(
-                _('Không thể đổi vai trò do còn liên kết với học sinh:\n\n')
+                _('Cannot change role because student links still exist:\n\n')
                 + '\n'.join('• ' + m for m in msgs)
-                + _('\n\nVui lòng gỡ các liên kết trên hồ sơ học sinh trước.')
+                + _('\n\nPlease remove these links on student records first.')
             )
 
     def write(self, vals):
@@ -173,46 +173,46 @@ class EducareUserProfileExt(models.Model):
                 uid = rec.user_id.id
                 name = rec.display_name
 
-                # parent_user_id: chỉ role 'parent' hợp lệ
+                # parent_user_id: only role 'parent' is valid
                 if new_role != 'parent':
                     count = Student.search_count([('parent_user_id', '=', uid)])
                     if count:
                         errors.append(
-                            _('• "%s" đang là phụ huynh của %d học sinh. '
-                              'Vui lòng gỡ liên kết trên hồ sơ học sinh trước khi đổi vai trò.')
+                            _('• "%s" is parent of %d students. '
+                              'Please unlink these student records before changing role.')
                             % (name, count)
                         )
 
-                # assigned_teacher_id + co_teacher_ids: chỉ teacher/admin/supervisor hợp lệ
+                # assigned_teacher_id + co_teacher_ids: only teacher/admin/supervisor are valid
                 if new_role not in ('teacher', 'admin', 'supervisor'):
                     assigned = Student.search_count([('assigned_teacher_id', '=', uid)])
                     if assigned:
                         errors.append(
-                            _('• "%s" đang là giáo viên chính của %d học sinh. '
-                              'Vui lòng chuyển học sinh sang giáo viên khác trước.')
+                            _('• "%s" is main teacher of %d students. '
+                              'Please reassign students to another teacher first.')
                             % (name, assigned)
                         )
                     co_taught = Student.search_count([('co_teacher_ids', 'in', [uid])])
                     if co_taught:
                         errors.append(
-                            _('• "%s" đang là đồng giáo viên của %d học sinh. '
-                              'Vui lòng gỡ khỏi danh sách đồng giáo viên trước.')
+                            _('• "%s" is co-teacher of %d students. '
+                              'Please remove from co-teacher lists first.')
                             % (name, co_taught)
                         )
 
-                # supervisor_id: chỉ supervisor/admin hợp lệ
+                # supervisor_id: only supervisor/admin are valid
                 if new_role not in ('supervisor', 'admin'):
                     supervised = Student.search_count([('supervisor_id', '=', uid)])
                     if supervised:
                         errors.append(
-                            _('• "%s" đang giám sát %d học sinh. '
-                              'Vui lòng gỡ phân công giám sát trước.')
+                            _('• "%s" is supervising %d students. '
+                              'Please remove supervision assignments first.')
                             % (name, supervised)
                         )
 
             if errors:
                 raise ValidationError(
-                    _('Không thể đổi vai trò do còn dữ liệu liên kết với học sinh:\n\n')
+                    _('Cannot change role because linked student data still exists:\n\n')
                     + '\n'.join(errors)
                 )
 

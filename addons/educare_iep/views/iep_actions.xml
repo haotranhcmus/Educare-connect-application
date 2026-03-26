@@ -93,4 +93,19 @@
         <field name="view_id" ref="view_educare_iep_objective_quick_wizard_form" />
         <field name="target">new</field>
     </record>
+
+    <!-- Objective Progress Action: Kanban, Graph, Pivot, Tree, Form -->
+    <record id="action_objective_progress" model="ir.actions.act_window">
+        <field name="name">Objective Progress</field>
+        <field name="res_model">educare.iep.objective</field>
+        <field name="view_mode">kanban,graph,pivot,tree,form</field>
+        <field name="search_view_id" ref="view_educare_iep_objective_search" />
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No active objectives yet
+            </p>
+            <p>Objectives will appear here after you create IEP goals and log session data.</p>
+        </field>
+    </record>
 </odoo>

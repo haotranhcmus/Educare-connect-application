@@ -15,6 +15,7 @@
                 <field name="start_time" widget="float_time" />
                 <field name="duration" widget="float_time" />
                 <field name="location" />
+                <field name="session_purpose" />
                 <field name="status" widget="badge"
                     decoration-info="status == 'draft'"
                     decoration-warning="status == 'scheduled'"

@@ -10,7 +10,7 @@
                 <form string="Assessment Record">
                     <sheet>
                         <group>
-                            <group string="Assessment Info">
+                            <group string="Assessment Information">
                                 <field name="student_id" />
                                 <field name="assessment_date" />
                                 <field name="assessment_type" />
@@ -19,13 +19,33 @@
                             <group string="Results">
                                 <field name="vbmapp_score" />
                                 <field name="ablls_score" />
-                                <field name="overall_progress" />
+                                <field name="overall_progress"
+                                    invisible="assessment_type == 'initial'"
+                                    required="assessment_type != 'initial'" />
                                 <field name="classification" />
                             </group>
                         </group>
-                        <group>
-                            <field name="notes" placeholder="Assessment notes..." />
-                        </group>
+                        <field name="notes" placeholder="General notes..." />
+                        <notebook>
+                            <page string="Strengths / Limitations Assessment" name="detail_lines">
+                                <field name="line_ids">
+                                    <tree string="Assessment Details" editable="bottom">
+                                        <field name="domain_color" column_invisible="1" />
+                                        <field name="domain_id" string="Domain"
+                                            widget="domain_color_badge"
+                                            options='{"color_field": "domain_color"}'
+                                            optional="show" />
+                                        <field name="item_id" string="Criterion" />
+                                        <field name="strength_text" string="Strength"
+                                            placeholder="Describe strengths..." />
+                                        <field name="limitation_text" string="Limitation / Challenge"
+                                            placeholder="Describe limitations..." />
+                                        <field name="notes" string="Notes"
+                                            placeholder="Additional notes..." optional="hide" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_ids" widget="mail_thread" />

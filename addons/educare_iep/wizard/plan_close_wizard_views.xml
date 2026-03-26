@@ -5,6 +5,14 @@
         <field name="model">educare.iep.plan.close.wizard</field>
         <field name="arch" type="xml">
             <form string="Close IEP Plan" create="false" edit="false">
+                <field name="active_goal_count" invisible="1" />
+                <field name="active_objective_count" invisible="1" />
+                <div class="alert alert-warning" role="alert"
+                    invisible="active_goal_count == 0">
+                    <strong>Warning:</strong> Closing this plan will affect <field
+                        name="active_goal_count" class="oe_inline" readonly="1" /> active goal(s)
+                    and <field name="active_objective_count" class="oe_inline" readonly="1" />
+                    active objective(s). All non-terminal goals and objectives will be discontinued. </div>
                 <group>
                     <group>
                         <field name="plan_id" readonly="1" />

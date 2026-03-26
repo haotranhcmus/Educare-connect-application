@@ -35,12 +35,5 @@
                         action="action_educare_domain"
                         sequence="30" />
 
-                <!-- Lesson Template -->
-                <menuitem id="menu_educare_lesson_template"
-                        name="Lesson Template"
-                        parent="menu_educare_config"
-                        action="action_educare_lesson_template"
-                        sequence="40" />
-
         </data>
 </odoo>

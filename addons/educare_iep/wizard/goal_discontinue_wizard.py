@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -23,6 +23,29 @@ class EducareIepGoalDiscontinueWizard(models.TransientModel):
         required=True,
     )
     notes = fields.Text(string='Notes')
+    is_last_active_goal = fields.Boolean(
+        string='Last Active Goal',
+        compute='_compute_is_last_active_goal',
+    )
+    active_objective_count = fields.Integer(
+        string='Active Objectives',
+        compute='_compute_is_last_active_goal',
+    )
+
+    @api.depends('goal_id')
+    def _compute_is_last_active_goal(self):
+        for wiz in self:
+            if not wiz.goal_id or not wiz.goal_id.plan_id:
+                wiz.is_last_active_goal = False
+                wiz.active_objective_count = 0
+                continue
+            other_active_goals = len(wiz.goal_id.plan_id.goal_ids.filtered(
+                lambda g: g.status not in ('achieved', 'discontinued') and g.id != wiz.goal_id.id
+            ))
+            wiz.is_last_active_goal = other_active_goals == 0
+            wiz.active_objective_count = len(wiz.goal_id.objective_ids.filtered(
+                lambda o: o.status not in ('mastered', 'discontinued')
+            ))
 
     def action_confirm_discontinue(self):
         self.ensure_one()

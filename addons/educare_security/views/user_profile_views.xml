@@ -26,16 +26,16 @@
                                 options="{'preview_image': 'avatar', 'size': [128, 128]}" />
 
                             <group>
-                                <!-- Tạo mới: nhập full_name + login để tự động tạo res.users -->
+                                <!-- New profile: enter full_name + login to auto-create res.users -->
                                 <field name="full_name"
                                     invisible="user_id"
                                     required="not user_id"
-                                    placeholder="e.g. Nguyễn Văn A" />
+                                    placeholder="e.g. John Doe" />
                                 <field name="login"
                                     invisible="user_id"
                                     required="not user_id"
                                     placeholder="e.g. nguyenvana@example.com" />
-                                <!-- Khi đã tạo: hiển thị user liên kết (readonly) -->
+                                <!-- Existing profile: show linked user (readonly) -->
                                 <field name="user_id"
                                     invisible="not user_id"
                                     readonly="1" />
@@ -250,9 +250,9 @@
                 <p class="o_view_nocontent_smiling_face">
                     No user profiles found.
                 </p>
-                <p>Tạo profile mới: nhập Full Name, Login (Email) và Role.
-                    Hệ thống sẽ tự động tạo tài khoản Odoo và gán quyền tương ứng.
-                    Mọi thay đổi được ghi lại trong Audit Log.</p>
+                <p>Create a new profile by entering Full Name, Login (Email), and Role.
+                    The system will automatically create an Odoo account and assign matching access rights.
+                    All changes are logged in the Audit Log.</p>
             </field>
         </record>
 

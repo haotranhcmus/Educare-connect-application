@@ -53,110 +53,6 @@
     </record>
 
     <!-- ================================================= -->
-    <!-- PROMPT LEVELS                                     -->
-    <!-- ================================================= -->
-    <record id="view_iep_prompt_level_form" model="ir.ui.view">
-        <field name="name">educare.iep.prompt.level.form</field>
-        <field name="model">educare.iep.prompt.level</field>
-        <field name="arch" type="xml">
-            <form string="Prompt Level">
-                <sheet>
-                    <group>
-                        <group string="Identity">
-                            <field name="name" />
-                            <field name="code" />
-                            <field name="sequence" />
-                            <field name="active" />
-                        </group>
-                    </group>
-                    <group>
-                        <field name="description" colspan="2" />
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="view_iep_prompt_level_tree" model="ir.ui.view">
-        <field name="name">educare.iep.prompt.level.tree</field>
-        <field name="model">educare.iep.prompt.level</field>
-        <field name="arch" type="xml">
-            <tree string="Prompt Levels"
-                decoration-muted="active == False">
-                <field name="active" column_invisible="1" />
-                <field name="sequence" widget="handle" />
-                <field name="name" />
-                <field name="code" />
-                <field name="description" optional="show" />
-            </tree>
-        </field>
-    </record>
-
-    <record id="action_iep_prompt_level" model="ir.actions.act_window">
-        <field name="name">Prompt Levels</field>
-        <field name="res_model">educare.iep.prompt.level</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'active_test': False}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Add prompt support levels (Independent, Verbal, Gestural...)
-            </p>
-        </field>
-    </record>
-
-    <!-- ================================================= -->
-    <!-- PROBE METHODS                                     -->
-    <!-- ================================================= -->
-    <record id="view_iep_probe_method_form" model="ir.ui.view">
-        <field name="name">educare.iep.probe.method.form</field>
-        <field name="model">educare.iep.probe.method</field>
-        <field name="arch" type="xml">
-            <form string="Probe Method">
-                <sheet>
-                    <group>
-                        <group string="Identity">
-                            <field name="name" />
-                            <field name="code" />
-                            <field name="sequence" />
-                            <field name="active" />
-                        </group>
-                    </group>
-                    <group>
-                        <field name="description" colspan="2" />
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="view_iep_probe_method_tree" model="ir.ui.view">
-        <field name="name">educare.iep.probe.method.tree</field>
-        <field name="model">educare.iep.probe.method</field>
-        <field name="arch" type="xml">
-            <tree string="Probe Methods"
-                decoration-muted="active == False">
-                <field name="active" column_invisible="1" />
-                <field name="sequence" widget="handle" />
-                <field name="name" />
-                <field name="code" />
-                <field name="description" optional="show" />
-            </tree>
-        </field>
-    </record>
-
-    <record id="action_iep_probe_method" model="ir.actions.act_window">
-        <field name="name">Probe Methods</field>
-        <field name="res_model">educare.iep.probe.method</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'active_test': False}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Add data collection probe methods
-            </p>
-        </field>
-    </record>
-
-    <!-- ================================================= -->
     <!-- MEASUREMENT TEMPLATES                            -->
     <!-- ================================================= -->
     <record id="view_iep_measurement_template_form" model="ir.ui.view">
@@ -206,6 +102,159 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Add reusable templates for measurement criteria and conditions.
+            </p>
+        </field>
+    </record>
+
+    <!-- ================================================= -->
+    <!-- PROMPT LEVELS                                     -->
+    <!-- ================================================= -->
+    <record id="view_iep_prompt_level_form" model="ir.ui.view">
+        <field name="name">educare.iep.prompt.level.form</field>
+        <field name="model">educare.iep.prompt.level</field>
+        <field name="arch" type="xml">
+            <form string="Prompt Level">
+                <sheet>
+                    <group>
+                        <group string="Identity">
+                            <field name="name" />
+                            <field name="code" />
+                            <field name="sequence" />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" colspan="2" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_iep_prompt_level_tree" model="ir.ui.view">
+        <field name="name">educare.iep.prompt.level.tree</field>
+        <field name="model">educare.iep.prompt.level</field>
+        <field name="arch" type="xml">
+            <tree string="Prompt Levels" decoration-muted="active == False">
+                <field name="active" column_invisible="1" />
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" />
+                <field name="description" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_iep_prompt_level" model="ir.actions.act_window">
+        <field name="name">Prompt Levels</field>
+        <field name="res_model">educare.iep.prompt.level</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define prompt/support levels (Independent, Verbal, Gestural, etc.)
+            </p>
+        </field>
+    </record>
+
+    <!-- ================================================= -->
+    <!-- TEACHING METHODS                                  -->
+    <!-- ================================================= -->
+    <record id="view_iep_teaching_method_form" model="ir.ui.view">
+        <field name="name">educare.iep.teaching.method.form</field>
+        <field name="model">educare.iep.teaching.method</field>
+        <field name="arch" type="xml">
+            <form string="Teaching Method">
+                <sheet>
+                    <group>
+                        <group string="Identity">
+                            <field name="name" />
+                            <field name="code" />
+                            <field name="sequence" />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" colspan="2" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_iep_teaching_method_tree" model="ir.ui.view">
+        <field name="name">educare.iep.teaching.method.tree</field>
+        <field name="model">educare.iep.teaching.method</field>
+        <field name="arch" type="xml">
+            <tree string="Teaching Methods" decoration-muted="active == False">
+                <field name="active" column_invisible="1" />
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" />
+                <field name="description" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_iep_teaching_method" model="ir.actions.act_window">
+        <field name="name">Teaching Methods</field>
+        <field name="res_model">educare.iep.teaching.method</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define teaching methods (DTT, NET, Task Analysis, etc.)
+            </p>
+        </field>
+    </record>
+
+    <!-- ================================================= -->
+    <!-- DATA COLLECTION METHODS                           -->
+    <!-- ================================================= -->
+    <record id="view_iep_data_collection_method_form" model="ir.ui.view">
+        <field name="name">educare.iep.data.collection.method.form</field>
+        <field name="model">educare.iep.data.collection.method</field>
+        <field name="arch" type="xml">
+            <form string="Data Collection Method">
+                <sheet>
+                    <group>
+                        <group string="Identity">
+                            <field name="name" />
+                            <field name="code" />
+                            <field name="sequence" />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" colspan="2" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_iep_data_collection_method_tree" model="ir.ui.view">
+        <field name="name">educare.iep.data.collection.method.tree</field>
+        <field name="model">educare.iep.data.collection.method</field>
+        <field name="arch" type="xml">
+            <tree string="Data Collection Methods" decoration-muted="active == False">
+                <field name="active" column_invisible="1" />
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" />
+                <field name="description" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_iep_data_collection_method" model="ir.actions.act_window">
+        <field name="name">Data Collection Methods</field>
+        <field name="res_model">educare.iep.data.collection.method</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define data collection methods (Trial by Trial, Probe, etc.)
             </p>
         </field>
     </record>

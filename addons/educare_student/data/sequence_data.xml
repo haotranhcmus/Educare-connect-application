@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="seq_educare_student" model="ir.sequence">
-            <field name="name">Educare Student Sequence</field>
+            <field name="name">So thu tu hoc sinh Educare</field>
             <field name="code">educare.student</field>
             <field name="prefix">HS-%(year)s-</field>
             <field name="padding">4</field>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_daily_report_search" model="ir.ui.view">
+        <field name="name">educare.daily.report.search</field>
+        <field name="model">educare.daily.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Reports">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="teacher_id" />
+
+                <separator />
+                <filter name="filter_draft" string="Draft"
+                    domain="[('status', '=', 'draft')]" />
+                <filter name="filter_ready" string="Ready to Send"
+                    domain="[('status', '=', 'ready')]" />
+                <filter name="filter_sent" string="Sent"
+                    domain="[('status', '=', 'sent')]" />
+                <filter name="filter_read" string="Read by Parent"
+                    domain="[('status', '=', 'read')]" />
+                <separator />
+                <filter name="filter_today" string="Today"
+                    domain="[('report_date', '=', context_today().strftime('%Y-%m-%d'))]" />
+                <filter name="filter_this_week" string="This Week"
+                    domain="[('report_date', '>=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]" />
+
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                        context="{'group_by': 'student_id'}" />
+                    <filter name="group_teacher" string="Teacher"
+                        context="{'group_by': 'teacher_id'}" />
+                    <filter name="group_status" string="Status"
+                        context="{'group_by': 'status'}" />
+                    <filter name="group_date" string="Report Date"
+                        context="{'group_by': 'report_date:week'}" />
+                    <filter name="group_performance" string="Performance"
+                        context="{'group_by': 'overall_performance'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

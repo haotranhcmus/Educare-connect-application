@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo noupdate="1">
     <record id="ir_cron_auto_sync_objective_status" model="ir.cron">
-        <field name="name">IEP Objective: Auto Sync Status</field>
+        <field name="name">Muc tieu ngan han IEP: Tu dong dong bo trang thai</field>
         <field name="model_id" ref="model_educare_iep_objective" />
         <field name="state">code</field>
         <field name="code">model.cron_auto_sync_objective_status()</field>

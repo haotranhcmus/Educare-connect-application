@@ -5,6 +5,17 @@
         <field name="model">educare.iep.goal.discontinue.wizard</field>
         <field name="arch" type="xml">
             <form string="Discontinue Goal" create="false" edit="false">
+                <field name="is_last_active_goal" invisible="1" />
+                <field name="active_objective_count" invisible="1" />
+                <div class="alert alert-warning" role="alert"
+                    invisible="not is_last_active_goal">
+                    <strong>Warning:</strong> This is the last active goal in this plan.
+                    Discontinuing it will leave the plan with no active goals. </div>
+                <div class="alert alert-info" role="alert"
+                    invisible="active_objective_count == 0">
+                    <strong>Note:</strong>
+                    <field name="active_objective_count" class="oe_inline"
+                        readonly="1" /> active objective(s) will also be discontinued. </div>
                 <group>
                     <group>
                         <field name="goal_id" readonly="1" />

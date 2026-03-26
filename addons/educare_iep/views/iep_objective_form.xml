@@ -62,6 +62,8 @@
                                 <group string="Core Information">
                                     <field name="goal_id" readonly="1" />
                                     <field name="student_id" readonly="1" />
+                                    <field name="domain_ids" widget="many2many_tags"
+                                        readonly="plan_status != 'draft'" />
                                     <field name="sequence" readonly="plan_status != 'draft'" />
                                     <field name="start_date" readonly="1" />
                                     <field name="target_date" readonly="1" />
@@ -69,16 +71,6 @@
                                         invisible="status != 'mastered'" />
                                 </group>
                                 <group string="Method &amp; Workflow">
-                                    <field name="prompt_level_id"
-                                        readonly="plan_status != 'draft'"
-                                        options="{'no_create': True}"
-                                        placeholder="E.g.: Verbal Prompt, Physical Prompt..."
-                                        help="Maximum prompt level used during ABA intervention session. Select from low (Gesture) to high (Full Physical)." />
-                                    <field name="probe_method_id"
-                                        readonly="plan_status != 'draft'"
-                                        options="{'no_create': True}"
-                                        placeholder="E.g.: DTT, Natural Environment..."
-                                        help="Method for measuring child responses: DTT (discrete trial training) or NE (natural environment)." />
                                     <field name="weight" readonly="plan_status != 'draft'" />
                                     <field name="status" readonly="1" />
                                     <field name="is_overdue" readonly="1" />
@@ -118,7 +110,6 @@
                                         readonly="plan_status != 'draft'" />
                                 </group>
                                 <group string="Session Rules">
-                                    <field name="target_trials" readonly="plan_status != 'draft'" />
                                     <field name="consecutive_sessions_required"
                                         readonly="plan_status != 'draft'" />
                                     <field name="consecutive_sessions_achieved"

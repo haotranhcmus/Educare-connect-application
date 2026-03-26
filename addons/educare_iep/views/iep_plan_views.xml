@@ -81,7 +81,7 @@
                         string="Submit for Review"
                         type="object"
                         class="btn-primary"
-                        invisible="status != 'draft'"
+                        invisible="status != 'draft' or not id"
                         groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
                     <button name="action_reset_to_draft"
                         string="Reset to Draft"
@@ -96,6 +96,12 @@
                         class="btn-warning"
                         invisible="status not in ['active', 'closed']"
                         groups="educare_security.group_supervisor,educare_security.group_admin" />
+                    <button name="action_open_cancel_revision_wizard"
+                        string="Cancel Revision"
+                        type="object"
+                        class="btn-danger"
+                        invisible="not revision_of_id or status not in ['draft', 'ready_review']"
+                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
                     <button name="action_supervisor_approve"
                         string="Supervisor Approve Plan"
                         type="object"
@@ -161,31 +167,6 @@
                         </h1>
                     </div>
 
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2"
-                        invisible="status in ['draft', 'closed']">
-                        <span class="fw-bold">Approval Checklist</span>
-                        <span class="badge text-bg-success" invisible="not goal_ids">
-                            <i class="fa fa-check me-1" />Goal added </span>
-                        <span class="badge text-bg-warning" invisible="goal_ids">
-                            <i class="fa fa-exclamation-triangle me-1" />Goal added </span>
-                        <span class="badge text-bg-success" invisible="not supervisor_approved">
-                            <i class="fa fa-check me-1" />Supervisor approved </span>
-                        <span class="badge text-bg-secondary" invisible="supervisor_approved">
-                            <i class="fa fa-hourglass-half me-1" />Supervisor approved </span>
-                        <span class="badge text-bg-success"
-                            invisible="status == 'draft' or not parent_consent">
-                            <i class="fa fa-check me-1" />Parent consent received </span>
-                        <span class="badge text-bg-secondary"
-                            invisible="status == 'draft' or parent_consent">
-                            <i class="fa fa-hourglass-half me-1" />Parent consent received </span>
-                    </div>
-
-                    <div class="text-warning small mb-1"
-                        invisible="status != 'draft'">
-                        <i class="fa fa-exclamation-triangle me-1" />Add at least 1 long-term goal
-                        (Goal) and objectives for each goal, then click <strong>Submit for Review</strong>
-                        to submit the plan to Supervisor. </div>
-
                     <group>
                         <group string="Plan Information">
                             <field name="student_center_id" invisible="1" />
@@ -236,6 +217,10 @@
                                 readonly="1" />
                         </group>
                     </group>
+
+                    <div class="alert alert-info" role="alert" invisible="id">
+                        <i class="fa fa-info-circle me-1" />Save the plan first, then use the <strong>Add
+                        Goal</strong> button to add goals before submitting for review. </div>
 
                     <notebook>
                         <page string="Goals" name="goals" invisible="not id">

@@ -70,7 +70,6 @@ class EducareIepGoalWizard(models.TransientModel):
         wizard = self.env['educare.iep.goal.template.select.wizard'].create({
             'goal_id': goal.id,
             'plan_id': self.plan_id.id,
-            'filter_domain_id': goal.goal_domain_id.id or False,
         })
         return {
             'type': 'ir.actions.act_window',

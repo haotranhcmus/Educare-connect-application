@@ -8,7 +8,7 @@ class EducareAuditMixin(models.AbstractModel):
 
     # ── Helper ────────────────────────────────────────────────────────────────
     def _get_audit_log_env(self):
-        """Trả về environment để tạo audit log (dùng sudo để bypass ACL)"""
+        """Return environment for audit log creation (sudo to bypass ACL)."""
         return self.env['educare.audit.log'].sudo()
 
     # ── Override create ───────────────────────────────────────────────────────
@@ -16,7 +16,7 @@ class EducareAuditMixin(models.AbstractModel):
     def create(self, vals_list):
         records = super().create(vals_list)
         for record in records:
-            # Lấy tất cả field values (bỏ các field meta)
+            # Read all field values except metadata fields
             all_values = record.read()[0]
             filtered_values = {
                 k: str(v) for k, v in all_values.items()
@@ -39,7 +39,7 @@ class EducareAuditMixin(models.AbstractModel):
     # ── Override write ────────────────────────────────────────────────────────
     def write(self, vals):
         for record in self:
-            # Capture giá trị CŨ TRƯỚC khi write
+            # Capture OLD values before write
             old_vals = {}
             for field_name in vals:
                 if field_name in record._fields:

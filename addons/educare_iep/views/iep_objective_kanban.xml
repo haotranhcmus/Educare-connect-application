@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_iep_objective_kanban" model="ir.ui.view">
+        <field name="name">educare.iep.objective.kanban</field>
+        <field name="model">educare.iep.objective</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" quick_create="0" class="o_kanban_small_column">
+                <field name="name" />
+                <field name="student_id" />
+                <field name="current_accuracy_pct" />
+                <field name="target_accuracy_pct" />
+                <field name="trend" />
+                <field name="status" />
+                <field name="alert_triggered" />
+                <field name="last_session_date" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name" />
+                                        </strong>
+                                    </div>
+                                    <div t-if="record.alert_triggered.raw_value"
+                                        class="badge rounded-pill text-bg-danger ms-1">
+                                        Alert
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="mb-1">
+                                        <field name="student_id" />
+                                    </div>
+                                    <div class="mt-1">
+                                        <span>Accuracy: <field name="current_accuracy_pct" />%</span>
+                                        <span class="ms-2">/ <field name="target_accuracy_pct" />%</span>
+                                    </div>
+                                    <div class="mt-1">
+                                        <field name="trend" widget="badge"
+                                            decoration-success="trend == 'improving'"
+                                            decoration-danger="trend == 'declining'"
+                                            decoration-warning="trend == 'stagnant'"
+                                            decoration-info="trend == 'stable'" />
+                                    </div>
+                                    <div t-if="record.last_session_date.raw_value"
+                                        class="text-muted small mt-1"> Last session: <field
+                                            name="last_session_date" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>
