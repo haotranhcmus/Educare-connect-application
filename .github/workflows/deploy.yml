@@ -1,0 +1,33 @@
+name: Deploy Odoo to DigitalOcean (Production)
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Executing remote ssh commands to deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Đi vào thư mục dự án trên VPS
+            cd ~/odoo-educare/Educare-connect-application
+
+            # Kéo code mới nhất từ nhánh main
+            git pull origin main
+
+            # Khởi động lại Docker để Odoo nhận code mới
+            docker-compose restart web
+
