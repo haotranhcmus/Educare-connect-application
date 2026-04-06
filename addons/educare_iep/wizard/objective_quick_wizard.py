@@ -31,6 +31,35 @@ class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMi
         help='Number of consecutive sessions reaching target accuracy to be considered mastered. Default 3 sessions per ABA standard.',
     )
 
+    # --- Extended fields (optional, can be filled now or later in the objective form) ---
+    baseline_description = fields.Text(string='Baseline Description')
+    measurement_template_id = fields.Many2one(
+        'educare.iep.measurement.template',
+        string='Measurement Template',
+        ondelete='set null',
+    )
+    suggested_prompt_level_id = fields.Many2one(
+        'educare.iep.prompt.level',
+        string='Suggested Prompt Level',
+        ondelete='set null',
+    )
+    smart_specific = fields.Text(string='S - Specific')
+    smart_measurable = fields.Char(string='M - Measurable', size=256)
+    smart_analysis = fields.Text(string='A/R - Achievable & Relevant')
+    smart_timebound = fields.Char(string='T - Time-Bound', size=128)
+    difficulty_level = fields.Integer(string='Difficulty Level', default=1)
+    age_min_months = fields.Integer(string='Min Age (months)')
+    age_max_months = fields.Integer(string='Max Age (months)')
+    relevant_diagnosis_ids = fields.Many2many(
+        'educare.diagnosis',
+        'educare_iep_obj_qwizard_diagnosis_rel',
+        'wizard_id',
+        'diagnosis_id',
+        string='Relevant Diagnoses',
+    )
+    materials_needed = fields.Text(string='Materials Needed')
+    implementation_steps = fields.Text(string='Implementation Steps')
+
     @api.constrains('consecutive_sessions_required')
     def _check_consecutive_sessions(self):
         for wizard in self:
@@ -54,6 +83,10 @@ class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMi
 
     def action_create_objective(self):
         self.ensure_one()
+        measurement_method = _('Direct observation during session.')
+        if self.measurement_template_id:
+            measurement_method = self.measurement_template_id.criteria_template
+
         objective = self.env['educare.iep.objective'].create({
             'goal_id': self.goal_id.id,
             'name': self.name,
@@ -64,7 +97,20 @@ class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMi
             'target_date': self.target_date or self.goal_id.target_date,
             'weight': 1.0,
             'consecutive_sessions_required': self.consecutive_sessions_required,
-            'measurement_method': _('Quan sat truc tiep trong buoi hoc.'),
+            'measurement_method': measurement_method,
+            'baseline_description': self.baseline_description or False,
+            'measurement_template_id': self.measurement_template_id.id if self.measurement_template_id else False,
+            'suggested_prompt_level_id': self.suggested_prompt_level_id.id if self.suggested_prompt_level_id else False,
+            'smart_specific': self.smart_specific or False,
+            'smart_measurable': self.smart_measurable or False,
+            'smart_analysis': self.smart_analysis or False,
+            'smart_timebound': self.smart_timebound or False,
+            'difficulty_level': self.difficulty_level or 1,
+            'age_min_months': self.age_min_months or False,
+            'age_max_months': self.age_max_months or False,
+            'relevant_diagnosis_ids': [(6, 0, self.relevant_diagnosis_ids.ids)],
+            'materials_needed': self.materials_needed or False,
+            'implementation_steps': self.implementation_steps or False,
         })
 
         return {

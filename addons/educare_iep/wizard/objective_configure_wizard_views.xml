@@ -1,5 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Form view for each wizard line (opens as nested dialog when clicked) -->
+    <record id="view_educare_iep_objective_configure_wizard_line_form" model="ir.ui.view">
+        <field name="name">educare.iep.objective.configure.wizard.line.form</field>
+        <field name="model">educare.iep.objective.configure.wizard.line</field>
+        <field name="arch" type="xml">
+            <form string="Configure Objective">
+                <sheet>
+                    <div class="alert alert-secondary d-flex align-items-center gap-2 mb-3 py-2"
+                        role="alert">
+                        <i class="fa fa-list-alt fa-lg" />
+                        <span>
+                            <strong>Objective:</strong>
+                            <field name="name" readonly="1" nolabel="1" class="ms-1 fw-semibold" />
+                        </span>
+                    </div>
+
+                    <notebook>
+                        <!-- Tab 1: Editable configuration -->
+                        <page string="Configure" name="configure">
+                            <group string="Accuracy Targets">
+                                <field name="baseline_accuracy_pct" />
+                                <field name="target_accuracy_pct" />
+                            </group>
+                            <group string="Mastery Criteria">
+                                <field name="consecutive_sessions_required" />
+                                <field name="weight" />
+                                <field name="measurement_template_id" />
+                            </group>
+                            <group string="Baseline Notes" col="1">
+                                <field name="baseline_description"
+                                    placeholder="Describe the student's current baseline performance..."
+                                    nolabel="1" />
+                            </group>
+                        </page>
+
+                        <!-- Tab 2: SMART info read from template (readonly preview) -->
+                        <page string="SMART (từ template)" name="smart_preview">
+                            <div class="text-muted small mb-3">
+                                <i class="fa fa-info-circle me-1" /> Thông tin SMART được đọc từ
+                                objective template. Sau khi import, bạn có thể chỉnh sửa trực tiếp
+                                trong form objective. </div>
+                            <group>
+                                <field name="smart_specific" readonly="1"
+                                    placeholder="(chưa có trong template)" />
+                                <field name="smart_measurable" readonly="1"
+                                    placeholder="(chưa có trong template)" />
+                                <field name="smart_analysis" readonly="1"
+                                    placeholder="(chưa có trong template)" />
+                                <field name="smart_timebound" readonly="1"
+                                    placeholder="(chưa có trong template)" />
+                            </group>
+                        </page>
+
+                        <!-- Tab 3: Guidance info read from template (readonly preview) -->
+                        <page string="Guidance (từ template)" name="guidance_preview">
+                            <div class="text-muted small mb-3">
+                                <i class="fa fa-info-circle me-1" /> Thông tin hướng dẫn được đọc từ
+                                objective template và sẽ được copy sang objective khi import. </div>
+                            <group string="Độ khó &amp; Đối tượng">
+                                <field name="difficulty_level" readonly="1" />
+                                <field name="age_min_months" readonly="1" />
+                                <field name="age_max_months" readonly="1" />
+                                <field name="suggested_prompt_level" readonly="1" />
+                            </group>
+                            <group string="Vật liệu &amp; Hướng dẫn" col="1">
+                                <field name="materials_needed" readonly="1"
+                                    placeholder="(chưa có trong template)" />
+                                <field name="implementation_steps" readonly="1"
+                                    placeholder="(chưa có trong template)" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Main wizard form -->
     <record id="view_educare_iep_objective_configure_wizard_form" model="ir.ui.view">
         <field name="name">educare.iep.objective.configure.wizard.form</field>
         <field name="model">educare.iep.objective.configure.wizard</field>
@@ -18,17 +96,21 @@
                     </div>
 
                     <div class="text-muted small mb-3">
-                        <i class="fa fa-info-circle me-1" /> Adjust baseline, target, weight, and
-                        consecutive sessions for each objective before importing. </div>
+                        <i class="fa fa-info-circle me-1" /> Nhấn vào từng objective để xem/chỉnh
+                        sửa chi tiết (tab Configure, SMART, Guidance). SMART fields và guidance sẽ
+                        được copy tự động từ template sau khi import. </div>
 
-                    <!-- Objective configuration lines -->
-                    <field name="line_ids" nolabel="1">
-                        <tree editable="bottom" create="false" delete="true">
-                            <field name="name" readonly="1" />
+                    <!-- Objective configuration lines (click row to open detail form) -->
+                    <field name="line_ids" nolabel="1"
+                        context="{&apos;form_view_ref&apos;: &apos;educare_iep.view_educare_iep_objective_configure_wizard_line_form&apos;}">
+                        <tree create="false" delete="true">
+                            <field name="name" />
                             <field name="baseline_accuracy_pct" string="Baseline (%)" />
                             <field name="target_accuracy_pct" string="Target (%)" />
                             <field name="consecutive_sessions_required" string="Sessions" />
                             <field name="weight" />
+                            <field name="baseline_description" string="Baseline Description"
+                                optional="show" />
                             <field name="template_id" column_invisible="1" />
                         </tree>
                     </field>

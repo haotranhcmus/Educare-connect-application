@@ -196,6 +196,65 @@ class EducareIepObjective(models.Model):
     discontinued_reason = fields.Text(string='Discontinued Reason', tracking=True)
     notes = fields.Text(string='Notes / Observations')
 
+    # --- Baseline & Teaching Guidance (from template) ---
+    baseline_description = fields.Text(
+        string='Baseline Description',
+        help='Description of the student\'s current baseline performance.',
+    )
+    materials_needed = fields.Text(
+        string='Materials Needed',
+        help='List of materials or supplies required for this objective.',
+    )
+    implementation_steps = fields.Text(
+        string='Implementation Steps',
+        help='Step-by-step teaching instructions or guidelines.',
+    )
+
+    # --- SMART Components ---
+    smart_specific = fields.Text(string='S - Specific')
+    smart_measurable = fields.Char(string='M - Measurable', size=256)
+    smart_analysis = fields.Text(string='A/R - Achievable & Relevant')
+    smart_timebound = fields.Char(string='T - Time-Bound', size=128)
+
+    # --- Context / Metadata (carried from template) ---
+    age_min_months = fields.Integer(
+        string='Min Age (months)',
+        help='Minimum recommended age in months.',
+    )
+    age_max_months = fields.Integer(
+        string='Max Age (months)',
+        help='Maximum recommended age in months.',
+    )
+    difficulty_level = fields.Integer(
+        string='Difficulty Level',
+        default=1,
+        help='Skill difficulty level from 1 (easiest) to 5 (hardest).',
+    )
+    relevant_diagnosis_ids = fields.Many2many(
+        'educare.diagnosis',
+        'educare_iep_objective_diagnosis_rel',
+        'objective_id',
+        'diagnosis_id',
+        string='Relevant Diagnoses',
+    )
+    suggested_prompt_level_id = fields.Many2one(
+        'educare.iep.prompt.level',
+        string='Suggested Prompt Level',
+        ondelete='set null',
+    )
+    measurement_template_id = fields.Many2one(
+        'educare.iep.measurement.template',
+        string='Measurement Template',
+        ondelete='set null',
+    )
+    source_template_id = fields.Many2one(
+        'educare.iep.objective.template',
+        string='Source Template',
+        ondelete='set null',
+        readonly=True,
+        help='The objective template this record was created from.',
+    )
+
     # Relationships (placeholder)
     # Uncomment when educare_session module is ready:
     # session_result_ids = fields.One2many(
