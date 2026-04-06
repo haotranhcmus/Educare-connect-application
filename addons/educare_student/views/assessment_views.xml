@@ -30,15 +30,16 @@
                             <page string="Strengths / Limitations Assessment" name="detail_lines">
                                 <field name="line_ids">
                                     <tree string="Assessment Details" editable="bottom">
-                                        <field name="domain_color" column_invisible="1" />
+                                        <field name="item_id" string="Criterion" />
                                         <field name="domain_id" string="Domain"
                                             widget="domain_color_badge"
                                             options='{"color_field": "domain_color"}'
                                             optional="show" />
-                                        <field name="item_id" string="Criterion" />
+                                        <field name="domain_color" column_invisible="1" />
                                         <field name="strength_text" string="Strength"
                                             placeholder="Describe strengths..." />
-                                        <field name="limitation_text" string="Limitation / Challenge"
+                                        <field name="limitation_text"
+                                            string="Limitation / Challenge"
                                             placeholder="Describe limitations..." />
                                         <field name="notes" string="Notes"
                                             placeholder="Additional notes..." optional="hide" />

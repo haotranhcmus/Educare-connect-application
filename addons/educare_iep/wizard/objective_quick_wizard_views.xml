@@ -11,36 +11,79 @@
                         <field name="student_id" readonly="1" />
                     </group>
 
-                    <separator />
+                    <notebook>
+                        <!-- Tab 1: Required basic info -->
+                        <page string="Thông tin cơ bản" name="basic">
+                            <group string="Objective">
+                                <field name="name"
+                                    placeholder="E.g.: Identify 10 basic vocabulary words" />
+                                <field name="description"
+                                    placeholder="Detailed description of the short-term skill to achieve..." />
+                            </group>
+                            <group col="2">
+                                <group string="Accuracy">
+                                    <field name="baseline_accuracy_pct" />
+                                    <field name="target_accuracy_pct" />
+                                </group>
+                                <group string="Timeline">
+                                    <field name="start_date" />
+                                    <field name="target_date" />
+                                </group>
+                            </group>
+                            <group string="Mastery Criteria">
+                                <field name="consecutive_sessions_required" />
+                            </group>
+                        </page>
 
-                    <group col="2" string="Basic Information">
-                        <field name="name"
-                            placeholder="E.g.: Identify 10 basic vocabulary words" />
-                        <field name="description"
-                            placeholder="Detailed description of the short-term skill to achieve..." />
-                    </group>
+                        <!-- Tab 2: Baseline, measurement context -->
+                        <page string="Baseline &amp; Tiêu chí" name="baseline_criteria">
+                            <group string="Measurement">
+                                <field name="measurement_template_id" />
+                                <field name="suggested_prompt_level_id" />
+                            </group>
+                            <group string="Baseline Notes" col="1">
+                                <field name="baseline_description"
+                                    placeholder="Describe the student's current baseline performance..."
+                                    nolabel="1" />
+                            </group>
+                        </page>
 
-                    <group col="2">
-                        <group string="Accuracy">
-                            <field name="baseline_accuracy_pct" />
-                            <field name="target_accuracy_pct" />
-                        </group>
-                        <group string="Timeline">
-                            <field name="start_date" />
-                            <field name="target_date" />
-                        </group>
-                    </group>
+                        <!-- Tab 3: SMART framework -->
+                        <page string="SMART" name="smart">
+                            <div class="text-muted small mb-3">
+                                <i class="fa fa-info-circle me-1" /> Điền thông tin SMART để đảm bảo
+                                mục tiêu rõ ràng, đo lường được và có thời hạn cụ thể. </div>
+                            <group>
+                                <field name="smart_specific"
+                                    placeholder="Mô tả cụ thể mục tiêu là gì..." />
+                                <field name="smart_measurable"
+                                    placeholder="Đo lường bằng cách nào..." />
+                                <field name="smart_analysis"
+                                    placeholder="Tính khả thi và phù hợp với học sinh..." />
+                                <field name="smart_timebound"
+                                    placeholder="Thời hạn đạt mục tiêu..." />
+                            </group>
+                        </page>
 
-                    <group col="2">
-                        <group string="Mastery Criteria">
-                            <field name="consecutive_sessions_required" />
-                        </group>
-                    </group>
-
-                    <div class="text-muted small mt-2">
-                        <i class="fa fa-info-circle me-1" /> Advanced fields (prompt level, probe
-                        method, detailed measurement) can be filled later in the full Objective
-                        form. Consecutive Sessions Required defaults to 3 per ABA standard. </div>
+                        <!-- Tab 4: Guidance and difficulty -->
+                        <page string="Hướng dẫn" name="guidance">
+                            <group string="Đối tượng &amp; Độ khó">
+                                <field name="difficulty_level" />
+                                <field name="age_min_months" />
+                                <field name="age_max_months" />
+                                <field name="relevant_diagnosis_ids" widget="many2many_tags" />
+                            </group>
+                            <group string="Thực hiện" col="1">
+                                <field name="materials_needed"
+                                    placeholder="Liệt kê vật liệu, đồ dùng cần thiết..."
+                                    nolabel="1" />
+                                <separator string="Implementation Steps" />
+                                <field name="implementation_steps"
+                                    placeholder="Mô tả từng bước thực hiện trong buổi trị liệu..."
+                                    nolabel="1" />
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <footer>
                     <button name="action_create_objective" string="Create Objective" type="object"
