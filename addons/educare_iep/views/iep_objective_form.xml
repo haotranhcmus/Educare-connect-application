@@ -87,6 +87,12 @@
                                     colspan="2" />
                             </group>
                             <group>
+                                <field name="baseline_description"
+                                    placeholder="Describe the student's current baseline performance..."
+                                    readonly="plan_status != 'draft'"
+                                    colspan="2" />
+                            </group>
+                            <group>
                                 <field name="measurement_method"
                                     placeholder="E.g.: Number of correct responses / total trials"
                                     readonly="plan_status != 'draft'"
@@ -116,9 +122,76 @@
                                         readonly="1" />
                                 </group>
                             </group>
+                            <group>
+                                <group string="Measurement">
+                                    <field name="measurement_template_id"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="suggested_prompt_level_id"
+                                        readonly="plan_status != 'draft'" />
+                                </group>
+                            </group>
                         </page>
 
-                        <!-- Tab 3: Actual Progress -->
+                        <!-- Tab 3: SMART -->
+                        <page string="SMART" name="smart">
+                            <group>
+                                <field name="smart_specific"
+                                    placeholder="S - Cụ thể: Mô tả rõ ràng hành vi mục tiêu..."
+                                    readonly="plan_status != 'draft'"
+                                    colspan="2" />
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="smart_measurable"
+                                        placeholder="M - Đo lường được: tiêu chí đo lường..."
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="smart_timebound"
+                                        placeholder="T - Có thời hạn: trong bao nhiêu tuần/tháng..."
+                                        readonly="plan_status != 'draft'" />
+                                </group>
+                            </group>
+                            <group>
+                                <field name="smart_analysis"
+                                    placeholder="A/R - Khả thi &amp; Phù hợp: lý do mục tiêu phù hợp với học sinh..."
+                                    readonly="plan_status != 'draft'"
+                                    colspan="2" />
+                            </group>
+                        </page>
+
+                        <!-- Tab 4: Guidance -->
+                        <page string="Guidance" name="guidance">
+                            <group>
+                                <group string="Student Context">
+                                    <field name="difficulty_level"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="age_min_months"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="age_max_months"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="source_template_id" readonly="1" />
+                                </group>
+                                <group string="Relevant Diagnoses">
+                                    <field name="relevant_diagnosis_ids"
+                                        widget="many2many_tags"
+                                        readonly="plan_status != 'draft'"
+                                        colspan="2" />
+                                </group>
+                            </group>
+                            <group>
+                                <field name="materials_needed"
+                                    placeholder="List materials or supplies required..."
+                                    readonly="plan_status != 'draft'"
+                                    colspan="2" />
+                            </group>
+                            <group>
+                                <field name="implementation_steps"
+                                    placeholder="Step-by-step teaching instructions..."
+                                    readonly="plan_status != 'draft'"
+                                    colspan="2" />
+                            </group>
+                        </page>
+
+                        <!-- Tab 5: Actual Progress -->
                         <page string="Progress" name="progress">
                             <group>
                                 <group string="Results">
