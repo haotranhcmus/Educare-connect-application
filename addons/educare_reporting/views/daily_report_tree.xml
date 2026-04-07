@@ -6,9 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Daily Reports"
                 decoration-muted="status == 'draft'"
-                decoration-info="status == 'ready'"
-                decoration-success="status == 'sent'"
-                decoration-bf="status == 'read'">
+                decoration-success="status in ('sent', 'read')">
                 <field name="name" />
                 <field name="student_id" />
                 <field name="report_date" />
@@ -20,7 +18,6 @@
                     decoration-danger="overall_performance == 'poor'" />
                 <field name="status" widget="badge"
                     decoration-info="status == 'draft'"
-                    decoration-warning="status == 'ready'"
                     decoration-success="status in ('sent', 'read')" />
                 <field name="report_type" optional="hide" />
             </tree>

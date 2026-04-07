@@ -3,7 +3,6 @@ from odoo.exceptions import ValidationError
 
 REPORT_STATUS = [
     ('draft', 'Draft'),
-    ('ready', 'Ready to Send'),
     ('sent', 'Sent'),
     ('read', 'Read by Parent'),
 ]
@@ -14,8 +13,7 @@ REPORT_TYPES = [
 ]
 
 ALLOWED_TRANSITIONS = {
-    'draft': ['ready'],
-    'ready': ['draft', 'sent'],
+    'draft': ['sent'],
     'sent': ['read'],
     'read': [],
 }
@@ -236,20 +234,14 @@ class EducareDailyReport(models.Model):
 
     # ── Workflow Actions ──────────────────────────────────────────
 
-    def action_mark_ready(self):
-        self._check_content_completeness()
-        self.write({'status': 'ready'})
-
     def action_send_to_parent(self):
+        self._check_content_completeness()
         for report in self:
             report._send_report()
         self.write({'status': 'sent'})
 
     def action_mark_read(self):
         self.write({'status': 'read'})
-
-    def action_reset_to_draft(self):
-        self.write({'status': 'draft'})
 
     # ── Business Logic ────────────────────────────────────────────
 
@@ -259,7 +251,7 @@ class EducareDailyReport(models.Model):
                 raise ValidationError(
                     _(
                         "Please fill in 'What did we do today?' "
-                        "before marking report '%(name)s' as ready.",
+                        "before sending report '%(name)s'.",
                         name=report.name,
                     )
                 )
