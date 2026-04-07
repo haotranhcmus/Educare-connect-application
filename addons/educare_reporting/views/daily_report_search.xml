@@ -12,8 +12,6 @@
                 <separator />
                 <filter name="filter_draft" string="Draft"
                     domain="[('status', '=', 'draft')]" />
-                <filter name="filter_ready" string="Ready to Send"
-                    domain="[('status', '=', 'ready')]" />
                 <filter name="filter_sent" string="Sent"
                     domain="[('status', '=', 'sent')]" />
                 <filter name="filter_read" string="Read by Parent"
