@@ -57,7 +57,7 @@ export function StudentListScreen({ navigation }: Props) {
 
       {/* Search */}
       <Searchbar
-        placeholder="Tìm theo tên hoặc mã HS"
+        placeholder="Tìm theo tên HS"
         value={searchQuery}
         onChangeText={setSearchQuery}
         style={styles.searchbar}
@@ -71,7 +71,14 @@ export function StudentListScreen({ navigation }: Props) {
             mode="outlined"
             selected={statusFilter === f}
             onPress={() => setStatusFilter(f)}
-            style={styles.chip}
+            style={[
+              styles.chip,
+              statusFilter === f && { backgroundColor: theme.colors.primary },
+            ]}
+            showSelectedCheck={false}
+            textStyle={[
+              statusFilter === f && { color: theme.colors.onPrimary },
+            ]}
           >
             {f === "all"
               ? `Tất cả (${students.length})`

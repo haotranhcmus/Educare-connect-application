@@ -1,4 +1,4 @@
-import { callKw } from "./odooClient";
+import { searchRead } from "./odooClient";
 
 export interface UserProfile {
   id: number;
@@ -15,14 +15,11 @@ export interface UserProfile {
  * because educare.user.profile is protected by record rules.
  */
 export async function fetchUserProfile(uid: number): Promise<UserProfile> {
-  const records = await callKw<UserProfile[]>(
+  const records = await searchRead<UserProfile>(
     "educare.user.profile",
-    "search_read",
-    [[["user_id", "=", uid]]],
-    {
-      fields: ["id", "role", "center_id", "display_name"],
-      limit: 1,
-    },
+    [["user_id", "=", uid]],
+    ["id", "role", "center_id", "display_name"],
+    { limit: 1 },
   );
 
   if (!records || records.length === 0) {

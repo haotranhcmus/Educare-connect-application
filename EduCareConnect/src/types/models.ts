@@ -118,6 +118,8 @@ export interface IepPlan {
   supervisor_id: OdooRef | false;
 
   goal_ids: number[]; // ids only for list, load separately
+  /** Computed field (store=False) — chỉ có khi được request trong fields list */
+  goal_count?: number;
 }
 
 // ===== IEP Goal =====
@@ -149,6 +151,7 @@ export interface IepObjectiveListItem {
   id: number;
   name: string;
   objective_code: string;
+  description?: string;
   status: ObjectiveStatus;
   goal_id: OdooRef;
   current_accuracy_pct: number;
@@ -156,6 +159,14 @@ export interface IepObjectiveListItem {
   baseline_accuracy_pct: number;
   progress_pct: number;
   trend: Trend;
+  weight?: number;
+  consecutive_sessions_required?: number;
+  consecutive_sessions_achieved?: number;
+  total_sessions_worked?: number;
+  last_session_date?: string;
+  last_session_accuracy?: number;
+  mastery_date?: string;
+  is_overdue?: boolean;
 }
 
 export interface IepObjectiveDetail {
@@ -185,6 +196,10 @@ export interface IepObjectiveDetail {
   last_session_accuracy?: number;
   mastery_date?: string;
   is_overdue?: boolean;
+
+  measurement_method?: string;
+  materials_needed?: string;
+  implementation_steps?: string;
 }
 
 // ===== Session =====
@@ -234,12 +249,40 @@ export interface SessionDetail {
   avg_accuracy?: number;
 }
 
+export interface SessionLogDetail {
+  id: number;
+  name: string;
+  student_id: OdooRef;
+  teacher_id: OdooRef;
+  center_id?: OdooRef;
+  session_date: string;
+  start_time: number;
+  end_time: number;
+  duration: number;
+  location: SessionLocation;
+  session_type: SessionType;
+  session_purpose: SessionPurpose;
+  status: SessionStatus;
+  avg_accuracy?: number;
+
+  attendance?: Attendance;
+  mood?: Mood;
+  energy_level?: EnergyLevel;
+  engagement_level?: EngagementLevel;
+  overall_performance?: OverallPerformance;
+  notes?: string;
+
+  result_line_ids?: number[];
+  objective_ids?: number[];
+}
+
 // ===== Session Result =====
 
 export interface SessionResult {
   id: number;
   session_id: OdooRef;
   objective_id: OdooRef;
+  session_date?: string;
 
   correct_trials: number;
   total_trials: number;

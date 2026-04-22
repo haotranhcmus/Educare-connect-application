@@ -8,20 +8,29 @@ import type {
   ParentChildStackParamList,
   ParentIepStackParamList,
   ParentReportStackParamList,
+  ParentProfileStackParamList,
 } from "./types";
-import { PlaceholderScreen } from "../screens/PlaceholderScreen";
+import { ParentHomeScreen } from "../screens/parent/home/ParentHomeScreen";
+import { ChildProfileScreen } from "../screens/parent/child/ChildProfileScreen";
+import { ParentIepPlanScreen } from "../screens/parent/iep/ParentIepPlanScreen";
+import { IepHistoryScreen } from "../screens/parent/iep/IepHistoryScreen";
+import { ParentReportListScreen } from "../screens/parent/report/ParentReportListScreen";
+import { ParentReportDetailScreen } from "../screens/parent/report/ParentReportDetailScreen";
+import { ParentProfileScreen } from "../screens/parent/profile/ParentProfileScreen";
+import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen"; // reuse
 
 const Tab = createBottomTabNavigator<ParentTabParamList>();
 const ChildStack = createNativeStackNavigator<ParentChildStackParamList>();
 const IepStack = createNativeStackNavigator<ParentIepStackParamList>();
 const ReportStack = createNativeStackNavigator<ParentReportStackParamList>();
+const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
 
 function ChildStackNavigator() {
   return (
     <ChildStack.Navigator>
       <ChildStack.Screen
         name="ChildProfile"
-        component={PlaceholderScreen}
+        component={ChildProfileScreen}
         options={{ title: "Con tôi" }}
       />
     </ChildStack.Navigator>
@@ -33,12 +42,12 @@ function IepStackNavigator() {
     <IepStack.Navigator>
       <IepStack.Screen
         name="ParentIepPlan"
-        component={PlaceholderScreen}
+        component={IepHistoryScreen}
         options={{ title: "Kế hoạch IEP" }}
       />
       <IepStack.Screen
         name="ParentIepPlanDetail"
-        component={PlaceholderScreen}
+        component={ParentIepPlanScreen}
         options={{ title: "Chi tiết IEP" }}
       />
     </IepStack.Navigator>
@@ -50,15 +59,32 @@ function ReportStackNavigator() {
     <ReportStack.Navigator>
       <ReportStack.Screen
         name="ParentReportList"
-        component={PlaceholderScreen}
+        component={ParentReportListScreen}
         options={{ title: "Báo cáo" }}
       />
       <ReportStack.Screen
         name="ParentReportDetail"
-        component={PlaceholderScreen}
+        component={ParentReportDetailScreen}
         options={{ title: "Chi tiết báo cáo" }}
       />
     </ReportStack.Navigator>
+  );
+}
+
+function ProfileStackNavigator() {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen
+        name="Profile"
+        component={ParentProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{ title: "Đổi mật khẩu" }}
+      />
+    </ProfileStack.Navigator>
   );
 }
 
@@ -79,7 +105,7 @@ export function ParentNavigator() {
     >
       <Tab.Screen
         name="ParentHomeTab"
-        component={PlaceholderScreen}
+        component={ParentHomeScreen}
         options={{
           title: "Trang chủ",
           headerShown: true,
@@ -129,10 +155,10 @@ export function ParentNavigator() {
       />
       <Tab.Screen
         name="ParentProfileTab"
-        component={PlaceholderScreen}
+        component={ProfileStackNavigator}
         options={{
           title: "Cá nhân",
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="account-circle"

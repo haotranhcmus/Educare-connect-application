@@ -4,6 +4,7 @@ import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AvatarLabel } from "../common/AvatarLabel";
 import { StatusBadge } from "../common/StatusBadge";
+import { DIAGNOSIS_LABELS } from "../../utils/labels";
 import type { StudentListItem } from "../../types";
 
 interface StudentListCardProps {
@@ -18,22 +19,25 @@ export function StudentListCard({
   showIepBadge = true,
 }: StudentListCardProps) {
   const theme = useTheme();
-  const diagnosisName = Array.isArray(student.primary_diagnosis)
-    ? student.primary_diagnosis[1]
+  const diagnosisName = student.primary_diagnosis
+    ? DIAGNOSIS_LABELS[student.primary_diagnosis]
     : undefined;
 
   return (
     <TouchableOpacity onPress={() => onPress(student.id)} activeOpacity={0.7}>
       <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-        <AvatarLabel name={student.name} size={44} />
+        <AvatarLabel uri={student.avatar_url} name={student.name} size={44} />
         <View style={styles.content}>
-          <Text
-            variant="titleSmall"
-            style={{ color: theme.colors.onSurface }}
-            numberOfLines={1}
-          >
-            {student.name}
-          </Text>
+          <View style={styles.row}>
+            <Text
+              variant="titleSmall"
+              style={{ color: theme.colors.onSurface }}
+              numberOfLines={1}
+            >
+              {student.name}
+            </Text>
+            <StatusBadge status={student.status} size="small" />
+          </View>
           <Text
             variant="bodySmall"
             style={{ color: theme.colors.onSurfaceVariant }}
@@ -49,10 +53,6 @@ export function StudentListCard({
                 {diagnosisName}
               </Text>
             )}
-            {diagnosisName && (
-              <Text style={{ color: theme.colors.outline }}> · </Text>
-            )}
-            <StatusBadge status={student.status} size="small" />
           </View>
           {showIepBadge && student.latest_iep_status && (
             <View style={styles.iepRow}>
@@ -98,6 +98,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 2,
+    justifyContent: "space-between",
+    width: "100%",
   },
   iepRow: {
     flexDirection: "row",

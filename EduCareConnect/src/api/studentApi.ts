@@ -1,11 +1,20 @@
-import { client } from "./odooClient";
+import { searchRead, read } from "./odooClient";
 import type { StudentListItem, StudentDetail } from "../types";
+
+type StudentListRaw = StudentListItem & { avatar?: string | false };
+type StudentDetailRaw = StudentDetail & { avatar?: string | false };
+
+function toAvatarUrl(avatar?: string | false): string | undefined {
+  if (!avatar) return undefined;
+  return `data:image/png;base64,${avatar}`;
+}
 
 const STUDENT_LIST_FIELDS = [
   "id",
   "name",
   "student_code",
   "status",
+  "avatar",
   "center_id",
   "primary_diagnosis",
   "date_of_birth",
@@ -17,6 +26,7 @@ const STUDENT_DETAIL_FIELDS = [
   "name",
   "student_code",
   "status",
+  "avatar",
   "center_id",
   "gender",
   "date_of_birth",
@@ -43,7 +53,6 @@ const STUDENT_DETAIL_FIELDS = [
   "communication_level",
   "attention_span",
   "behavior_notes",
-  "sensory_profile",
   "reinforcement_preferences",
 ];
 
@@ -52,25 +61,41 @@ const STUDENT_DETAIL_FIELDS = [
  * Filter: assigned_teacher_id = uid OR co_teacher_ids includes uid
  */
 export async function fetchMyStudents(uid: number): Promise<StudentListItem[]> {
-  const response = await client.post("/web/dataset/call_kw", {
-    jsonrpc: "2.0",
-    params: {
-      model: "educare.student",
-      method: "search_read",
-      args: [
-        [
-          "|",
-          ["assigned_teacher_id.user_id", "=", uid],
-          ["co_teacher_ids.user_id", "in", [uid]],
-        ],
-      ],
-      kwargs: {
-        fields: STUDENT_LIST_FIELDS,
-        order: "name asc",
-      },
-    },
-  });
-  return response.data?.result || [];
+  const records = await searchRead<StudentListRaw>(
+    "educare.student",
+    [
+      "|",
+      // assigned_teacher_id / co_teacher_ids are both res.users fields,
+      // so compare directly with current uid from Odoo session.
+      ["assigned_teacher_id", "=", uid],
+      ["co_teacher_ids", "in", [uid]],
+      ["status", "=", "active"],
+    ],
+    STUDENT_LIST_FIELDS,
+    { order: "name asc" },
+  );
+
+  return records.map(({ avatar, ...student }) => ({
+    ...student,
+    avatar_url: toAvatarUrl(avatar),
+  }));
+}
+
+/**
+ * Fetch set of student IDs that have at least one active IEP plan.
+ */
+export async function fetchStudentIdsWithActivePlan(): Promise<Set<number>> {
+  const plans = await searchRead<{ student_id: [number, string] | false }>(
+    "educare.iep.plan",
+    [["status", "=", "active"]],
+    ["student_id"],
+    { limit: 500 },
+  );
+  const ids = new Set<number>();
+  for (const p of plans) {
+    if (Array.isArray(p.student_id)) ids.add(p.student_id[0]);
+  }
+  return ids;
 }
 
 /**
@@ -79,22 +104,19 @@ export async function fetchMyStudents(uid: number): Promise<StudentListItem[]> {
 export async function fetchStudentDetail(
   studentId: number,
 ): Promise<StudentDetail> {
-  const response = await client.post("/web/dataset/call_kw", {
-    jsonrpc: "2.0",
-    params: {
-      model: "educare.student",
-      method: "read",
-      args: [[studentId]],
-      kwargs: {
-        fields: STUDENT_DETAIL_FIELDS,
-      },
-    },
-  });
-  const records = response.data?.result;
+  const records = await read<StudentDetailRaw>(
+    "educare.student",
+    [studentId],
+    STUDENT_DETAIL_FIELDS,
+  );
   if (!records || records.length === 0) {
     throw new Error("Không tìm thấy học sinh");
   }
-  return records[0];
+  const { avatar, ...student } = records[0];
+  return {
+    ...student,
+    avatar_url: toAvatarUrl(avatar),
+  };
 }
 
 /**

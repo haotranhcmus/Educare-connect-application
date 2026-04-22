@@ -9,7 +9,7 @@
     "esModuleInterop": true,
 
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
 
     "paths": {
       "@/*": ["./*"],
@@ -28,5 +28,6 @@
 
     "jsx": "react-jsx"
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["gluestack-ui.config.ts", "node_modules"]
 }
