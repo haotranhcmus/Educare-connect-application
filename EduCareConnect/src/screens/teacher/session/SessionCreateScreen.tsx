@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet, Alert } from "react-native";
-import { Text, Button, useTheme } from "react-native-paper";
+import { Text, Button, useTheme, Modal, Portal } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StepIndicator } from "../../../components/common/StepIndicator";
 import { ObjectiveCard } from "../../../components/iep/ObjectiveCard";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
@@ -56,8 +57,26 @@ interface FormData {
 export function SessionCreateScreen({ route, navigation }: Props) {
   const theme = useTheme();
   const [step, setStep] = useState(0);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
   const { data: students = [] } = useStudentsWithActivePlan();
   const createMutation = useCreateSession();
+
+  // Ensure SessionList is always behind us so hardware back doesn't get stuck
+  useEffect(() => {
+    const state = navigation.getState();
+    const hasSessionListBehind = state.routes.some(
+      (r: any) => r.name === "SessionList",
+    );
+    if (!hasSessionListBehind) {
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: "SessionList" },
+          { name: "SessionCreate", params: route.params },
+        ],
+      });
+    }
+  }, []);
 
   // Form state — pre-fill studentId if passed from Home/StudentDetail
   const [form, setForm] = useState<FormData>({
@@ -103,7 +122,7 @@ export function SessionCreateScreen({ route, navigation }: Props) {
           "Buổi học trùng lịch",
           `Học sinh này đã có ${conflicts} buổi học được lên lịch vào ngày ${form.session_date}. Bạn có muốn tiếp tục tạo thêm không?`,
           [
-            { text: "Quảy lại", style: "cancel" },
+            { text: "Quay lại", style: "cancel" },
             { text: "Tiếp tục", onPress: () => setStep(1) },
           ],
         );
@@ -137,8 +156,7 @@ export function SessionCreateScreen({ route, navigation }: Props) {
         session_purpose: form.session_purpose,
         objective_ids: [[6, 0, Array.from(selectedObjIds)]],
       });
-      // Reset the session stack to SessionList to avoid leaving SessionCreate in history
-      navigation.reset({ index: 0, routes: [{ name: "SessionList" }] });
+      setSuccessModalVisible(true);
     } catch (e: any) {
       Alert.alert("Lỗi", e.message || "Không thể tạo buổi học");
     }
@@ -258,6 +276,53 @@ export function SessionCreateScreen({ route, navigation }: Props) {
           </View>
         </ScrollView>
       )}
+      <Portal>
+        <Modal
+          visible={successModalVisible}
+          onDismiss={() => {}}
+          contentContainerStyle={[
+            styles.modal,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.modalContent}>
+            <MaterialCommunityIcons
+              name="check-circle"
+              size={56}
+              color={theme.colors.primary}
+            />
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "700", marginTop: 16, textAlign: "center" }}
+            >
+              Tạo buổi học thành công!
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                marginTop: 8,
+                textAlign: "center",
+              }}
+            >
+              Buổi học đã được lưu vào lịch.
+            </Text>
+            <Button
+              mode="contained"
+              style={{ marginTop: 24, minWidth: 120 }}
+              onPress={() => {
+                setSuccessModalVisible(false);
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "SessionList" }],
+                });
+              }}
+            >
+              Đóng
+            </Button>
+          </View>
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -271,5 +336,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 24,
     gap: 12,
+  },
+  modal: {
+    marginHorizontal: 32,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  modalContent: {
+    padding: 32,
+    alignItems: "center",
   },
 });

@@ -84,7 +84,7 @@ export function StudentDetailScreen({ route, navigation }: Props) {
             <StudentIepTab studentId={student.id} navigation={navigation} />
           )}
         </TopTab.Screen>
-        <TopTab.Screen name="Session">
+        <TopTab.Screen name="Buổi học">
           {() => (
             <StudentSessionTab studentId={student.id} navigation={navigation} />
           )}

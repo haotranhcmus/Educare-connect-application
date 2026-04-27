@@ -7,13 +7,8 @@ import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { useIepPlanHistory } from "../../../hooks/useParent";
 import { useParentStore } from "../../../store/parentStore";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ParentTimetableStackParamList } from "../../../navigation/types";
 
-type Props = NativeStackScreenProps<
-  ParentTimetableStackParamList,
-  "ChildIepHistory"
->;
+type Props = { navigation: any };
 
 const STATUS_CONFIG: Record<
   string,

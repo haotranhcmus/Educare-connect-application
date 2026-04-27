@@ -149,7 +149,7 @@ export function ObjectiveCard({
                   size="small"
                   label="Tiến độ hoàn thành"
                 />
-                <Text
+                {/* <Text
                   variant="labelSmall"
                   style={{
                     color: theme.colors.onSurfaceVariant,
@@ -160,7 +160,7 @@ export function ObjectiveCard({
                   (Độ chính xác hiện tại:{" "}
                   {Math.round(objective.current_accuracy_pct || 0)}% · Mục tiêu:{" "}
                   {Math.round(objective.target_accuracy_pct || 0)}%)
-                </Text>
+                </Text> */}
               </View>
               {objective.description ? (
                 <DetailRow

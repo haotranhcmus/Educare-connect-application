@@ -1,6 +1,7 @@
 import React from "react";
-import { ScrollView, View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, Button, Card, useTheme } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuthStore } from "../../store/authStore";
 import { useMyStudents } from "../../hooks/useStudents";
 import { useTodaySessions } from "../../hooks/useSessions";
@@ -13,6 +14,7 @@ import { StatusBadge } from "../../components/common/StatusBadge";
 
 export function HomeScreen({ navigation }: any) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { userName, centerName } = useAuthStore();
   const { data: todaySessions = [] } = useTodaySessions();
   const { data: pendingCount = 0 } = usePendingReportCount();
@@ -38,12 +40,17 @@ export function HomeScreen({ navigation }: any) {
   };
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
-      {/* Greeting Header */}
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Top header — replaces the nav bar */}
       <View
-        style={[styles.greeting, { backgroundColor: theme.colors.surface }]}
+        style={[
+          styles.header,
+          {
+            backgroundColor: theme.colors.surface,
+            paddingTop: insets.top + 8,
+            borderBottomColor: theme.colors.outlineVariant,
+          },
+        ]}
       >
         <View style={styles.greetingRow}>
           <AvatarLabel name={userName || "User"} size={44} />
@@ -67,13 +74,13 @@ export function HomeScreen({ navigation }: any) {
         </View>
         <Text
           variant="bodySmall"
-          style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}
+          style={{ color: theme.colors.onSurfaceVariant, marginTop: 6 }}
         >
           {dateStr}
         </Text>
       </View>
 
-      {/* Today Sessions */}
+      <ScrollView style={{ flex: 1 }}>
       <SectionHeader
         icon="calendar-today"
         title={`Hôm nay — ${todaySessions.length} buổi học`}
@@ -175,13 +182,18 @@ export function HomeScreen({ navigation }: any) {
       </View>
 
       <View style={{ height: 32 }} />
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  greeting: { padding: 16, marginBottom: 8 },
+  header: {
+    padding: 16,
+    paddingBottom: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
   greetingRow: { flexDirection: "row", alignItems: "center" },
   greetingText: { marginLeft: 12 },
   section: { paddingHorizontal: 16, marginBottom: 16 },

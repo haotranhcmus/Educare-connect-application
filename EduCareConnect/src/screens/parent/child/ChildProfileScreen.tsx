@@ -1,7 +1,6 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
@@ -58,63 +57,6 @@ export function ChildProfileScreen({ route, navigation }: Props) {
           </Text>
           <Text style={{ color: theme.colors.outline }}> · </Text>
           <StatusBadge status={student.status} />
-        </View>
-
-        {/* Action buttons row */}
-        <View style={styles.actionRow}>
-          {/* IEP History button */}
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              { backgroundColor: theme.colors.primaryContainer },
-            ]}
-            activeOpacity={0.7}
-            onPress={() =>
-              navigation.navigate("ChildIepHistory", {
-                studentId: student.id,
-                studentName: student.name,
-              })
-            }
-          >
-            <MaterialCommunityIcons
-              name="clipboard-text-clock-outline"
-              size={16}
-              color={theme.colors.primary}
-            />
-            <Text
-              variant="labelSmall"
-              style={{ color: theme.colors.primary, marginLeft: 5 }}
-            >
-              Kế hoạch IEP
-            </Text>
-          </TouchableOpacity>
-
-          {/* Timetable button */}
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              { backgroundColor: theme.colors.secondaryContainer },
-            ]}
-            activeOpacity={0.7}
-            onPress={() =>
-              navigation.navigate("ChildTimetable", {
-                studentId: student.id,
-                studentName: student.name,
-              })
-            }
-          >
-            <MaterialCommunityIcons
-              name="calendar-week-outline"
-              size={16}
-              color={theme.colors.secondary}
-            />
-            <Text
-              variant="labelSmall"
-              style={{ color: theme.colors.secondary, marginLeft: 5 }}
-            >
-              Thời khóa biểu
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
 

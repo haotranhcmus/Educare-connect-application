@@ -189,8 +189,7 @@ function TeacherTabsNavigator() {
         component={HomeScreen}
         options={{
           title: "Trang chủ",
-          headerShown: true,
-          headerTitle: "Educare Connect",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
@@ -238,15 +237,15 @@ function TeacherTabsNavigator() {
         }}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
+            e.preventDefault();
             const r = route as any;
             if (r.state && r.state.index > 0) {
-              e.preventDefault();
               navigation.dispatch({
                 ...StackActions.popToTop(),
                 target: r.state.key,
               });
-              navigation.navigate(route.name as any);
             }
+            navigation.navigate(route.name as any, { screen: "SessionList" });
           },
         })}
       />

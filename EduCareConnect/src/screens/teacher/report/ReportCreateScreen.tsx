@@ -8,6 +8,7 @@ import {
   useTheme,
   Surface,
   IconButton,
+  Snackbar,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
@@ -128,6 +129,23 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   const { sessionId: routeSessionId, reportId } = route.params ?? {};
   const isEdit = !!reportId;
 
+  // Ensure ReportList is always behind us so hardware back doesn't get stuck
+  useEffect(() => {
+    const state = navigation.getState();
+    const hasListBehind = state.routes.some(
+      (r: any) => r.name === "ReportList",
+    );
+    if (!hasListBehind) {
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: "ReportList" },
+          { name: "ReportCreate", params: route.params },
+        ],
+      });
+    }
+  }, []);
+
   const createReport = useCreateReport();
   const updateReport = useUpdateReport();
   const sendReport = useSendReport();
@@ -135,6 +153,12 @@ export function ReportCreateScreen({ navigation, route }: Props) {
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(false);
+  const [snackVisible, setSnackVisible] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const showSnack = (msg: string) => {
+    setSnackMessage(msg);
+    setSnackVisible(true);
+  };
   // Track which sessionId was last loaded to avoid duplicate fetches
   const loadedSessionIdRef = useRef<number | null>(null);
 
@@ -315,7 +339,8 @@ export function ReportCreateScreen({ navigation, route }: Props) {
       } else {
         await createReport.mutateAsync(payload);
       }
-      navigation.goBack();
+      showSnack("Đã lưu báo cáo nháp");
+      setTimeout(() => navigation.goBack(), 1500);
     } catch {
       Alert.alert("Lỗi", "Không thể lưu báo cáo");
     }
@@ -341,16 +366,19 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               }
               if (rptId) {
                 await sendReport.mutateAsync(rptId);
-                // Reset stack so back from ReportDetail goes to ReportList (not SessionPicker)
-                navigation.dispatch(
-                  CommonActions.reset({
-                    index: 1,
-                    routes: [
-                      { name: "ReportList" },
-                      { name: "ReportDetail", params: { reportId: rptId } },
-                    ],
-                  }),
-                );
+                showSnack("Đã gửi báo cáo đến phụ huynh");
+                setTimeout(() => {
+                  // Reset stack so back from ReportDetail goes to ReportList (not SessionPicker)
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 1,
+                      routes: [
+                        { name: "ReportList" },
+                        { name: "ReportDetail", params: { reportId: rptId } },
+                      ],
+                    }),
+                  );
+                }, 1500);
               }
             } catch (e: any) {
               Alert.alert("Lỗi", e?.message || "Không thể gửi báo cáo");
@@ -364,107 +392,117 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   if (loading) return <LoadingOverlay visible />;
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: theme.colors.background }}
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
-    >
-      {/* ── Chọn buổi học ────────────────────────────── */}
-      <SectionHeader icon="calendar-clock" title="Buổi Học" theme={theme} />
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* ── Chọn buổi học ────────────────────────────── */}
+        <SectionHeader icon="calendar-clock" title="Buổi Học" theme={theme} />
 
-      {!sessionInfo ? (
-        <Surface
-          style={[styles.pickCard, { borderColor: theme.colors.primary }]}
-          elevation={0}
-        >
-          <MaterialCommunityIcons
-            name="clipboard-search-outline"
-            size={32}
-            color={theme.colors.primary}
-          />
-          <Text
-            variant="bodyMedium"
-            style={{ marginTop: 8, color: theme.colors.onSurfaceVariant }}
+        {!sessionInfo ? (
+          <Surface
+            style={[styles.pickCard, { borderColor: theme.colors.primary }]}
+            elevation={0}
           >
-            Chưa chọn buổi học
-          </Text>
-          <Button
-            mode="contained"
-            onPress={() => navigation.navigate("SessionPicker")}
-            style={{ marginTop: 12 }}
-            icon="magnify"
-          >
-            Chọn buổi học
-          </Button>
-        </Surface>
-      ) : (
-        <View>
-          <SessionInfoCard
-            studentName={sessionInfo.studentName}
-            reportDate={sessionInfo.reportDate}
-            durationMinutes={sessionInfo.durationMinutes}
-            performance={sessionInfo.performance}
-            objectives={sessionInfo.objectives}
-            avgAccuracy={sessionInfo.avgAccuracy}
-          />
-          {!isEdit && (
-            <Button
-              mode="text"
-              compact
-              icon="pencil"
-              onPress={() => navigation.navigate("SessionPicker")}
-              style={{ alignSelf: "flex-start", marginTop: -4 }}
+            <MaterialCommunityIcons
+              name="clipboard-search-outline"
+              size={32}
+              color={theme.colors.primary}
+            />
+            <Text
+              variant="bodyMedium"
+              style={{ marginTop: 8, color: theme.colors.onSurfaceVariant }}
             >
-              Đổi buổi học
+              Chưa chọn buổi học
+            </Text>
+            <Button
+              mode="contained"
+              onPress={() => navigation.navigate("SessionPicker")}
+              style={{ marginTop: 12 }}
+              icon="magnify"
+            >
+              Chọn buổi học
             </Button>
-          )}
-        </View>
-      )}
+          </Surface>
+        ) : (
+          <View>
+            <SessionInfoCard
+              studentName={sessionInfo.studentName}
+              reportDate={sessionInfo.reportDate}
+              durationMinutes={sessionInfo.durationMinutes}
+              performance={sessionInfo.performance}
+              objectives={sessionInfo.objectives}
+              avgAccuracy={sessionInfo.avgAccuracy}
+            />
+            {!isEdit && (
+              <Button
+                mode="text"
+                compact
+                icon="pencil"
+                onPress={() => navigation.navigate("SessionPicker")}
+                style={{ alignSelf: "flex-start", marginTop: -4 }}
+              >
+                Đổi buổi học
+              </Button>
+            )}
+          </View>
+        )}
 
-      {/* ── Nội dung báo cáo ─────────────────────────── */}
-      <SectionHeader
-        icon="file-document-edit-outline"
-        title="Nội Dung Báo Cáo"
-        theme={theme}
-      />
-
-      {REPORT_FIELDS.map((field) => (
-        <ReportField
-          key={field.name}
-          control={control}
-          field={field}
-          error={errors[field.name]?.message}
+        {/* ── Nội dung báo cáo ─────────────────────────── */}
+        <SectionHeader
+          icon="file-document-edit-outline"
+          title="Nội Dung Báo Cáo"
           theme={theme}
         />
-      ))}
 
-      {/* ── Nút hành động ───────────────────────────── */}
-      <Divider style={{ marginTop: 8, marginBottom: 16 }} />
-      <View style={styles.actions}>
-        <Button
-          mode="outlined"
-          onPress={onSaveDraft}
-          loading={createReport.isPending || updateReport.isPending}
-          icon="content-save-outline"
-          style={styles.actionBtn}
-          disabled={!sessionInfo}
-        >
-          Lưu nháp
-        </Button>
-        <Button
-          mode="contained"
-          onPress={onSend}
-          loading={sendReport.isPending}
-          disabled={
-            !sessionInfo || createReport.isPending || updateReport.isPending
-          }
-          icon="send"
-          style={styles.actionBtn}
-        >
-          Gửi phụ huynh
-        </Button>
-      </View>
-    </ScrollView>
+        {REPORT_FIELDS.map((field) => (
+          <ReportField
+            key={field.name}
+            control={control}
+            field={field}
+            error={errors[field.name]?.message}
+            theme={theme}
+          />
+        ))}
+
+        {/* ── Nút hành động ───────────────────────────── */}
+        <Divider style={{ marginTop: 8, marginBottom: 16 }} />
+        <View style={styles.actions}>
+          <Button
+            mode="outlined"
+            onPress={onSaveDraft}
+            loading={createReport.isPending || updateReport.isPending}
+            icon="content-save-outline"
+            style={styles.actionBtn}
+            disabled={!sessionInfo}
+          >
+            Lưu nháp
+          </Button>
+          <Button
+            mode="contained"
+            onPress={onSend}
+            loading={sendReport.isPending}
+            disabled={
+              !sessionInfo || createReport.isPending || updateReport.isPending
+            }
+            icon="send"
+            style={styles.actionBtn}
+          >
+            Gửi phụ huynh
+          </Button>
+        </View>
+      </ScrollView>
+      <Snackbar
+        visible={snackVisible}
+        onDismiss={() => setSnackVisible(false)}
+        duration={1500}
+        style={{ marginBottom: 8 }}
+      >
+        {snackMessage}
+      </Snackbar>
+    </View>
   );
 }
 
