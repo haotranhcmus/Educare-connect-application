@@ -337,6 +337,8 @@ export interface ReportDetail {
   parent_action_guide?: string;
   next_session_preview?: string;
   teacher_note?: string; // internal, not sent to parent
+
+  write_date?: string;
 }
 
 // ===== User / Auth =====

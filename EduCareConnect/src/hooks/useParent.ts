@@ -101,8 +101,12 @@ export function useMarkReportRead() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (reportId: number) => markReportRead(reportId),
-    onSuccess: () => {
+    onSuccess: (_data, reportId) => {
+      // Refresh the detail page cache
+      qc.invalidateQueries({ queryKey: ["reports", "detail", reportId] });
+      // Refresh parent report list
       qc.invalidateQueries({ queryKey: ["parent", "reports"] });
+      // Refresh unread badge count
       qc.invalidateQueries({ queryKey: ["parent", "unreadCount"] });
     },
   });
