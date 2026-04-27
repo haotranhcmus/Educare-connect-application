@@ -1,19 +1,30 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, useTheme } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { ChildProfileTab } from "./ChildProfileTab";
 import { ChildProgressTab } from "./ChildProgressTab";
-import { useMyStudent } from "../../../hooks/useParent";
+import { useStudentById } from "../../../hooks/useParent";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const TopTab = createMaterialTopTabNavigator();
 
-export function ChildProfileScreen() {
+type ChildListStackParamList = {
+  ChildList: undefined;
+  ChildDetail: { studentId: number; studentName?: string };
+  ChildIepHistory: { studentId: number; studentName?: string };
+  ChildTimetable: { studentId: number; studentName?: string };
+};
+type Props = NativeStackScreenProps<ChildListStackParamList, "ChildDetail">;
+
+export function ChildProfileScreen({ route, navigation }: Props) {
   const theme = useTheme();
-  const { data: student, isLoading } = useMyStudent();
+  const { studentId } = route.params;
+  const { data: student, isLoading } = useStudentById(studentId);
 
   if (isLoading || !student) return <LoadingOverlay visible />;
 
@@ -21,7 +32,7 @@ export function ChildProfileScreen() {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      {/* Header — matches StudentDetailScreen style */}
+      {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
         <AvatarLabel
           uri={
@@ -47,6 +58,63 @@ export function ChildProfileScreen() {
           </Text>
           <Text style={{ color: theme.colors.outline }}> · </Text>
           <StatusBadge status={student.status} />
+        </View>
+
+        {/* Action buttons row */}
+        <View style={styles.actionRow}>
+          {/* IEP History button */}
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: theme.colors.primaryContainer },
+            ]}
+            activeOpacity={0.7}
+            onPress={() =>
+              navigation.navigate("ChildIepHistory", {
+                studentId: student.id,
+                studentName: student.name,
+              })
+            }
+          >
+            <MaterialCommunityIcons
+              name="clipboard-text-clock-outline"
+              size={16}
+              color={theme.colors.primary}
+            />
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.primary, marginLeft: 5 }}
+            >
+              Kế hoạch IEP
+            </Text>
+          </TouchableOpacity>
+
+          {/* Timetable button */}
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: theme.colors.secondaryContainer },
+            ]}
+            activeOpacity={0.7}
+            onPress={() =>
+              navigation.navigate("ChildTimetable", {
+                studentId: student.id,
+                studentName: student.name,
+              })
+            }
+          >
+            <MaterialCommunityIcons
+              name="calendar-week-outline"
+              size={16}
+              color={theme.colors.secondary}
+            />
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.secondary, marginLeft: 5 }}
+            >
+              Thời khóa biểu
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -77,7 +145,24 @@ export function ChildProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { alignItems: "center", paddingVertical: 16, paddingHorizontal: 16 },
+  header: {
+    alignItems: "center",
+    paddingTop: 16,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+  },
   name: { fontWeight: "bold", marginTop: 8 },
   headerRow: { flexDirection: "row", alignItems: "center", marginTop: 4 },
+  actionRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 12,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+  },
 });

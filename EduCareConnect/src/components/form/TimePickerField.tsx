@@ -44,7 +44,7 @@ export function TimePickerField({
           mode="time"
           is24Hour
           display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={(_, selected) => {
+          onValueChange={(_event, selected) => {
             setShow(false);
             if (selected) {
               onChange({
@@ -53,6 +53,7 @@ export function TimePickerField({
               });
             }
           }}
+          onDismiss={() => setShow(false)}
         />
       )}
     </View>

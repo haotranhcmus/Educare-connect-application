@@ -1,11 +1,59 @@
 import { callKw, searchCount, searchRead } from "./odooClient";
 
-// ── Fetch parent's student ────────────────────────────────────
+// ── Fetch parent's student (first child, backward-compat) ─────
 export async function fetchMyStudent(uid: number) {
   const result = await searchRead<any>(
     "educare.student",
     [["parent_user_id", "=", uid]],
     [
+      "name",
+      "student_code",
+      "status",
+      "avatar",
+      "date_of_birth",
+      "age",
+      "age_months",
+      "gender",
+      "school_name",
+      "class_name",
+      "enrollment_date",
+      "primary_diagnosis",
+      "assigned_teacher_id",
+      "supervisor_id",
+      "center_id",
+    ],
+    { limit: 1 },
+  );
+  return result[0] || null;
+}
+
+// ── Fetch all children of a parent ───────────────────────────
+export async function fetchMyStudents(uid: number) {
+  return searchRead<any>(
+    "educare.student",
+    [["parent_user_id", "=", uid]],
+    [
+      "id",
+      "name",
+      "student_code",
+      "status",
+      "avatar",
+      "date_of_birth",
+      "age",
+      "gender",
+      "assigned_teacher_id",
+      "center_id",
+    ],
+  );
+}
+
+// ── Fetch a single student by ID ─────────────────────────────
+export async function fetchStudentById(studentId: number) {
+  const result = await searchRead<any>(
+    "educare.student",
+    [["id", "=", studentId]],
+    [
+      "id",
       "name",
       "student_code",
       "status",
@@ -142,6 +190,54 @@ export async function fetchGoalsWithObjectives(planId: number) {
     );
   }
   return goals;
+}
+
+// ── Count sessions this week ──────────────────────────────────
+export async function fetchSessionsThisWeek(studentId: number): Promise<number> {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun
+  const offsetToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - offsetToMonday);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  return searchCount("educare.session.log", [
+    ["student_id", "=", studentId],
+    ["session_date", ">=", fmt(monday)],
+    ["session_date", "<=", fmt(sunday)],
+    ["status", "in", ["completed", "done"]],
+  ]);
+}
+
+// ── Fetch sessions for timetable (parent view) ───────────────
+export async function fetchStudentTimetable(
+  studentId: number,
+  dateFrom?: string,
+  dateTo?: string,
+) {
+  const domain: any[] = [["student_id", "=", studentId]];
+  if (dateFrom) domain.push(["session_date", ">=", dateFrom]);
+  if (dateTo) domain.push(["session_date", "<=", dateTo]);
+  return searchRead<any>(
+    "educare.session.log",
+    domain,
+    [
+      "id",
+      "name",
+      "session_date",
+      "start_time",
+      "end_time",
+      "duration",
+      "location",
+      "session_type",
+      "session_purpose",
+      "status",
+      "teacher_id",
+      "avg_accuracy",
+    ],
+    { order: "session_date asc, start_time asc" },
+  );
 }
 
 // ── Fetch parent reports ──────────────────────────────────────

@@ -102,7 +102,6 @@ export function StudentInfoTab({ student }: Props) {
           {student.medical_alert_detail || "Có cảnh báo y tế"}
         </Banner>
       )}
-
       <SectionHeader icon="account" title="Thông tin cơ bản" />
       <View style={styles.section}>
         <InfoGrid
@@ -122,7 +121,6 @@ export function StudentInfoTab({ student }: Props) {
           ]}
         />
       </View>
-
       <Divider />
 
       <SectionHeader icon="medical-bag" title="Chẩn đoán" />
@@ -142,9 +140,7 @@ export function StudentInfoTab({ student }: Props) {
           ]}
         />
       </View>
-
       <Divider />
-
       <SectionHeader icon="account-heart" title="Phụ huynh" />
       <View style={styles.section}>
         <InfoGrid
@@ -161,9 +157,7 @@ export function StudentInfoTab({ student }: Props) {
           ]}
         />
       </View>
-
       <Divider />
-
       <SectionHeader icon="account-group" title="Đội ngũ can thiệp" />
       <View style={styles.section}>
         <InfoGrid
@@ -173,9 +167,7 @@ export function StudentInfoTab({ student }: Props) {
           ]}
         />
       </View>
-
       <Divider />
-
       <SectionHeader icon="school" title="Học tập" />
       <View style={styles.section}>
         <InfoGrid
@@ -189,7 +181,6 @@ export function StudentInfoTab({ student }: Props) {
           ]}
         />
       </View>
-
       <View style={{ height: 24 }} />
     </ScrollView>
   );

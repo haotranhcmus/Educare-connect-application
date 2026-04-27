@@ -1,4 +1,5 @@
 import { read, searchRead, write, create, callKw } from "./odooClient";
+import { logger } from "../utils/logger";
 import type {
   SessionListItem,
   SessionLogDetail,
@@ -39,79 +40,134 @@ const SESSION_DETAIL_FIELDS = [
 export async function fetchStudentSessions(
   studentId: number,
 ): Promise<SessionListItem[]> {
-  const records = await searchRead<SessionListItem>(
-    "educare.session.log",
-    [["student_id", "=", studentId]],
-    SESSION_LIST_FIELDS,
-    { order: "session_date desc, start_time desc", limit: 50 },
-  );
-  return records;
+  logger.session("fetchStudentSessions", "start", { studentId });
+  try {
+    const records = await searchRead<SessionListItem>(
+      "educare.session.log",
+      [["student_id", "=", studentId]],
+      SESSION_LIST_FIELDS,
+      { order: "session_date desc, start_time desc", limit: 50 },
+    );
+    logger.session("fetchStudentSessions", `ok — ${records.length} records`);
+    return records;
+  } catch (e) {
+    logger.error("fetchStudentSessions", "failed", e);
+    throw e;
+  }
 }
 
 export async function fetchTodaySessions(
   teacherUid: number,
 ): Promise<SessionListItem[]> {
   const today = new Date().toISOString().split("T")[0];
-  const records = await searchRead<SessionListItem>(
-    "educare.session.log",
-    [
-      ["session_date", "=", today],
-      ["teacher_id", "=", teacherUid],
-    ],
-    SESSION_LIST_FIELDS,
-    { order: "start_time asc" },
-  );
-  return records;
+  logger.session("fetchTodaySessions", "start", { teacherUid, today });
+  try {
+    const records = await searchRead<SessionListItem>(
+      "educare.session.log",
+      [
+        ["session_date", "=", today],
+        ["teacher_id", "=", teacherUid],
+      ],
+      SESSION_LIST_FIELDS,
+      { order: "start_time asc" },
+    );
+    logger.session("fetchTodaySessions", `ok — ${records.length} records`);
+    return records;
+  } catch (e) {
+    logger.error("fetchTodaySessions", "failed", e);
+    throw e;
+  }
 }
 
 export async function fetchMySessions(
   teacherId: number,
   filters?: { dateFrom?: string; dateTo?: string },
 ): Promise<SessionListItem[]> {
+  logger.session("fetchMySessions", "start", { teacherId, filters });
   const domain: any[] = [["teacher_id", "=", teacherId]];
   if (filters?.dateFrom) domain.push(["session_date", ">=", filters.dateFrom]);
   if (filters?.dateTo) domain.push(["session_date", "<=", filters.dateTo]);
 
-  const records = await searchRead<SessionListItem>(
-    "educare.session.log",
-    domain,
-    SESSION_LIST_FIELDS,
-    { limit: 200, order: "session_date desc, start_time desc" },
-  );
-  return records;
+  try {
+    const records = await searchRead<SessionListItem>(
+      "educare.session.log",
+      domain,
+      SESSION_LIST_FIELDS,
+      { limit: 200, order: "session_date desc, start_time desc" },
+    );
+    logger.session("fetchMySessions", `ok — ${records.length} records`);
+    return records;
+  } catch (e) {
+    logger.error("fetchMySessions", "failed", e);
+    throw e;
+  }
 }
 
 export async function fetchSessionDetail(
   sessionId: number,
 ): Promise<SessionLogDetail> {
-  const result = await read<SessionLogDetail>(
-    "educare.session.log",
-    [sessionId],
-    SESSION_DETAIL_FIELDS,
-  );
-  return result[0];
+  logger.session("fetchSessionDetail", "start", { sessionId });
+  try {
+    const result = await read<SessionLogDetail>(
+      "educare.session.log",
+      [sessionId],
+      SESSION_DETAIL_FIELDS,
+    );
+    if (!result || result.length === 0) {
+      logger.error(
+        "fetchSessionDetail",
+        `No record returned for sessionId=${sessionId}. Check record rules — user may not have access.`,
+      );
+      throw new Error(
+        `Buổi học #${sessionId} không tồn tại hoặc bạn không có quyền truy cập.`,
+      );
+    }
+    logger.session("fetchSessionDetail", "ok", {
+      id: result[0].id,
+      name: result[0].name,
+      status: result[0].status,
+      objectiveCount: result[0].objective_ids?.length ?? 0,
+    });
+    return result[0];
+  } catch (e: any) {
+    logger.error("fetchSessionDetail", `failed for sessionId=${sessionId}`, {
+      message: e?.message,
+      odooError: e?.odooError,
+    });
+    throw e;
+  }
 }
 
 export async function fetchSessionResults(
   sessionId: number,
 ): Promise<SessionResult[]> {
-  const records = await searchRead<SessionResult>(
-    "educare.session.result",
-    [["session_log_id", "=", sessionId]],
-    [
-      "id",
-      "objective_id",
-      "result_type",
-      "correct_trials",
-      "total_trials",
-      "accuracy_pct",
-      "prompt_level_used",
-      "phase",
-      "notes",
-      "teaching_method",
-    ],
-  );
-  return records;
+  logger.session("fetchSessionResults", "start", { sessionId });
+  try {
+    const records = await searchRead<SessionResult>(
+      "educare.session.result",
+      [["session_id", "=", sessionId]],
+      [
+        "id",
+        "objective_id",
+        "result_type",
+        "correct_trials",
+        "total_trials",
+        "accuracy_pct",
+        "prompt_level_used",
+        "phase",
+        "notes",
+        "teaching_method",
+      ],
+    );
+    logger.session(
+      "fetchSessionResults",
+      `ok — ${records.length} results for session ${sessionId}`,
+    );
+    return records;
+  } catch (e: any) {
+    logger.error("fetchSessionResults", `failed for sessionId=${sessionId}`, e);
+    throw e;
+  }
 }
 
 export async function createSession(vals: {
@@ -124,17 +180,48 @@ export async function createSession(vals: {
   session_purpose: string;
   objective_ids?: [number, number, number[]][];
 }): Promise<number> {
-  const newId = await create("educare.session.log", vals);
-  await callKw("educare.session.log", "action_schedule", [[newId]]);
-  return newId;
+  logger.session("createSession", "start", {
+    student_id: vals.student_id,
+    session_date: vals.session_date,
+    objectiveCount: (vals.objective_ids?.[0] as any)?.[2]?.length ?? 0,
+  });
+  try {
+    const newId = await create("educare.session.log", vals);
+    logger.session(
+      "createSession",
+      `record created id=${newId}, scheduling...`,
+    );
+    await callKw("educare.session.log", "action_schedule", [[newId]]);
+    logger.session("createSession", `ok — session ${newId} scheduled`);
+    return newId;
+  } catch (e: any) {
+    logger.error("createSession", "failed", {
+      message: e?.message,
+      odooError: e?.odooError,
+    });
+    throw e;
+  }
 }
 
 export async function updateSession(
   sessionId: number,
   vals: Record<string, any>,
 ): Promise<boolean> {
-  const response = await write("educare.session.log", [sessionId], vals);
-  return response;
+  logger.session("updateSession", "start", {
+    sessionId,
+    keys: Object.keys(vals),
+  });
+  try {
+    const response = await write("educare.session.log", [sessionId], vals);
+    logger.session("updateSession", `ok — session ${sessionId} updated`);
+    return response;
+  } catch (e: any) {
+    logger.error("updateSession", `failed for sessionId=${sessionId}`, {
+      message: e?.message,
+      odooError: e?.odooError,
+    });
+    throw e;
+  }
 }
 
 type ActiveObjective = Pick<
@@ -149,31 +236,57 @@ type ActiveObjective = Pick<
   | "baseline_accuracy_pct"
   | "progress_pct"
   | "trend"
+  | "description"
+  | "consecutive_sessions_required"
+  | "consecutive_sessions_achieved"
+  | "measurement_method"
+  | "implementation_steps"
+  | "materials_needed"
 >;
 
 export async function fetchStudentActiveObjectives(
   studentId: number,
 ): Promise<ActiveObjective[]> {
-  const records = await searchRead<ActiveObjective>(
-    "educare.iep.objective",
-    [
-      ["student_id", "=", studentId],
-      ["status", "=", "in_progress"],
-    ],
-    [
-      "id",
-      "objective_code",
-      "name",
-      "status",
-      "goal_id",
-      "current_accuracy_pct",
-      "baseline_accuracy_pct",
-      "progress_pct",
-      "trend",
-      "target_accuracy_pct",
-    ],
-  );
-  return records;
+  logger.session("fetchStudentActiveObjectives", "start", { studentId });
+  try {
+    const records = await searchRead<ActiveObjective>(
+      "educare.iep.objective",
+      [
+        ["student_id", "=", studentId],
+        ["status", "in", ["not_started", "in_progress"]],
+      ],
+      [
+        "id",
+        "objective_code",
+        "name",
+        "status",
+        "goal_id",
+        "current_accuracy_pct",
+        "baseline_accuracy_pct",
+        "progress_pct",
+        "trend",
+        "target_accuracy_pct",
+        "description",
+        "consecutive_sessions_required",
+        "consecutive_sessions_achieved",
+        "measurement_method",
+        "implementation_steps",
+        "materials_needed",
+      ],
+    );
+    logger.session(
+      "fetchStudentActiveObjectives",
+      `ok — ${records.length} objectives for student ${studentId}`,
+    );
+    return records;
+  } catch (e: any) {
+    logger.error(
+      "fetchStudentActiveObjectives",
+      `failed for studentId=${studentId}`,
+      e,
+    );
+    throw e;
+  }
 }
 
 /** Fetch objectives by exact IDs — used by EvalStep1 to show only session-linked objectives. */
@@ -181,21 +294,84 @@ export async function fetchObjectivesByIds(
   ids: number[],
 ): Promise<ActiveObjective[]> {
   if (!ids.length) return [];
-  const records = await searchRead<ActiveObjective>(
-    "educare.iep.objective",
-    [["id", "in", ids]],
+  logger.session("fetchObjectivesByIds", "start", { ids });
+  try {
+    const records = await searchRead<ActiveObjective>(
+      "educare.iep.objective",
+      [["id", "in", ids]],
+      [
+        "id",
+        "objective_code",
+        "name",
+        "status",
+        "goal_id",
+        "current_accuracy_pct",
+        "baseline_accuracy_pct",
+        "progress_pct",
+        "trend",
+        "target_accuracy_pct",
+        "description",
+        "consecutive_sessions_required",
+        "consecutive_sessions_achieved",
+        "measurement_method",
+        "implementation_steps",
+        "materials_needed",
+      ],
+    );
+    logger.session(
+      "fetchObjectivesByIds",
+      `ok — ${records.length}/${ids.length} objectives fetched`,
+    );
+    if (records.length !== ids.length) {
+      logger.warn(
+        "fetchObjectivesByIds",
+        `Expected ${ids.length} objectives but got ${records.length}. Missing ids: ${ids.filter((id) => !records.find((r) => r.id === id)).join(", ")}`,
+      );
+    }
+    return records;
+  } catch (e: any) {
+    logger.error("fetchObjectivesByIds", "failed", { ids, error: e?.message });
+    throw e;
+  }
+}
+
+export async function checkStudentSessionConflict(
+  studentId: number,
+  sessionDate: string,
+): Promise<number> {
+  const records = await searchRead<{ id: number }>(
+    "educare.session.log",
     [
-      "id",
-      "objective_code",
-      "name",
-      "status",
-      "goal_id",
-      "current_accuracy_pct",
-      "baseline_accuracy_pct",
-      "progress_pct",
-      "trend",
-      "target_accuracy_pct",
+      ["student_id", "=", studentId],
+      ["session_date", "=", sessionDate],
+      ["status", "in", ["draft", "scheduled"]],
     ],
+    ["id"],
+    { limit: 5 },
   );
-  return records;
+  return records.length;
+}
+
+export async function cancelSession(
+  sessionId: number,
+  cancelType: "cancelled_center" | "cancelled_family",
+  reason: string = "",
+): Promise<boolean> {
+  logger.session("cancelSession", "start", { sessionId, cancelType });
+  try {
+    const response = await callKw(
+      "educare.session.log",
+      "action_cancel_session",
+      [[sessionId], cancelType, reason],
+      {},
+    );
+    logger.session("cancelSession", `ok — session ${sessionId} cancelled`);
+    return response;
+  } catch (e: any) {
+    logger.error("cancelSession", `failed for sessionId=${sessionId}`, {
+      message: e?.message,
+      odooError: e?.odooError,
+    });
+    throw e;
+  }
 }

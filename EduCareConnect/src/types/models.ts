@@ -167,6 +167,9 @@ export interface IepObjectiveListItem {
   last_session_accuracy?: number;
   mastery_date?: string;
   is_overdue?: boolean;
+  measurement_method?: string;
+  implementation_steps?: string;
+  materials_needed?: string;
 }
 
 export interface IepObjectiveDetail {
@@ -287,6 +290,8 @@ export interface SessionResult {
   correct_trials: number;
   total_trials: number;
   accuracy_pct: number;
+  baseline_accuracy_pct?: number;
+  target_accuracy_pct?: number;
 
   result_type: ResultType;
   prompt_level_used: PromptLevel;

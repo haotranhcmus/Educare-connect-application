@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
-import { Searchbar, Text, IconButton, useTheme } from "react-native-paper";
+import { Searchbar, Text, useTheme } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SessionPickerCard } from "../../../components/report/SessionPickerCard";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
@@ -31,24 +32,28 @@ export function SessionPickerScreen({ navigation }: Props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {/* Header */}
-      <View style={styles.header}>
-        <IconButton icon="close" onPress={() => navigation.goBack()} />
-        <Text variant="titleMedium" style={{ flex: 1 }}>
-          Chọn buổi học
-        </Text>
-      </View>
-
       <Searchbar
         placeholder="Tìm theo tên học sinh..."
         value={search}
         onChangeText={setSearch}
         style={styles.search}
+        elevation={0}
       />
 
-      <Text variant="bodySmall" style={styles.count}>
-        📋 {filtered.length} buổi chưa có báo cáo
-      </Text>
+      {/* Count row */}
+      <View style={styles.countRow}>
+        <MaterialCommunityIcons
+          name="clipboard-list-outline"
+          size={14}
+          color={theme.colors.outline}
+        />
+        <Text
+          variant="bodySmall"
+          style={{ color: theme.colors.outline, marginLeft: 4 }}
+        >
+          {filtered.length} buổi chưa có báo cáo
+        </Text>
+      </View>
 
       {isLoading ? (
         <LoadingOverlay visible />
@@ -56,7 +61,7 @@ export function SessionPickerScreen({ navigation }: Props) {
         <FlatList
           data={filtered}
           keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingTop: 8 }}
           renderItem={({ item }) => (
             <SessionPickerCard session={item} onSelect={handleSelect} />
           )}
@@ -81,7 +86,16 @@ export function SessionPickerScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: "row", alignItems: "center", paddingRight: 16 },
-  search: { marginHorizontal: 16, marginBottom: 8 },
-  count: { paddingHorizontal: 16, marginBottom: 8, opacity: 0.7 },
+  search: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 4,
+    borderRadius: 12,
+  },
+  countRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 6,
+  },
 });

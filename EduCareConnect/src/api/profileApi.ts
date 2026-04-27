@@ -1,4 +1,4 @@
-import { callKw, searchRead } from "./odooClient";
+import { callKw, searchRead, write } from "./odooClient";
 
 export interface UserProfile {
   id: number;
@@ -37,6 +37,18 @@ export async function fetchMyProfile(userId: number): Promise<UserProfile> {
     throw new Error("User profile not found");
   }
   return records[0];
+}
+
+export async function uploadAvatar(
+  userId: number,
+  base64Image: string,
+): Promise<void> {
+  // The 'avatar' field on educare.user.profile is a read-only related field
+  // pointing to user_id.image_128. We must write image_1920 on res.users directly.
+  const data = base64Image.includes(",")
+    ? base64Image.split(",")[1]
+    : base64Image;
+  await write("res.users", [userId], { image_1920: data });
 }
 
 export async function changePassword(

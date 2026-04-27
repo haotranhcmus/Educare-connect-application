@@ -46,7 +46,7 @@ export type SessionStackParamList = {
   SessionDetail: { sessionId: number };
   SessionEdit: { sessionId: number };
   EvalStep1: { sessionId: number };
-  EvalStep2: { sessionId: number };
+  EvalStep2: { sessionId: number; objectiveIndex?: number };
   EvalStep3: { sessionId: number };
   EvalDetailView: { sessionId: number };
 };
@@ -73,13 +73,19 @@ export type ParentProfileStackParamList = ProfileStackParamList;
 // -- Parent Bottom Tabs --
 export type ParentTabParamList = {
   ParentHomeTab: undefined;
-  ChildTab: undefined;
-  IepTab: undefined;
+  TimetableTab: undefined;
   ReportTab: undefined;
   ParentProfileTab: undefined;
 };
 
-// -- Parent: IEP Stack --
+// -- Parent: Timetable Stack --
+export type ParentTimetableStackParamList = {
+  Timetable: undefined;
+  ChildIepHistory: undefined;
+  ChildIepPlanDetail: { planId: number; plan?: any };
+};
+
+// -- Parent: IEP Stack (legacy – kept for backward-compat) --
 export type ParentIepStackParamList = {
   ParentIepPlan: undefined;
   ParentIepPlanDetail: { planId: number; plan?: any };
@@ -108,10 +114,6 @@ export type TeacherReportStackParamList = {
   ReportCreate: { sessionId?: number; reportId?: number } | undefined;
   ReportDetail: { reportId: number };
   SessionPicker: undefined;
-};
-
-export type ParentChildStackParamList = {
-  ChildProfile: undefined;
 };
 
 export type ParentReportStackParamList = {

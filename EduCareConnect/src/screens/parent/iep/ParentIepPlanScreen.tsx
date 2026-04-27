@@ -6,11 +6,11 @@ import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { useGoalsWithObjectives } from "../../../hooks/useParent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ParentIepStackParamList } from "../../../navigation/types";
+import type { ParentTimetableStackParamList } from "../../../navigation/types";
 
 type Props = NativeStackScreenProps<
-  ParentIepStackParamList,
-  "ParentIepPlanDetail"
+  ParentTimetableStackParamList,
+  "ChildIepPlanDetail"
 >;
 
 export function ParentIepPlanScreen({ route }: Props) {

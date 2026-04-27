@@ -43,13 +43,10 @@ export async function fetchStudentReports(
 export async function fetchPendingReportCount(
   teacherUid: number,
 ): Promise<number> {
-  const result = searchCount("educare.daily.report", [
+  return searchCount("educare.daily.report", [
     ["status", "=", "draft"],
-    "|",
     ["teacher_id", "=", teacherUid],
-    ["teacher_id", "in", [teacherUid]],
   ]);
-  return result;
 }
 
 export async function fetchMyReports(
@@ -57,14 +54,9 @@ export async function fetchMyReports(
 ): Promise<ReportListItem[]> {
   return searchRead<ReportListItem>(
     "educare.daily.report",
-    [
-      ["status", "=", "draft"],
-      "|",
-      ["teacher_id", "=", teacherUid],
-      ["teacher_id", "in", [teacherUid]],
-    ],
+    [["teacher_id", "=", teacherUid]],
     REPORT_LIST_FIELDS,
-    { order: "report_date desc", limit: 50 },
+    { order: "report_date desc", limit: 100 },
   );
 }
 
@@ -93,11 +85,14 @@ export interface SessionAvailableItem {
 export async function fetchSessionsAvailableForReport(
   teacherId: number,
 ): Promise<SessionAvailableItem[]> {
-  const doneSessions = await searchRead<SessionAvailableItem>(
+  // Include both 'completed' and 'done' sessions — teachers can write
+  // a parent report as soon as the session is finished.
+  const sessions = await searchRead<SessionAvailableItem>(
     "educare.session.log",
     [
       ["teacher_id", "=", teacherId],
-      ["status", "=", "done"],
+      ["status", "in", ["completed", "done"]],
+      ["attendance", "not in", ["cancelled_center", "cancelled_family"]],
     ],
     [
       "id",
@@ -109,16 +104,17 @@ export async function fetchSessionsAvailableForReport(
       "end_time",
       "overall_performance",
       "result_count",
-      "avg_accuracy_pct",
+      "avg_accuracy",
     ],
-    { order: "session_date desc, start_time desc", limit: 100 },
+    { order: "session_date desc, start_time desc", limit: 200 },
   );
 
+  // Exclude any session that already has a report (ANY teacher, not just this one)
   const existingReports = await searchRead<{
     session_log_id: number | [number, string] | false;
   }>(
     "educare.daily.report",
-    [["teacher_id", "=", teacherId]],
+    [["session_log_id", "!=", false]],
     ["session_log_id"],
   );
 
@@ -132,7 +128,19 @@ export async function fetchSessionsAvailableForReport(
       .filter(Boolean),
   );
 
-  return doneSessions.filter((s: any) => !reportedSessionIds.has(s.id));
+  return sessions.filter((s: any) => !reportedSessionIds.has(s.id));
+}
+
+export async function fetchReportForSession(
+  sessionId: number,
+): Promise<{ id: number; status: string } | null> {
+  const records = await searchRead<{ id: number; status: string }>(
+    "educare.daily.report",
+    [["session_log_id", "=", sessionId]],
+    ["id", "status"],
+    { limit: 1 },
+  );
+  return records.length > 0 ? records[0] : null;
 }
 
 export async function createReport(vals: Record<string, any>): Promise<number> {
@@ -147,5 +155,5 @@ export async function updateReport(
 }
 
 export async function sendReport(reportId: number): Promise<boolean> {
-  return callKw("educare.daily.report", "action_send", [[reportId]]);
+  return callKw("educare.daily.report", "action_send_to_parent", [[reportId]]);
 }

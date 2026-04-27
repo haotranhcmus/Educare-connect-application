@@ -101,9 +101,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error: null,
       });
     } catch (err: any) {
+      const raw: string = err?.message || "";
+      const isAccessDenied =
+        raw.toLowerCase().includes("access denied") ||
+        raw.toLowerCase().includes("accessdenied");
       set({
         isLoading: false,
-        error: err.message || "Lỗi kết nối. Vui lòng thử lại.",
+        error: isAccessDenied
+          ? "Email hoặc mật khẩu không đúng"
+          : raw || "Lỗi kết nối. Vui lòng thử lại.",
       });
     }
   },

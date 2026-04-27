@@ -1,162 +1,154 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
-import { View, ScrollView, StyleSheet, LayoutChangeEvent } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import {
-  Text,
-  Button,
-  ProgressBar as PaperProgress,
-  useTheme,
-} from "react-native-paper";
+import React, { useEffect } from "react";
+import { View, ScrollView, StyleSheet } from "react-native";
+import { Text, TextInput, Button, useTheme } from "react-native-paper";
 import { StepIndicator } from "../../../components/common/StepIndicator";
-import { ResultInputCard } from "../../../components/session/ResultInputCard";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import {
-  useSessionDetail,
-  useSessionObjectives,
-} from "../../../hooks/useSessions";
-import { formatDate, formatFloatTime } from "../../../utils/formatters";
-import type { ResultInput } from "../../../api/evalApi";
+import { Picker } from "../../../components/form/Picker";
 import { useEvalStore } from "../../../store/evalStore";
+import { useSessionDetail } from "../../../hooks/useSessions";
+import { formatDate, formatFloatTime } from "../../../utils/formatters";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { TeacherSessionStackParamList } from "../../../navigation/types";
 
 type Props = NativeStackScreenProps<TeacherSessionStackParamList, "EvalStep1">;
 
-const STEPS = ["Kết quả MT", "Quan sát", "Xác nhận"];
+const STEPS = ["Quan sát", "Mục tiêu", "Xác nhận"];
+
+const ATTENDANCE_OPTIONS = [
+  { value: "present", label: "Có mặt" },
+  { value: "absent_excused", label: "Vắng có phép" },
+  { value: "absent_unexcused", label: "Vắng không phép" },
+  { value: "cancelled_center", label: "Huỷ bởi trung tâm" },
+  { value: "cancelled_family", label: "Huỷ bởi gia đình" },
+];
+
+const MOOD_OPTIONS = [
+  { value: "very_good", label: "Rất tốt" },
+  { value: "good", label: "Tốt" },
+  { value: "neutral", label: "Bình thường" },
+  { value: "difficult", label: "Khó khăn" },
+  { value: "very_difficult", label: "Rất khó khăn" },
+];
+
+const ENERGY_OPTIONS = [
+  { value: "high", label: "Cao" },
+  { value: "normal", label: "Bình thường" },
+  { value: "low", label: "Thấp" },
+];
+
+const ENGAGEMENT_OPTIONS = [
+  { value: "highly_engaged", label: "Rất tập trung" },
+  { value: "engaged", label: "Có tham gia" },
+  { value: "somewhat_engaged", label: "Tham gia một phần" },
+  { value: "disengaged", label: "Không tham gia" },
+];
+
+const PERFORMANCE_OPTIONS = [
+  { value: "excellent", label: "Xuất sắc" },
+  { value: "good", label: "Tốt" },
+  { value: "fair", label: "Bình thường" },
+  { value: "poor", label: "Kém" },
+];
 
 export function EvalStep1Screen({ route, navigation }: Props) {
   const { sessionId } = route.params;
   const theme = useTheme();
-  const { setResult: storeSetResult, setSessionId: storeSetSessionId } =
-    useEvalStore();
-
-  // Reset store once when this eval session starts. Must run before user
-  // enters any results so storeSetSessionId (which clears results) fires first.
-  useEffect(() => {
-    storeSetSessionId(sessionId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
   const { data: session, isLoading: sessionLoading } =
     useSessionDetail(sessionId);
+  const observation = useEvalStore((s) => s.observation);
+  const setObservation = useEvalStore((s) => s.setObservation);
+  const setSessionId = useEvalStore((s) => s.setSessionId);
 
-  const sessionObjectiveIds = session?.objective_ids ?? [];
+  // Reset eval store when entering a new evaluation session
+  useEffect(() => {
+    setSessionId(sessionId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
+
   const studentName = Array.isArray(session?.student_id)
     ? session.student_id[1]
     : "";
-  const { data: objectives = [], isLoading: objLoading } =
-    useSessionObjectives(sessionObjectiveIds);
-
-  // Results map: objective_id -> ResultInput
-  const [resultsMap, setResultsMap] = useState<Map<number, ResultInput>>(
-    new Map(),
-  );
-  const [activeObjId, setActiveObjId] = useState<number | null>(null);
-
-  const scrollRef = useRef<ScrollView>(null);
-  const cardPositions = useRef<Map<number, number>>(new Map());
-
-  const savedCount = resultsMap.size;
-  const totalCount = objectives.length;
-  const allDone = totalCount > 0 && savedCount === totalCount;
-
-  const handleSaveResult = useCallback(
-    (objId: number, result: ResultInput) => {
-      setResultsMap((prev) => new Map(prev).set(objId, result));
-      storeSetResult(objId, result);
-      setActiveObjId(null);
-
-      // Auto-scroll to next pending
-      const nextPending = objectives.find(
-        (o) => o.id !== objId && !resultsMap.has(o.id),
-      );
-      if (nextPending) {
-        const y = cardPositions.current.get(nextPending.id);
-        if (y != null) {
-          setTimeout(
-            () => scrollRef.current?.scrollTo({ y: y - 100, animated: true }),
-            300,
-          );
-        }
-        setActiveObjId(nextPending.id);
-      }
-    },
-    [objectives, resultsMap],
-  );
-
-  const handleCardLayout = (objId: number, e: LayoutChangeEvent) => {
-    cardPositions.current.set(objId, e.nativeEvent.layout.y);
-  };
 
   const handleNext = () => {
-    // storeSetSessionId is called on mount — do NOT call it here because
-    // setSessionId resets the results Map, wiping everything already saved.
-    navigation.navigate("EvalStep2", {
-      sessionId,
-      // Pass results via route params (serialized)
-      // In production, consider a shared eval store
-    });
+    if (sessionLoading || !session) return;
+    const objCount = session.objective_ids?.length ?? 0;
+    if (objCount === 0) {
+      // No objectives — skip directly to review
+      navigation.navigate("EvalStep3", { sessionId });
+    } else {
+      navigation.navigate("EvalStep2", { sessionId, objectiveIndex: 0 });
+    }
   };
-
-  if (sessionLoading || objLoading) return <LoadingOverlay visible />;
-  if (!session) return null;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <StepIndicator steps={STEPS} currentStep={0} />
 
-      {/* Sticky context bar */}
-      <View
-        style={[styles.contextBar, { backgroundColor: theme.colors.surface }]}
-      >
-        <Text variant="bodySmall">
-          {studentName} · {formatDate(session.session_date)} ·{" "}
-          {formatFloatTime(session.start_time)}
-        </Text>
-        <PaperProgress
-          progress={totalCount > 0 ? savedCount / totalCount : 0}
-          color={theme.colors.primary}
-          style={{ marginVertical: 4 }}
-        />
+      <ScrollView contentContainerStyle={styles.content}>
         <Text
-          variant="labelSmall"
-          style={{
-            color: allDone ? theme.colors.primary : theme.colors.outline,
-          }}
+          variant="titleSmall"
+          style={{ fontWeight: "700", marginBottom: 4 }}
         >
-          {allDone ? (
-            <MaterialCommunityIcons
-              name="check-circle"
-              size={14}
-              color={theme.colors.primary}
-            />
-          ) : null}{" "}
-          Đã nhập: {savedCount} / {totalCount} mục tiêu
+          Quan Sát Chung
         </Text>
-      </View>
+        <Text
+          variant="bodySmall"
+          style={{ color: theme.colors.outline, marginBottom: 16 }}
+        >
+          {studentName} · {formatDate(session?.session_date || "")} ·{" "}
+          {formatFloatTime(session?.start_time || 0)}
+        </Text>
 
-      <ScrollView ref={scrollRef} contentContainerStyle={styles.content}>
-        {objectives.map((obj, idx) => (
-          <View key={obj.id} onLayout={(e) => handleCardLayout(obj.id, e)}>
-            <ResultInputCard
-              index={idx}
-              total={totalCount}
-              objective={obj}
-              savedResult={resultsMap.get(obj.id)}
-              isActive={activeObjId === obj.id}
-              onSave={(r) => handleSaveResult(obj.id, r)}
-              onEdit={() => setActiveObjId(obj.id)}
-              onActivate={() => setActiveObjId(obj.id)}
-            />
-          </View>
-        ))}
+        <Picker
+          label="Điểm danh *"
+          value={observation.attendance}
+          options={ATTENDANCE_OPTIONS}
+          onChange={(v) => setObservation({ attendance: v })}
+        />
+
+        <Picker
+          label="Tâm trạng học sinh"
+          value={observation.mood}
+          options={MOOD_OPTIONS}
+          onChange={(v) => setObservation({ mood: v })}
+        />
+
+        <Picker
+          label="Mức năng lượng"
+          value={observation.energy_level}
+          options={ENERGY_OPTIONS}
+          onChange={(v) => setObservation({ energy_level: v })}
+        />
+
+        <Picker
+          label="Mức độ tập trung"
+          value={observation.engagement_level}
+          options={ENGAGEMENT_OPTIONS}
+          onChange={(v) => setObservation({ engagement_level: v })}
+        />
+
+        <Picker
+          label="Kết quả tổng thể buổi học"
+          value={observation.overall_performance}
+          options={PERFORMANCE_OPTIONS}
+          onChange={(v) => setObservation({ overall_performance: v })}
+        />
+
+        <TextInput
+          label="Ghi chú tổng buổi học (tùy chọn)"
+          value={observation.notes || ""}
+          onChangeText={(v) => setObservation({ notes: v })}
+          mode="outlined"
+          multiline
+          numberOfLines={3}
+          style={{ marginTop: 8 }}
+        />
       </ScrollView>
 
-      {/* Footer */}
       <View style={[styles.footer, { backgroundColor: theme.colors.surface }]}>
         <Button mode="outlined" onPress={() => navigation.goBack()}>
-          ← Quay lại
+          ← Hủy
         </Button>
-        <Button mode="contained" onPress={handleNext} disabled={!allDone}>
+        <Button mode="contained" onPress={handleNext}>
           Tiếp theo →
         </Button>
       </View>
@@ -165,12 +157,7 @@ export function EvalStep1Screen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  contextBar: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
-  },
-  content: { padding: 16, paddingBottom: 80 },
+  content: { padding: 16, paddingBottom: 32 },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",

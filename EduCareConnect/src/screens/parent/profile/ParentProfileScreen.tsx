@@ -5,11 +5,15 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import { Avatar, Text, Card, Divider, useTheme } from "react-native-paper";
+import { Avatar, Text, Divider, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { SectionHeader } from "../../../components/common/SectionHeader";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useMyProfile } from "../../../hooks/useProfile";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useMyProfile, useUploadAvatar } from "../../../hooks/useProfile";
 import { useMyStudent } from "../../../hooks/useParent";
 import { useAuthStore } from "../../../store/authStore";
 import Constants from "expo-constants";
@@ -20,15 +24,44 @@ type Props = NativeStackScreenProps<ParentProfileStackParamList, "Profile">;
 
 export function ParentProfileScreen({ navigation }: Props) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { data: profile, isLoading: loadingProfile } = useMyProfile();
   const { data: student, isLoading: loadingStudent } = useMyStudent();
   const logout = useAuthStore((s) => s.logout);
+  const uploadAvatar = useUploadAvatar();
 
   const handleLogout = () => {
     Alert.alert("Đăng xuất", "Bạn có chắc muốn đăng xuất?", [
       { text: "Hủy", style: "cancel" },
       { text: "Đăng xuất", style: "destructive", onPress: () => logout() },
     ]);
+  };
+
+  const handlePickAvatar = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert(
+        "Cần quyền truy cập",
+        "Vui lòng cho phép truy cập thư viện ảnh.",
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+      base64: true,
+    });
+    if (!result.canceled && result.assets[0].base64 && profile) {
+      try {
+        await uploadAvatar.mutateAsync({
+          base64Image: result.assets[0].base64,
+        });
+      } catch {
+        Alert.alert("Lỗi", "Không thể cập nhật ảnh đại diện.");
+      }
+    }
   };
 
   if (loadingProfile || loadingStudent) return <LoadingOverlay visible />;
@@ -39,110 +72,105 @@ export function ParentProfileScreen({ navigation }: Props) {
 
   return (
     <ScrollView
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.surfaceVariant ?? theme.colors.background,
-      }}
-      contentContainerStyle={styles.container}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      contentContainerStyle={[styles.container, { paddingTop: insets.top + 8 }]}
     >
-      {/* ── Hero Card ─────────────────────────────────── */}
-      <Card style={styles.heroCard} mode="elevated">
-        <Card.Content style={styles.heroContent}>
+      {/* ── Hero ─────────────────────────────────────── */}
+      <View
+        style={[styles.heroCard, { backgroundColor: theme.colors.surface }]}
+      >
+        <TouchableOpacity
+          onPress={handlePickAvatar}
+          activeOpacity={0.8}
+          style={styles.avatarWrapper}
+        >
           {profile?.avatar ? (
             <Avatar.Image
-              size={88}
+              size={80}
               source={{ uri: `data:image/png;base64,${profile.avatar}` }}
-              style={styles.avatar}
             />
           ) : (
-            <Avatar.Icon size={88} icon="account" style={styles.avatar} />
+            <Avatar.Icon size={80} icon="account" />
           )}
-          <Text variant="headlineSmall" style={styles.heroName}>
-            {profile?.display_name || "—"}
-          </Text>
           <View
             style={[
-              styles.roleBadge,
-              { backgroundColor: theme.colors.primaryContainer },
+              styles.cameraOverlay,
+              { backgroundColor: theme.colors.primary },
             ]}
           >
+            {uploadAvatar.isPending ? (
+              <ActivityIndicator size={12} color="#fff" />
+            ) : (
+              <MaterialCommunityIcons name="camera" size={14} color="#fff" />
+            )}
+          </View>
+        </TouchableOpacity>
+        <Text
+          variant="titleLarge"
+          style={{ fontWeight: "700", textAlign: "center", marginBottom: 6 }}
+        >
+          {profile?.display_name || "—"}
+        </Text>
+        <View
+          style={[
+            styles.roleBadge,
+            { backgroundColor: theme.colors.primaryContainer },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name="human-male-child"
+            size={14}
+            color={theme.colors.primary}
+          />
+          <Text
+            variant="labelMedium"
+            style={{ color: theme.colors.primary, marginLeft: 4 }}
+          >
+            Phụ huynh
+          </Text>
+        </View>
+        {centerName ? (
+          <View style={styles.centerRow}>
             <MaterialCommunityIcons
-              name="human-male-child"
+              name="domain"
               size={14}
-              color={theme.colors.primary}
+              color={theme.colors.outline}
             />
             <Text
-              variant="labelMedium"
-              style={{ color: theme.colors.primary, marginLeft: 4 }}
+              variant="bodySmall"
+              style={{ color: theme.colors.outline, marginLeft: 4 }}
             >
-              Phụ huynh
+              {centerName}
             </Text>
           </View>
-          {centerName ? (
-            <Text variant="bodySmall" style={styles.centerText}>
-              🏫 {centerName}
-            </Text>
-          ) : null}
-        </Card.Content>
-      </Card>
+        ) : null}
+      </View>
 
       {/* ── Thông Tin Liên Hệ ─────────────────────────── */}
-      <Card style={styles.sectionCard} mode="elevated">
-        <Card.Title
-          title="Thông tin liên hệ"
-          titleStyle={styles.cardTitle}
-          left={(p) => (
-            <MaterialCommunityIcons
-              name="card-account-details-outline"
-              size={p.size}
-              color={theme.colors.primary}
-            />
-          )}
-        />
-        <Card.Content>
-          <InfoRow
-            icon="email-outline"
-            label="Email"
-            value={profile?.email || "—"}
-          />
-          <InfoRow
-            icon="phone-outline"
-            label="Điện thoại"
-            value={profile?.phone || "—"}
-          />
-        </Card.Content>
-      </Card>
+      <SectionHeader
+        icon="card-account-details-outline"
+        title="Thông Tin Liên Hệ"
+      />
+      <View
+        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+      >
+        <InfoRow label="Email" value={profile?.email || "—"} />
+        <InfoRow label="Điện thoại" value={profile?.phone || "—"} />
+      </View>
 
       {/* ── Con tôi ───────────────────────────────────── */}
       {student && (
-        <Card style={styles.sectionCard} mode="elevated">
-          <Card.Title
-            title="Con tôi"
-            titleStyle={styles.cardTitle}
-            left={(p) => (
-              <MaterialCommunityIcons
-                name="baby-face-outline"
-                size={p.size}
-                color={theme.colors.primary}
-              />
-            )}
-          />
-          <Card.Content>
-            <InfoRow
-              icon="account-circle-outline"
-              label="Họ và tên"
-              value={student.name}
-            />
-            <InfoRow
-              icon="identifier"
-              label="Mã học sinh"
-              value={student.student_code}
-            />
+        <>
+          <SectionHeader icon="baby-face-outline" title="Con tôi" />
+          <View
+            style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+          >
+            <InfoRow label="Họ và tên" value={student.name} />
+            <InfoRow label="Mã học sinh" value={student.student_code} />
             {centerName ? (
-              <InfoRow icon="domain" label="Trung tâm" value={centerName} />
+              <InfoRow label="Trung tâm" value={centerName} />
             ) : null}
             <InfoRow
-              icon="account-school-outline"
               label="Giáo viên phụ trách"
               value={
                 Array.isArray(student.assigned_teacher_id)
@@ -150,59 +178,67 @@ export function ParentProfileScreen({ navigation }: Props) {
                   : "—"
               }
             />
-          </Card.Content>
-        </Card>
+          </View>
+        </>
       )}
 
-      {/* ── Hành Động ─────────────────────────────────── */}
-      <Card style={styles.sectionCard} mode="elevated">
-        <Card.Content style={{ paddingHorizontal: 0 }}>
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate("ChangePassword")}
-            activeOpacity={0.7}
+      {/* ── Tài Khoản ─────────────────────────────────── */}
+      <SectionHeader icon="cog-outline" title="Tài Khoản" />
+      <View
+        style={[
+          styles.infoCard,
+          {
+            backgroundColor: theme.colors.surface,
+            paddingHorizontal: 0,
+            paddingVertical: 0,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.actionRow}
+          onPress={() => navigation.navigate("ChangePassword")}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="key-outline"
+            size={22}
+            color={theme.colors.onSurface}
+            style={styles.actionIcon}
+          />
+          <Text variant="bodyLarge" style={styles.actionLabel}>
+            Đổi mật khẩu
+          </Text>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={20}
+            color={theme.colors.outline}
+          />
+        </TouchableOpacity>
+        <Divider style={{ marginHorizontal: 16 }} />
+        <TouchableOpacity
+          style={styles.actionRow}
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="logout"
+            size={22}
+            color={theme.colors.error}
+            style={styles.actionIcon}
+          />
+          <Text
+            variant="bodyLarge"
+            style={[styles.actionLabel, { color: theme.colors.error }]}
           >
-            <MaterialCommunityIcons
-              name="key-outline"
-              size={22}
-              color={theme.colors.onSurface}
-              style={styles.actionIcon}
-            />
-            <Text variant="bodyLarge" style={styles.actionLabel}>
-              Đổi mật khẩu
-            </Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={theme.colors.outline}
-            />
-          </TouchableOpacity>
-          <Divider style={{ marginHorizontal: 16 }} />
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={handleLogout}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name="logout"
-              size={22}
-              color={theme.colors.error}
-              style={styles.actionIcon}
-            />
-            <Text
-              variant="bodyLarge"
-              style={[styles.actionLabel, { color: theme.colors.error }]}
-            >
-              Đăng xuất
-            </Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={theme.colors.error}
-            />
-          </TouchableOpacity>
-        </Card.Content>
-      </Card>
+            Đăng xuất
+          </Text>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={20}
+            color={theme.colors.error}
+          />
+        </TouchableOpacity>
+      </View>
 
       <Text variant="bodySmall" style={styles.version}>
         Phiên bản {Constants.expoConfig?.version || "1.0.0"}
@@ -211,62 +247,65 @@ export function ParentProfileScreen({ navigation }: Props) {
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: string;
-  label: string;
-  value: string;
-}) {
+function InfoRow({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
     <View style={styles.infoRow}>
-      <MaterialCommunityIcons
-        name={icon as any}
-        size={18}
-        color={theme.colors.primary}
-        style={styles.infoIcon}
-      />
-      <View style={{ flex: 1 }}>
-        <Text
-          variant="bodySmall"
-          style={{ color: theme.colors.outline, marginBottom: 1 }}
-        >
-          {label}
-        </Text>
-        <Text variant="bodyMedium" style={{ fontWeight: "500" }}>
-          {value}
-        </Text>
-      </View>
+      <Text
+        variant="labelSmall"
+        style={{ color: theme.colors.outline, width: 140 }}
+      >
+        {label}
+      </Text>
+      <Text variant="bodySmall" style={{ flex: 1 }}>
+        {value}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingBottom: 40, gap: 12 },
-  heroCard: { borderRadius: 20 },
-  heroContent: { alignItems: "center", paddingVertical: 24 },
-  avatar: { marginBottom: 12 },
-  heroName: { fontWeight: "700", textAlign: "center", marginBottom: 8 },
+  container: { padding: 16, paddingBottom: 40, paddingTop: 0 },
+  heroCard: {
+    alignItems: "center",
+    padding: 24,
+    borderRadius: 12,
+    elevation: 1,
+    marginBottom: 16,
+  },
+  avatarWrapper: { marginBottom: 12, position: "relative" },
+  cameraOverlay: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
   roleBadge: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    marginBottom: 6,
+    marginBottom: 4,
   },
-  centerText: { color: "#757575" },
-  sectionCard: { borderRadius: 16 },
-  cardTitle: { fontWeight: "700", fontSize: 15 },
-  infoRow: {
+  centerRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 14,
+    alignItems: "center",
+    marginTop: 4,
   },
-  infoIcon: { marginRight: 12, marginTop: 2 },
+  infoCard: {
+    padding: 16,
+    borderRadius: 12,
+    elevation: 1,
+    marginBottom: 16,
+  },
+  infoRow: { flexDirection: "row", marginVertical: 3 },
   actionRow: {
     flexDirection: "row",
     alignItems: "center",

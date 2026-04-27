@@ -12,7 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<TeacherSessionStackParamList, "EvalStep3">;
 
-const STEPS = ["Kết quả MT", "Quan sát", "Xác nhận"];
+const STEPS = ["Quan sát", "Mục tiêu", "Xác nhận"];
 
 const PROMPT_LABEL: Record<string, string> = {
   independent: "Độc lập",
@@ -34,7 +34,7 @@ const OBS_LABELS: Record<string, Record<string, string>> = {
   engagement_level: {
     highly_engaged: "Rất tập trung",
     engaged: "Tham gia",
-    partially_engaged: "Một phần",
+    somewhat_engaged: "Một phần",
     disengaged: "Không tham gia",
   },
   overall_performance: {

@@ -31,10 +31,17 @@ export function DatePickerField({
           value={date}
           mode="date"
           display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={(_, selected) => {
+          onValueChange={(_event, selected) => {
             setShow(false);
-            if (selected) onChange(selected.toISOString().split("T")[0]);
+            if (selected) {
+              // Use local date to avoid UTC offset shifting the day
+              const y = selected.getFullYear();
+              const m = String(selected.getMonth() + 1).padStart(2, "0");
+              const d = String(selected.getDate()).padStart(2, "0");
+              onChange(`${y}-${m}-${d}`);
+            }
           }}
+          onDismiss={() => setShow(false)}
         />
       )}
     </View>

@@ -1,6 +1,8 @@
-import React from "react";
-import { View, ScrollView, StyleSheet, RefreshControl } from "react-native";
-import { Text, Button, Divider, useTheme } from "react-native-paper";
+import React, { useState } from "react";
+import { View, ScrollView, StyleSheet, RefreshControl, Modal, TextInput as RNTextInput } from "react-native";
+import { Text, Button, Divider, useTheme, RadioButton, ActivityIndicator } from "react-native-paper";
+import { cancelSession } from "../../../api/sessionApi";
+import { useQueryClient } from "@tanstack/react-query";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
 import { SectionHeader } from "../../../components/common/SectionHeader";
@@ -10,7 +12,9 @@ import {
   useSessionDetail,
   useSessionResults,
 } from "../../../hooks/useSessions";
+import { useReportForSession } from "../../../hooks/useReports";
 import { formatDate, formatFloatTime } from "../../../utils/formatters";
+import { logger } from "../../../utils/logger";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
 import { SessionResult } from "@/src/types/models";
@@ -18,7 +22,13 @@ import { SessionResult } from "@/src/types/models";
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionDetail">;
 
 const OBSERVATION_LABELS: Record<string, Record<string, string>> = {
-  attendance: { present: "Có mặt", absent: "Vắng", late: "Đến muộn" },
+  attendance: {
+    present: "Có mặt",
+    absent_excused: "Vắng có phép",
+    absent_unexcused: "Vắng không phép",
+    cancelled_center: "Huỷ bởi trung tâm",
+    cancelled_family: "Huỷ bởi gia đình",
+  },
   mood: {
     very_good: "Rất tốt",
     good: "Tốt",
@@ -30,7 +40,7 @@ const OBSERVATION_LABELS: Record<string, Record<string, string>> = {
   engagement_level: {
     highly_engaged: "Rất tập trung",
     engaged: "Tham gia",
-    partially_engaged: "Tham gia một phần",
+    somewhat_engaged: "Tham gia một phần",
     disengaged: "Không tham gia",
   },
   overall_performance: {
@@ -44,13 +54,72 @@ const OBSERVATION_LABELS: Record<string, Record<string, string>> = {
 export function SessionDetailScreen({ route, navigation }: Props) {
   const { sessionId } = route.params;
   const theme = useTheme();
-  const { data: session, isLoading, refetch } = useSessionDetail(sessionId);
+  const queryClient = useQueryClient();
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [cancelType, setCancelType] = useState<"cancelled_center" | "cancelled_family">("cancelled_center");
+  const [cancelReason, setCancelReason] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState("");
+  const {
+    data: session,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useSessionDetail(sessionId);
   const { data: results = [] } = useSessionResults(
+    session?.status === "done" ? sessionId : 0,
+  );
+  const { data: existingReport } = useReportForSession(
     session?.status === "done" ? sessionId : 0,
   );
 
   if (isLoading && !session) return <LoadingOverlay visible />;
-  if (!session) return null;
+
+  if (isError || (!isLoading && !session)) {
+    const errorMsg =
+      (error as any)?.message || "Không thể tải thông tin buổi học.";
+    logger.error("SessionDetailScreen", `render error state`, {
+      sessionId,
+      errorMsg,
+      odooError: (error as any)?.odooError,
+    });
+    return (
+      <View style={styles.errorContainer}>
+        <Text
+          variant="titleSmall"
+          style={{
+            color: theme.colors.error,
+            textAlign: "center",
+            marginBottom: 8,
+          }}
+        >
+          Không tải được buổi học #{sessionId}
+        </Text>
+        <Text
+          variant="bodySmall"
+          style={{
+            color: theme.colors.onSurfaceVariant,
+            textAlign: "center",
+            marginBottom: 16,
+            paddingHorizontal: 24,
+          }}
+        >
+          {errorMsg}
+        </Text>
+        <Button mode="contained" onPress={() => refetch()} icon="refresh">
+          Thử lại
+        </Button>
+        <Button
+          mode="text"
+          onPress={() => navigation.goBack()}
+          style={{ marginTop: 8 }}
+        >
+          Quay lại
+        </Button>
+      </View>
+    );
+  }
 
   const studentName = Array.isArray(session.student_id)
     ? session.student_id[1]
@@ -59,7 +128,25 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   const canEval =
     session.status === "scheduled" || session.status === "completed";
   const canEdit = session.status === "draft" || session.status === "scheduled";
+  const canCancel = session.status === "draft" || session.status === "scheduled";
   const duration = Math.round((session.end_time - session.start_time) * 60);
+
+  const handleConfirmCancel = async () => {
+    setIsCancelling(true);
+    setCancelError("");
+    try {
+      await cancelSession(sessionId, cancelType, cancelReason.trim());
+      await queryClient.invalidateQueries({ queryKey: ["session", sessionId] });
+      await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      setCancelModalVisible(false);
+      setCancelReason("");
+      refetch();
+    } catch (e: any) {
+      setCancelError(e?.message || "Không thể hủy buổi học. Vui lòng thử lại.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -166,6 +253,86 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         </>
       )}
 
+      {/* Cancel session modal */}
+      <Modal
+        visible={cancelModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setCancelModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
+            <Text variant="titleMedium" style={{ fontWeight: "700", marginBottom: 12 }}>
+              Hủy buổi học
+            </Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 16 }}>
+              Chọn lý do hủy buổi học:
+            </Text>
+
+            <RadioButton.Group
+              onValueChange={(val) => setCancelType(val as "cancelled_center" | "cancelled_family")}
+              value={cancelType}
+            >
+              <View style={styles.radioRow}>
+                <RadioButton value="cancelled_center" />
+                <Text variant="bodyMedium">Trung tâm hủy</Text>
+              </View>
+              <View style={styles.radioRow}>
+                <RadioButton value="cancelled_family" />
+                <Text variant="bodyMedium">Gia đình hủy</Text>
+              </View>
+            </RadioButton.Group>
+
+            <Text variant="labelSmall" style={{ color: theme.colors.outline, marginTop: 12, marginBottom: 4 }}>
+              Ghi chú (không bắt buộc)
+            </Text>
+            <RNTextInput
+              value={cancelReason}
+              onChangeText={setCancelReason}
+              placeholder="Nhập lý do hủy..."
+              placeholderTextColor={theme.colors.onSurfaceVariant}
+              multiline
+              numberOfLines={3}
+              style={[
+                styles.reasonInput,
+                {
+                  borderColor: theme.colors.outlineVariant,
+                  color: theme.colors.onSurface,
+                  backgroundColor: theme.colors.surfaceVariant,
+                },
+              ]}
+            />
+
+            {cancelError ? (
+              <Text variant="labelSmall" style={{ color: theme.colors.error, marginTop: 8 }}>
+                {cancelError}
+              </Text>
+            ) : null}
+
+            <View style={styles.modalActions}>
+              <Button
+                mode="outlined"
+                onPress={() => { setCancelModalVisible(false); setCancelError(""); }}
+                style={{ flex: 1 }}
+                disabled={isCancelling}
+              >
+                Đóng
+              </Button>
+              <Button
+                mode="contained"
+                buttonColor={theme.colors.error}
+                onPress={handleConfirmCancel}
+                style={{ flex: 1, marginLeft: 8 }}
+                disabled={isCancelling}
+                icon={isCancelling ? undefined : "cancel"}
+              >
+                {isCancelling ? <ActivityIndicator size={16} color={theme.colors.onError} /> : "Xác nhận hủy"}
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Action buttons */}
       <View style={styles.actions}>
         {canEval && (
@@ -189,7 +356,32 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             Chỉnh sửa
           </Button>
         )}
-        {isDone && (
+        {canCancel && (
+          <Button
+            mode="outlined"
+            icon="cancel"
+            textColor={theme.colors.error}
+            style={{ marginTop: 8, borderColor: theme.colors.error }}
+            onPress={() => { setCancelError(""); setCancelModalVisible(true); }}
+          >
+            Hủy buổi học
+          </Button>
+        )}
+        {isDone && existingReport ? (
+          <Button
+            mode="contained"
+            icon="file-document-outline"
+            onPress={() => {
+              navigation.getParent()?.navigate("ReportTab" as any, {
+                screen: "ReportDetail",
+                params: { reportId: existingReport.id },
+              });
+            }}
+            style={{ marginTop: 8 }}
+          >
+            Xem báo cáo đã gửi
+          </Button>
+        ) : isDone ? (
           <Button
             mode="contained"
             icon="file-document-edit-outline"
@@ -203,7 +395,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
           >
             Tạo báo cáo buổi học
           </Button>
-        )}
+        ) : null}
       </View>
     </ScrollView>
   );
@@ -226,6 +418,12 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 32 },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -239,4 +437,33 @@ const styles = StyleSheet.create({
   infoRow: { flexDirection: "row", marginVertical: 2 },
   avgCard: { padding: 12, borderRadius: 10, marginBottom: 8 },
   actions: { marginTop: 24 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalCard: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    paddingBottom: 40,
+    elevation: 8,
+  },
+  radioRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 2,
+  },
+  reasonInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 14,
+    minHeight: 72,
+    textAlignVertical: "top",
+  },
+  modalActions: {
+    flexDirection: "row",
+    marginTop: 16,
+  },
 });

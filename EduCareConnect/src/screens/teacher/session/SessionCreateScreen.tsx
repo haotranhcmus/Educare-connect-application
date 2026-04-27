@@ -116,7 +116,8 @@ export function SessionCreateScreen({ route, navigation }: Props) {
         session_purpose: form.session_purpose,
         objective_ids: [[6, 0, Array.from(selectedObjIds)]],
       });
-      navigation.goBack();
+      // Reset the session stack to SessionList to avoid leaving SessionCreate in history
+      navigation.reset({ index: 0, routes: [{ name: "SessionList" }] });
     } catch (e: any) {
       Alert.alert("Lỗi", e.message || "Không thể tạo buổi học");
     }

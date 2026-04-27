@@ -5,6 +5,7 @@ import {
   fetchMyReports,
   fetchReportDetail,
   fetchSessionsAvailableForReport,
+  fetchReportForSession,
   createReport,
   updateReport,
   sendReport,
@@ -54,12 +55,22 @@ export function useSessionsForReport() {
   });
 }
 
+export function useReportForSession(sessionId: number) {
+  return useQuery({
+    queryKey: ["reports", "for-session", sessionId],
+    queryFn: () => fetchReportForSession(sessionId),
+    enabled: sessionId > 0,
+  });
+}
+
 export function useCreateReport() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: createReport,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["reports"] });
+      qc.invalidateQueries({ queryKey: ["sessions", "available-for-report"] });
+      qc.invalidateQueries({ queryKey: ["pendingReportCount"] });
     },
   });
 }
@@ -87,7 +98,9 @@ export function useSendReport() {
     mutationFn: sendReport,
     onSuccess: (_, reportId) => {
       qc.invalidateQueries({ queryKey: ["reports", "detail", reportId] });
-      qc.invalidateQueries({ queryKey: ["reports", "my"] });
+      qc.invalidateQueries({ queryKey: ["reports"] });
+      qc.invalidateQueries({ queryKey: ["sessions", "available-for-report"] });
+      qc.invalidateQueries({ queryKey: ["pendingReportCount"] });
     },
   });
 }

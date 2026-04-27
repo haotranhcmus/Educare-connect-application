@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 import { getSessionId, clearSession } from "../utils/secureStore";
+import { logger } from "../utils/logger";
 import type {
   OdooRpcResponse,
   OdooSearchReadResult,
@@ -46,6 +47,13 @@ client.interceptors.request.use(async (config) => {
   if (sessionId) {
     config.headers.Cookie = `session_id=${sessionId}`;
   }
+  // config.data is a JS object at this stage (Axios stringifies it AFTER interceptors)
+  // Do NOT call JSON.parse on it — access properties directly
+  logger.api(
+    "request",
+    `${config.method?.toUpperCase()} ${config.url}`,
+    config.data?.params,
+  );
   return config;
 });
 
@@ -55,19 +63,46 @@ client.interceptors.response.use(
     // Odoo trả error trong body JSON, không phải HTTP status
     if (response.data?.error) {
       const odooError = response.data.error as OdooError;
-      const error = new Error(
-        odooError.data?.message || odooError.message || "Odoo error",
-      );
+      const message =
+        odooError.data?.message || odooError.message || "Odoo error";
+      logger.error("odooClient", `Odoo RPC error: ${message}`, {
+        code: odooError.code,
+        name: odooError.data?.name,
+        debug: odooError.data?.debug,
+        url: response.config?.url,
+        requestParams: response.config?.data
+          ? JSON.parse(response.config.data as string)?.params
+          : undefined,
+      });
+      const error = new Error(message);
       (error as any).odooError = odooError;
       throw error;
     }
+    logger.api(
+      "response",
+      `${response.status} ${response.config?.url}`,
+      Array.isArray(response.data?.result)
+        ? `${response.data.result.length} records`
+        : typeof response.data?.result,
+    );
     return response;
   },
   async (error: AxiosError) => {
     // Session expired → clear local data
     if (error.response?.status === 401 || error.response?.status === 403) {
+      logger.warn(
+        "odooClient",
+        `Session expired (HTTP ${error.response.status}) — clearing local session`,
+      );
       await clearSession();
       // Navigation to login will be handled by auth store listener
+    } else {
+      logger.error("odooClient", `Network/HTTP error`, {
+        status: error.response?.status,
+        message: error.message,
+        url: error.config?.url,
+        code: error.code,
+      });
     }
     throw error;
   },

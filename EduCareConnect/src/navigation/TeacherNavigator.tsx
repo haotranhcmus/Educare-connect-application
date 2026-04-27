@@ -1,6 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StackActions } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type {
@@ -101,12 +102,12 @@ function SessionStackNavigator() {
       <SessionStack.Screen
         name="EvalStep1"
         component={EvalStep1Screen}
-        options={{ title: "Nhập kết quả", headerBackTitle: "Hủy" }}
+        options={{ title: "Quan sát chung", headerBackTitle: "Hủy" }}
       />
       <SessionStack.Screen
         name="EvalStep2"
         component={EvalStep2Screen}
-        options={{ title: "Quan sát chung" }}
+        options={{ title: "Đánh giá mục tiêu" }}
       />
       <SessionStack.Screen
         name="EvalStep3"
@@ -154,7 +155,7 @@ function ProfileStackNavigator() {
     <ProfileStack.Navigator screenOptions={{ headerShown: true }}>
       <ProfileStack.Screen
         name="Profile"
-        component={PlaceholderScreen}
+        component={TeacherProfileScreen}
         options={{ title: "Cá nhân" }}
       />
       <ProfileStack.Screen
@@ -208,6 +209,19 @@ function TeacherTabsNavigator() {
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
       <Tab.Screen
         name="SessionTab"
@@ -222,6 +236,19 @@ function TeacherTabsNavigator() {
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
       <Tab.Screen
         name="ReportTab"
@@ -236,6 +263,19 @@ function TeacherTabsNavigator() {
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
       <Tab.Screen
         name="ProfileTab"
@@ -250,6 +290,19 @@ function TeacherTabsNavigator() {
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
     </Tab.Navigator>
   );

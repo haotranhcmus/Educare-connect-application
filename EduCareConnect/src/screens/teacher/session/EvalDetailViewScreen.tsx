@@ -33,7 +33,7 @@ const RESULT_TYPE_LABEL: Record<string, string> = {
   probe: "Probe",
   whole_task: "Whole Task",
   partial_interval: "Khoảng thời gian một phần",
-  momentary_time: "Khoảng thời điểm",
+  momentary_time_sample: "Khoảng thời điểm",
 };
 
 export function EvalDetailViewScreen({ route }: Props) {

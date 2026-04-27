@@ -5,11 +5,14 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import { Avatar, Text, Card, Divider, useTheme } from "react-native-paper";
+import { Avatar, Text, Divider, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { SectionHeader } from "../../../components/common/SectionHeader";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useMyProfile } from "../../../hooks/useProfile";
+import { useMyProfile, useUploadAvatar } from "../../../hooks/useProfile";
 import { useAuthStore } from "../../../store/authStore";
 import Constants from "expo-constants";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -35,12 +38,40 @@ export function TeacherProfileScreen({ navigation }: Props) {
   const theme = useTheme();
   const { data: profile, isLoading } = useMyProfile();
   const logout = useAuthStore((s) => s.logout);
+  const uploadAvatar = useUploadAvatar();
 
   const handleLogout = () => {
     Alert.alert("Đăng xuất", "Bạn có chắc muốn đăng xuất?", [
       { text: "Hủy", style: "cancel" },
       { text: "Đăng xuất", style: "destructive", onPress: () => logout() },
     ]);
+  };
+
+  const handlePickAvatar = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert(
+        "Cần quyền truy cập",
+        "Vui lòng cho phép truy cập thư viện ảnh.",
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+      base64: true,
+    });
+    if (!result.canceled && result.assets[0].base64 && profile) {
+      try {
+        await uploadAvatar.mutateAsync({
+          base64Image: result.assets[0].base64,
+        });
+      } catch {
+        Alert.alert("Lỗi", "Không thể cập nhật ảnh đại diện.");
+      }
+    }
   };
 
   if (isLoading || !profile) return <LoadingOverlay visible />;
@@ -60,215 +91,211 @@ export function TeacherProfileScreen({ navigation }: Props) {
 
   return (
     <ScrollView
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.surfaceVariant ?? theme.colors.background,
-      }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       contentContainerStyle={styles.container}
     >
-      {/* ── Hero Card ─────────────────────────────────── */}
-      <Card style={styles.heroCard} mode="elevated">
-        <Card.Content style={styles.heroContent}>
+      {/* ── Hero ─────────────────────────────────────── */}
+      <View
+        style={[styles.heroCard, { backgroundColor: theme.colors.surface }]}
+      >
+        {/* ── Avatar with edit button ── */}
+        <TouchableOpacity
+          onPress={handlePickAvatar}
+          activeOpacity={0.8}
+          style={styles.avatarWrapper}
+        >
           {profile.avatar ? (
             <Avatar.Image
-              size={88}
+              size={80}
               source={{ uri: `data:image/png;base64,${profile.avatar}` }}
-              style={styles.avatar}
             />
           ) : (
-            <Avatar.Icon size={88} icon="account" style={styles.avatar} />
+            <Avatar.Icon size={80} icon="account" />
           )}
-          <Text variant="headlineSmall" style={styles.heroName}>
-            {profile.display_name}
-          </Text>
           <View
             style={[
-              styles.roleBadge,
-              { backgroundColor: theme.colors.primaryContainer },
+              styles.cameraOverlay,
+              { backgroundColor: theme.colors.primary },
             ]}
           >
-            <MaterialCommunityIcons
-              name={(ROLE_ICONS[profile.role] || "account") as any}
-              size={14}
-              color={theme.colors.primary}
-            />
-            <Text
-              variant="labelMedium"
-              style={{ color: theme.colors.primary, marginLeft: 4 }}
-            >
-              {ROLE_LABELS[profile.role] || profile.role}
-            </Text>
+            {uploadAvatar.isPending ? (
+              <ActivityIndicator size={12} color="#fff" />
+            ) : (
+              <MaterialCommunityIcons name="camera" size={14} color="#fff" />
+            )}
           </View>
-          <Text variant="bodySmall" style={styles.centerText}>
-            🏫 {centerName}
+        </TouchableOpacity>
+        <Text
+          variant="titleLarge"
+          style={{ fontWeight: "700", textAlign: "center", marginBottom: 6 }}
+        >
+          {profile.display_name}
+        </Text>
+        <View
+          style={[
+            styles.roleBadge,
+            { backgroundColor: theme.colors.primaryContainer },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name={(ROLE_ICONS[profile.role] || "account") as any}
+            size={14}
+            color={theme.colors.primary}
+          />
+          <Text
+            variant="labelMedium"
+            style={{ color: theme.colors.primary, marginLeft: 4 }}
+          >
+            {ROLE_LABELS[profile.role] || profile.role}
           </Text>
-        </Card.Content>
-      </Card>
+        </View>
+        <Text
+          variant="bodySmall"
+          style={{ color: theme.colors.outline, marginTop: 4 }}
+        >
+          {centerName}
+        </Text>
+      </View>
 
       {/* ── Thông Tin Liên Hệ ─────────────────────────── */}
-      <Card style={styles.sectionCard} mode="elevated">
-        <Card.Title
-          title="Thông tin liên hệ"
-          titleStyle={styles.cardTitle}
-          left={(p) => (
-            <MaterialCommunityIcons
-              name="card-account-details-outline"
-              size={p.size}
-              color={theme.colors.primary}
-            />
-          )}
-        />
-        <Card.Content>
-          <InfoRow
-            icon="email-outline"
-            label="Email"
-            value={profile.email || "—"}
-          />
-          <InfoRow
-            icon="phone-outline"
-            label="Điện thoại"
-            value={profile.phone || "—"}
-          />
-        </Card.Content>
-      </Card>
+      <SectionHeader
+        icon="card-account-details-outline"
+        title="Thông Tin Liên Hệ"
+      />
+      <View
+        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+      >
+        <InfoRow label="Email" value={profile.email || "—"} />
+        <InfoRow label="Điện thoại" value={profile.phone || "—"} />
+      </View>
 
       {/* ── Thông Tin Chuyên Môn ──────────────────────── */}
-      <Card style={styles.sectionCard} mode="elevated">
-        <Card.Title
-          title="Chuyên môn"
-          titleStyle={styles.cardTitle}
-          left={(p) => (
-            <MaterialCommunityIcons
-              name="briefcase-outline"
-              size={p.size}
-              color={theme.colors.primary}
-            />
-          )}
+      <SectionHeader icon="briefcase-outline" title="Chuyên Môn" />
+      <View
+        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+      >
+        <InfoRow
+          label="Chứng chỉ / Bằng cấp"
+          value={profile.certification || "—"}
         />
-        <Card.Content>
-          <InfoRow
-            icon="certificate-outline"
-            label="Chứng chỉ / Bằng cấp"
-            value={profile.certification || "—"}
-          />
-          <InfoRow
-            icon="clock-outline"
-            label="Kinh nghiệm"
-            value={`${profile.years_experience ?? 0} năm`}
-          />
-        </Card.Content>
-      </Card>
+        <InfoRow
+          label="Kinh nghiệm"
+          value={`${profile.years_experience ?? 0} năm`}
+        />
+      </View>
 
       {/* ── Quản Lý Học Sinh ──────────────────────────── */}
-      <Card style={styles.sectionCard} mode="elevated">
-        <Card.Title
-          title="Quản lý học sinh"
-          titleStyle={styles.cardTitle}
-          left={(p) => (
-            <MaterialCommunityIcons
-              name="account-group-outline"
-              size={p.size}
-              color={theme.colors.primary}
+      <SectionHeader icon="account-group-outline" title="Quản Lý Học Sinh" />
+      <View
+        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+      >
+        <View style={styles.capacityRow}>
+          <Text
+            variant="displaySmall"
+            style={[styles.capacityNum, { color: theme.colors.primary }]}
+          >
+            {filled}
+          </Text>
+          <Text variant="headlineMedium" style={styles.capacitySep}>
+            /
+          </Text>
+          <Text variant="titleLarge" style={styles.capacityMax}>
+            {maxSlots}
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={{
+              color: theme.colors.outline,
+              paddingBottom: 4,
+              marginLeft: 4,
+            }}
+          >
+            học sinh
+          </Text>
+        </View>
+        <View style={styles.progressRow}>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${Math.min(progress * 100, 100)}%`,
+                  backgroundColor: progressColor,
+                },
+              ]}
             />
-          )}
-        />
-        <Card.Content>
-          <View style={styles.capacityRow}>
-            <Text
-              variant="displaySmall"
-              style={[styles.capacityNum, { color: theme.colors.primary }]}
-            >
-              {filled}
-            </Text>
-            <Text variant="headlineMedium" style={styles.capacitySep}>
-              /
-            </Text>
-            <Text variant="titleLarge" style={styles.capacityMax}>
-              {maxSlots}
-            </Text>
-            <Text
-              variant="bodyMedium"
-              style={[styles.capacityUnit, { color: theme.colors.outline }]}
-            >
-              học sinh
-            </Text>
           </View>
-          <View style={styles.progressRow}>
-            <View style={styles.progressTrack}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${Math.min(progress * 100, 100)}%`,
-                    backgroundColor: progressColor,
-                  },
-                ]}
-              />
-            </View>
-            <Text
-              variant="labelSmall"
-              style={{
-                color: progressColor,
-                fontWeight: "700",
-                minWidth: 32,
-                textAlign: "right",
-              }}
-            >
-              {Math.round(progress * 100)}%
-            </Text>
-          </View>
-        </Card.Content>
-      </Card>
+          <Text
+            variant="labelSmall"
+            style={{
+              color: progressColor,
+              fontWeight: "700",
+              minWidth: 32,
+              textAlign: "right",
+            }}
+          >
+            {Math.round(progress * 100)}%
+          </Text>
+        </View>
+      </View>
 
-      {/* ── Hành Động ─────────────────────────────────── */}
-      <Card style={styles.sectionCard} mode="elevated">
-        <Card.Content style={{ paddingHorizontal: 0 }}>
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate("ChangePassword")}
-            activeOpacity={0.7}
+      {/* ── Tài Khoản ─────────────────────────────────── */}
+      <SectionHeader icon="cog-outline" title="Tài Khoản" />
+      <View
+        style={[
+          styles.infoCard,
+          {
+            backgroundColor: theme.colors.surface,
+            paddingHorizontal: 0,
+            paddingVertical: 0,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.actionRow}
+          onPress={() => navigation.navigate("ChangePassword")}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="key-outline"
+            size={22}
+            color={theme.colors.onSurface}
+            style={styles.actionIcon}
+          />
+          <Text variant="bodyLarge" style={styles.actionLabel}>
+            Đổi mật khẩu
+          </Text>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={20}
+            color={theme.colors.outline}
+          />
+        </TouchableOpacity>
+        <Divider style={{ marginHorizontal: 16 }} />
+        <TouchableOpacity
+          style={styles.actionRow}
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="logout"
+            size={22}
+            color={theme.colors.error}
+            style={styles.actionIcon}
+          />
+          <Text
+            variant="bodyLarge"
+            style={[styles.actionLabel, { color: theme.colors.error }]}
           >
-            <MaterialCommunityIcons
-              name="key-outline"
-              size={22}
-              color={theme.colors.onSurface}
-              style={styles.actionIcon}
-            />
-            <Text variant="bodyLarge" style={styles.actionLabel}>
-              Đổi mật khẩu
-            </Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={theme.colors.outline}
-            />
-          </TouchableOpacity>
-          <Divider style={{ marginHorizontal: 16 }} />
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={handleLogout}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name="logout"
-              size={22}
-              color={theme.colors.error}
-              style={styles.actionIcon}
-            />
-            <Text
-              variant="bodyLarge"
-              style={[styles.actionLabel, { color: theme.colors.error }]}
-            >
-              Đăng xuất
-            </Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={theme.colors.error}
-            />
-          </TouchableOpacity>
-        </Card.Content>
-      </Card>
+            Đăng xuất
+          </Text>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={20}
+            color={theme.colors.error}
+          />
+        </TouchableOpacity>
+      </View>
 
       <Text variant="bodySmall" style={styles.version}>
         Phiên bản {Constants.expoConfig?.version || "1.0.0"}
@@ -277,62 +304,61 @@ export function TeacherProfileScreen({ navigation }: Props) {
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: string;
-  label: string;
-  value: string;
-}) {
+function InfoRow({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
     <View style={styles.infoRow}>
-      <MaterialCommunityIcons
-        name={icon as any}
-        size={18}
-        color={theme.colors.primary}
-        style={styles.infoIcon}
-      />
-      <View style={{ flex: 1 }}>
-        <Text
-          variant="bodySmall"
-          style={{ color: theme.colors.outline, marginBottom: 1 }}
-        >
-          {label}
-        </Text>
-        <Text variant="bodyMedium" style={{ fontWeight: "500" }}>
-          {value}
-        </Text>
-      </View>
+      <Text
+        variant="labelSmall"
+        style={{ color: theme.colors.outline, width: 140 }}
+      >
+        {label}
+      </Text>
+      <Text variant="bodySmall" style={{ flex: 1 }}>
+        {value}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingBottom: 40, gap: 12 },
-  heroCard: { borderRadius: 20 },
-  heroContent: { alignItems: "center", paddingVertical: 24 },
+  container: { padding: 16, paddingBottom: 40 },
+  heroCard: {
+    alignItems: "center",
+    padding: 24,
+    borderRadius: 12,
+    elevation: 1,
+    marginBottom: 16,
+  },
   avatar: { marginBottom: 12 },
-  heroName: { fontWeight: "700", textAlign: "center", marginBottom: 8 },
+  avatarWrapper: { marginBottom: 12, position: "relative" },
+  cameraOverlay: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
   roleBadge: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    marginBottom: 6,
+    marginBottom: 4,
   },
-  centerText: { color: "#757575" },
-  sectionCard: { borderRadius: 16 },
-  cardTitle: { fontWeight: "700", fontSize: 15 },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 14,
+  infoCard: {
+    padding: 16,
+    borderRadius: 12,
+    elevation: 1,
+    marginBottom: 16,
   },
-  infoIcon: { marginRight: 12, marginTop: 2 },
+  infoRow: { flexDirection: "row", marginVertical: 3 },
   capacityRow: {
     flexDirection: "row",
     alignItems: "flex-end",
@@ -342,7 +368,6 @@ const styles = StyleSheet.create({
   capacityNum: { fontWeight: "700", lineHeight: 52 },
   capacitySep: { color: "#BDBDBD", paddingBottom: 6 },
   capacityMax: { fontWeight: "600", paddingBottom: 4, color: "#9E9E9E" },
-  capacityUnit: { paddingBottom: 4, marginLeft: 4 },
   progressRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   progressTrack: {
     flex: 1,

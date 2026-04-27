@@ -4,7 +4,8 @@ import { Chip, Text, useTheme } from "react-native-paper";
 import { ParentReportCard } from "../../../components/parent/ParentReportCard";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useMyStudent, useParentReports } from "../../../hooks/useParent";
+import { useParentReports } from "../../../hooks/useParent";
+import { useParentStore } from "../../../store/parentStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { ParentReportStackParamList } from "../../../navigation/types";
 
@@ -20,12 +21,12 @@ const FILTER_CHIPS = [
 
 export function ParentReportListScreen({ navigation }: Props) {
   const theme = useTheme();
-  const { data: student } = useMyStudent();
+  const { selectedStudentId } = useParentStore();
   const {
     data: reports = [],
     isLoading,
     refetch,
-  } = useParentReports(student?.id);
+  } = useParentReports(selectedStudentId ?? undefined);
   const [filter, setFilter] = useState("all");
 
   // Filter

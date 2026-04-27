@@ -95,16 +95,7 @@ export function HomeScreen({ navigation }: any) {
             Không có buổi học hôm nay
           </Text>
         )}
-        <Button
-          mode="outlined"
-          icon="plus"
-          onPress={() =>
-            navigation.navigate("SessionTab", { screen: "SessionCreate" })
-          }
-          style={styles.actionButton}
-        >
-          Tạo buổi học mới
-        </Button>
+
       </View>
 
       {/* Pending Reports */}

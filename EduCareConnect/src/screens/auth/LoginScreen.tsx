@@ -5,13 +5,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import {
   Text,
   TextInput,
   Button,
   useTheme,
-  Snackbar,
   HelperText,
 } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
@@ -159,7 +159,41 @@ export function LoginScreen() {
               )}
             />
 
-            {/* Login Button */}
+            {/* Inline error banner */}
+            {error && (
+              <TouchableOpacity
+                onPress={clearError}
+                activeOpacity={0.8}
+                style={[
+                  styles.errorBanner,
+                  { backgroundColor: theme.colors.errorContainer },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={18}
+                  color={theme.colors.error}
+                />
+                <Text
+                  variant="bodySmall"
+                  style={{
+                    color: theme.colors.onErrorContainer,
+                    flex: 1,
+                    marginLeft: 8,
+                    fontWeight: "600",
+                  }}
+                >
+                  {error}
+                </Text>
+                <MaterialCommunityIcons
+                  name="close"
+                  size={16}
+                  color={theme.colors.onErrorContainer}
+                />
+              </TouchableOpacity>
+            )}
+
+            {/* Login Button */}}
             <Button
               mode="contained"
               onPress={handleSubmit(onSubmit)}
@@ -194,16 +228,6 @@ export function LoginScreen() {
         </View>
       </ScrollView>
 
-      {/* Error Snackbar */}
-      <Snackbar
-        visible={!!error}
-        onDismiss={clearError}
-        duration={4000}
-        action={{ label: "Đóng", onPress: clearError }}
-        style={{ backgroundColor: theme.colors.errorContainer }}
-      >
-        <Text style={{ color: theme.colors.onErrorContainer }}>{error}</Text>
-      </Snackbar>
     </KeyboardAvoidingView>
   );
 }
@@ -266,6 +290,14 @@ const styles = StyleSheet.create({
   },
   forgotButton: {
     marginTop: 8,
+  },
+  errorBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
   footer: {
     textAlign: "center",

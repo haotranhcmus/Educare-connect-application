@@ -1,9 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, ScrollView, StyleSheet, Alert } from "react-native";
-import { TextInput, Button, Text, Divider, useTheme } from "react-native-paper";
+import {
+  TextInput,
+  Button,
+  Text,
+  Divider,
+  useTheme,
+  Surface,
+  IconButton,
+} from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFocusEffect } from "@react-navigation/native";
+import { CommonActions } from "@react-navigation/native";
 import { SessionInfoCard } from "../../../components/report/SessionInfoCard";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import {
@@ -11,7 +22,6 @@ import {
   useUpdateReport,
   useSendReport,
   useReportDetail,
-  useSessionsForReport,
 } from "../../../hooks/useReports";
 import {
   fetchSessionDetail,
@@ -41,7 +51,6 @@ const reportSchema = z.object({
 });
 type ReportFormData = z.infer<typeof reportSchema>;
 
-// ── Session info state ────────────────────────────────────────
 interface SessionInfo {
   sessionId: number;
   studentId: number;
@@ -53,12 +62,72 @@ interface SessionInfo {
   avgAccuracy: number;
 }
 
+// Report fields config
+const REPORT_FIELDS: {
+  name: keyof ReportFormData;
+  label: string;
+  icon: string;
+  placeholder: string;
+  lines: number;
+  required?: boolean;
+}[] = [
+  {
+    name: "activity_summary",
+    label: "Tóm tắt hoạt động",
+    icon: "clipboard-text-outline",
+    placeholder: "Hôm nay bé đã làm gì trong buổi học?",
+    lines: 4,
+    required: true,
+  },
+  {
+    name: "achievements",
+    label: "Thành tích nổi bật",
+    icon: "star-outline",
+    placeholder: "Bé đã đạt được gì đáng khen?",
+    lines: 3,
+  },
+  {
+    name: "challenges_noted",
+    label: "Điểm cần hỗ trợ thêm",
+    icon: "lightbulb-outline",
+    placeholder: "Những điểm cần tiếp tục luyện tập...",
+    lines: 3,
+  },
+  {
+    name: "highlight_moment",
+    label: "Khoảnh khắc đáng nhớ",
+    icon: "heart-outline",
+    placeholder: "Một khoảnh khắc đặc biệt trong buổi học...",
+    lines: 2,
+  },
+  {
+    name: "parent_action_guide",
+    label: "Hướng dẫn luyện tập tại nhà",
+    icon: "home-heart",
+    placeholder: "Phụ huynh có thể hỗ trợ bé bằng cách...",
+    lines: 3,
+  },
+  {
+    name: "next_session_preview",
+    label: "Nội dung buổi học tới",
+    icon: "calendar-arrow-right",
+    placeholder: "Buổi học tiếp theo chúng ta sẽ...",
+    lines: 2,
+  },
+  {
+    name: "teacher_note",
+    label: "Ghi chú nội bộ (chỉ giáo viên thấy)",
+    icon: "lock-outline",
+    placeholder: "Ghi chú dành riêng cho giáo viên...",
+    lines: 2,
+  },
+];
+
 export function ReportCreateScreen({ navigation, route }: Props) {
   const theme = useTheme();
   const { sessionId: routeSessionId, reportId } = route.params ?? {};
   const isEdit = !!reportId;
 
-  // ── Hooks ────────────────────────────────────────────────────
   const createReport = useCreateReport();
   const updateReport = useUpdateReport();
   const sendReport = useSendReport();
@@ -66,6 +135,8 @@ export function ReportCreateScreen({ navigation, route }: Props) {
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(false);
+  // Track which sessionId was last loaded to avoid duplicate fetches
+  const loadedSessionIdRef = useRef<number | null>(null);
 
   const {
     control,
@@ -85,7 +156,6 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     },
   });
 
-  // ── Load existing report for edit mode ──────────────────────
   useEffect(() => {
     if (existingReport) {
       reset({
@@ -97,23 +167,37 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         next_session_preview: existingReport.next_session_preview || "",
         teacher_note: existingReport.teacher_note || "",
       });
-      // Load session info from existing report
-      loadSessionInfo(
-        Array.isArray(existingReport.session_log_id)
-          ? existingReport.session_log_id[0]
-          : 0,
-      );
+      const sid = Array.isArray(existingReport.session_log_id)
+        ? existingReport.session_log_id[0]
+        : 0;
+      if (sid && loadedSessionIdRef.current !== sid) {
+        loadedSessionIdRef.current = sid;
+        loadSessionInfo(sid, false);
+      }
     }
   }, [existingReport]);
 
-  // ── Load session info when sessionId provided ───────────────
+  // Primary effect: load when routeSessionId is set (new report flow)
   useEffect(() => {
     if (routeSessionId && !isEdit) {
-      loadSessionInfo(routeSessionId);
+      if (loadedSessionIdRef.current !== routeSessionId) {
+        loadedSessionIdRef.current = routeSessionId;
+        loadSessionInfo(routeSessionId, true);
+      }
     }
   }, [routeSessionId]);
 
-  async function loadSessionInfo(sessionId: number) {
+  // Fallback: re-check on focus in case navigate() params update didn't trigger above
+  useFocusEffect(
+    React.useCallback(() => {
+      if (routeSessionId && !isEdit && loadedSessionIdRef.current !== routeSessionId) {
+        loadedSessionIdRef.current = routeSessionId;
+        loadSessionInfo(routeSessionId, true);
+      }
+    }, [routeSessionId, isEdit]),
+  );
+
+  async function loadSessionInfo(sessionId: number, applyPrefill = false) {
     setLoading(true);
     try {
       const [session, results] = await Promise.all([
@@ -134,6 +218,8 @@ export function ReportCreateScreen({ navigation, route }: Props) {
             ? r.objective_id[1]
             : `OBJ-${r.objective_id}`,
           accuracy: r.accuracy_pct || 0,
+          baseline: r.baseline_accuracy_pct ?? null,
+          target: r.target_accuracy_pct ?? null,
         }));
       const avg =
         objectives.length > 0
@@ -142,10 +228,8 @@ export function ReportCreateScreen({ navigation, route }: Props) {
                 objectives.length,
             )
           : 0;
-
       const d = new Date(session.session_date + "T00:00:00");
       const dateStr = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
-
       setSessionInfo({
         sessionId,
         studentId: Array.isArray(session.student_id)
@@ -158,6 +242,49 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         objectives,
         avgAccuracy: avg,
       });
+
+      if (applyPrefill) {
+        // ── Auto-generate pre-fill text ─────────────────────────
+        const perfNote = perf ? ` Kết quả tổng thể: ${perf}.` : "";
+        const objSummary =
+          objectives.length > 0
+            ? ` Thực hành ${objectives.length} mục tiêu với độ chính xác trung bình ${avg}%.`
+            : "";
+        const summary = `Buổi học kéo dài ${durationMinutes} phút tại trung tâm.${objSummary}${perfNote}`;
+
+        const achieved = objectives.filter(
+          (o: any) => o.target !== null && o.accuracy >= o.target,
+        );
+        const achievementsText =
+          achieved.length > 0
+            ? achieved
+                .map(
+                  (o: any) =>
+                    `• ${o.name}: đạt ${Math.round(o.accuracy)}% (mục tiêu ${Math.round(o.target)}%)`,
+                )
+                .join("\n")
+            : "";
+
+        const struggling = objectives.filter(
+          (o: any) => o.baseline !== null && o.accuracy <= o.baseline,
+        );
+        const challengesText =
+          struggling.length > 0
+            ? struggling
+                .map(
+                  (o: any) =>
+                    `• ${o.name}: ${Math.round(o.accuracy)}% (mức ban đầu ${Math.round(o.baseline)}%)`,
+                )
+                .join("\n")
+            : "";
+
+        reset((prev) => ({
+          ...prev,
+          activity_summary: summary,
+          achievements: achievementsText,
+          challenges_noted: challengesText,
+        }));
+      }
     } catch {
       Alert.alert("Lỗi", "Không thể tải thông tin buổi học");
     } finally {
@@ -165,18 +292,22 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     }
   }
 
-  // ── Submit handlers ─────────────────────────────────────────
-  const onSaveDraft = handleSubmit(async (data) => {
-    if (!sessionInfo) return;
-    const payload = {
+  function buildPayload(data: ReportFormData) {
+    if (!sessionInfo) return null;
+    return {
       session_log_id: sessionInfo.sessionId,
       student_id: sessionInfo.studentId,
       report_date: sessionInfo.reportDate.split("/").reverse().join("-"),
       ...data,
     };
+  }
+
+  const onSaveDraft = handleSubmit(async (data) => {
+    const payload = buildPayload(data);
+    if (!payload) return;
     try {
       if (isEdit && reportId) {
-        await updateReport.mutateAsync({ reportId: reportId!, vals: payload });
+        await updateReport.mutateAsync({ reportId, vals: payload });
       } else {
         await createReport.mutateAsync(payload);
       }
@@ -187,7 +318,8 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   });
 
   const onSend = handleSubmit(async (data) => {
-    if (!sessionInfo) return;
+    const payload = buildPayload(data);
+    if (!payload) return;
     Alert.alert(
       "Xác nhận gửi",
       "Báo cáo sẽ được gửi đến phụ huynh qua email. Bạn có chắc?",
@@ -196,32 +328,28 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         {
           text: "Gửi",
           onPress: async () => {
-            const payload = {
-              session_log_id: sessionInfo.sessionId,
-              student_id: sessionInfo.studentId,
-              report_date: sessionInfo.reportDate
-                .split("/")
-                .reverse()
-                .join("-"),
-              ...data,
-            };
             try {
               let rptId = reportId;
               if (isEdit && reportId) {
-                await updateReport.mutateAsync({
-                  reportId: reportId!,
-                  vals: payload,
-                });
+                await updateReport.mutateAsync({ reportId, vals: payload });
               } else {
-                const created = await createReport.mutateAsync(payload);
-                rptId = created;
+                rptId = await createReport.mutateAsync(payload);
               }
               if (rptId) {
                 await sendReport.mutateAsync(rptId);
+                // Reset stack so back from ReportDetail goes to ReportList (not SessionPicker)
+                navigation.dispatch(
+                  CommonActions.reset({
+                    index: 1,
+                    routes: [
+                      { name: "ReportList" },
+                      { name: "ReportDetail", params: { reportId: rptId } },
+                    ],
+                  }),
+                );
               }
-              navigation.goBack();
-            } catch {
-              Alert.alert("Lỗi", "Không thể gửi báo cáo");
+            } catch (e: any) {
+              Alert.alert("Lỗi", e?.message || "Không thể gửi báo cáo");
             }
           },
         },
@@ -237,83 +365,85 @@ export function ReportCreateScreen({ navigation, route }: Props) {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
-      {/* Section: Chọn buổi học */}
-      <Text variant="titleSmall" style={styles.sectionTitle}>
-        ━━━ Chọn Buổi Học ━━━
-      </Text>
+      {/* ── Chọn buổi học ────────────────────────────── */}
+      <SectionHeader icon="calendar-clock" title="Buổi Học" theme={theme} />
 
       {!sessionInfo ? (
-        <Button
-          mode="outlined"
-          icon="clipboard-text"
-          onPress={() => navigation.navigate("SessionPicker")}
-          style={{ marginBottom: 16 }}
+        <Surface
+          style={[styles.pickCard, { borderColor: theme.colors.primary }]}
+          elevation={0}
         >
-          Chọn buổi học...
-        </Button>
+          <MaterialCommunityIcons
+            name="clipboard-search-outline"
+            size={32}
+            color={theme.colors.primary}
+          />
+          <Text
+            variant="bodyMedium"
+            style={{ marginTop: 8, color: theme.colors.onSurfaceVariant }}
+          >
+            Chưa chọn buổi học
+          </Text>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate("SessionPicker")}
+            style={{ marginTop: 12 }}
+            icon="magnify"
+          >
+            Chọn buổi học
+          </Button>
+        </Surface>
       ) : (
-        <SessionInfoCard
-          studentName={sessionInfo.studentName}
-          reportDate={sessionInfo.reportDate}
-          durationMinutes={sessionInfo.durationMinutes}
-          performance={sessionInfo.performance}
-          objectives={sessionInfo.objectives}
-          avgAccuracy={sessionInfo.avgAccuracy}
-        />
+        <View>
+          <SessionInfoCard
+            studentName={sessionInfo.studentName}
+            reportDate={sessionInfo.reportDate}
+            durationMinutes={sessionInfo.durationMinutes}
+            performance={sessionInfo.performance}
+            objectives={sessionInfo.objectives}
+            avgAccuracy={sessionInfo.avgAccuracy}
+          />
+          {!isEdit && (
+            <Button
+              mode="text"
+              compact
+              icon="pencil"
+              onPress={() => navigation.navigate("SessionPicker")}
+              style={{ alignSelf: "flex-start", marginTop: -4 }}
+            >
+              Đổi buổi học
+            </Button>
+          )}
+        </View>
       )}
 
-      {/* Section: Nội dung báo cáo */}
-      <Text variant="titleSmall" style={styles.sectionTitle}>
-        ━━━ Nội Dung Báo Cáo ━━━
-      </Text>
-
-      <ReportTextArea
-        control={control}
-        name="activity_summary"
-        label="Tóm tắt hoạt động *"
-        error={errors.activity_summary?.message}
-        numberOfLines={4}
-      />
-      <ReportTextArea
-        control={control}
-        name="achievements"
-        label="Thành tích nổi bật"
-      />
-      <ReportTextArea
-        control={control}
-        name="challenges_noted"
-        label="Điểm cần tiếp tục hỗ trợ"
-      />
-      <ReportTextArea
-        control={control}
-        name="highlight_moment"
-        label="Khoảnh khắc đáng nhớ 🌟"
-      />
-      <ReportTextArea
-        control={control}
-        name="parent_action_guide"
-        label="Hướng dẫn cho phụ huynh tại nhà"
-      />
-      <ReportTextArea
-        control={control}
-        name="next_session_preview"
-        label="Xem trước buổi học tới"
-      />
-      <ReportTextArea
-        control={control}
-        name="teacher_note"
-        label="Ghi chú nội bộ (chỉ GV thấy)"
+      {/* ── Nội dung báo cáo ─────────────────────────── */}
+      <SectionHeader
+        icon="file-document-edit-outline"
+        title="Nội Dung Báo Cáo"
+        theme={theme}
       />
 
-      <Divider style={{ marginVertical: 16 }} />
+      {REPORT_FIELDS.map((field) => (
+        <ReportField
+          key={field.name}
+          control={control}
+          field={field}
+          error={errors[field.name]?.message}
+          theme={theme}
+        />
+      ))}
 
-      {/* Action buttons */}
+      {/* ── Nút hành động ───────────────────────────── */}
+      <Divider style={{ marginTop: 8, marginBottom: 16 }} />
       <View style={styles.actions}>
         <Button
           mode="outlined"
           onPress={onSaveDraft}
           loading={createReport.isPending || updateReport.isPending}
-          style={{ flex: 1, marginRight: 8 }}
+          icon="content-save-outline"
+          style={styles.actionBtn}
+          disabled={!sessionInfo}
         >
           Lưu nháp
         </Button>
@@ -321,52 +451,145 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           mode="contained"
           onPress={onSend}
           loading={sendReport.isPending}
-          disabled={!sessionInfo}
-          style={{ flex: 1 }}
+          disabled={
+            !sessionInfo || createReport.isPending || updateReport.isPending
+          }
+          icon="send"
+          style={styles.actionBtn}
         >
-          Gửi →
+          Gửi phụ huynh
         </Button>
       </View>
     </ScrollView>
   );
 }
 
-// ── Reusable TextArea ─────────────────────────────────────────
-function ReportTextArea({
-  control,
-  name,
-  label,
-  error,
-  numberOfLines = 3,
+// ── Section header component ──────────────────────────────────
+function SectionHeader({
+  icon,
+  title,
+  theme,
 }: {
-  control: any;
-  name: string;
-  label: string;
-  error?: string;
-  numberOfLines?: number;
+  icon: string;
+  title: string;
+  theme: any;
 }) {
   return (
-    <Controller
-      control={control}
-      name={name}
-      render={({ field: { onChange, value } }) => (
-        <TextInput
-          label={label}
-          value={value}
-          onChangeText={onChange}
-          mode="outlined"
-          multiline
-          numberOfLines={numberOfLines}
-          style={{ marginBottom: 12 }}
-          error={!!error}
+    <View style={styles.sectionHeader}>
+      <MaterialCommunityIcons
+        name={icon as any}
+        size={18}
+        color={theme.colors.primary}
+      />
+      <Text
+        variant="titleSmall"
+        style={[styles.sectionTitle, { color: theme.colors.primary }]}
+      >
+        {title}
+      </Text>
+    </View>
+  );
+}
+
+// ── Reusable report field ─────────────────────────────────────
+function ReportField({
+  control,
+  field,
+  error,
+  theme,
+}: {
+  control: any;
+  field: (typeof REPORT_FIELDS)[0];
+  error?: string;
+  theme: any;
+}) {
+  return (
+    <View style={styles.fieldWrapper}>
+      <View style={styles.fieldLabelRow}>
+        <MaterialCommunityIcons
+          name={field.icon as any}
+          size={16}
+          color={field.required ? theme.colors.primary : theme.colors.outline}
         />
-      )}
-    />
+        <Text
+          variant="labelMedium"
+          style={[
+            styles.fieldLabel,
+            {
+              color: field.required
+                ? theme.colors.onSurface
+                : theme.colors.onSurfaceVariant,
+            },
+          ]}
+        >
+          {field.label}
+          {field.required && (
+            <Text style={{ color: theme.colors.error }}> *</Text>
+          )}
+        </Text>
+      </View>
+      <Controller
+        control={control}
+        name={field.name}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            value={value}
+            onChangeText={onChange}
+            placeholder={field.placeholder}
+            mode="outlined"
+            multiline
+            numberOfLines={field.lines}
+            style={styles.textInput}
+            error={!!error}
+            outlineStyle={{ borderRadius: 10 }}
+          />
+        )}
+      />
+      {error ? (
+        <Text
+          variant="labelSmall"
+          style={{ color: theme.colors.error, marginTop: 2 }}
+        >
+          {error}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingBottom: 40 },
-  sectionTitle: { marginBottom: 12, fontWeight: "700" },
-  actions: { flexDirection: "row", marginTop: 8 },
+  container: { padding: 16, paddingBottom: 48 },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 20,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1.5,
+    borderBottomColor: "rgba(0,0,0,0.08)",
+  },
+  sectionTitle: { fontWeight: "700" },
+  pickCard: {
+    padding: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    marginBottom: 8,
+  },
+  fieldWrapper: { marginBottom: 16 },
+  fieldLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 6,
+  },
+  fieldLabel: { fontWeight: "600" },
+  textInput: { backgroundColor: "transparent" },
+  actions: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  actionBtn: { flex: 1 },
 });

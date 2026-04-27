@@ -1,56 +1,49 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StackActions } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type {
   ParentTabParamList,
-  ParentChildStackParamList,
-  ParentIepStackParamList,
+  ParentTimetableStackParamList,
   ParentReportStackParamList,
   ParentProfileStackParamList,
 } from "./types";
 import { ParentHomeScreen } from "../screens/parent/home/ParentHomeScreen";
-import { ChildProfileScreen } from "../screens/parent/child/ChildProfileScreen";
-import { ParentIepPlanScreen } from "../screens/parent/iep/ParentIepPlanScreen";
+import { ChildTimetableScreen } from "../screens/parent/child/ChildTimetableScreen";
 import { IepHistoryScreen } from "../screens/parent/iep/IepHistoryScreen";
+import { ParentIepPlanScreen } from "../screens/parent/iep/ParentIepPlanScreen";
 import { ParentReportListScreen } from "../screens/parent/report/ParentReportListScreen";
 import { ParentReportDetailScreen } from "../screens/parent/report/ParentReportDetailScreen";
 import { ParentProfileScreen } from "../screens/parent/profile/ParentProfileScreen";
-import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen"; // reuse
+import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen";
 
 const Tab = createBottomTabNavigator<ParentTabParamList>();
-const ChildStack = createNativeStackNavigator<ParentChildStackParamList>();
-const IepStack = createNativeStackNavigator<ParentIepStackParamList>();
+const TimetableStack =
+  createNativeStackNavigator<ParentTimetableStackParamList>();
 const ReportStack = createNativeStackNavigator<ParentReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
 
-function ChildStackNavigator() {
+function TimetableStackNavigator() {
   return (
-    <ChildStack.Navigator>
-      <ChildStack.Screen
-        name="ChildProfile"
-        component={ChildProfileScreen}
-        options={{ title: "Con tôi" }}
+    <TimetableStack.Navigator>
+      <TimetableStack.Screen
+        name="Timetable"
+        component={ChildTimetableScreen}
+        options={{ title: "Thời khóa biểu" }}
       />
-    </ChildStack.Navigator>
-  );
-}
-
-function IepStackNavigator() {
-  return (
-    <IepStack.Navigator>
-      <IepStack.Screen
-        name="ParentIepPlan"
+      <TimetableStack.Screen
+        name="ChildIepHistory"
         component={IepHistoryScreen}
         options={{ title: "Kế hoạch IEP" }}
       />
-      <IepStack.Screen
-        name="ParentIepPlanDetail"
+      <TimetableStack.Screen
+        name="ChildIepPlanDetail"
         component={ParentIepPlanScreen}
-        options={{ title: "Chi tiết IEP" }}
+        options={{ title: "Chi tiết kế hoạch IEP" }}
       />
-    </IepStack.Navigator>
+    </TimetableStack.Navigator>
   );
 }
 
@@ -108,36 +101,38 @@ export function ParentNavigator() {
         component={ParentHomeScreen}
         options={{
           title: "Trang chủ",
-          headerShown: true,
-          headerTitle: "Educare Connect",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
-        name="ChildTab"
-        component={ChildStackNavigator}
+        name="TimetableTab"
+        component={TimetableStackNavigator}
         options={{
-          title: "Con tôi",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="IepTab"
-        component={IepStackNavigator}
-        options={{
-          title: "Kế hoạch IEP",
+          title: "Thời khóa biểu",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="clipboard-text"
+              name="calendar-week"
               size={size}
               color={color}
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
       <Tab.Screen
         name="ReportTab"
@@ -152,13 +147,25 @@ export function ParentNavigator() {
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
       <Tab.Screen
         name="ParentProfileTab"
         component={ProfileStackNavigator}
         options={{
           title: "Cá nhân",
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="account-circle"
@@ -167,6 +174,19 @@ export function ParentNavigator() {
             />
           ),
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              e.preventDefault();
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
     </Tab.Navigator>
   );
