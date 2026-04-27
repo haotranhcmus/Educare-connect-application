@@ -151,9 +151,15 @@ export function ObjectiveCard({
                 />
                 <Text
                   variant="labelSmall"
-                  style={{ color: theme.colors.onSurfaceVariant, marginTop: 1, fontStyle: "italic" }}
+                  style={{
+                    color: theme.colors.onSurfaceVariant,
+                    marginTop: 1,
+                    fontStyle: "italic",
+                  }}
                 >
-                  (Độ chính xác hiện tại: {Math.round(objective.current_accuracy_pct || 0)}% · Mục tiêu: {Math.round(objective.target_accuracy_pct || 0)}%)
+                  (Độ chính xác hiện tại:{" "}
+                  {Math.round(objective.current_accuracy_pct || 0)}% · Mục tiêu:{" "}
+                  {Math.round(objective.target_accuracy_pct || 0)}%)
                 </Text>
               </View>
               {objective.description ? (

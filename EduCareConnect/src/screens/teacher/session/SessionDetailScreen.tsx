@@ -1,6 +1,20 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, RefreshControl, Modal, TextInput as RNTextInput } from "react-native";
-import { Text, Button, Divider, useTheme, RadioButton, ActivityIndicator } from "react-native-paper";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  RefreshControl,
+  Modal,
+  TextInput as RNTextInput,
+} from "react-native";
+import {
+  Text,
+  Button,
+  Divider,
+  useTheme,
+  RadioButton,
+  ActivityIndicator,
+} from "react-native-paper";
 import { cancelSession } from "../../../api/sessionApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
@@ -56,7 +70,9 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   const theme = useTheme();
   const queryClient = useQueryClient();
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
-  const [cancelType, setCancelType] = useState<"cancelled_center" | "cancelled_family">("cancelled_center");
+  const [cancelType, setCancelType] = useState<
+    "cancelled_center" | "cancelled_family"
+  >("cancelled_center");
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState("");
@@ -129,7 +145,8 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   const canEval =
     session.status === "scheduled" || session.status === "completed";
   const canEdit = session.status === "draft" || session.status === "scheduled";
-  const canCancel = session.status === "draft" || session.status === "scheduled";
+  const canCancel =
+    session.status === "draft" || session.status === "scheduled";
   const duration = Math.round((session.end_time - session.start_time) * 60);
 
   const handleConfirmCancel = async () => {
@@ -185,15 +202,34 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         {isCancelled && (
           <>
             <Divider style={{ marginVertical: 8 }} />
-            <View style={[styles.cancelBanner, { backgroundColor: theme.colors.errorContainer }]}>
-              <MaterialCommunityIcons name="cancel" size={16} color={theme.colors.error} />
-              <Text variant="labelMedium" style={{ color: theme.colors.onErrorContainer, marginLeft: 6, flex: 1, fontWeight: "700" }}>
+            <View
+              style={[
+                styles.cancelBanner,
+                { backgroundColor: theme.colors.errorContainer },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="cancel"
+                size={16}
+                color={theme.colors.error}
+              />
+              <Text
+                variant="labelMedium"
+                style={{
+                  color: theme.colors.onErrorContainer,
+                  marginLeft: 6,
+                  flex: 1,
+                  fontWeight: "700",
+                }}
+              >
                 Buổi học đã bị hủy
               </Text>
             </View>
             <InfoRow
               label="Lý do hủy"
-              value={OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""}
+              value={
+                OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
+              }
             />
             {session.notes ? (
               <InfoRow label="Ghi chú" value={session.notes} />
@@ -281,16 +317,29 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         onRequestClose={() => setCancelModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
-            <Text variant="titleMedium" style={{ fontWeight: "700", marginBottom: 12 }}>
+          <View
+            style={[
+              styles.modalCard,
+              { backgroundColor: theme.colors.surface },
+            ]}
+          >
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "700", marginBottom: 12 }}
+            >
               Hủy buổi học
             </Text>
-            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 16 }}>
+            <Text
+              variant="bodySmall"
+              style={{ color: theme.colors.onSurfaceVariant, marginBottom: 16 }}
+            >
               Chọn lý do hủy buổi học:
             </Text>
 
             <RadioButton.Group
-              onValueChange={(val) => setCancelType(val as "cancelled_center" | "cancelled_family")}
+              onValueChange={(val) =>
+                setCancelType(val as "cancelled_center" | "cancelled_family")
+              }
               value={cancelType}
             >
               <View style={styles.radioRow}>
@@ -303,7 +352,14 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               </View>
             </RadioButton.Group>
 
-            <Text variant="labelSmall" style={{ color: theme.colors.outline, marginTop: 12, marginBottom: 4 }}>
+            <Text
+              variant="labelSmall"
+              style={{
+                color: theme.colors.outline,
+                marginTop: 12,
+                marginBottom: 4,
+              }}
+            >
               Ghi chú (không bắt buộc)
             </Text>
             <RNTextInput
@@ -324,7 +380,10 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             />
 
             {cancelError ? (
-              <Text variant="labelSmall" style={{ color: theme.colors.error, marginTop: 8 }}>
+              <Text
+                variant="labelSmall"
+                style={{ color: theme.colors.error, marginTop: 8 }}
+              >
                 {cancelError}
               </Text>
             ) : null}
@@ -332,7 +391,10 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             <View style={styles.modalActions}>
               <Button
                 mode="outlined"
-                onPress={() => { setCancelModalVisible(false); setCancelError(""); }}
+                onPress={() => {
+                  setCancelModalVisible(false);
+                  setCancelError("");
+                }}
                 style={{ flex: 1 }}
                 disabled={isCancelling}
               >
@@ -346,7 +408,11 @@ export function SessionDetailScreen({ route, navigation }: Props) {
                 disabled={isCancelling}
                 icon={isCancelling ? undefined : "cancel"}
               >
-                {isCancelling ? <ActivityIndicator size={16} color={theme.colors.onError} /> : "Xác nhận hủy"}
+                {isCancelling ? (
+                  <ActivityIndicator size={16} color={theme.colors.onError} />
+                ) : (
+                  "Xác nhận hủy"
+                )}
               </Button>
             </View>
           </View>
@@ -382,7 +448,10 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             icon="cancel"
             textColor={theme.colors.error}
             style={{ marginTop: 8, borderColor: theme.colors.error }}
-            onPress={() => { setCancelError(""); setCancelModalVisible(true); }}
+            onPress={() => {
+              setCancelError("");
+              setCancelModalVisible(true);
+            }}
           >
             Hủy buổi học
           </Button>

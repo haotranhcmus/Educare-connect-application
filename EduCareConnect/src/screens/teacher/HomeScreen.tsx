@@ -95,7 +95,6 @@ export function HomeScreen({ navigation }: any) {
             Không có buổi học hôm nay
           </Text>
         )}
-
       </View>
 
       {/* Pending Reports */}
