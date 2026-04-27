@@ -22,8 +22,16 @@
                         type="object"
                         groups="educare_security.group_supervisor,educare_security.group_admin"
                         invisible="status != 'done'" />
+                    <button name="action_cancel_center" string="Hủy (Trung tâm hủy)"
+                        type="object"
+                        confirm="Bạn có chắc chắn muốn hủy buổi học này vì trường hợp trung tâm hủy không?"
+                        invisible="status not in ('draft', 'scheduled')" />
+                    <button name="action_cancel_family" string="Hủy (Gia đình hủy)"
+                        type="object"
+                        confirm="Bạn có chắc chắn muốn hủy buổi học này vì trường hợp gia đình hủy không?"
+                        invisible="status not in ('draft', 'scheduled')" />
                     <field name="status" widget="statusbar"
-                        statusbar_visible="draft,scheduled,completed,done" />
+                        statusbar_visible="draft,scheduled,completed,done,cancelled" />
                 </header>
                 <sheet>
                     <!-- Hide code when still placeholder, only show after save -->
@@ -111,6 +119,14 @@
                                 </group>
                             </group>
                             <field name="notes" placeholder="Session notes..." />
+                        </page>
+                        <!-- Cancellation info visible when cancelled -->
+                        <page string="Thông tin hủy" name="cancellation"
+                            invisible="status != 'cancelled'">
+                            <group>
+                                <field name="attendance" string="Lý do hủy" />
+                            </group>
+                            <field name="notes" string="Ghi chú" placeholder="Ghi chú lý do hủy..." />
                         </page>
                         <page string="Summary" name="summary"
                             invisible="status not in ('completed', 'done')">

@@ -442,6 +442,38 @@ class EducareSessionLog(models.Model):
                 )
             rec.status = 'draft'
 
+    def action_cancel_session(self, cancel_type='cancelled_center', reason=''):
+        """Draft/Scheduled → Cancelled: mark session as cancelled without evaluation.
+
+        Args:
+            cancel_type: 'cancelled_center' | 'cancelled_family'
+            reason: optional text reason stored in notes
+        """
+        valid_cancel_types = ('cancelled_center', 'cancelled_family')
+        if cancel_type not in valid_cancel_types:
+            raise ValidationError(_('Invalid cancel type. Must be cancelled_center or cancelled_family.'))
+        for rec in self:
+            if rec.status not in ('draft', 'scheduled'):
+                raise ValidationError(_('Chỉ có thể hủy buổi học ở trạng thái Nháp hoặc Đã lên lịch.'))
+            write_vals = {
+                'status': 'cancelled',
+                'attendance': cancel_type,
+            }
+            if reason:
+                existing = rec.notes or ''
+                separator = '\n---\n' if existing else ''
+                write_vals['notes'] = existing + separator + _('[Hủy] ') + reason
+            rec.write(write_vals)
+        return True
+
+    def action_cancel_center(self):
+        """UI button: Cancel session — cancelled by center."""
+        return self.action_cancel_session('cancelled_center')
+
+    def action_cancel_family(self):
+        """UI button: Cancel session — cancelled by family."""
+        return self.action_cancel_session('cancelled_family')
+
     # ── Post-Review Helpers ───────────────────────────────────────
 
     def _update_objective_progress(self):
