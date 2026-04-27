@@ -73,9 +73,19 @@ export type ParentProfileStackParamList = ProfileStackParamList;
 // -- Parent Bottom Tabs --
 export type ParentTabParamList = {
   ParentHomeTab: undefined;
+  ChildTab: undefined;
   TimetableTab: undefined;
   ReportTab: undefined;
   ParentProfileTab: undefined;
+};
+
+// -- Parent: Child Stack --
+export type ParentChildStackParamList = {
+  ChildList: undefined;
+  ChildDetail: { studentId: number; studentName?: string };
+  ChildIepHistory: undefined;
+  ChildIepPlanDetail: { planId: number; plan?: any };
+  ChildTimetable: undefined;
 };
 
 // -- Parent: Timetable Stack --

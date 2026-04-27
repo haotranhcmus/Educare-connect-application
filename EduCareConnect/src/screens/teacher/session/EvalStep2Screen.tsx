@@ -272,7 +272,7 @@ export function EvalStep2Screen({ route, navigation }: Props) {
           onPress={handleNext}
           disabled={!totalTrials || Number(totalTrials) === 0}
         >
-          {isLast ? "Xem lại →" : `Tiếp → MT ${objectiveIndex + 2}`}
+          {isLast ? "Tiếp tục →" : `Tiếp → MT ${objectiveIndex + 2}`}
         </Button>
       </View>
     </View>

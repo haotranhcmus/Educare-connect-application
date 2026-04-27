@@ -1,26 +1,40 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { useMyStudents } from "../../../hooks/useParent";
+import { useParentStore } from "../../../store/parentStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { ParentChildStackParamList } from "../../../navigation/types";
 
-type ChildListStackParamList = {
-  ChildList: undefined;
-  ChildDetail: { studentId: number; studentName?: string };
-};
-type Props = NativeStackScreenProps<ChildListStackParamList, "ChildList">;
+type Props = NativeStackScreenProps<ParentChildStackParamList, "ChildList">;
 
 const GENDER_LABELS: Record<string, string> = { male: "Nam", female: "Nữ" };
 
 export function ChildListScreen({ navigation }: Props) {
   const theme = useTheme();
   const { data: students = [], isLoading } = useMyStudents();
+  const { selectedStudentId, selectedStudent } = useParentStore();
 
+  // If a child is already selected from home, skip the list and go directly
+  useFocusEffect(
+    useCallback(() => {
+      if (selectedStudentId && selectedStudent) {
+        navigation.replace("ChildDetail", {
+          studentId: selectedStudentId,
+          studentName: selectedStudent.name,
+        });
+      }
+    }, [selectedStudentId, selectedStudent]),
+  );
+
+  // Show a loading overlay while redirecting to avoid list flash
+  if (selectedStudentId) return <LoadingOverlay visible />;
   if (isLoading) return <LoadingOverlay visible />;
 
   return (

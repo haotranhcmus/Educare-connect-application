@@ -1,6 +1,6 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text, useTheme, MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AvatarLabel } from "../common/AvatarLabel";
 
@@ -142,7 +142,7 @@ function StatChip({
 }: {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
-  theme: ReturnType<typeof useTheme>;
+  theme: MD3Theme;
 }) {
   return (
     <View

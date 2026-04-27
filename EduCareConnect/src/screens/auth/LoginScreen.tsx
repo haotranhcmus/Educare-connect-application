@@ -193,7 +193,7 @@ export function LoginScreen() {
               </TouchableOpacity>
             )}
 
-            {/* Login Button */}}
+            {/* Login Button */}
             <Button
               mode="contained"
               onPress={handleSubmit(onSubmit)}
@@ -227,7 +227,6 @@ export function LoginScreen() {
           </Text>
         </View>
       </ScrollView>
-
     </KeyboardAvoidingView>
   );
 }
