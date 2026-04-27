@@ -59,6 +59,7 @@ SESSION_STATUS = [
     ('scheduled', 'Scheduled'),
     ('completed', 'Completed'),
     ('done', 'Reviewed'),
+    ('cancelled', 'Cancelled'),
 ]
 
 ATTENDANCE_STATUS = [

@@ -8,6 +8,7 @@ import {
   useCreateSession,
   useStudentActiveObjectives,
 } from "../../../hooks/useSessions";
+import { checkStudentSessionConflict } from "../../../api/sessionApi";
 import { useStudentsWithActivePlan } from "../../../hooks/useStudents";
 import { Picker } from "../../../components/form/Picker";
 import { DatePickerField } from "../../../components/form/DatePickerField";
@@ -90,8 +91,28 @@ export function SessionCreateScreen({ route, navigation }: Props) {
     return true;
   };
 
-  const handleNext = () => {
-    if (validateStep1()) setStep(1);
+  const handleNext = async () => {
+    if (!validateStep1()) return;
+    try {
+      const conflicts = await checkStudentSessionConflict(
+        form.student_id,
+        form.session_date,
+      );
+      if (conflicts > 0) {
+        Alert.alert(
+          "Buổi học trùng lịch",
+          `Học sinh này đã có ${conflicts} buổi học được lên lịch vào ngày ${form.session_date}. Bạn có muốn tiếp tục tạo thêm không?`,
+          [
+            { text: "Quảy lại", style: "cancel" },
+            { text: "Tiếp tục", onPress: () => setStep(1) },
+          ],
+        );
+      } else {
+        setStep(1);
+      }
+    } catch {
+      setStep(1);
+    }
   };
 
   const toggleObjective = (id: number) => {

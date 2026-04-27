@@ -92,7 +92,6 @@ export async function fetchSessionsAvailableForReport(
     [
       ["teacher_id", "=", teacherId],
       ["status", "in", ["completed", "done"]],
-      ["attendance", "not in", ["cancelled_center", "cancelled_family"]],
     ],
     [
       "id",

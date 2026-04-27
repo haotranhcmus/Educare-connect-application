@@ -31,6 +31,8 @@
                     domain="[('status', '=', 'completed')]" />
                 <filter name="done" string="Reviewed"
                     domain="[('status', '=', 'done')]" />
+                <filter name="cancelled" string="Cancelled"
+                    domain="[('status', '=', 'cancelled')]" />
                 <separator />
                 <filter name="today" string="Today"
                     domain="[('session_date', '=', context_today().strftime('%Y-%m-%d'))]" />
