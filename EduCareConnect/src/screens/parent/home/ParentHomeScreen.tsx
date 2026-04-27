@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StatusBar,
 } from "react-native";
-import { Text, ProgressBar, useTheme, type MD3Theme } from "react-native-paper";
+import { Text, useTheme, type MD3Theme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
@@ -17,7 +17,6 @@ import { ChildSelectorModal } from "./ChildSelectorModal";
 import {
   useMyStudents,
   useUnreadReportCount,
-  useActiveIepPlan,
   useLatestSession,
   useSessionsThisWeek,
 } from "../../../hooks/useParent";
@@ -50,7 +49,6 @@ export function ParentHomeScreen({ navigation }: any) {
   const { data: unreadCount = 0 } = useUnreadReportCount(
     selectedStudentId ?? undefined,
   );
-  const { data: activePlan } = useActiveIepPlan(selectedStudentId ?? undefined);
   const { data: latestSession } = useLatestSession(
     selectedStudentId ?? undefined,
   );
@@ -227,100 +225,7 @@ export function ParentHomeScreen({ navigation }: any) {
             value={String(unreadCount)}
             theme={theme}
           />
-          <StatCard
-            icon="clipboard-list-outline"
-            iconColor="#1565C0"
-            iconBg="#E3F2FD"
-            label="Mục tiêu IEP"
-            value={String(activePlan?.goals?.length ?? 0)}
-            theme={theme}
-          />
         </View>
-
-        {/* ── Active IEP Progress ─────────────────────────────── */}
-        {activePlan && (
-          <View
-            style={[styles.section, { backgroundColor: theme.colors.surface }]}
-          >
-            <View style={styles.sectionHeader}>
-              <View
-                style={[
-                  styles.iconBox,
-                  { backgroundColor: theme.colors.primaryContainer },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="chart-line"
-                  size={18}
-                  color={theme.colors.primary}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  variant="titleSmall"
-                  style={{ color: theme.colors.onSurface, fontWeight: "700" }}
-                >
-                  Kế hoạch IEP hiện tại
-                </Text>
-                <Text
-                  variant="bodySmall"
-                  style={{ color: theme.colors.outline }}
-                >
-                  {activePlan.start_date} → {activePlan.end_date}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={styles.seeMoreBtn}
-                onPress={() =>
-                  navigation.navigate("TimetableTab", {
-                    screen: "ChildIepHistory",
-                  })
-                }
-              >
-                <Text
-                  variant="labelSmall"
-                  style={{ color: theme.colors.primary }}
-                >
-                  Xem thêm
-                </Text>
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={14}
-                  color={theme.colors.primary}
-                />
-              </TouchableOpacity>
-            </View>
-            {activePlan.goals?.slice(0, 3).map((goal: any) => (
-              <View key={goal.id} style={styles.goalRow}>
-                <Text
-                  variant="bodySmall"
-                  style={{ color: theme.colors.onSurface, flex: 1 }}
-                  numberOfLines={1}
-                >
-                  {goal.name}
-                </Text>
-                <View style={styles.goalBarRow}>
-                  <ProgressBar
-                    progress={(goal.progress_pct || 0) / 100}
-                    color={theme.colors.primary}
-                    style={styles.progressBar}
-                  />
-                  <Text
-                    variant="labelSmall"
-                    style={{
-                      color: theme.colors.primary,
-                      marginLeft: 8,
-                      width: 32,
-                      textAlign: "right",
-                    }}
-                  >
-                    {Math.round(goal.progress_pct || 0)}%
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
 
         {/* ── Latest Session ──────────────────────────────────── */}
         {latestSession && (
@@ -544,9 +449,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   seeMoreBtn: { flexDirection: "row", alignItems: "center" },
-  goalRow: { marginTop: 8 },
-  goalBarRow: { flexDirection: "row", alignItems: "center", marginTop: 4 },
-  progressBar: { flex: 1, height: 7, borderRadius: 4 },
 
   // Done badge
   doneBadge: {

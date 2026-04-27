@@ -4,13 +4,17 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackActions } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useParentStore } from "../store/parentStore";
 import type {
   ParentTabParamList,
+  ParentChildStackParamList,
   ParentTimetableStackParamList,
   ParentReportStackParamList,
   ParentProfileStackParamList,
 } from "./types";
 import { ParentHomeScreen } from "../screens/parent/home/ParentHomeScreen";
+import { ChildListScreen } from "../screens/parent/child/ChildListScreen";
+import { ChildProfileScreen } from "../screens/parent/child/ChildProfileScreen";
 import { ChildTimetableScreen } from "../screens/parent/child/ChildTimetableScreen";
 import { IepHistoryScreen } from "../screens/parent/iep/IepHistoryScreen";
 import { ParentIepPlanScreen } from "../screens/parent/iep/ParentIepPlanScreen";
@@ -20,10 +24,45 @@ import { ParentProfileScreen } from "../screens/parent/profile/ParentProfileScre
 import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen";
 
 const Tab = createBottomTabNavigator<ParentTabParamList>();
+const ChildStack = createNativeStackNavigator<ParentChildStackParamList>();
 const TimetableStack =
   createNativeStackNavigator<ParentTimetableStackParamList>();
 const ReportStack = createNativeStackNavigator<ParentReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
+
+function ChildStackNavigator() {
+  return (
+    <ChildStack.Navigator>
+      <ChildStack.Screen
+        name="ChildList"
+        component={ChildListScreen}
+        options={{ title: "Con tôi" }}
+      />
+      <ChildStack.Screen
+        name="ChildDetail"
+        component={ChildProfileScreen}
+        options={({ route }) => ({
+          title: (route.params as any)?.studentName ?? "Hồ sơ",
+        })}
+      />
+      <ChildStack.Screen
+        name="ChildIepHistory"
+        component={IepHistoryScreen}
+        options={{ title: "Kế hoạch IEP" }}
+      />
+      <ChildStack.Screen
+        name="ChildIepPlanDetail"
+        component={ParentIepPlanScreen}
+        options={{ title: "Chi tiết kế hoạch IEP" }}
+      />
+      <ChildStack.Screen
+        name="ChildTimetable"
+        component={ChildTimetableScreen}
+        options={{ title: "Thời khóa biểu" }}
+      />
+    </ChildStack.Navigator>
+  );
+}
 
 function TimetableStackNavigator() {
   return (
@@ -106,6 +145,45 @@ export function ParentNavigator() {
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
         }}
+      />
+      <Tab.Screen
+        name="ChildTab"
+        component={ChildStackNavigator}
+        options={{
+          title: "Con tôi",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="account-child"
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            const { selectedStudentId, selectedStudent } =
+              useParentStore.getState();
+            if (selectedStudentId && selectedStudent) {
+              navigation.navigate(route.name as any, {
+                screen: "ChildDetail",
+                params: {
+                  studentId: selectedStudentId,
+                  studentName: selectedStudent.name,
+                },
+              });
+            } else {
+              const r = route as any;
+              if (r.state && r.state.index > 0) {
+                navigation.dispatch({
+                  ...StackActions.popToTop(),
+                  target: r.state.key,
+                });
+              }
+              navigation.navigate(route.name as any);
+            }
+          },
+        })}
       />
       <Tab.Screen
         name="TimetableTab"

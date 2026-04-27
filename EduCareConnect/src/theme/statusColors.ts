@@ -39,7 +39,7 @@ export const STATUS_COLORS: Record<string, StatusConfig> = {
     icon: "clock-outline",
   },
   done: {
-    label: "Đã xác nhận",
+    label: "Đã hoàn tất",
     color: "#2E7D32",
     backgroundColor: "#C8E6C9",
     icon: "check-circle",

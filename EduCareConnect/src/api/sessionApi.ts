@@ -352,6 +352,10 @@ export async function checkStudentSessionConflict(
   return records.length;
 }
 
+export async function scheduleSession(sessionId: number): Promise<boolean> {
+  return callKw("educare.session.log", "action_schedule", [[sessionId]], {});
+}
+
 export async function cancelSession(
   sessionId: number,
   cancelType: "cancelled_center" | "cancelled_family",

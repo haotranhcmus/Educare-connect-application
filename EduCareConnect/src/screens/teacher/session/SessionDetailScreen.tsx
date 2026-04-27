@@ -5,6 +5,7 @@ import {
   StyleSheet,
   RefreshControl,
   Modal,
+  Alert,
   TextInput as RNTextInput,
 } from "react-native";
 import {
@@ -14,8 +15,9 @@ import {
   useTheme,
   RadioButton,
   ActivityIndicator,
+  Snackbar,
 } from "react-native-paper";
-import { cancelSession } from "../../../api/sessionApi";
+import { cancelSession, scheduleSession } from "../../../api/sessionApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
@@ -32,6 +34,7 @@ import { logger } from "../../../utils/logger";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
 import { SessionResult } from "@/src/types/models";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionDetail">;
 
@@ -75,7 +78,15 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   >("cancelled_center");
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isScheduling, setIsScheduling] = useState(false);
   const [cancelError, setCancelError] = useState("");
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackVisible, setSnackVisible] = useState(false);
+
+  const showSnack = (msg: string) => {
+    setSnackMessage(msg);
+    setSnackVisible(true);
+  };
   const {
     data: session,
     isLoading,
@@ -137,16 +148,34 @@ export function SessionDetailScreen({ route, navigation }: Props) {
     );
   }
 
+  if (!session) return null;
+
   const studentName = Array.isArray(session.student_id)
     ? session.student_id[1]
     : "";
   const isCancelled = session.status === "cancelled";
   const isDone = session.status === "done";
+  const canSchedule = session.status === "draft";
   const canEval =
     session.status === "scheduled" || session.status === "completed";
   const canEdit = session.status === "draft" || session.status === "scheduled";
   const canCancel =
     session.status === "draft" || session.status === "scheduled";
+
+  const handleSchedule = async () => {
+    setIsScheduling(true);
+    try {
+      await scheduleSession(sessionId);
+      await queryClient.invalidateQueries({ queryKey: ["session", sessionId] });
+      await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      refetch();
+      showSnack("Đã lên lịch buổi học thành công");
+    } catch (e: any) {
+      Alert.alert("Lỗi", e?.message || "Không thể lên lịch buổi học.");
+    } finally {
+      setIsScheduling(false);
+    }
+  };
   const duration = Math.round((session.end_time - session.start_time) * 60);
 
   const handleConfirmCancel = async () => {
@@ -159,6 +188,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
       setCancelModalVisible(false);
       setCancelReason("");
       refetch();
+      showSnack("Đã hủy buổi học");
     } catch (e: any) {
       setCancelError(e?.message || "Không thể hủy buổi học. Vui lòng thử lại.");
     } finally {
@@ -167,326 +197,359 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: theme.colors.background }}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
-    >
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
-        <Text variant="titleMedium" style={{ fontWeight: "700" }}>
-          {session.name}
-        </Text>
-        <StatusBadge status={session.status} />
-      </View>
-
-      {/* Info section */}
-      <SectionHeader icon="information-outline" title="Thông Tin Buổi Học" />
-      <View
-        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={refetch} />
+        }
       >
-        <AvatarLabel name={studentName} size={40} />
-        <Text variant="bodyMedium" style={{ fontWeight: "600", marginTop: 8 }}>
-          {studentName}
-        </Text>
-        <Divider style={{ marginVertical: 8 }} />
-        <InfoRow label="Ngày" value={formatDate(session.session_date)} />
-        <InfoRow
-          label="Thời gian"
-          value={`${formatFloatTime(session.start_time)} – ${formatFloatTime(session.end_time)} (${duration} phút)`}
-        />
-        <InfoRow label="Địa điểm" value={session.location} />
-        <InfoRow label="Loại" value={session.session_type} />
-        <InfoRow label="Mục đích" value={session.session_purpose} />
+        {/* Header */}
+        <View
+          style={[styles.header, { backgroundColor: theme.colors.surface }]}
+        >
+          <Text variant="titleMedium" style={{ fontWeight: "700" }}>
+            {session.name}
+          </Text>
+          <StatusBadge status={session.status} />
+        </View>
 
-        {isCancelled && (
+        {/* Info section */}
+        <SectionHeader icon="information-outline" title="Thông Tin Buổi Học" />
+        <View
+          style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+        >
+          <AvatarLabel name={studentName} size={40} />
+          <Text
+            variant="bodyMedium"
+            style={{ fontWeight: "600", marginTop: 8 }}
+          >
+            {studentName}
+          </Text>
+          <Divider style={{ marginVertical: 8 }} />
+          <InfoRow label="Ngày" value={formatDate(session.session_date)} />
+          <InfoRow
+            label="Thời gian"
+            value={`${formatFloatTime(session.start_time)} – ${formatFloatTime(session.end_time)} (${duration} phút)`}
+          />
+          <InfoRow label="Địa điểm" value={session.location} />
+          <InfoRow label="Loại" value={session.session_type} />
+          <InfoRow label="Mục đích" value={session.session_purpose} />
+
+          {isCancelled && (
+            <>
+              <Divider style={{ marginVertical: 8 }} />
+              <View
+                style={[
+                  styles.cancelBanner,
+                  { backgroundColor: theme.colors.errorContainer },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="cancel"
+                  size={16}
+                  color={theme.colors.error}
+                />
+                <Text
+                  variant="labelMedium"
+                  style={{
+                    color: theme.colors.onErrorContainer,
+                    marginLeft: 6,
+                    flex: 1,
+                    fontWeight: "700",
+                  }}
+                >
+                  Buổi học đã bị hủy
+                </Text>
+              </View>
+              <InfoRow
+                label="Lý do hủy"
+                value={
+                  OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
+                }
+              />
+              {session.notes ? (
+                <InfoRow label="Ghi chú" value={session.notes} />
+              ) : null}
+            </>
+          )}
+
+          {isDone && (
+            <>
+              <Divider style={{ marginVertical: 8 }} />
+              <InfoRow
+                label="Điểm danh"
+                value={
+                  OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
+                }
+              />
+              <InfoRow
+                label="Tâm trạng"
+                value={OBSERVATION_LABELS.mood[session.mood ?? ""] || ""}
+              />
+              <InfoRow
+                label="Năng lượng"
+                value={
+                  OBSERVATION_LABELS.energy_level[session.energy_level ?? ""] ||
+                  ""
+                }
+              />
+              <InfoRow
+                label="Tập trung"
+                value={
+                  OBSERVATION_LABELS.engagement_level[
+                    session.engagement_level ?? ""
+                  ] || ""
+                }
+              />
+              <InfoRow
+                label="Kết quả tổng"
+                value={
+                  OBSERVATION_LABELS.overall_performance[
+                    session.overall_performance ?? ""
+                  ] || ""
+                }
+              />
+            </>
+          )}
+        </View>
+
+        {/* Results section (done) */}
+        {isDone && results.length > 0 && (
           <>
-            <Divider style={{ marginVertical: 8 }} />
+            <SectionHeader
+              icon="chart-bar"
+              title={`Kết Quả Đánh Giá (${results.length})`}
+            />
             <View
               style={[
-                styles.cancelBanner,
-                { backgroundColor: theme.colors.errorContainer },
+                styles.avgCard,
+                { backgroundColor: theme.colors.primaryContainer },
               ]}
             >
-              <MaterialCommunityIcons
-                name="cancel"
-                size={16}
-                color={theme.colors.error}
-              />
-              <Text
-                variant="labelMedium"
-                style={{
-                  color: theme.colors.onErrorContainer,
-                  marginLeft: 6,
-                  flex: 1,
-                  fontWeight: "700",
-                }}
-              >
-                Buổi học đã bị hủy
+              <Text variant="bodyMedium">
+                Trung bình: {Math.round(session.avg_accuracy || 0)}% ·{" "}
+                {results.length} mục tiêu
               </Text>
             </View>
-            <InfoRow
-              label="Lý do hủy"
-              value={
-                OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
+            {results.map((r: SessionResult) => (
+              <ResultSummaryCard key={r.id} result={r} />
+            ))}
+            <Button
+              mode="outlined"
+              icon="magnify"
+              onPress={() =>
+                navigation.navigate("EvalDetailView", { sessionId })
               }
-            />
-            {session.notes ? (
-              <InfoRow label="Ghi chú" value={session.notes} />
-            ) : null}
+              style={{ marginTop: 8 }}
+            >
+              Xem chi tiết đánh giá
+            </Button>
           </>
         )}
 
-        {isDone && (
-          <>
-            <Divider style={{ marginVertical: 8 }} />
-            <InfoRow
-              label="Điểm danh"
-              value={
-                OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
-              }
-            />
-            <InfoRow
-              label="Tâm trạng"
-              value={OBSERVATION_LABELS.mood[session.mood ?? ""] || ""}
-            />
-            <InfoRow
-              label="Năng lượng"
-              value={
-                OBSERVATION_LABELS.energy_level[session.energy_level ?? ""] ||
-                ""
-              }
-            />
-            <InfoRow
-              label="Tập trung"
-              value={
-                OBSERVATION_LABELS.engagement_level[
-                  session.engagement_level ?? ""
-                ] || ""
-              }
-            />
-            <InfoRow
-              label="Kết quả tổng"
-              value={
-                OBSERVATION_LABELS.overall_performance[
-                  session.overall_performance ?? ""
-                ] || ""
-              }
-            />
-          </>
-        )}
-      </View>
-
-      {/* Results section (done) */}
-      {isDone && results.length > 0 && (
-        <>
-          <SectionHeader
-            icon="chart-bar"
-            title={`Kết Quả Đánh Giá (${results.length})`}
-          />
-          <View
-            style={[
-              styles.avgCard,
-              { backgroundColor: theme.colors.primaryContainer },
-            ]}
-          >
-            <Text variant="bodyMedium">
-              Trung bình: {Math.round(session.avg_accuracy || 0)}% ·{" "}
-              {results.length} mục tiêu
-            </Text>
-          </View>
-          {results.map((r: SessionResult) => (
-            <ResultSummaryCard key={r.id} result={r} />
-          ))}
-          <Button
-            mode="outlined"
-            icon="magnify"
-            onPress={() => navigation.navigate("EvalDetailView", { sessionId })}
-            style={{ marginTop: 8 }}
-          >
-            Xem chi tiết đánh giá
-          </Button>
-        </>
-      )}
-
-      {/* Cancel session modal */}
-      <Modal
-        visible={cancelModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setCancelModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalCard,
-              { backgroundColor: theme.colors.surface },
-            ]}
-          >
-            <Text
-              variant="titleMedium"
-              style={{ fontWeight: "700", marginBottom: 12 }}
-            >
-              Hủy buổi học
-            </Text>
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant, marginBottom: 16 }}
-            >
-              Chọn lý do hủy buổi học:
-            </Text>
-
-            <RadioButton.Group
-              onValueChange={(val) =>
-                setCancelType(val as "cancelled_center" | "cancelled_family")
-              }
-              value={cancelType}
-            >
-              <View style={styles.radioRow}>
-                <RadioButton value="cancelled_center" />
-                <Text variant="bodyMedium">Trung tâm hủy</Text>
-              </View>
-              <View style={styles.radioRow}>
-                <RadioButton value="cancelled_family" />
-                <Text variant="bodyMedium">Gia đình hủy</Text>
-              </View>
-            </RadioButton.Group>
-
-            <Text
-              variant="labelSmall"
-              style={{
-                color: theme.colors.outline,
-                marginTop: 12,
-                marginBottom: 4,
-              }}
-            >
-              Ghi chú (không bắt buộc)
-            </Text>
-            <RNTextInput
-              value={cancelReason}
-              onChangeText={setCancelReason}
-              placeholder="Nhập lý do hủy..."
-              placeholderTextColor={theme.colors.onSurfaceVariant}
-              multiline
-              numberOfLines={3}
+        {/* Cancel session modal */}
+        <Modal
+          visible={cancelModalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setCancelModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View
               style={[
-                styles.reasonInput,
-                {
-                  borderColor: theme.colors.outlineVariant,
-                  color: theme.colors.onSurface,
-                  backgroundColor: theme.colors.surfaceVariant,
-                },
+                styles.modalCard,
+                { backgroundColor: theme.colors.surface },
               ]}
-            />
+            >
+              <Text
+                variant="titleMedium"
+                style={{ fontWeight: "700", marginBottom: 12 }}
+              >
+                Hủy buổi học
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  marginBottom: 16,
+                }}
+              >
+                Chọn lý do hủy buổi học:
+              </Text>
 
-            {cancelError ? (
+              <RadioButton.Group
+                onValueChange={(val) =>
+                  setCancelType(val as "cancelled_center" | "cancelled_family")
+                }
+                value={cancelType}
+              >
+                <View style={styles.radioRow}>
+                  <RadioButton value="cancelled_center" />
+                  <Text variant="bodyMedium">Trung tâm hủy</Text>
+                </View>
+                <View style={styles.radioRow}>
+                  <RadioButton value="cancelled_family" />
+                  <Text variant="bodyMedium">Gia đình hủy</Text>
+                </View>
+              </RadioButton.Group>
+
               <Text
                 variant="labelSmall"
-                style={{ color: theme.colors.error, marginTop: 8 }}
-              >
-                {cancelError}
-              </Text>
-            ) : null}
-
-            <View style={styles.modalActions}>
-              <Button
-                mode="outlined"
-                onPress={() => {
-                  setCancelModalVisible(false);
-                  setCancelError("");
+                style={{
+                  color: theme.colors.outline,
+                  marginTop: 12,
+                  marginBottom: 4,
                 }}
-                style={{ flex: 1 }}
-                disabled={isCancelling}
               >
-                Đóng
-              </Button>
-              <Button
-                mode="contained"
-                buttonColor={theme.colors.error}
-                onPress={handleConfirmCancel}
-                style={{ flex: 1, marginLeft: 8 }}
-                disabled={isCancelling}
-                icon={isCancelling ? undefined : "cancel"}
-              >
-                {isCancelling ? (
-                  <ActivityIndicator size={16} color={theme.colors.onError} />
-                ) : (
-                  "Xác nhận hủy"
-                )}
-              </Button>
+                Ghi chú (không bắt buộc)
+              </Text>
+              <RNTextInput
+                value={cancelReason}
+                onChangeText={setCancelReason}
+                placeholder="Nhập lý do hủy..."
+                placeholderTextColor={theme.colors.onSurfaceVariant}
+                multiline
+                numberOfLines={3}
+                style={[
+                  styles.reasonInput,
+                  {
+                    borderColor: theme.colors.outlineVariant,
+                    color: theme.colors.onSurface,
+                    backgroundColor: theme.colors.surfaceVariant,
+                  },
+                ]}
+              />
+
+              {cancelError ? (
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.error, marginTop: 8 }}
+                >
+                  {cancelError}
+                </Text>
+              ) : null}
+
+              <View style={styles.modalActions}>
+                <Button
+                  mode="outlined"
+                  onPress={() => {
+                    setCancelModalVisible(false);
+                    setCancelError("");
+                  }}
+                  style={{ flex: 1 }}
+                  disabled={isCancelling}
+                >
+                  Đóng
+                </Button>
+                <Button
+                  mode="contained"
+                  buttonColor={theme.colors.error}
+                  onPress={handleConfirmCancel}
+                  style={{ flex: 1, marginLeft: 8 }}
+                  disabled={isCancelling}
+                  icon={isCancelling ? undefined : "cancel"}
+                >
+                  {isCancelling ? (
+                    <ActivityIndicator size={16} color={theme.colors.onError} />
+                  ) : (
+                    "Xác nhận hủy"
+                  )}
+                </Button>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {/* Action buttons */}
-      <View style={styles.actions}>
-        {canEval && (
-          <Button
-            mode="contained"
-            icon="clipboard-edit-outline"
-            onPress={() => navigation.navigate("EvalStep1", { sessionId })}
-          >
-            {session.status === "completed"
-              ? "Tiếp tục nhập kết quả"
-              : "Nhập kết quả buổi học"}
-          </Button>
-        )}
-        {canEdit && (
-          <Button
-            mode="outlined"
-            icon="pencil"
-            onPress={() => navigation.navigate("SessionEdit", { sessionId })}
-            style={{ marginTop: 8 }}
-          >
-            Chỉnh sửa
-          </Button>
-        )}
-        {canCancel && (
-          <Button
-            mode="outlined"
-            icon="cancel"
-            textColor={theme.colors.error}
-            style={{ marginTop: 8, borderColor: theme.colors.error }}
-            onPress={() => {
-              setCancelError("");
-              setCancelModalVisible(true);
-            }}
-          >
-            Hủy buổi học
-          </Button>
-        )}
-        {isDone && existingReport ? (
-          <Button
-            mode="contained"
-            icon="file-document-outline"
-            onPress={() => {
-              navigation.getParent()?.navigate("ReportTab" as any, {
-                screen: "ReportDetail",
-                params: { reportId: existingReport.id },
-              });
-            }}
-            style={{ marginTop: 8 }}
-          >
-            Xem báo cáo đã gửi
-          </Button>
-        ) : isDone ? (
-          <Button
-            mode="contained"
-            icon="file-document-edit-outline"
-            onPress={() => {
-              navigation.getParent()?.navigate("ReportTab" as any, {
-                screen: "ReportCreate",
-                params: { sessionId },
-              });
-            }}
-            style={{ marginTop: 8 }}
-          >
-            Tạo báo cáo buổi học
-          </Button>
-        ) : null}
-      </View>
-    </ScrollView>
+        {/* Action buttons */}
+        <View style={styles.actions}>
+          {canSchedule && (
+            <Button
+              mode="contained"
+              icon="calendar-check"
+              loading={isScheduling}
+              disabled={isScheduling}
+              onPress={handleSchedule}
+            >
+              Lên lịch buổi học
+            </Button>
+          )}
+          {canEval && (
+            <Button
+              mode="contained"
+              icon="clipboard-edit-outline"
+              onPress={() => navigation.navigate("EvalStep1", { sessionId })}
+            >
+              {session.status === "completed"
+                ? "Tiếp tục nhập kết quả"
+                : "Nhập kết quả buổi học"}
+            </Button>
+          )}
+          {canEdit && (
+            <Button
+              mode="outlined"
+              icon="pencil"
+              onPress={() => navigation.navigate("SessionEdit", { sessionId })}
+              style={{ marginTop: 8 }}
+            >
+              Chỉnh sửa
+            </Button>
+          )}
+          {canCancel && (
+            <Button
+              mode="outlined"
+              icon="cancel"
+              textColor={theme.colors.error}
+              style={{ marginTop: 8, borderColor: theme.colors.error }}
+              onPress={() => {
+                setCancelError("");
+                setCancelModalVisible(true);
+              }}
+            >
+              Hủy buổi học
+            </Button>
+          )}
+          {isDone && existingReport ? (
+            <Button
+              mode="contained"
+              icon="file-document-outline"
+              onPress={() => {
+                navigation.getParent()?.navigate("ReportTab" as any, {
+                  screen: "ReportDetail",
+                  params: { reportId: existingReport.id },
+                });
+              }}
+              style={{ marginTop: 8 }}
+            >
+              Xem báo cáo đã gửi
+            </Button>
+          ) : isDone ? (
+            <Button
+              mode="contained"
+              icon="file-document-edit-outline"
+              onPress={() => {
+                navigation.getParent()?.navigate("ReportTab" as any, {
+                  screen: "ReportCreate",
+                  params: { sessionId },
+                });
+              }}
+              style={{ marginTop: 8 }}
+            >
+              Tạo báo cáo buổi học
+            </Button>
+          ) : null}
+        </View>
+      </ScrollView>
+      <Snackbar
+        visible={snackVisible}
+        onDismiss={() => setSnackVisible(false)}
+        duration={3000}
+        style={{ marginBottom: 8 }}
+      >
+        {snackMessage}
+      </Snackbar>
+    </View>
   );
 }
 

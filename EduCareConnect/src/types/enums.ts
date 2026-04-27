@@ -58,7 +58,12 @@ export type Trend =
   | "insufficient_data";
 
 // ===== Session =====
-export type SessionStatus = "draft" | "scheduled" | "completed" | "done";
+export type SessionStatus =
+  | "draft"
+  | "scheduled"
+  | "completed"
+  | "done"
+  | "cancelled";
 export type SessionLocation = "center" | "home" | "school" | "online";
 export type SessionType = "individual" | "small_group" | "consultation";
 export type SessionPurpose =

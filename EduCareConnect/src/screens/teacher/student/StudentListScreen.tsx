@@ -1,6 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
-import { Searchbar, Chip, useTheme } from "react-native-paper";
+import {
+  Searchbar,
+  Menu,
+  IconButton,
+  Text as PaperText,
+  useTheme,
+} from "react-native-paper";
 import { useMyStudents } from "../../../hooks/useStudents";
 import { StudentListCard } from "../../../components/student/StudentListCard";
 import { EmptyState } from "../../../components/common/EmptyState";
@@ -21,6 +27,16 @@ export function StudentListScreen({ navigation }: Props) {
   } = useMyStudents();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [filterMenuVisible, setFilterMenuVisible] = useState(false);
+
+  const activeCount = students.filter((s) => s.status === "active").length;
+  const inactiveCount = students.filter((s) => s.status !== "active").length;
+
+  const FILTER_LABELS: Record<StatusFilter, string> = {
+    all: `Tất cả (${students.length})`,
+    active: `Đang hoạt động (${activeCount})`,
+    inactive: `Không hoạt động (${inactiveCount})`,
+  };
 
   const filteredStudents = useMemo(() => {
     let result = students;
@@ -55,38 +71,42 @@ export function StudentListScreen({ navigation }: Props) {
     >
       <LoadingOverlay visible={isLoading} />
 
-      {/* Search */}
-      <Searchbar
-        placeholder="Tìm theo tên HS"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        style={styles.searchbar}
-      />
-
-      {/* Filter Chips */}
-      <View style={styles.chips}>
-        {(["all", "active", "inactive"] as StatusFilter[]).map((f) => (
-          <Chip
-            key={f}
-            mode="outlined"
-            selected={statusFilter === f}
-            onPress={() => setStatusFilter(f)}
-            style={[
-              styles.chip,
-              statusFilter === f && { backgroundColor: theme.colors.primary },
-            ]}
-            showSelectedCheck={false}
-            textStyle={[
-              statusFilter === f && { color: theme.colors.onPrimary },
-            ]}
-          >
-            {f === "all"
-              ? `Tất cả (${students.length})`
-              : f === "active"
-                ? "Active"
-                : "Inactive"}
-          </Chip>
-        ))}
+      {/* Search + Filter */}
+      <View style={styles.searchRow}>
+        <Searchbar
+          placeholder="Tìm theo tên HS"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          style={styles.searchbar}
+        />
+        <Menu
+          visible={filterMenuVisible}
+          onDismiss={() => setFilterMenuVisible(false)}
+          anchor={
+            <IconButton
+              icon="filter-variant"
+              iconColor={
+                statusFilter !== "all"
+                  ? theme.colors.primary
+                  : theme.colors.onSurfaceVariant
+              }
+              size={24}
+              onPress={() => setFilterMenuVisible(true)}
+            />
+          }
+        >
+          {(["all", "active", "inactive"] as StatusFilter[]).map((f) => (
+            <Menu.Item
+              key={f}
+              leadingIcon={statusFilter === f ? "check" : undefined}
+              title={FILTER_LABELS[f]}
+              onPress={() => {
+                setStatusFilter(f);
+                setFilterMenuVisible(false);
+              }}
+            />
+          ))}
+        </Menu>
       </View>
 
       {/* Student List */}
@@ -119,13 +139,13 @@ export function StudentListScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  searchbar: { margin: 16, marginBottom: 8 },
-  chips: {
+  searchRow: {
     flexDirection: "row",
-    paddingHorizontal: 16,
-    gap: 8,
-    marginBottom: 8,
+    alignItems: "center",
+    paddingLeft: 16,
+    paddingRight: 4,
+    marginBottom: 4,
   },
-  chip: { borderRadius: 20 },
+  searchbar: { flex: 1, marginBottom: 0 },
   list: { flexGrow: 1, paddingBottom: 16 },
 });
