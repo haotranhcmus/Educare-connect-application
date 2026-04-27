@@ -205,7 +205,6 @@ export function ParentHomeScreen({ navigation }: any) {
                   </View>
                 )}
               </View>
-
             </View>
           </View>
         )}
@@ -396,7 +395,11 @@ function StatCard({
   return (
     <View style={[styles.statCard, { backgroundColor: theme.colors.surface }]}>
       <View style={[styles.statIcon, { backgroundColor: iconBg }]}>
-        <MaterialCommunityIcons name={icon as any} size={20} color={iconColor} />
+        <MaterialCommunityIcons
+          name={icon as any}
+          size={20}
+          color={iconColor}
+        />
       </View>
       <Text
         variant="headlineSmall"
