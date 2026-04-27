@@ -190,7 +190,11 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   // Fallback: re-check on focus in case navigate() params update didn't trigger above
   useFocusEffect(
     React.useCallback(() => {
-      if (routeSessionId && !isEdit && loadedSessionIdRef.current !== routeSessionId) {
+      if (
+        routeSessionId &&
+        !isEdit &&
+        loadedSessionIdRef.current !== routeSessionId
+      ) {
         loadedSessionIdRef.current = routeSessionId;
         loadSessionInfo(routeSessionId, true);
       }

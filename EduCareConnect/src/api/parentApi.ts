@@ -193,7 +193,9 @@ export async function fetchGoalsWithObjectives(planId: number) {
 }
 
 // ── Count sessions this week ──────────────────────────────────
-export async function fetchSessionsThisWeek(studentId: number): Promise<number> {
+export async function fetchSessionsThisWeek(
+  studentId: number,
+): Promise<number> {
   const now = new Date();
   const dayOfWeek = now.getDay(); // 0=Sun
   const offsetToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;

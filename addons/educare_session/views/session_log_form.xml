@@ -22,13 +22,9 @@
                         type="object"
                         groups="educare_security.group_supervisor,educare_security.group_admin"
                         invisible="status != 'done'" />
-                    <button name="action_cancel_center" string="Hủy (Trung tâm hủy)"
+                    <button name="action_cancel_center" string="Cancel Session"
                         type="object"
-                        confirm="Bạn có chắc chắn muốn hủy buổi học này vì trường hợp trung tâm hủy không?"
-                        invisible="status not in ('draft', 'scheduled')" />
-                    <button name="action_cancel_family" string="Hủy (Gia đình hủy)"
-                        type="object"
-                        confirm="Bạn có chắc chắn muốn hủy buổi học này vì trường hợp gia đình hủy không?"
+                        confirm="Are you sure you want to cancel this session?"
                         invisible="status not in ('draft', 'scheduled')" />
                     <field name="status" widget="statusbar"
                         statusbar_visible="draft,scheduled,completed,done,cancelled" />
