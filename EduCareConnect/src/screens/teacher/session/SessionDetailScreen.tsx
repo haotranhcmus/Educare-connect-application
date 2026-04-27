@@ -124,6 +124,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   const studentName = Array.isArray(session.student_id)
     ? session.student_id[1]
     : "";
+  const isCancelled = session.status === "cancelled";
   const isDone = session.status === "done";
   const canEval =
     session.status === "scheduled" || session.status === "completed";
@@ -180,6 +181,25 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         <InfoRow label="Địa điểm" value={session.location} />
         <InfoRow label="Loại" value={session.session_type} />
         <InfoRow label="Mục đích" value={session.session_purpose} />
+
+        {isCancelled && (
+          <>
+            <Divider style={{ marginVertical: 8 }} />
+            <View style={[styles.cancelBanner, { backgroundColor: theme.colors.errorContainer }]}>
+              <MaterialCommunityIcons name="cancel" size={16} color={theme.colors.error} />
+              <Text variant="labelMedium" style={{ color: theme.colors.onErrorContainer, marginLeft: 6, flex: 1, fontWeight: "700" }}>
+                Buổi học đã bị hủy
+              </Text>
+            </View>
+            <InfoRow
+              label="Lý do hủy"
+              value={OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""}
+            />
+            {session.notes ? (
+              <InfoRow label="Ghi chú" value={session.notes} />
+            ) : null}
+          </>
+        )}
 
         {isDone && (
           <>
@@ -435,6 +455,13 @@ const styles = StyleSheet.create({
   },
   infoCard: { padding: 16, borderRadius: 12, elevation: 1, marginBottom: 16 },
   infoRow: { flexDirection: "row", marginVertical: 2 },
+  cancelBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 6,
+  },
   avgCard: { padding: 12, borderRadius: 10, marginBottom: 8 },
   actions: { marginTop: 24 },
   modalOverlay: {
