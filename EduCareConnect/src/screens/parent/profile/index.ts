@@ -1,0 +1,1 @@
+export { ParentProfileScreen } from "./ParentProfileScreen";
