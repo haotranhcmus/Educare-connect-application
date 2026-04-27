@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   greetingRow: { flexDirection: "row", alignItems: "center" },
   greetingText: { marginLeft: 12 },
   section: { paddingHorizontal: 16, marginBottom: 16 },
-  actionButton: { marginTop: 8 },
+
   infoCard: { borderRadius: 12 },
   studentRow: {
     flexDirection: "row",
