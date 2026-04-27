@@ -7,7 +7,8 @@
             <tree string="Session Logs"
                 decoration-info="status == 'draft'"
                 decoration-warning="status == 'scheduled'"
-                decoration-success="status == 'done'">
+                decoration-success="status == 'done'"
+                decoration-danger="status == 'cancelled'">
                 <field name="name" />
                 <field name="student_id" />
                 <field name="teacher_id" />
@@ -20,7 +21,8 @@
                     decoration-info="status == 'draft'"
                     decoration-warning="status == 'scheduled'"
                     decoration-success="status == 'done'"
-                    decoration-primary="status == 'completed'" />
+                    decoration-primary="status == 'completed'"
+                    decoration-danger="status == 'cancelled'" />
                 <field name="avg_accuracy" string="Accuracy (%)" />
             </tree>
         </field>
