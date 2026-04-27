@@ -33,13 +33,13 @@ export function ParentReportCard({ report, onPress }: ParentReportCardProps) {
     >
       <View style={styles.row}>
         <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
-          {isUnread ? "🔵" : "✅"} {formatReportDate(report.report_date)}
+          {isUnread ? "🔵" : ""} {formatReportDate(report.report_date)}
         </Text>
         <Text
           variant="bodySmall"
           style={{ color: isUnread ? "#1976D2" : "#2E7D32" }}
         >
-          {isUnread ? "🔵 Mới" : "✅ Đã đọc"}
+          {isUnread ? "🔵 Mới" : " Đã đọc"}
         </Text>
       </View>
       <Text variant="bodySmall" style={{ color: "#757575" }}>

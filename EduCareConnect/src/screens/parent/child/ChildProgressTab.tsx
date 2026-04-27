@@ -13,19 +13,30 @@ interface ChildProgressTabProps {
   studentId: number;
 }
 
-const TREND_MAP: Record<string, { icon: string; label: string }> = {
-  improving: { icon: "↑", label: "Tốt hơn" },
-  stable: { icon: "→", label: "Ổn định" },
-  declining: { icon: "↓", label: "Cần cải thiện" },
-  stagnant: { icon: "⟳", label: "Chưa thay đổi" },
-  insufficient_data: { icon: "—", label: "Chưa đủ dữ liệu" },
+const TREND_MAP: Record<
+  string,
+  { icon: string; color: string; label: string }
+> = {
+  improving: { icon: "trending-up", color: "#2E7D32", label: "Tốt hơn" },
+  stable: { icon: "minus", color: "#1976D2", label: "Ổn định" },
+  declining: {
+    icon: "trending-down",
+    color: "#B71C1C",
+    label: "Cần cải thiện",
+  },
+  stagnant: { icon: "refresh", color: "#E65100", label: "Chưa thay đổi" },
+  insufficient_data: {
+    icon: "help-circle-outline",
+    color: "#757575",
+    label: "Chưa đủ dữ liệu",
+  },
 };
 
 function getAccuracyBadge(current: number, target: number, status: string) {
-  if (status === "mastered") return { icon: "⭐", color: "#F57C00" };
-  if (current >= target) return { icon: "✅", color: "#2E7D32" };
-  if (current >= 50) return { icon: "🔵", color: "#1976D2" };
-  return { icon: "🟡", color: "#F9A825" };
+  if (status === "mastered") return { icon: "star", color: "#F57C00" };
+  if (current >= target) return { icon: "check-circle", color: "#2E7D32" };
+  if (current >= 50) return { icon: "trending-up", color: "#1976D2" };
+  return { icon: "clock-outline", color: "#F9A825" };
 }
 
 export function ChildProgressTab({ studentId }: ChildProgressTabProps) {
@@ -67,9 +78,26 @@ export function ChildProgressTab({ studentId }: ChildProgressTabProps) {
       <Text variant="titleSmall" style={{ fontWeight: "700" }}>
         Kế hoạch IEP: {activePlan.iep_period}
       </Text>
-      <Text variant="bodySmall" style={{ color: "#757575" }}>
-        {activePlan.start_date} → {activePlan.end_date} · 🟢 Active
-      </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          flexWrap: "wrap",
+          marginTop: 2,
+        }}
+      >
+        <Text variant="bodySmall" style={{ color: "#757575" }}>
+          {activePlan.start_date} → {activePlan.end_date} ·{" "}
+        </Text>
+        <MaterialCommunityIcons
+          name="circle-medium"
+          size={14}
+          color="#2E7D32"
+        />
+        <Text variant="bodySmall" style={{ color: "#2E7D32" }}>
+          Hoạt động
+        </Text>
+      </View>
 
       <Divider style={{ marginVertical: 16 }} />
 
@@ -293,15 +321,25 @@ export function ChildProgressTab({ studentId }: ChildProgressTabProps) {
                             { backgroundColor: theme.colors.surfaceVariant },
                           ]}
                         >
-                          <Text style={{ fontSize: 11 }}>{badge.icon}</Text>
+                          <MaterialCommunityIcons
+                            name={badge.icon as any}
+                            size={13}
+                            color={badge.color}
+                          />
+                          <MaterialCommunityIcons
+                            name={trend.icon as any}
+                            size={11}
+                            color={trend.color}
+                            style={{ marginLeft: 4 }}
+                          />
                           <Text
                             variant="labelSmall"
                             style={{
                               color: theme.colors.onSurfaceVariant,
-                              marginLeft: 4,
+                              marginLeft: 3,
                             }}
                           >
-                            {trend.icon} {trend.label}
+                            {trend.label}
                           </Text>
                         </View>
                         {obj.last_session_date && (
