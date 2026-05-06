@@ -184,61 +184,6 @@ export function TeacherProfileScreen({ navigation }: Props) {
         />
       </View>
 
-      {/* ── Quản Lý Học Sinh ──────────────────────────── */}
-      <SectionHeader icon="account-group-outline" title="Quản Lý Học Sinh" />
-      <View
-        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
-      >
-        <View style={styles.capacityRow}>
-          <Text
-            variant="displaySmall"
-            style={[styles.capacityNum, { color: theme.colors.primary }]}
-          >
-            {filled}
-          </Text>
-          <Text variant="headlineMedium" style={styles.capacitySep}>
-            /
-          </Text>
-          <Text variant="titleLarge" style={styles.capacityMax}>
-            {maxSlots}
-          </Text>
-          <Text
-            variant="bodyMedium"
-            style={{
-              color: theme.colors.outline,
-              paddingBottom: 4,
-              marginLeft: 4,
-            }}
-          >
-            học sinh
-          </Text>
-        </View>
-        <View style={styles.progressRow}>
-          <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${Math.min(progress * 100, 100)}%`,
-                  backgroundColor: progressColor,
-                },
-              ]}
-            />
-          </View>
-          <Text
-            variant="labelSmall"
-            style={{
-              color: progressColor,
-              fontWeight: "700",
-              minWidth: 32,
-              textAlign: "right",
-            }}
-          >
-            {Math.round(progress * 100)}%
-          </Text>
-        </View>
-      </View>
-
       {/* ── Tài Khoản ─────────────────────────────────── */}
       <SectionHeader icon="cog-outline" title="Tài Khoản" />
       <View
@@ -310,7 +255,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     <View style={styles.infoRow}>
       <Text
         variant="labelSmall"
-        style={{ color: theme.colors.outline, width: 140 }}
+        style={{ color: theme.colors.outline, width: 100 }}
       >
         {label}
       </Text>

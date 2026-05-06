@@ -84,7 +84,7 @@ export function ParentReportListScreen({ navigation }: Props) {
         }
         renderSectionHeader={({ section }) => (
           <Text variant="titleSmall" style={styles.sectionHeader}>
-            ── {section.title} ──
+            {section.title}
           </Text>
         )}
         renderItem={({ item }) => (

@@ -1,5 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchMyProfile, changePassword, uploadAvatar } from "../api/profileApi";
+import {
+  fetchMyProfile,
+  changePassword,
+  uploadAvatar,
+} from "../api/profileApi";
 import { useAuthStore } from "../store/authStore";
 
 export function useMyProfile() {
@@ -34,5 +38,3 @@ export function useChangePassword() {
     }) => changePassword(oldPassword, newPassword),
   });
 }
-
-

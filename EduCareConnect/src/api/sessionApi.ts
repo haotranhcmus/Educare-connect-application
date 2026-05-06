@@ -7,6 +7,48 @@ import type {
   IepObjectiveListItem,
 } from "../types";
 
+function toAvatarUrl(b64?: string | false): string | undefined {
+  return b64 ? `data:image/png;base64,${b64}` : undefined;
+}
+
+/** Batch-fetch student avatars and merge into session/record list. */
+async function mergeStudentAvatars<
+  T extends { student_id: any; student_avatar_url?: string },
+>(records: T[]): Promise<T[]> {
+  if (records.length === 0) return records;
+  const studentIds = [
+    ...new Set(
+      records
+        .map((r) =>
+          Array.isArray(r.student_id)
+            ? r.student_id[0]
+            : ((r.student_id as any)?.id ?? 0),
+        )
+        .filter(Boolean),
+    ),
+  ];
+  if (studentIds.length === 0) return records;
+  try {
+    const students = await searchRead<{ id: number; avatar: string | false }>(
+      "educare.student",
+      [["id", "in", studentIds]],
+      ["id", "avatar"],
+    );
+    const avatarMap = new Map<number, string | undefined>(
+      students.map((s) => [s.id, toAvatarUrl(s.avatar)]),
+    );
+    return records.map((r) => {
+      const sid = Array.isArray(r.student_id)
+        ? r.student_id[0]
+        : ((r.student_id as any)?.id ?? 0);
+      return { ...r, student_avatar_url: avatarMap.get(sid) };
+    });
+  } catch {
+    // Avatar fetch is non-critical — return records as-is
+    return records;
+  }
+}
+
 const SESSION_LIST_FIELDS = [
   "id",
   "name",
@@ -42,14 +84,14 @@ export async function fetchStudentSessions(
 ): Promise<SessionListItem[]> {
   logger.session("fetchStudentSessions", "start", { studentId });
   try {
-    const records = await searchRead<SessionListItem>(
+    const records = await searchRead<any>(
       "educare.session.log",
       [["student_id", "=", studentId]],
       SESSION_LIST_FIELDS,
       { order: "session_date desc, start_time desc", limit: 50 },
     );
     logger.session("fetchStudentSessions", `ok — ${records.length} records`);
-    return records;
+    return mergeStudentAvatars<SessionListItem>(records);
   } catch (e) {
     logger.error("fetchStudentSessions", "failed", e);
     throw e;
@@ -62,7 +104,7 @@ export async function fetchTodaySessions(
   const today = new Date().toISOString().split("T")[0];
   logger.session("fetchTodaySessions", "start", { teacherUid, today });
   try {
-    const records = await searchRead<SessionListItem>(
+    const records = await searchRead<any>(
       "educare.session.log",
       [
         ["session_date", "=", today],
@@ -72,7 +114,7 @@ export async function fetchTodaySessions(
       { order: "start_time asc" },
     );
     logger.session("fetchTodaySessions", `ok — ${records.length} records`);
-    return records;
+    return mergeStudentAvatars<SessionListItem>(records);
   } catch (e) {
     logger.error("fetchTodaySessions", "failed", e);
     throw e;
@@ -89,14 +131,14 @@ export async function fetchMySessions(
   if (filters?.dateTo) domain.push(["session_date", "<=", filters.dateTo]);
 
   try {
-    const records = await searchRead<SessionListItem>(
+    const records = await searchRead<any>(
       "educare.session.log",
       domain,
       SESSION_LIST_FIELDS,
       { limit: 200, order: "session_date desc, start_time desc" },
     );
     logger.session("fetchMySessions", `ok — ${records.length} records`);
-    return records;
+    return mergeStudentAvatars<SessionListItem>(records);
   } catch (e) {
     logger.error("fetchMySessions", "failed", e);
     throw e;
@@ -108,7 +150,7 @@ export async function fetchSessionDetail(
 ): Promise<SessionLogDetail> {
   logger.session("fetchSessionDetail", "start", { sessionId });
   try {
-    const result = await read<SessionLogDetail>(
+    const result = await read<any>(
       "educare.session.log",
       [sessionId],
       SESSION_DETAIL_FIELDS,
@@ -128,7 +170,7 @@ export async function fetchSessionDetail(
       status: result[0].status,
       objectiveCount: result[0].objective_ids?.length ?? 0,
     });
-    return result[0];
+    return (await mergeStudentAvatars<SessionLogDetail>([result[0]]))[0];
   } catch (e: any) {
     logger.error("fetchSessionDetail", `failed for sessionId=${sessionId}`, {
       message: e?.message,
@@ -335,21 +377,27 @@ export async function fetchObjectivesByIds(
   }
 }
 
+export interface ConflictSession {
+  id: number;
+  start_time: number;
+  end_time: number;
+}
+
 export async function checkStudentSessionConflict(
   studentId: number,
   sessionDate: string,
-): Promise<number> {
-  const records = await searchRead<{ id: number }>(
+): Promise<ConflictSession[]> {
+  const records = await searchRead<ConflictSession>(
     "educare.session.log",
     [
       ["student_id", "=", studentId],
       ["session_date", "=", sessionDate],
       ["status", "in", ["draft", "scheduled"]],
     ],
-    ["id"],
-    { limit: 5 },
+    ["id", "start_time", "end_time"],
+    { limit: 10 },
   );
-  return records.length;
+  return records;
 }
 
 export async function scheduleSession(sessionId: number): Promise<boolean> {

@@ -211,6 +211,7 @@ export interface SessionListItem {
   id: number;
   name: string; // session code e.g. "SL-2026-004"
   student_id: OdooRef;
+  student_avatar_url?: string;
   session_date: string;
   start_time: number; // Float e.g. 8.0 = 08:00
   end_time: number;
@@ -256,6 +257,7 @@ export interface SessionLogDetail {
   id: number;
   name: string;
   student_id: OdooRef;
+  student_avatar_url?: string;
   teacher_id: OdooRef;
   center_id?: OdooRef;
   session_date: string;
@@ -309,6 +311,7 @@ export interface ReportListItem {
   id: number;
   name: string; // e.g. "DR-S001-20260407"
   student_id: OdooRef;
+  student_avatar_url?: string;
   report_date: string;
   status: ReportStatus;
   activity_summary?: string; // preview ~45 chars

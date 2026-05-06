@@ -42,7 +42,8 @@ function ChildStackNavigator() {
         name="ChildDetail"
         component={ChildProfileScreen}
         options={({ route }) => ({
-          title: (route.params as any)?.studentName ?? "Hồ sơ",
+          title: "Hồ sơ " + (route.params as any)?.studentName,
+          headerShown: false,
         })}
       />
       <ChildStack.Screen

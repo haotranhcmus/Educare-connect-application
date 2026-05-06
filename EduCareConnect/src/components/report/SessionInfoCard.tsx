@@ -44,7 +44,7 @@ export function SessionInfoCard({
             </Text>
             {objectives.map((obj, i) => (
               <Text key={i} variant="bodySmall" style={{ marginLeft: 8 }}>
-                · {obj.name}: {obj.accuracy}%
+                · {obj.name}: {Math.round(obj.accuracy)}%
               </Text>
             ))}
           </View>
@@ -52,7 +52,7 @@ export function SessionInfoCard({
 
         {avgAccuracy > 0 && (
           <Text variant="bodySmall" style={{ marginTop: 4, fontWeight: "600" }}>
-            Độ chính xác TB: {avgAccuracy}%
+            Độ chính xác TB: {Math.round(avgAccuracy)}%
           </Text>
         )}
       </Card.Content>

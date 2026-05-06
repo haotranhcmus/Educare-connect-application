@@ -13,6 +13,7 @@ import { EmptyState } from "../../../components/common/EmptyState";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StudentStackParamList } from "../../../navigation/types";
+import { theme } from "@/src/theme";
 
 type Props = NativeStackScreenProps<StudentStackParamList, "StudentList">;
 type StatusFilter = "all" | "active" | "inactive";
@@ -138,7 +139,7 @@ export function StudentListScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, paddingVertical: 16 },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -146,6 +147,10 @@ const styles = StyleSheet.create({
     paddingRight: 4,
     marginBottom: 4,
   },
-  searchbar: { flex: 1, marginBottom: 0 },
+  searchbar: {
+    flex: 1,
+    marginBottom: 0,
+    backgroundColor: theme.colors.surface,
+  },
   list: { flexGrow: 1, paddingBottom: 16 },
 });

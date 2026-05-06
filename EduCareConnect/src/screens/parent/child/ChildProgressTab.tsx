@@ -8,6 +8,7 @@ import {
   useActiveIepPlan,
   useGoalsWithObjectives,
 } from "../../../hooks/useParent";
+import { theme } from "@/src/theme/theme";
 
 interface ChildProgressTabProps {
   studentId: number;
@@ -367,7 +368,11 @@ export function ChildProgressTab({ studentId }: ChildProgressTabProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingBottom: 40 },
+  container: {
+    padding: 16,
+    paddingBottom: 40,
+    backgroundColor: theme.colors.background,
+  },
   goalCard: {
     padding: 16,
     borderRadius: 14,

@@ -7,6 +7,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useMyStudents } from "../../hooks/useStudents";
 import { useTodaySessions } from "../../hooks/useSessions";
 import { usePendingReportCount } from "../../hooks/useReports";
+import { useMyProfile } from "../../hooks/useProfile";
 import { AvatarLabel } from "../../components/common/AvatarLabel";
 import { SectionHeader } from "../../components/common/SectionHeader";
 import { SessionListCard } from "../../components/student/SessionListCard";
@@ -19,6 +20,10 @@ export function HomeScreen({ navigation }: any) {
   const { data: todaySessions = [] } = useTodaySessions();
   const { data: pendingCount = 0 } = usePendingReportCount();
   const { data: students = [] } = useMyStudents();
+  const { data: myProfile } = useMyProfile();
+  const teacherAvatarUri = myProfile?.avatar
+    ? `data:image/png;base64,${myProfile.avatar}`
+    : undefined;
 
   const today = new Date();
   const dateStr = today.toLocaleDateString("vi-VN", {
@@ -55,14 +60,11 @@ export function HomeScreen({ navigation }: any) {
       >
         {/* Row: avatar + name/center + date */}
         <View style={styles.headerRow}>
-          <View
-            style={[
-              styles.avatarBox,
-              { backgroundColor: "rgba(255,255,255,0.20)" },
-            ]}
-          >
-            <MaterialCommunityIcons name="account" size={26} color="#fff" />
-          </View>
+          <AvatarLabel
+            uri={teacherAvatarUri}
+            name={userName || "?"}
+            size={48}
+          />
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.greetLabel}>Xin chào,</Text>
             <Text style={styles.greetName} numberOfLines={1}>
@@ -159,7 +161,7 @@ export function HomeScreen({ navigation }: any) {
                   { backgroundColor: theme.colors.surface },
                 ]}
               >
-                <AvatarLabel name={s.name} size={36} />
+                <AvatarLabel uri={s.avatar_url} name={s.name} size={36} />
                 <Text variant="bodyMedium" style={{ flex: 1, marginLeft: 12 }}>
                   {s.name}
                 </Text>
@@ -203,13 +205,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   headerRow: { flexDirection: "row", alignItems: "center" },
-  avatarBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   greetLabel: { color: "rgba(255,255,255,0.75)", fontSize: 12 },
   greetName: { color: "#fff", fontSize: 17, fontWeight: "700", lineHeight: 22 },
   greetCenter: { color: "rgba(255,255,255,0.80)", fontSize: 12, marginTop: 1 },

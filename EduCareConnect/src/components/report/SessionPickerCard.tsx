@@ -68,7 +68,11 @@ export function SessionPickerCard({
     >
       <View style={styles.mainRow}>
         {/* Avatar */}
-        <AvatarLabel name={studentName} size={50} />
+        <AvatarLabel
+          uri={session.student_avatar_url}
+          name={studentName}
+          size={50}
+        />
 
         {/* Info block */}
         <View style={styles.infoBlock}>

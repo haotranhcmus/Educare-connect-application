@@ -25,7 +25,11 @@ export function ReportListCard({ report, onPress }: ReportListCardProps) {
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
         <View style={styles.topRow}>
-          <AvatarLabel name={studentName} size={36} />
+          <AvatarLabel
+            uri={report.student_avatar_url}
+            name={studentName}
+            size={36}
+          />
           <View style={styles.info}>
             <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
               {studentName}

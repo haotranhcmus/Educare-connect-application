@@ -8,7 +8,8 @@ import {
   useTheme,
   Surface,
   IconButton,
-  Snackbar,
+  Modal,
+  Portal,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
@@ -153,12 +154,11 @@ export function ReportCreateScreen({ navigation, route }: Props) {
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(false);
-  const [snackVisible, setSnackVisible] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("");
-  const showSnack = (msg: string) => {
-    setSnackMessage(msg);
-    setSnackVisible(true);
-  };
+  const [successModal, setSuccessModal] = useState<{
+    visible: boolean;
+    type: "draft" | "sent";
+    reportId: number | null;
+  }>({ visible: false, type: "draft", reportId: null });
   // Track which sessionId was last loaded to avoid duplicate fetches
   const loadedSessionIdRef = useRef<number | null>(null);
 
@@ -334,13 +334,13 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     const payload = buildPayload(data);
     if (!payload) return;
     try {
+      let rptId: number | null = reportId ?? null;
       if (isEdit && reportId) {
         await updateReport.mutateAsync({ reportId, vals: payload });
       } else {
-        await createReport.mutateAsync(payload);
+        rptId = await createReport.mutateAsync(payload);
       }
-      showSnack("Đã lưu báo cáo nháp");
-      setTimeout(() => navigation.goBack(), 1500);
+      setSuccessModal({ visible: true, type: "draft", reportId: rptId });
     } catch {
       Alert.alert("Lỗi", "Không thể lưu báo cáo");
     }
@@ -366,19 +366,11 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               }
               if (rptId) {
                 await sendReport.mutateAsync(rptId);
-                showSnack("Đã gửi báo cáo đến phụ huynh");
-                setTimeout(() => {
-                  // Reset stack so back from ReportDetail goes to ReportList (not SessionPicker)
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 1,
-                      routes: [
-                        { name: "ReportList" },
-                        { name: "ReportDetail", params: { reportId: rptId } },
-                      ],
-                    }),
-                  );
-                }, 1500);
+                setSuccessModal({
+                  visible: true,
+                  type: "sent",
+                  reportId: rptId,
+                });
               }
             } catch (e: any) {
               Alert.alert("Lỗi", e?.message || "Không thể gửi báo cáo");
@@ -494,14 +486,71 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           </Button>
         </View>
       </ScrollView>
-      <Snackbar
-        visible={snackVisible}
-        onDismiss={() => setSnackVisible(false)}
-        duration={1500}
-        style={{ marginBottom: 8 }}
-      >
-        {snackMessage}
-      </Snackbar>
+      <Portal>
+        <Modal
+          visible={successModal.visible}
+          onDismiss={() => {}}
+          contentContainerStyle={[
+            styles.modal,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.modalContent}>
+            <MaterialCommunityIcons
+              name={
+                successModal.type === "sent" ? "send-check" : "check-circle"
+              }
+              size={56}
+              color={theme.colors.primary}
+            />
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "700", marginTop: 16, textAlign: "center" }}
+            >
+              {successModal.type === "sent"
+                ? "Đã gửi báo cáo!"
+                : "Đã lưu báo cáo nháp!"}
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                marginTop: 8,
+                textAlign: "center",
+              }}
+            >
+              {successModal.type === "sent"
+                ? "Báo cáo đã được gửi đến phụ huynh qua email."
+                : "Báo cáo đã được lưu, bạn có thể chỉnh sửa thêm sau."}
+            </Text>
+            <Button
+              mode="contained"
+              style={{ marginTop: 24, minWidth: 120 }}
+              onPress={() => {
+                setSuccessModal((s) => ({ ...s, visible: false }));
+                if (successModal.type === "sent" && successModal.reportId) {
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 1,
+                      routes: [
+                        { name: "ReportList" },
+                        {
+                          name: "ReportDetail",
+                          params: { reportId: successModal.reportId },
+                        },
+                      ],
+                    }),
+                  );
+                } else {
+                  navigation.goBack();
+                }
+              }}
+            >
+              Đóng
+            </Button>
+          </View>
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -634,4 +683,13 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   actionBtn: { flex: 1 },
+  modal: {
+    marginHorizontal: 32,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  modalContent: {
+    padding: 32,
+    alignItems: "center",
+  },
 });

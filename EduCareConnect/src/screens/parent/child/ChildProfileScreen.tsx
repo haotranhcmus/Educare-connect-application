@@ -9,6 +9,7 @@ import { ChildProfileTab } from "./ChildProfileTab";
 import { ChildProgressTab } from "./ChildProgressTab";
 import { useStudentById } from "../../../hooks/useParent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -28,7 +29,7 @@ export function ChildProfileScreen({ route, navigation }: Props) {
   if (isLoading || !student) return <LoadingOverlay visible />;
 
   return (
-    <View
+    <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       {/* Header */}
@@ -81,7 +82,7 @@ export function ChildProfileScreen({ route, navigation }: Props) {
           {() => <ChildProgressTab studentId={student.id} />}
         </TopTab.Screen>
       </TopTab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 }
 

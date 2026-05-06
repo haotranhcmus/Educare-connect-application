@@ -220,7 +220,11 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         <View
           style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
         >
-          <AvatarLabel name={studentName} size={40} />
+          <AvatarLabel
+            uri={session.student_avatar_url}
+            name={studentName}
+            size={40}
+          />
           <Text
             variant="bodyMedium"
             style={{ fontWeight: "600", marginTop: 8 }}

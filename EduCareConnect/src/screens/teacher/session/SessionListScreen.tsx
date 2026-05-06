@@ -6,6 +6,7 @@ import {
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
+  Text as RNText,
 } from "react-native";
 import {
   Searchbar,
@@ -27,6 +28,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
 import type { SessionListItem } from "../../../types";
 import { theme as appTheme } from "@/src/theme/theme";
+import { is } from "zod/v4/locales";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionList">;
 
@@ -153,23 +155,28 @@ function MiniCalendar({
                     },
                     isToday &&
                       !isSelected && {
-                        borderWidth: 1.5,
+                        borderWidth: 1,
+                        borderColor: theme.colors.primary,
+                      },
+                    isToday &&
+                      isSelected && {
+                        backgroundColor: theme.colors.primary,
+                        borderWidth: 1,
                         borderColor: theme.colors.primary,
                       },
                   ]}
                 >
-                  <Text
+                  <RNText
                     style={[
                       calStyles.dayText,
                       isSelected
                         ? { color: theme.colors.onPrimary }
-                        : isToday
-                          ? { color: theme.colors.primary }
-                          : { color: theme.colors.onSurface },
+                        : { color: theme.colors.onSurface },
+                      isToday && !isSelected && { color: theme.colors.primary },
                     ]}
                   >
                     {day}
-                  </Text>
+                  </RNText>
                 </View>
                 {hasSession && (
                   <View

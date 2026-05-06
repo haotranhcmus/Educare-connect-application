@@ -41,7 +41,11 @@ export function SessionListCard({ session, onPress }: SessionListCardProps) {
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
         <View style={styles.topRow}>
-          <AvatarLabel name={studentName} size={36} />
+          <AvatarLabel
+            uri={session.student_avatar_url}
+            name={studentName}
+            size={36}
+          />
           <View style={styles.topInfo}>
             <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
               {studentName}

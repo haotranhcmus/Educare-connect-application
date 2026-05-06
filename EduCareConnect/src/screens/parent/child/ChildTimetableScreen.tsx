@@ -180,7 +180,7 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
               variant="bodySmall"
               style={{ color: theme.colors.outline, marginLeft: 4 }}
             >
-              {Math.round(session.duration)} phút
+              {Math.round(session.duration * 60)} phút
             </Text>
           </View>
         )}

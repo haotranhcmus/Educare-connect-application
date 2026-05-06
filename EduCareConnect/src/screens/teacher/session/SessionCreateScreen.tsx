@@ -10,6 +10,7 @@ import {
   useStudentActiveObjectives,
 } from "../../../hooks/useSessions";
 import { checkStudentSessionConflict } from "../../../api/sessionApi";
+import { formatFloatTime } from "../../../utils/formatters";
 import { useStudentsWithActivePlan } from "../../../hooks/useStudents";
 import { Picker } from "../../../components/form/Picker";
 import { DatePickerField } from "../../../components/form/DatePickerField";
@@ -113,14 +114,48 @@ export function SessionCreateScreen({ route, navigation }: Props) {
   const handleNext = async () => {
     if (!validateStep1()) return;
     try {
+      const toFloat = (t: TimeValue) => t.hours + t.minutes / 60;
+      const newStart = toFloat(form.start_time);
+      const newEnd = toFloat(form.end_time);
+
       const conflicts = await checkStudentSessionConflict(
         form.student_id,
         form.session_date,
       );
-      if (conflicts > 0) {
+
+      if (conflicts.length > 0) {
+        // Check if any existing session truly overlaps (times overlap)
+        const overlapping = conflicts.filter(
+          (c) =>
+            Math.max(c.start_time, newStart) < Math.min(c.end_time, newEnd),
+        );
+
+        if (overlapping.length > 0) {
+          // Hard block — time overlap, hide "continue"
+          const detail = overlapping
+            .map(
+              (c) =>
+                `• ${formatFloatTime(c.start_time)} – ${formatFloatTime(c.end_time)}`,
+            )
+            .join("\n");
+          Alert.alert(
+            "Trùng giờ học",
+            `Học sinh đã có buổi học trùng giờ vào ngày ${form.session_date}:\n${detail}\n\nVui lòng chọn giờ khác hoặc ngày khác.`,
+            [{ text: "Quay lại", style: "cancel" }],
+          );
+          return;
+        }
+
+        // Same day, non-overlapping — warn but allow continue
+        const detail = conflicts
+          .map(
+            (c) =>
+              `• ${formatFloatTime(c.start_time)} – ${formatFloatTime(c.end_time)}`,
+          )
+          .join("\n");
         Alert.alert(
-          "Buổi học trùng lịch",
-          `Học sinh này đã có ${conflicts} buổi học được lên lịch vào ngày ${form.session_date}. Bạn có muốn tiếp tục tạo thêm không?`,
+          "Cùng ngày học",
+          `Học sinh đã có ${conflicts.length} buổi học vào ngày ${form.session_date}:\n${detail}\n\nBạn có muốn tiếp tục tạo thêm buổi học không?`,
           [
             { text: "Quay lại", style: "cancel" },
             { text: "Tiếp tục", onPress: () => setStep(1) },

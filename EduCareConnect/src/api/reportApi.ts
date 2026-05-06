@@ -1,6 +1,46 @@
 import { searchRead, searchCount, create, write, callKw } from "./odooClient";
 import type { ReportListItem, ReportDetail } from "../types";
 
+function toAvatarUrl(b64?: string | false): string | undefined {
+  return b64 ? `data:image/png;base64,${b64}` : undefined;
+}
+
+async function mergeStudentAvatars(
+  records: ReportListItem[],
+): Promise<ReportListItem[]> {
+  if (records.length === 0) return records;
+  const studentIds = [
+    ...new Set(
+      records
+        .map((r) =>
+          Array.isArray(r.student_id)
+            ? r.student_id[0]
+            : ((r.student_id as any)?.id ?? 0),
+        )
+        .filter(Boolean),
+    ),
+  ];
+  if (studentIds.length === 0) return records;
+  try {
+    const students = await searchRead<{ id: number; avatar: string | false }>(
+      "educare.student",
+      [["id", "in", studentIds]],
+      ["id", "avatar"],
+    );
+    const avatarMap = new Map<number, string | undefined>(
+      students.map((s) => [s.id, toAvatarUrl(s.avatar)]),
+    );
+    return records.map((r) => {
+      const sid = Array.isArray(r.student_id)
+        ? r.student_id[0]
+        : ((r.student_id as any)?.id ?? 0);
+      return { ...r, student_avatar_url: avatarMap.get(sid) };
+    });
+  } catch {
+    return records;
+  }
+}
+
 const REPORT_LIST_FIELDS = [
   "id",
   "name",
@@ -32,12 +72,13 @@ const REPORT_DETAIL_FIELDS = [
 export async function fetchStudentReports(
   studentId: number,
 ): Promise<ReportListItem[]> {
-  return searchRead<ReportListItem>(
+  const records = await searchRead<ReportListItem>(
     "educare.daily.report",
     [["student_id", "=", studentId]],
     REPORT_LIST_FIELDS,
     { order: "report_date desc", limit: 50 },
   );
+  return mergeStudentAvatars(records);
 }
 
 export async function fetchPendingReportCount(
@@ -52,12 +93,13 @@ export async function fetchPendingReportCount(
 export async function fetchMyReports(
   teacherUid: number,
 ): Promise<ReportListItem[]> {
-  return searchRead<ReportListItem>(
+  const records = await searchRead<ReportListItem>(
     "educare.daily.report",
     [["teacher_id", "=", teacherUid]],
     REPORT_LIST_FIELDS,
     { order: "report_date desc", limit: 100 },
   );
+  return mergeStudentAvatars(records);
 }
 
 export async function fetchReportDetail(
@@ -76,6 +118,7 @@ export interface SessionAvailableItem {
   id: number;
   name: string;
   student_id: [number, string] | false;
+  student_avatar_url?: string;
   session_date: string;
   duration: number;
   overall_performance: string | false;
@@ -127,7 +170,10 @@ export async function fetchSessionsAvailableForReport(
       .filter(Boolean),
   );
 
-  return sessions.filter((s: any) => !reportedSessionIds.has(s.id));
+  const filtered = sessions.filter((s) => !reportedSessionIds.has(s.id));
+  return mergeStudentAvatars(filtered as any) as Promise<
+    SessionAvailableItem[]
+  >;
 }
 
 export async function fetchReportForSession(

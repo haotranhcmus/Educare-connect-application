@@ -182,6 +182,7 @@ export function EvalStep2Screen({ route, navigation }: Props) {
             label="Mức ban đầu"
             value={`${objective.baseline_accuracy_pct}%`}
             theme={theme}
+            primary
           />
           <StatChip
             label="Hiện tại"
@@ -193,6 +194,7 @@ export function EvalStep2Screen({ route, navigation }: Props) {
             label="Mục tiêu"
             value={`${objective.target_accuracy_pct}%`}
             theme={theme}
+            primary
           />
         </View>
 

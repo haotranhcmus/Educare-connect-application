@@ -13,6 +13,7 @@ import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { useReportDetail, useSendReport } from "../../../hooks/useReports";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { ReportStackParamList } from "../../../navigation/types";
+import { theme } from "@/src/theme/theme";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "ReportDetail">;
 
@@ -481,6 +482,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     marginBottom: 20,
+    backgroundColor: theme.colors.surface,
   },
   infoRow: {
     flexDirection: "row",
@@ -506,6 +508,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 14,
     marginBottom: 10,
+    backgroundColor: theme.colors.surface,
   },
   contentCardHeader: {
     flexDirection: "row",

@@ -157,14 +157,14 @@ export function ParentReportDetailScreen({ route }: Props) {
                 { backgroundColor: isUnread ? "#1565C0" : "#2E7D32" },
               ]}
             >
-              <MaterialCommunityIcons
-                name={isUnread ? "send" : "check-all"}
-                size={12}
-                color="white"
-              />
               <Text
                 variant="labelSmall"
-                style={{ color: "white", marginLeft: 4 }}
+                style={{
+                  color: "white",
+                  marginLeft: 4,
+                  width: 50,
+                  textAlign: "center",
+                }}
               >
                 {STATUS_LABEL[report.status] ?? report.status}
               </Text>
@@ -275,11 +275,6 @@ export function ParentReportDetailScreen({ route }: Props) {
       {/* ── Footer status line ── */}
       {report.write_date ? (
         <View style={styles.footerRow}>
-          <MaterialCommunityIcons
-            name={isUnread ? "send" : "check-all"}
-            size={14}
-            color={isUnread ? "#1565C0" : "#2E7D32"}
-          />
           <Text
             variant="labelSmall"
             style={{
@@ -308,7 +303,6 @@ export function ParentReportDetailScreen({ route }: Props) {
 
       {report.status === "read" && (
         <View style={styles.readNoticeRow}>
-          <MaterialCommunityIcons name="check-all" size={16} color="#2E7D32" />
           <Text
             variant="bodySmall"
             style={[styles.readNotice, { marginLeft: 6 }]}
