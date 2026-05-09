@@ -37,10 +37,6 @@
 
                         <!-- Tab 2: SMART info read from template (readonly preview) -->
                         <page string="SMART (từ template)" name="smart_preview">
-                            <div class="text-muted small mb-3">
-                                <i class="fa fa-info-circle me-1" /> Thông tin SMART được đọc từ
-                                objective template. Sau khi import, bạn có thể chỉnh sửa trực tiếp
-                                trong form objective. </div>
                             <group>
                                 <field name="smart_specific" readonly="1"
                                     placeholder="(chưa có trong template)" />
@@ -95,21 +91,15 @@
                         </span>
                     </div>
 
-                    <div class="text-muted small mb-3">
-                        <i class="fa fa-info-circle me-1" /> Nhấn vào từng objective để xem/chỉnh
-                        sửa chi tiết (tab Configure, SMART, Guidance). SMART fields và guidance sẽ
-                        được copy tự động từ template sau khi import. </div>
-
-                    <!-- Objective configuration lines (click row to open detail form) -->
-                    <field name="line_ids" nolabel="1"
-                        context="{&apos;form_view_ref&apos;: &apos;educare_iep.view_educare_iep_objective_configure_wizard_line_form&apos;}">
-                        <tree create="false" delete="true">
+                    <!-- Objective configuration lines (inline editable) -->
+                    <field name="line_ids" nolabel="1">
+                        <tree create="false" delete="true" editable="bottom">
                             <field name="name" />
-                            <field name="baseline_accuracy_pct" string="Baseline (%)" />
-                            <field name="target_accuracy_pct" string="Target (%)" />
-                            <field name="consecutive_sessions_required" string="Sessions" />
+                            <field name="baseline_accuracy_pct" string="Mức ban đầu (%)" />
+                            <field name="target_accuracy_pct" string="Mục tiêu (%)" />
+                            <field name="consecutive_sessions_required" string="Số buổi liên tiếp" />
                             <field name="weight" />
-                            <field name="baseline_description" string="Baseline Description"
+                            <field name="baseline_description" string="Mô tả mức ban đầu"
                                 optional="show" />
                             <field name="template_id" column_invisible="1" />
                         </tree>

@@ -22,10 +22,10 @@
                         type="object"
                         groups="educare_security.group_supervisor,educare_security.group_admin"
                         invisible="status != 'done'" />
-                    <button name="action_cancel_center" string="Cancel Session"
+                    <button name="action_open_cancel_wizard" string="Hủy buổi học"
                         type="object"
-                        confirm="Are you sure you want to cancel this session?"
-                        invisible="status not in ('draft', 'scheduled')" />
+                        class="btn-danger"
+                        invisible="status not in ( 'scheduled')" />
                     <field name="status" widget="statusbar"
                         statusbar_visible="draft,scheduled,completed,done,cancelled" />
                 </header>
@@ -42,7 +42,7 @@
                                 readonly="status != 'draft'"
                                 domain="[('iep_plan_ids.status', '=', 'active')]" />
                             <field name="teacher_id"
-                                readonly="status != 'draft'" />
+                                readonly="status != 'draft'" invisible="1" />
                             <field name="center_id" />
                             <field name="session_purpose"
                                 readonly="status != 'draft'" />
@@ -90,7 +90,6 @@
                                     <field name="sequence" column_invisible="1" />
                                     <field name="objective_id" readonly="1" />
                                     <field name="result_type" />
-                                    <field name="phase" />
                                     <field name="correct_trials" />
                                     <field name="total_trials" />
                                     <field name="accuracy_pct" readonly="1" widget="progressbar" />

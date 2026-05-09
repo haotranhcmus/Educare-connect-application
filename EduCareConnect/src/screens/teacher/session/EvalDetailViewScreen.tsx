@@ -36,6 +36,36 @@ const RESULT_TYPE_LABEL: Record<string, string> = {
   momentary_time_sample: "Khoảng thời điểm",
 };
 
+const OBSERVATION_LABELS: Record<string, Record<string, string>> = {
+  attendance: {
+    present: "Có mặt",
+    absent_excused: "Vắng có phép",
+    absent_unexcused: "Vắng không phép",
+    cancelled_center: "Huỷ bởi trung tâm",
+    cancelled_family: "Huỷ bởi gia đình",
+  },
+  mood: {
+    very_good: "Rất tốt",
+    good: "Tốt",
+    neutral: "Bình thường",
+    difficult: "Khó khăn",
+    very_difficult: "Rất khó khăn",
+  },
+  energy_level: { high: "Cao", normal: "Bình thường", low: "Thấp" },
+  engagement_level: {
+    highly_engaged: "Rất tập trung",
+    engaged: "Tham gia",
+    somewhat_engaged: "Tham gia một phần",
+    disengaged: "Không tham gia",
+  },
+  overall_performance: {
+    excellent: "Xuất sắc",
+    good: "Tốt",
+    fair: "Bình thường",
+    poor: "Kém",
+  },
+};
+
 export function EvalDetailViewScreen({ route }: Props) {
   const { sessionId } = route.params;
   const theme = useTheme();

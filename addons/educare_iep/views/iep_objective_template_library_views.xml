@@ -15,7 +15,7 @@
                 <field name="difficulty_level" />
                 <field name="age_min_months" string="Min Age" optional="show" />
                 <field name="age_max_months" string="Max Age" optional="show" />
-                <field name="default_target_accuracy_pct" string="Suggested Target (%)"
+                <field name="default_target_accuracy_pct" string="Mục tiêu (%)"
                     optional="show" />
                 <field name="active" widget="boolean_toggle" optional="hide" />
             </tree>
@@ -43,8 +43,13 @@
                             <field name="template_domain_ids" widget="many2many_tags" />
                             <field name="sequence" />
                             <field name="active" />
+
+                            <field name="age_min_months" />
+                            <field name="age_max_months" />
+                            <field name="difficulty_level" />
+
                         </group>
-                        <group string="Suggested Defaults">
+                        <group string="Mặc định đề xuất">
                             <field name="default_baseline_accuracy_pct" />
                             <field name="default_target_accuracy_pct" />
                             <field name="default_consecutive_sessions" />
@@ -53,14 +58,10 @@
                     </group>
 
                     <notebook>
-                        <page string="Description &amp; Guidance" name="description">
+                        <page string="Mô tả &amp; Hướng dẫn" name="description">
                             <group>
                                 <field name="description"
                                     placeholder="Detailed description of the behavior/skill to achieve..." />
-                            </group>
-                            <group>
-                                <field name="baseline_description"
-                                    placeholder="Description of initial level before intervention..." />
                             </group>
                             <group>
                                 <field name="materials_needed"
@@ -71,7 +72,7 @@
                                     placeholder="Step-by-step teaching instructions..." />
                             </group>
                         </page>
-                        <page string="SMART Components" name="smart">
+                        <page string="Mô tả SMART" name="smart">
                             <group>
                                 <field name="smart_specific"
                                     placeholder="Specific behavior to be achieved..." />
@@ -83,23 +84,13 @@
                                     placeholder="E.g.: 8 weeks" />
                             </group>
                         </page>
-                        <page string="Enrichment" name="enrichment">
+                        <page string="Tài liệu tham khảo" name="enrichment">
                             <group>
-                                <group string="Age &amp; Difficulty">
-                                    <field name="age_min_months" />
-                                    <field name="age_max_months" />
-                                    <field name="difficulty_level" />
-                                </group>
-                                <group string="Clinical References">
-                                    <field name="relevant_diagnosis_ids" widget="many2many_tags" />
-                                    <field name="suggested_prompt_level" />
-                                    <field name="measurement_template_id" />
-                                </group>
-                            </group>
-                            <group string="Prerequisites">
-                                <field name="prerequisite_objective_ids" widget="many2many_tags"
-                                    nolabel="1"
-                                    options='{"no_create": true}' />
+
+                                <field name="relevant_diagnosis_ids" widget="many2many_tags" />
+                                <field name="suggested_prompt_level" />
+                                <field name="measurement_template_id" />
+
                             </group>
                         </page>
                     </notebook>

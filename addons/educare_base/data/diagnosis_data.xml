@@ -2,9 +2,9 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- 1. ASD — Roi loan pho tu ky -->
+        <!-- 1. ASD — Rối loạn phổ tự kỷ -->
         <record id="diagnosis_asd" model="educare.diagnosis">
-            <field name="name">Roi loan pho tu ky</field>
+            <field name="name">Rối loạn phổ tự kỷ</field>
             <field name="code">ASD</field>
             <field name="category">autism</field>
             <field name="icd10_code">F84.0</field>
@@ -12,9 +12,9 @@
             <field name="sequence">10</field>
         </record>
 
-        <!-- 2. ADHD — Roi loan tang dong giam chu y -->
+        <!-- 2. ADHD — Rối loạn tăng động giảm chú ý -->
         <record id="diagnosis_adhd" model="educare.diagnosis">
-            <field name="name">Roi loan tang dong giam chu y</field>
+            <field name="name">Rối loạn tăng động giảm chú ý</field>
             <field name="code">ADHD</field>
             <field name="category">behavioral</field>
             <field name="icd10_code">F90.0</field>
@@ -22,9 +22,9 @@
             <field name="sequence">20</field>
         </record>
 
-        <!-- 3. GDD — Cham phat trien toan dien -->
+        <!-- 3. GDD — Chậm phát triển toàn diện -->
         <record id="diagnosis_gdd" model="educare.diagnosis">
-            <field name="name">Cham phat trien toan dien</field>
+            <field name="name">Chậm phát triển toàn diện</field>
             <field name="code">GDD</field>
             <field name="category">developmental</field>
             <field name="icd10_code">F88</field>
@@ -32,9 +32,9 @@
             <field name="sequence">30</field>
         </record>
 
-        <!-- 4. SLI — Roi loan ngon ngu dac hieu -->
+        <!-- 4. SLI — Rối loạn ngôn ngữ đặc hiệu -->
         <record id="diagnosis_sli" model="educare.diagnosis">
-            <field name="name">Roi loan ngon ngu dac hieu</field>
+            <field name="name">Rối loạn ngôn ngữ đặc hiệu</field>
             <field name="code">SLI</field>
             <field name="category">speech</field>
             <field name="icd10_code">F80.1</field>
@@ -42,19 +42,19 @@
             <field name="sequence">40</field>
         </record>
 
-        <!-- 5. SPD — Roi loan xu ly cam giac -->
-        <!-- Khong co ma DSM-5 chinh thuc; chu dong bo trong truong nay -->
+        <!-- 5. SPD — Rối loạn xử lý cảm giác -->
+        <!-- Không có mã DSM-5 chính thức; chủ động bỏ trống trường này -->
         <record id="diagnosis_spd" model="educare.diagnosis">
-            <field name="name">Roi loan xu ly cam giac</field>
+            <field name="name">Rối loạn xử lý cảm giác</field>
             <field name="code">SPD</field>
             <field name="category">sensory</field>
             <field name="icd10_code">F88</field>
             <field name="sequence">50</field>
         </record>
 
-        <!-- 6. DS — Hoi chung Down -->
+        <!-- 6. DS — Hội chứng Down -->
         <record id="diagnosis_ds" model="educare.diagnosis">
-            <field name="name">Hoi chung Down</field>
+            <field name="name">Hội chứng Down</field>
             <field name="code">DS</field>
             <field name="category">genetic</field>
             <field name="icd10_code">Q90</field>
@@ -62,19 +62,19 @@
             <field name="sequence">60</field>
         </record>
 
-        <!-- 7. CP — Bai nao -->
-        <!-- Khong co ma DSM-5; chu dong bo trong truong nay -->
+        <!-- 7. CP — Bại não -->
+        <!-- Không có mã DSM-5; chủ động bỏ trống trường này -->
         <record id="diagnosis_cp" model="educare.diagnosis">
-            <field name="name">Bai nao</field>
+            <field name="name">Bại não</field>
             <field name="code">CP</field>
             <field name="category">neurological</field>
             <field name="icd10_code">G80</field>
             <field name="sequence">70</field>
         </record>
 
-        <!-- 8. ID_MILD — Khuyet tat tri tue muc do nhe -->
+        <!-- 8. ID_MILD — Khuyết tật trí tuệ mức độ nhẹ -->
         <record id="diagnosis_id_mild" model="educare.diagnosis">
-            <field name="name">Khuyet tat tri tue - Muc do nhe</field>
+            <field name="name">Khuyết tật trí tuệ - Mức độ nhẹ</field>
             <field name="code">ID_MILD</field>
             <field name="category">developmental</field>
             <field name="icd10_code">F70</field>
@@ -82,9 +82,9 @@
             <field name="sequence">80</field>
         </record>
 
-        <!-- 9. ID_MOD — Khuyet tat tri tue muc do vua -->
+        <!-- 9. ID_MOD — Khuyết tật trí tuệ mức độ vừa -->
         <record id="diagnosis_id_mod" model="educare.diagnosis">
-            <field name="name">Khuyet tat tri tue - Muc do vua</field>
+            <field name="name">Khuyết tật trí tuệ - Mức độ vừa</field>
             <field name="code">ID_MOD</field>
             <field name="category">developmental</field>
             <field name="icd10_code">F71</field>
@@ -92,9 +92,9 @@
             <field name="sequence">90</field>
         </record>
 
-        <!-- 10. EXPRESSIVE — Roi loan ngon ngu dien dat -->
+        <!-- 10. EXPRESSIVE — Rối loạn ngôn ngữ diễn đạt -->
         <record id="diagnosis_expressive" model="educare.diagnosis">
-            <field name="name">Roi loan ngon ngu dien dat</field>
+            <field name="name">Rối loạn ngôn ngữ diễn đạt</field>
             <field name="code">EXPRESSIVE</field>
             <field name="category">speech</field>
             <field name="icd10_code">F80.1</field>
@@ -102,9 +102,9 @@
             <field name="sequence">100</field>
         </record>
 
-        <!-- 11. RECEPTIVE — Roi loan ngon ngu tiep nhan -->
+        <!-- 11. RECEPTIVE — Rối loạn ngôn ngữ tiếp nhận -->
         <record id="diagnosis_receptive" model="educare.diagnosis">
-            <field name="name">Roi loan ngon ngu tiep nhan</field>
+            <field name="name">Rối loạn ngôn ngữ tiếp nhận</field>
             <field name="code">RECEPTIVE</field>
             <field name="category">speech</field>
             <field name="icd10_code">F80.2</field>
@@ -112,10 +112,10 @@
             <field name="sequence">110</field>
         </record>
 
-        <!-- 12. OTHER — Chan doan khac -->
-        <!-- Khong co ma ICD-10 hoac DSM-5; chu dong bo trong ca hai truong -->
+        <!-- 12. OTHER — Chẩn đoán khác -->
+        <!-- Không có mã ICD-10 hoặc DSM-5; chủ động bỏ trống cả hai trường -->
         <record id="diagnosis_other" model="educare.diagnosis">
-            <field name="name">Chan doan khac</field>
+            <field name="name">Chẩn đoán khác</field>
             <field name="code">OTHER</field>
             <field name="category">other</field>
             <field name="sequence">999</field>

@@ -84,7 +84,8 @@ export type ParentChildStackParamList = {
   ChildList: undefined;
   ChildDetail: { studentId: number; studentName?: string };
   ChildIepHistory: undefined;
-  ChildIepPlanDetail: { planId: number; plan?: any };
+  ChildIepPlanDetail: { planId: number };
+  ChildIepObjectiveDetail: { objectiveId: number };
   ChildTimetable: undefined;
 };
 
@@ -92,13 +93,14 @@ export type ParentChildStackParamList = {
 export type ParentTimetableStackParamList = {
   Timetable: undefined;
   ChildIepHistory: undefined;
-  ChildIepPlanDetail: { planId: number; plan?: any };
+  ChildIepPlanDetail: { planId: number };
+  ChildIepObjectiveDetail: { objectiveId: number };
 };
 
 // -- Parent: IEP Stack (legacy – kept for backward-compat) --
 export type ParentIepStackParamList = {
   ParentIepPlan: undefined;
-  ParentIepPlanDetail: { planId: number; plan?: any };
+  ParentIepPlanDetail: { planId: number };
 };
 
 // -- Composite types for screens that need both tab + stack navigation --

@@ -92,7 +92,10 @@ function addDays(d: Date, n: number): Date {
 }
 
 function toISODate(d: Date): string {
-  return d.toISOString().split("T")[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function formatDayLabel(dateStr: string): string {
@@ -215,23 +218,6 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
               style={{ color: theme.colors.outline, marginLeft: 4 }}
             >
               {teacherName}
-            </Text>
-          </View>
-        )}
-
-        {/* Accuracy */}
-        {session.avg_accuracy != null && session.avg_accuracy > 0 && (
-          <View style={styles.metaRow}>
-            <MaterialCommunityIcons
-              name="star-outline"
-              size={13}
-              color="#F9A825"
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: "#F9A825", marginLeft: 4 }}
-            >
-              Độ chính xác TB: {Math.round(session.avg_accuracy)}%
             </Text>
           </View>
         )}
@@ -411,11 +397,16 @@ export function ChildTimetableScreen() {
     isRefetching,
   } = useStudentTimetable(studentId, dateFrom, dateTo);
 
+  const visibleSessions = useMemo(
+    () => sessions.filter((session: any) => session.status !== "draft"),
+    [sessions],
+  );
+
   const today = toISODate(new Date());
 
   const sessionDates = useMemo(
-    () => new Set(sessions.map((s: any) => s.session_date as string)),
-    [sessions],
+    () => new Set(visibleSessions.map((s: any) => s.session_date as string)),
+    [visibleSessions],
   );
 
   const grouped = useMemo(() => {
@@ -425,7 +416,7 @@ export function ChildTimetableScreen() {
       const d = toISODate(addDays(thisMonday, i));
       map.set(d, []);
     }
-    for (const s of sessions) {
+    for (const s of visibleSessions) {
       const key = s.session_date as string;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(s);
@@ -433,7 +424,7 @@ export function ChildTimetableScreen() {
     return Array.from(map.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
       .filter(([, items]) => items.length > 0); // only show days with sessions
-  }, [sessions, thisMonday]);
+  }, [visibleSessions, thisMonday]);
 
   if (isLoading) return <LoadingOverlay visible />;
 

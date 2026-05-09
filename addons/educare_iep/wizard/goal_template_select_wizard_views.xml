@@ -9,7 +9,7 @@
                     <!-- Goal banner -->
                     <div class="alert alert-info d-flex align-items-center gap-2 mb-3 py-2"
                         role="alert">
-                        <i class="fa fa-bullseye fa-lg text-info" />
+                        <i class="fa fa-bullseye fa-lg text-info" title="Goal" />
                         <span>
                             <strong>Goal:</strong>
                             <field name="goal_id" readonly="1" nolabel="1" class="ms-1 fw-semibold"
@@ -32,6 +32,7 @@
                             string="Search"
                             type="object"
                             icon="fa-search"
+                            title="Search Templates"
                             class="btn-primary btn-sm" />
                         <span class="ms-auto badge text-bg-primary fs-6 px-3 py-2">
                             <field name="selected_count" nolabel="1" /> selected </span>
@@ -58,7 +59,7 @@
 
                     <!-- Empty state -->
                     <div class="text-center text-muted py-4" invisible="line_ids">
-                        <i class="fa fa-search fa-2x mb-2 d-block" />
+                        <i class="fa fa-search fa-2x mb-2 d-block" title="No templates found" />
                         <p class="mb-1">No templates found matching the goal's domain.</p>
                         <p class="small">Try adjusting the search term.</p>
                     </div>

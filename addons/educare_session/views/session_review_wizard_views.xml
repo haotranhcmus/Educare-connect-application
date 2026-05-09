@@ -14,7 +14,6 @@
                         <field name="sequence" readonly="1" column_invisible="1" />
                         <field name="objective_id" readonly="1" />
                         <field name="result_type" readonly="1" />
-                        <field name="phase" readonly="1" />
                         <field name="correct_trials" />
                         <field name="total_trials" />
                         <field name="prompt_level_used" />

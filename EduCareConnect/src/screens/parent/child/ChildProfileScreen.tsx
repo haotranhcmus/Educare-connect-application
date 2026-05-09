@@ -79,7 +79,13 @@ export function ChildProfileScreen({ route, navigation }: Props) {
           {() => <ChildProfileTab student={student} />}
         </TopTab.Screen>
         <TopTab.Screen name="Tiến độ IEP">
-          {() => <ChildProgressTab studentId={student.id} />}
+          {() => (
+            <ChildProgressTab
+              studentId={student.id}
+              navigation={navigation}
+              detailRouteName="ChildIepPlanDetail"
+            />
+          )}
         </TopTab.Screen>
       </TopTab.Navigator>
     </SafeAreaView>

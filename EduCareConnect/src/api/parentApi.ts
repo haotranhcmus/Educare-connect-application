@@ -66,8 +66,27 @@ export async function fetchStudentById(studentId: number) {
       "class_name",
       "enrollment_date",
       "primary_diagnosis",
+      "secondary_diagnosis_ids",
+      "diagnosis_date",
+      "diagnosed_by",
+      "current_medications",
+      "medical_alert",
+      "medical_alert_detail",
       "assigned_teacher_id",
+      "co_teacher_ids",
       "supervisor_id",
+      "parent_user_id",
+      "parent_name",
+      "parent_phone",
+      "parent_email",
+      "parent_relation",
+      "preferred_contact_method",
+      "receive_daily_report",
+      "learning_style",
+      "communication_level",
+      "attention_span",
+      "behavior_notes",
+      "reinforcement_preferences",
       "center_id",
     ],
     { limit: 1 },
@@ -203,7 +222,12 @@ export async function fetchSessionsThisWeek(
   monday.setDate(now.getDate() - offsetToMonday);
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
-  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  const fmt = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
   return searchCount("educare.session.log", [
     ["student_id", "=", studentId],
     ["session_date", ">=", fmt(monday)],

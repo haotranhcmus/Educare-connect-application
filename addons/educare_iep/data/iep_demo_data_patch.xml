@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Backfill demo profile fields for student IEP-DEMO-AN. -->
+        <function model="educare.student" name="write">
+            <function model="educare.student" name="search">
+                <value eval="[('student_code', '=', 'IEP-DEMO-AN')]" />
+            </function>
+            <value
+                eval="{
+                    'diagnosis_date': '2024-12-20',
+                    'diagnosed_by': 'Bệnh viện Nhi Đồng 1',
+                    'parent_name': 'Phụ huynh 01',
+                    'parent_email': 'parent01@example.com',
+                    'parent_relation': 'mother',
+                    'preferred_contact_method': 'phone',
+                    'learning_style': 'visual',
+                    'communication_level': 'single_word',
+                }"
+            />
+        </function>
+    </data>
+</odoo>

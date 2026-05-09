@@ -11,9 +11,14 @@ import type { IepPlan } from "../../../../types";
 interface Props {
   studentId: number;
   navigation: any;
+  detailRouteName?: string;
 }
 
-export function StudentIepTab({ studentId, navigation }: Props) {
+export function StudentIepTab({
+  studentId,
+  navigation,
+  detailRouteName = "IepPlanDetail",
+}: Props) {
   const theme = useTheme();
   const {
     data: plans = [],
@@ -23,7 +28,7 @@ export function StudentIepTab({ studentId, navigation }: Props) {
   } = useStudentIepPlans(studentId);
 
   const handlePress = (plan: IepPlan) => {
-    navigation.navigate("IepPlanDetail", {
+    navigation.navigate(detailRouteName, {
       planId: plan.id,
       studentName: plan.iep_period,
     });
@@ -37,41 +42,107 @@ export function StudentIepTab({ studentId, navigation }: Props) {
     return (
       <TouchableOpacity onPress={() => handlePress(item)} activeOpacity={0.7}>
         <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <View style={styles.cardHeader}>
-            <Text variant="titleSmall" style={{ fontWeight: "bold" }}>
-              {item.iep_period}
-            </Text>
-            <StatusBadge status={item.status} />
-          </View>
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            Phiên bản {item.version_number}
-          </Text>
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            {formatDate(item.start_date)} → {formatDate(item.end_date)}
-          </Text>
-          {supervisor && (
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
-            >
-              Supervisor: {supervisor}
-            </Text>
-          )}
-          <View style={styles.cardFooter}>
-            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-              {item.goal_count || 0} mục tiêu dài hạn
-            </Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={theme.colors.outline}
+          {/* Accent top bar */}
+          <View
+            style={[
+              styles.accentBar,
+              { backgroundColor: theme.colors.primary + "20" },
+            ]}
+          />
+
+          {/* Header: Period + Status */}
+          <View style={styles.cardContent}>
+            <View style={styles.titleRow}>
+              <Text
+                variant="titleMedium"
+                style={[styles.periodTitle, { color: theme.colors.onSurface }]}
+              >
+                {item.iep_period}
+              </Text>
+              <StatusBadge status={item.status} size="medium" />
+            </View>
+
+            {/* Info rows */}
+            <View style={styles.infoSection}>
+              <View style={styles.infoRow}>
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.outline }}
+                >
+                  Phiên bản
+                </Text>
+                <Text
+                  variant="bodySmall"
+                  style={{ color: theme.colors.onSurfaceVariant }}
+                >
+                  v{item.version_number}
+                </Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.outline }}
+                >
+                  Kỳ
+                </Text>
+                <Text
+                  variant="bodySmall"
+                  style={{ color: theme.colors.onSurfaceVariant }}
+                  numberOfLines={1}
+                >
+                  {formatDate(item.start_date)} → {formatDate(item.end_date)}
+                </Text>
+              </View>
+            </View>
+
+            {/* Supervisor */}
+            {supervisor && (
+              <View style={styles.supervisorSection}>
+                <MaterialCommunityIcons
+                  name="account-tie"
+                  size={16}
+                  color={theme.colors.outline}
+                  style={{ marginRight: 6 }}
+                />
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.outline }}
+                >
+                  {supervisor}
+                </Text>
+              </View>
+            )}
+
+            {/* Divider */}
+            <View
+              style={[
+                styles.divider,
+                { backgroundColor: theme.colors.outlineVariant },
+              ]}
             />
+
+            {/* Footer: Goal count */}
+            <View style={styles.footerRow}>
+              <View style={styles.goalInfo}>
+                <MaterialCommunityIcons
+                  name="target"
+                  size={16}
+                  color={theme.colors.primary}
+                  style={{ marginRight: 6 }}
+                />
+                <Text
+                  variant="labelMedium"
+                  style={{ color: theme.colors.onSurface, fontWeight: "600" }}
+                >
+                  {item.goal_count || 0} mục tiêu dài hạn
+                </Text>
+              </View>
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={20}
+                color={theme.colors.outline}
+              />
+            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -98,17 +169,55 @@ export function StudentIepTab({ studentId, navigation }: Props) {
 
 const styles = StyleSheet.create({
   list: { flexGrow: 1, padding: 16 },
-  card: { padding: 12, borderRadius: 12, marginBottom: 8, elevation: 1 },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 4,
+  card: {
+    borderRadius: 12,
+    marginBottom: 10,
+    elevation: 2,
+    overflow: "hidden",
   },
-  cardFooter: {
+  accentBar: {
+    height: 4,
+  },
+  cardContent: {
+    padding: 12,
+  },
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 10,
+    gap: 8,
+  },
+  periodTitle: {
+    flex: 1,
+    fontWeight: "700",
+  },
+  infoSection: {
+    gap: 6,
+    marginBottom: 10,
+  },
+  infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
+    gap: 8,
+  },
+  supervisorSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  divider: {
+    height: 1,
+    marginVertical: 10,
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  goalInfo: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

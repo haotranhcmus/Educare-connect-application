@@ -2,49 +2,49 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- 1. Educare Ha Noi -->
+        <!-- 1. Educare Hà Nội -->
         <record id="center_hanoi" model="educare.center">
-            <field name="name">Educare Ha Noi</field>
+            <field name="name">Educare Hà Nội</field>
             <field name="code">HN-01</field>
             <field name="phone">024-3825-1001</field>
             <field name="email">hanoi@educare.vn</field>
-            <field name="address">123 Duong Lang, Dong Da, Ha Noi</field>
+            <field name="address">123 Đường Láng, Đống Đa, Hà Nội</field>
         </record>
 
-        <!-- 2. Educare TP Ho Chi Minh -->
+        <!-- 2. Educare TP. Hồ Chí Minh -->
         <record id="center_hcm" model="educare.center">
-            <field name="name">Educare TP Ho Chi Minh</field>
+            <field name="name">Educare TP. Hồ Chí Minh</field>
             <field name="code">HCM-01</field>
             <field name="phone">028-3823-2002</field>
             <field name="email">hcm@educare.vn</field>
-            <field name="address">456 Nguyen Thi Minh Khai, Quan 3, TP Ho Chi Minh</field>
+            <field name="address">456 Nguyễn Thị Minh Khai, Quận 3, TP. Hồ Chí Minh</field>
         </record>
 
-        <!-- 3. Educare Da Nang -->
+        <!-- 3. Educare Đà Nẵng -->
         <record id="center_danang" model="educare.center">
-            <field name="name">Educare Da Nang</field>
+            <field name="name">Educare Đà Nẵng</field>
             <field name="code">DN-01</field>
             <field name="phone">0236-3822-3003</field>
             <field name="email">danang@educare.vn</field>
-            <field name="address">789 Tran Phu, Hai Chau, Da Nang</field>
+            <field name="address">789 Trần Phú, Hải Châu, Đà Nẵng</field>
         </record>
 
-        <!-- 4. Educare Can Tho -->
+        <!-- 4. Educare Cần Thơ -->
         <record id="center_cantho" model="educare.center">
-            <field name="name">Educare Can Tho</field>
+            <field name="name">Educare Cần Thơ</field>
             <field name="code">CT-01</field>
             <field name="phone">0292-3820-4004</field>
             <field name="email">cantho@educare.vn</field>
-            <field name="address">321 Duong 30/4, Ninh Kieu, Can Tho</field>
+            <field name="address">321 Đường 30/4, Ninh Kiều, Cần Thơ</field>
         </record>
 
-        <!-- 5. Educare Binh Duong -->
+        <!-- 5. Educare Bình Dương -->
         <record id="center_binhduong" model="educare.center">
-            <field name="name">Educare Binh Duong</field>
+            <field name="name">Educare Bình Dương</field>
             <field name="code">BD-01</field>
             <field name="phone">0274-3821-5005</field>
             <field name="email">binhduong@educare.vn</field>
-            <field name="address">654 Dai lo Binh Duong, Thu Dau Mot, Binh Duong</field>
+            <field name="address">654 Đại lộ Bình Dương, Thủ Dầu Một, Bình Dương</field>
         </record>
 
     </data>

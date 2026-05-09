@@ -73,13 +73,13 @@ export function StudentReportTab({ studentId, navigation }: Props) {
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={styles.buttonContainer}>
-        <Button
+        {/* <Button
           mode="outlined"
           icon="plus"
           onPress={() => navigateToReportTab("ReportCreate", { studentId })}
         >
           Tạo báo cáo mới
-        </Button>
+        </Button> */}
       </View>
       <FlatList
         data={reports}

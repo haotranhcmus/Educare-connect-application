@@ -9,7 +9,6 @@
                 <field name="session_id" />
                 <field name="objective_id" />
                 <field name="result_type" optional="hide" />
-                <field name="phase" optional="hide" />
                 <field name="correct_trials" />
                 <field name="total_trials" />
                 <field name="accuracy_pct" />

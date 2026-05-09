@@ -12,7 +12,7 @@ interface Props {
 
 interface InfoItem {
   label: string;
-  value?: string | number | null;
+  value?: string | number | boolean | null;
 }
 
 const PARENT_RELATION_LABELS: Record<string, string> = {
@@ -55,19 +55,21 @@ function InfoCell({ label, value }: { label: string; value?: string | null }) {
 }
 
 function InfoGrid({ items }: { items: InfoItem[] }) {
-  const visibleItems = items.filter(
-    (item) =>
-      item.value !== undefined && item.value !== null && item.value !== "",
-  );
+  const normalizedItems = items
+    .map((item) => {
+      if (item.value === undefined || item.value === null || item.value === false) {
+        return null;
+      }
+      const text = String(item.value).trim();
+      if (!text || text.toLowerCase() === "false") return null;
+      return { ...item, value: text };
+    })
+    .filter((item): item is { label: string; value: string } => item !== null);
 
   return (
     <View style={styles.infoGrid}>
-      {visibleItems.map((item) => (
-        <InfoCell
-          key={item.label}
-          label={item.label}
-          value={String(item.value)}
-        />
+      {normalizedItems.map((item) => (
+        <InfoCell key={item.label} label={item.label} value={item.value} />
       ))}
     </View>
   );

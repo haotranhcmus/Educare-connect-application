@@ -53,6 +53,7 @@ const SESSION_LIST_FIELDS = [
   "id",
   "name",
   "student_id",
+  "student_name",
   "session_date",
   "start_time",
   "end_time",
@@ -273,6 +274,7 @@ type ActiveObjective = Pick<
   | "name"
   | "status"
   | "goal_id"
+  | "domain_ids"
   | "current_accuracy_pct"
   | "target_accuracy_pct"
   | "baseline_accuracy_pct"
@@ -284,6 +286,12 @@ type ActiveObjective = Pick<
   | "measurement_method"
   | "implementation_steps"
   | "materials_needed"
+  | "smart_specific"
+  | "smart_measurable"
+  | "smart_analysis"
+  | "smart_timebound"
+  | "difficulty_level"
+  | "suggested_prompt_level_id"
 >;
 
 export async function fetchStudentActiveObjectives(
@@ -347,6 +355,7 @@ export async function fetchObjectivesByIds(
         "name",
         "status",
         "goal_id",
+        "domain_ids",
         "current_accuracy_pct",
         "baseline_accuracy_pct",
         "progress_pct",
@@ -358,6 +367,12 @@ export async function fetchObjectivesByIds(
         "measurement_method",
         "implementation_steps",
         "materials_needed",
+        "smart_specific",
+        "smart_measurable",
+        "smart_analysis",
+        "smart_timebound",
+        "difficulty_level",
+        "suggested_prompt_level_id",
       ],
     );
     logger.session(

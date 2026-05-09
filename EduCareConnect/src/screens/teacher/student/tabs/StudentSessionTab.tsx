@@ -1,14 +1,9 @@
 import React from "react";
-import { SectionList, View, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, Button, useTheme } from "react-native-paper";
+import { SectionList, View, StyleSheet } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { useStudentSessions } from "../../../../hooks/useSessions";
-import { StatusBadge } from "../../../../components/common/StatusBadge";
+import { SessionListCard } from "../../../../components/session/SessionListCard";
 import { EmptyState } from "../../../../components/common/EmptyState";
-import { formatFloatTime, formatDate } from "../../../../utils/formatters";
-import {
-  SESSION_PURPOSE_LABELS,
-  LOCATION_LABELS,
-} from "../../../../utils/labels";
 import type { SessionListItem } from "../../../../types";
 
 interface Props {
@@ -58,55 +53,24 @@ export function StudentSessionTab({ studentId, navigation }: Props) {
   };
 
   const renderItem = ({ item }: { item: SessionListItem }) => (
-    <TouchableOpacity
+    <SessionListCard
+      session={item}
       onPress={() =>
         navigateToSessionTab("SessionDetail", { sessionId: item.id })
       }
-      activeOpacity={0.7}
-    >
-      <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-        <View style={styles.cardRow}>
-          <Text variant="labelMedium">{item.name}</Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
-            {formatDate(item.session_date)}
-          </Text>
-        </View>
-        <Text
-          variant="bodySmall"
-          style={{ color: theme.colors.onSurfaceVariant }}
-        >
-          {SESSION_PURPOSE_LABELS[item.session_purpose] || item.session_purpose}{" "}
-          · {LOCATION_LABELS[item.location] || item.location}
-        </Text>
-        <Text
-          variant="bodySmall"
-          style={{ color: theme.colors.onSurfaceVariant }}
-        >
-          {formatFloatTime(item.start_time)} – {formatFloatTime(item.end_time)}{" "}
-          ({item.end_time - item.start_time} phút)
-        </Text>
-        <View style={styles.cardFooter}>
-          {(item.avg_accuracy || 0) > 0 && (
-            <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-              Avg: {Math.round(item.avg_accuracy || 0)}%
-            </Text>
-          )}
-          <StatusBadge status={item.status} size="small" />
-        </View>
-      </View>
-    </TouchableOpacity>
+    />
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={styles.buttonContainer}>
-        <Button
+        {/* <Button
           mode="outlined"
           icon="plus"
           onPress={() => navigateToSessionTab("SessionCreate", { studentId })}
         >
           Tạo buổi học mới
-        </Button>
+        </Button> */}
       </View>
       <SectionList
         sections={sections}
@@ -140,16 +104,4 @@ const styles = StyleSheet.create({
   buttonContainer: { padding: 16 },
   list: { flexGrow: 1, paddingHorizontal: 16, paddingBottom: 16 },
   sectionTitle: { paddingVertical: 8, fontWeight: "600" },
-  card: { padding: 12, borderRadius: 12, marginBottom: 8, elevation: 1 },
-  cardRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  cardFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-  },
 });

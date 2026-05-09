@@ -37,7 +37,11 @@ export function IepPlanDetailScreen({ route, navigation }: Props) {
 
   const handleObjectivePress = useCallback(
     (objectiveId: number) => {
-      navigation.navigate("IepObjectiveDetail", { objectiveId });
+      const routeNames: string[] = navigation?.getState?.()?.routeNames ?? [];
+      const objectiveRoute = routeNames.includes("IepObjectiveDetail")
+        ? "IepObjectiveDetail"
+        : "ChildIepObjectiveDetail";
+      navigation.navigate(objectiveRoute as never, { objectiveId } as never);
     },
     [navigation],
   );

@@ -114,6 +114,7 @@
                                             type="object"
                                             string="Delete Objective"
                                             class="btn-link text-danger"
+                                            invisible="not can_delete"
                                             confirm="Are you sure you want to delete the selected short-term objective? This action cannot be undone." />
                                     </header>
                                     <field name="objective_code" readonly="1"
@@ -135,6 +136,7 @@
                                     <field name="trend" column_invisible="1" />
                                     <field name="baseline_accuracy_pct" column_invisible="1" />
                                     <field name="weight" column_invisible="1" />
+                                    <field name="can_delete" column_invisible="1" />
                                 </tree>
                             </field>
                             <div class="align-items-center text-center">

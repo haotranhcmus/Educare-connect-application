@@ -7,6 +7,7 @@ import {
   Modal,
   Alert,
   TextInput as RNTextInput,
+  TouchableOpacity,
 } from "react-native";
 import {
   Text,
@@ -16,6 +17,7 @@ import {
   RadioButton,
   ActivityIndicator,
   Snackbar,
+  Chip,
 } from "react-native-paper";
 import { cancelSession, scheduleSession } from "../../../api/sessionApi";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,13 +29,14 @@ import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import {
   useSessionDetail,
   useSessionResults,
+  useSessionObjectives,
 } from "../../../hooks/useSessions";
 import { useReportForSession } from "../../../hooks/useReports";
 import { formatDate, formatFloatTime } from "../../../utils/formatters";
 import { logger } from "../../../utils/logger";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
-import { SessionResult } from "@/src/types/models";
+import { IepObjectiveListItem, SessionResult } from "@/src/types/models";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionDetail">;
@@ -68,6 +71,26 @@ const OBSERVATION_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
+const TYPE_LABEL: Record<string, string> = {
+  individual: "1:1",
+  small_group: "Nhóm nhỏ",
+  consultation: "Tư vấn",
+};
+
+const LOCATION_LABEL: Record<string, string> = {
+  center: "Tại trung tâm",
+  home: "Tại nhà",
+  school: "Tại trường",
+  online: "Online",
+};
+
+const PURPOSE_LABEL: Record<string, string> = {
+  intervention: "Can thiệp",
+  maintenance_probe: "Đánh giá duy trì",
+  generalization_probe: "Đánh giá tổng quát hóa",
+  parent_training: "Hướng dẫn phụ huynh",
+};
+
 export function SessionDetailScreen({ route, navigation }: Props) {
   const { sessionId } = route.params;
   const theme = useTheme();
@@ -99,6 +122,9 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   );
   const { data: existingReport } = useReportForSession(
     session?.status === "done" ? sessionId : 0,
+  );
+  const { data: sessionObjectives = [] } = useSessionObjectives(
+    session?.objective_ids ?? [],
   );
 
   if (isLoading && !session) return <LoadingOverlay visible />;
@@ -150,9 +176,9 @@ export function SessionDetailScreen({ route, navigation }: Props) {
 
   if (!session) return null;
 
-  const studentName = Array.isArray(session.student_id)
-    ? session.student_id[1]
-    : "";
+  const studentName =
+    session.student_name ||
+    (Array.isArray(session.student_id) ? session.student_id[1] : "");
   const isCancelled = session.status === "cancelled";
   const isDone = session.status === "done";
   const canSchedule = session.status === "draft";
@@ -220,26 +246,34 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         <View
           style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
         >
-          <AvatarLabel
-            uri={session.student_avatar_url}
-            name={studentName}
-            size={40}
-          />
-          <Text
-            variant="bodyMedium"
-            style={{ fontWeight: "600", marginTop: 8 }}
-          >
-            {studentName}
-          </Text>
+          <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
+            <AvatarLabel
+              uri={session.student_avatar_url}
+              name={studentName}
+              size={40}
+            />
+            <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
+              {studentName}
+            </Text>
+          </View>
           <Divider style={{ marginVertical: 8 }} />
           <InfoRow label="Ngày" value={formatDate(session.session_date)} />
           <InfoRow
             label="Thời gian"
             value={`${formatFloatTime(session.start_time)} – ${formatFloatTime(session.end_time)} (${duration} phút)`}
           />
-          <InfoRow label="Địa điểm" value={session.location} />
-          <InfoRow label="Loại" value={session.session_type} />
-          <InfoRow label="Mục đích" value={session.session_purpose} />
+          <InfoRow
+            label="Địa điểm"
+            value={LOCATION_LABEL[session.location ?? ""] || ""}
+          />
+          <InfoRow
+            label="Loại"
+            value={TYPE_LABEL[session.session_type ?? ""] || ""}
+          />
+          <InfoRow
+            label="Mục đích"
+            value={PURPOSE_LABEL[session.session_purpose ?? ""] || ""}
+          />
 
           {isCancelled && (
             <>
@@ -319,6 +353,19 @@ export function SessionDetailScreen({ route, navigation }: Props) {
           )}
         </View>
 
+        {/* Objectives taught in session */}
+        {sessionObjectives.length > 0 && (
+          <>
+            <SectionHeader
+              icon="target"
+              title={`Mục Tiêu Buổi Học (${sessionObjectives.length})`}
+            />
+            {sessionObjectives.map((obj) => (
+              <ObjectiveDetailCard key={obj.id} objective={obj} />
+            ))}
+          </>
+        )}
+
         {/* Results section (done) */}
         {isDone && results.length > 0 && (
           <>
@@ -340,7 +387,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             {results.map((r: SessionResult) => (
               <ResultSummaryCard key={r.id} result={r} />
             ))}
-            <Button
+            {/* <Button
               mode="outlined"
               icon="magnify"
               onPress={() =>
@@ -349,7 +396,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               style={{ marginTop: 8 }}
             >
               Xem chi tiết đánh giá
-            </Button>
+            </Button> */}
           </>
         )}
 
@@ -557,6 +604,185 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   );
 }
 
+function ObjectiveDetailCard({
+  objective,
+}: {
+  objective: IepObjectiveListItem;
+}) {
+  const theme = useTheme();
+  const [expanded, setExpanded] = useState(false);
+  const domains = Array.isArray(objective.domain_ids)
+    ? (objective.domain_ids as any[]).filter(Boolean)
+    : [];
+
+  return (
+    <TouchableOpacity
+      onPress={() => setExpanded((v) => !v)}
+      activeOpacity={0.8}
+    >
+      <View
+        style={[
+          styles.objectiveCard,
+          { backgroundColor: theme.colors.surface },
+        ]}
+      >
+        <View style={styles.objectiveHeader}>
+          <View style={{ flex: 1 }}>
+            <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+              {objective.objective_code}
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{ fontWeight: "600", marginTop: 2 }}
+            >
+              {objective.name}
+            </Text>
+          </View>
+          <MaterialCommunityIcons
+            name={expanded ? "chevron-up" : "chevron-down"}
+            size={20}
+            color={theme.colors.onSurfaceVariant}
+          />
+        </View>
+
+        {/* Domain chips */}
+        {domains.length > 0 && (
+          <View style={styles.chipRow}>
+            {domains.map((d: any) => (
+              <Chip
+                key={typeof d === "object" ? d.id : d}
+                compact
+                style={{ marginRight: 4, marginTop: 4 }}
+                textStyle={{ fontSize: 11 }}
+              >
+                {typeof d === "object" ? (d[1] ?? d.name ?? d.id) : d}
+              </Chip>
+            ))}
+          </View>
+        )}
+
+        {objective.description ? (
+          <Text
+            variant="bodySmall"
+            style={{ color: theme.colors.onSurfaceVariant, marginTop: 6 }}
+            numberOfLines={expanded ? undefined : 2}
+          >
+            {objective.description}
+          </Text>
+        ) : null}
+
+        {expanded && (
+          <>
+            <Divider style={{ marginVertical: 8 }} />
+            {objective.measurement_method ? (
+              <DetailRow
+                icon="ruler"
+                label="Phương pháp đo lường"
+                value={objective.measurement_method}
+              />
+            ) : null}
+            {objective.implementation_steps ? (
+              <DetailRow
+                icon="format-list-checks"
+                label="Các bước thực hiện"
+                value={objective.implementation_steps}
+              />
+            ) : null}
+            {objective.materials_needed ? (
+              <DetailRow
+                icon="package-variant-closed"
+                label="Vật liệu cần thiết"
+                value={objective.materials_needed}
+              />
+            ) : null}
+            {objective.consecutive_sessions_required ? (
+              <DetailRow
+                icon="calendar-check-outline"
+                label="Buổi đạt liên tiếp"
+                value={`${objective.consecutive_sessions_achieved || 0}/${objective.consecutive_sessions_required} buổi`}
+              />
+            ) : null}
+            {objective.smart_specific ? (
+              <DetailRow
+                icon="target"
+                label="Cụ thể (S)"
+                value={objective.smart_specific}
+              />
+            ) : null}
+            {objective.smart_measurable ? (
+              <DetailRow
+                icon="chart-line"
+                label="Đo lường (M)"
+                value={objective.smart_measurable}
+              />
+            ) : null}
+            {objective.smart_analysis ? (
+              <DetailRow
+                icon="check-decagram-outline"
+                label="Khả thi (A/R)"
+                value={objective.smart_analysis}
+              />
+            ) : null}
+            {objective.smart_timebound ? (
+              <DetailRow
+                icon="clock-outline"
+                label="Thời hạn (T)"
+                value={objective.smart_timebound}
+              />
+            ) : null}
+            {typeof objective.difficulty_level === "number" ? (
+              <DetailRow
+                icon="alert-circle-outline"
+                label="Độ khó"
+                value={`${objective.difficulty_level}/5`}
+              />
+            ) : null}
+            {objective.suggested_prompt_level_id &&
+            typeof objective.suggested_prompt_level_id === "object" ? (
+              <DetailRow
+                icon="account-question-outline"
+                label="Mức gợi ý"
+                value={(objective.suggested_prompt_level_id as any)[1] ?? ""}
+              />
+            ) : null}
+          </>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function DetailRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={styles.detailRow}>
+      <MaterialCommunityIcons
+        name={icon as any}
+        size={15}
+        color={theme.colors.primary}
+        style={{ marginRight: 6, marginTop: 2 }}
+      />
+      <View style={{ flex: 1 }}>
+        <Text
+          variant="labelSmall"
+          style={{ color: theme.colors.outline, marginBottom: 1 }}
+        >
+          {label}
+        </Text>
+        <Text variant="bodySmall">{value}</Text>
+      </View>
+    </View>
+  );
+}
+
 function InfoRow({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
@@ -591,6 +817,19 @@ const styles = StyleSheet.create({
   },
   infoCard: { padding: 16, borderRadius: 12, elevation: 1, marginBottom: 16 },
   infoRow: { flexDirection: "row", marginVertical: 2 },
+  objectiveCard: {
+    padding: 14,
+    borderRadius: 12,
+    elevation: 1,
+    marginBottom: 10,
+  },
+  objectiveHeader: { flexDirection: "row", alignItems: "flex-start" },
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginVertical: 4,
+  },
+  chipRow: { flexDirection: "row", flexWrap: "wrap" },
   cancelBanner: {
     flexDirection: "row",
     alignItems: "center",

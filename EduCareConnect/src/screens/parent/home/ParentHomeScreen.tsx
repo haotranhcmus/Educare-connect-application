@@ -254,8 +254,10 @@ export function ParentHomeScreen({ navigation }: any) {
                   {formatSessionDate(latestSession.session_date)} ·{" "}
                   {formatFloatTime(latestSession.start_time)} –{" "}
                   {formatFloatTime(latestSession.end_time)}
+                </Text>
+                <Text>
                   {latestSession.location
-                    ? ` · ${LOCATION_LABELS[latestSession.location] ?? latestSession.location}`
+                    ? `${LOCATION_LABELS[latestSession.location] ?? latestSession.location}`
                     : ""}
                 </Text>
               </View>

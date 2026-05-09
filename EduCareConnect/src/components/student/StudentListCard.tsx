@@ -36,7 +36,7 @@ export function StudentListCard({
             >
               {student.name}
             </Text>
-            <StatusBadge status={student.status} size="small" />
+            {/* <StatusBadge status={student.status} size="small" /> */}
           </View>
           <Text
             variant="bodySmall"
@@ -44,16 +44,6 @@ export function StudentListCard({
           >
             {student.student_code}
           </Text>
-          <View style={styles.row}>
-            {diagnosisName && (
-              <Text
-                variant="labelSmall"
-                style={{ color: theme.colors.outline }}
-              >
-                {diagnosisName}
-              </Text>
-            )}
-          </View>
           {showIepBadge && student.latest_iep_status && (
             <View style={styles.iepRow}>
               <Text

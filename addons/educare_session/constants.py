@@ -8,11 +8,11 @@ across multiple models and for easier maintenance.
 # Prompt/Support levels in ABA training
 # Order matters: index 0 (independent) = best, index 4 (full_physical) = needs most support
 PROMPT_LEVELS = [
-    ('independent', 'Independent'),
-    ('verbal_prompt', 'Verbal Prompt'),
-    ('gestural_prompt', 'Gestural Prompt'),
-    ('partial_physical', 'Partial Physical Prompt'),
-    ('full_physical', 'Full Physical Prompt'),
+    ("independent", "Độc lập"),
+    ("verbal_prompt", "Gợi ý bằng lời"),
+    ("gestural_prompt", "Gợi ý bằng cử chỉ"),
+    ("partial_physical", "Hỗ trợ thể chất một phần"),
+    ("full_physical", "Hỗ trợ thể chất toàn phần"),
 ]
 
 # Extracted keys in order - for index-based comparison
@@ -22,107 +22,107 @@ PROMPT_ORDER = [key for key, _ in PROMPT_LEVELS]
 
 # Result/data collection types in ABA
 RESULT_TYPES = [
-    ('trial_by_trial', 'Trial by Trial'),
-    ('probe', 'Probe'),
-    ('whole_task', 'Whole Task'),
-    ('partial_interval', 'Partial Interval'),
-    ('momentary_time_sample', 'Momentary Time Sample'),
+    ("trial_by_trial", "Từng trial"),
+    ("probe", "Thăm dò"),
+    ("whole_task", "Toàn bộ nhiệm vụ"),
+    ("partial_interval", "Khoảng thời gian một phần"),
+    ("momentary_time_sample", "Lấy mẫu thời điểm"),
 ]
 
 # Objective-level ABA phase at the moment data is collected.
 RESULT_PHASES = [
-    ('baseline', 'Baseline'),
-    ('intervention', 'Intervention'),
-    ('maintenance', 'Maintenance'),
-    ('generalization', 'Generalization'),
+    ("baseline", "Cơ sở"),
+    ("intervention", "Can thiệp"),
+    ("maintenance", "Duy trì"),
+    ("generalization", "Khái quát hóa"),
 ]
 
 # Teaching method used for a specific objective inside one session.
 TEACHING_METHODS = [
-    ('dtt', 'Discrete Trial Training (DTT)'),
-    ('net', 'Natural Environment Teaching (NET)'),
-    ('task_analysis', 'Task Analysis'),
-    ('incidental', 'Incidental Teaching'),
-    ('errorless', 'Errorless Learning'),
+    ("dtt", "Luyện tập theo trial rời rạc (DTT)"),
+    ("net", "Dạy học trong môi trường tự nhiên (NET)"),
+    ("task_analysis", "Phân tích nhiệm vụ"),
+    ("incidental", "Dạy học ngẫu nhiên"),
+    ("errorless", "Học không lỗi"),
 ]
 
 # Teacher-rated reinforcement effectiveness for that objective result.
 REINFORCEMENT_EFFECTIVENESS = [
-    ('high', 'High - Strong learner response'),
-    ('medium', 'Medium - Moderate learner response'),
-    ('low', 'Low - Limited learner response'),
+    ("high", "Cao - Học viên phản ứng mạnh"),
+    ("medium", "Trung bình - Học viên phản ứng vừa phải"),
+    ("low", "Thấp - Học viên phản ứng hạn chế"),
 ]
 
 # Session status workflow
 SESSION_STATUS = [
-    ('draft', 'Draft'),
-    ('scheduled', 'Scheduled'),
-    ('completed', 'Completed'),
-    ('done', 'Reviewed'),
-    ('cancelled', 'Cancelled'),
+    ("draft", "Bản nháp"),
+    ("scheduled", "Đã lên lịch"),
+    ("completed", "Đã hoàn thành"),
+    ("done", "Đã xét duyệt"),
+    ("cancelled", "Đã hủy"),
 ]
 
 ATTENDANCE_STATUS = [
-    ('present', 'Present'),
-    ('absent_excused', 'Absent (Excused)'),
-    ('absent_unexcused', 'Absent (Unexcused)'),
-    ('cancelled_center', 'Cancelled by Center'),
-    ('cancelled_family', 'Cancelled by Family'),
+    ("present", "Có mặt"),
+    ("absent_excused", "Vắng có phép"),
+    ("absent_unexcused", "Vắng không phép"),
+    ("cancelled_center", "Trung tâm hủy"),
+    ("cancelled_family", "Gia đình hủy"),
 ]
 
 # Environmental factors during session
 MOOD_LEVELS = [
-    ('very_good', 'Very Good'),
-    ('good', 'Good'),
-    ('neutral', 'Neutral'),
-    ('difficult', 'Difficult'),
-    ('very_difficult', 'Very Difficult'),
+    ("very_good", "Rất tốt"),
+    ("good", "Tốt"),
+    ("neutral", "Bình thường"),
+    ("difficult", "Khó khăn"),
+    ("very_difficult", "Rất khó khăn"),
 ]
 
 ENERGY_LEVELS = [
-    ('high', 'High'),
-    ('normal', 'Normal'),
-    ('low', 'Low'),
+    ("high", "Cao"),
+    ("normal", "Bình thường"),
+    ("low", "Thấp"),
 ]
 
 ENGAGEMENT_LEVELS = [
-    ('highly_engaged', 'Highly Engaged'),
-    ('engaged', 'Engaged'),
-    ('somewhat_engaged', 'Somewhat Engaged'),
-    ('disengaged', 'Disengaged'),
+    ("highly_engaged", "Rất tập trung"),
+    ("engaged", "Tập trung"),
+    ("somewhat_engaged", "Khá tập trung"),
+    ("disengaged", "Mất tập trung"),
 ]
 
 PERFORMANCE_LEVELS = [
-    ('excellent', 'Excellent'),
-    ('good', 'Good'),
-    ('fair', 'Fair'),
-    ('poor', 'Needs Improvement'),
+    ("excellent", "Xuất sắc"),
+    ("good", "Tốt"),
+    ("fair", "Khá"),
+    ("poor", "Cần cải thiện"),
 ]
 
 LOCATIONS = [
-    ('center', 'Center'),
-    ('home', 'Home'),
-    ('school', 'School'),
-    ('online', 'Online'),
+    ("center", "Tại trung tâm"),
+    ("home", "Tại nhà"),
+    ("school", "Tại trường"),
+    ("online", "Trực tuyến"),
 ]
 
 SESSION_TYPES = [
-    ('individual', '1:1 (Individual)'),
-    ('small_group', 'Small Group (2-4 Learners)'),
-    ('consultation', 'Consultation'),
+    ("individual", "Cá nhân (1:1)"),
+    ("small_group", "Nhóm nhỏ (2-4 học viên)"),
+    ("consultation", "Tư vấn"),
 ]
 
 # Session purpose controls objective selection policy.
 SESSION_PURPOSES = [
-    ('intervention', 'Intervention'),
-    ('maintenance_probe', 'Maintenance Probe'),
-    ('generalization_probe', 'Generalization Probe'),
-    ('parent_training', 'Parent Training'),
+    ("intervention", "Can thiệp"),
+    ("maintenance_probe", "Kiểm tra duy trì"),
+    ("generalization_probe", "Kiểm tra khái quát hóa"),
+    ("parent_training", "Đào tạo phụ huynh"),
 ]
 
 HOME_PRACTICE_STATUS = [
-    ('yes', 'Completed Fully'),
-    ('partial', 'Completed Partially'),
-    ('no', 'Not Completed'),
-    ('not_assigned', 'Not Assigned'),
+    ("yes", "Hoàn thành đầy đủ"),
+    ("partial", "Hoàn thành một phần"),
+    ("no", "Chưa hoàn thành"),
+    ("not_assigned", "Chưa được giao"),
 ]

@@ -146,21 +146,8 @@ export function SessionCreateScreen({ route, navigation }: Props) {
           return;
         }
 
-        // Same day, non-overlapping — warn but allow continue
-        const detail = conflicts
-          .map(
-            (c) =>
-              `• ${formatFloatTime(c.start_time)} – ${formatFloatTime(c.end_time)}`,
-          )
-          .join("\n");
-        Alert.alert(
-          "Cùng ngày học",
-          `Học sinh đã có ${conflicts.length} buổi học vào ngày ${form.session_date}:\n${detail}\n\nBạn có muốn tiếp tục tạo thêm buổi học không?`,
-          [
-            { text: "Quay lại", style: "cancel" },
-            { text: "Tiếp tục", onPress: () => setStep(1) },
-          ],
-        );
+        // Same day, non-overlapping — proceed directly without warning
+        setStep(1);
       } else {
         setStep(1);
       }

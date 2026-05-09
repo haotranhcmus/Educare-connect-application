@@ -45,6 +45,7 @@
     ],
     'demo': [
         'data/iep_demo_data.xml',
+        'data/iep_demo_data_patch.xml',
     ],
     'installable': True,
     'license': 'LGPL-3',

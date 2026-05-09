@@ -154,6 +154,7 @@ export interface IepObjectiveListItem {
   description?: string;
   status: ObjectiveStatus;
   goal_id: OdooRef;
+  domain_ids?: number[] | OdooRef[];
   current_accuracy_pct: number;
   target_accuracy_pct: number;
   baseline_accuracy_pct: number;
@@ -170,6 +171,12 @@ export interface IepObjectiveListItem {
   measurement_method?: string;
   implementation_steps?: string;
   materials_needed?: string;
+  smart_specific?: string;
+  smart_measurable?: string;
+  smart_analysis?: string;
+  smart_timebound?: string;
+  difficulty_level?: number;
+  suggested_prompt_level_id?: OdooRef | false;
 }
 
 export interface IepObjectiveDetail {
@@ -211,6 +218,7 @@ export interface SessionListItem {
   id: number;
   name: string; // session code e.g. "SL-2026-004"
   student_id: OdooRef;
+  student_name?: string; // plain name without [code] prefix
   student_avatar_url?: string;
   session_date: string;
   start_time: number; // Float e.g. 8.0 = 08:00
@@ -257,6 +265,7 @@ export interface SessionLogDetail {
   id: number;
   name: string;
   student_id: OdooRef;
+  student_name?: string; // plain name without [code] prefix
   student_avatar_url?: string;
   teacher_id: OdooRef;
   center_id?: OdooRef;

@@ -17,7 +17,8 @@ import { ChildListScreen } from "../screens/parent/child/ChildListScreen";
 import { ChildProfileScreen } from "../screens/parent/child/ChildProfileScreen";
 import { ChildTimetableScreen } from "../screens/parent/child/ChildTimetableScreen";
 import { IepHistoryScreen } from "../screens/parent/iep/IepHistoryScreen";
-import { ParentIepPlanScreen } from "../screens/parent/iep/ParentIepPlanScreen";
+import { IepPlanDetailScreen } from "../screens/teacher/iep/IepPlanDetailScreen";
+import { IepObjectiveDetailScreen } from "../screens/teacher/iep/IepObjectiveDetailScreen";
 import { ParentReportListScreen } from "../screens/parent/report/ParentReportListScreen";
 import { ParentReportDetailScreen } from "../screens/parent/report/ParentReportDetailScreen";
 import { ParentProfileScreen } from "../screens/parent/profile/ParentProfileScreen";
@@ -53,8 +54,13 @@ function ChildStackNavigator() {
       />
       <ChildStack.Screen
         name="ChildIepPlanDetail"
-        component={ParentIepPlanScreen}
+        component={IepPlanDetailScreen as any}
         options={{ title: "Chi tiết kế hoạch IEP" }}
+      />
+      <ChildStack.Screen
+        name="ChildIepObjectiveDetail"
+        component={IepObjectiveDetailScreen as any}
+        options={{ title: "Chi tiết mục tiêu ngắn hạn" }}
       />
       <ChildStack.Screen
         name="ChildTimetable"
@@ -80,8 +86,13 @@ function TimetableStackNavigator() {
       />
       <TimetableStack.Screen
         name="ChildIepPlanDetail"
-        component={ParentIepPlanScreen}
+        component={IepPlanDetailScreen as any}
         options={{ title: "Chi tiết kế hoạch IEP" }}
+      />
+      <TimetableStack.Screen
+        name="ChildIepObjectiveDetail"
+        component={IepObjectiveDetailScreen as any}
+        options={{ title: "Chi tiết mục tiêu ngắn hạn" }}
       />
     </TimetableStack.Navigator>
   );

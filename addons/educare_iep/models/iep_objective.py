@@ -2,7 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from datetime import timedelta 
+from datetime import timedelta
 import uuid
 
 _logger = logging.getLogger(__name__)
@@ -10,37 +10,37 @@ _logger = logging.getLogger(__name__)
 
 # Module-level selection constants
 OBJECTIVE_STATUS = [
-    ('not_started', 'Not Started'),
-    ('in_progress', 'In Progress'),
-    ('on_hold', 'Paused'),
-    ('mastered', 'Mastered'),
-    ('discontinued', 'Discontinued'),
+    ("not_started", "Chưa bắt đầu"),
+    ("in_progress", "Đang thực hiện"),
+    ("on_hold", "Tạm dừng"),
+    ("mastered", "Đã thành thạo"),
+    ("discontinued", "Đã ngừng"),
 ]
 
 TREND_VALUES = [
-    ('improving', 'Improving'),
-    ('stable', 'Stable'),
-    ('declining', 'Declining'),
-    ('stagnant', 'Stagnant'),
-    ('insufficient_data', 'Insufficient Data'),
+    ("improving", "Tiến bộ"),
+    ("stable", "Ổn định"),
+    ("declining", "Suy giảm"),
+    ("stagnant", "Giậm chân"),
+    ("insufficient_data", "Chưa đủ dữ liệu"),
 ]
 
 
 class EducareIepObjective(models.Model):
-    _name = 'educare.iep.objective'
-    _description = 'IEP Short-term Objective'
-    _rec_name = 'name'
-    _order = 'goal_id, sequence, id'
-    _inherit = ['mail.thread']
+    _name = "educare.iep.objective"
+    _description = "IEP Short-term Objective"
+    _rec_name = "name"
+    _order = "goal_id, sequence, id"
+    _inherit = ["mail.thread"]
 
     # Tab 1: General Information
     name = fields.Char(
-        string='Objective Name',
+        string="Objective Name",
         size=256,
         required=True,
     )
     objective_code = fields.Char(
-        string='Objective Code',
+        string="Objective Code",
         size=32,
         default=False,
         index=True,
@@ -48,211 +48,211 @@ class EducareIepObjective(models.Model):
         readonly=True,
     )
     goal_id = fields.Many2one(
-        'educare.iep.goal',
-        string='Parent Goal',
+        "educare.iep.goal",
+        string="Parent Goal",
         required=True,
-        ondelete='cascade',
+        ondelete="cascade",
         index=True,
     )
     plan_status = fields.Selection(
-        related='goal_id.plan_id.status',
-        string='Plan Status',
+        related="goal_id.plan_id.status",
+        string="Plan Status",
         store=False,
     )
     # Related stored field, auto-filled from goal_id.student_id
     # store=True allows search/filter/record rules on this field
     student_id = fields.Many2one(
-        'educare.student',
-        string='Student',
-        related='goal_id.student_id',
+        "educare.student",
+        string="Student",
+        related="goal_id.student_id",
         store=True,
         index=True,
     )
     domain_ids = fields.Many2many(
-        'educare.domain',
-        'educare_iep_objective_domain_rel',
-        'objective_id',
-        'domain_id',
-        string='Domains',
-        help='Development domains for this objective. Defaults to goal domain.',
+        "educare.domain",
+        "educare_iep_objective_domain_rel",
+        "objective_id",
+        "domain_id",
+        string="Domains",
+        help="Development domains for this objective. Defaults to goal domain.",
     )
     sequence = fields.Integer(
-        string='Sequence',
+        string="Sequence",
         default=10,
     )
     description = fields.Text(
-        string='Objective Description',
+        string="Objective Description",
         required=True,
     )
     status = fields.Selection(
         selection=OBJECTIVE_STATUS,
-        string='Status',
+        string="Status",
         required=True,
-        default='not_started',
+        default="not_started",
         tracking=True,
         index=True,
     )
-    start_date = fields.Date(string='Start Date')
-    target_date = fields.Date(string='Target Date')
-    mastery_date = fields.Date(string='Mastery Date', tracking=True)
+    start_date = fields.Date(string="Start Date")
+    target_date = fields.Date(string="Target Date")
+    mastery_date = fields.Date(string="Mastery Date", tracking=True)
     is_overdue = fields.Boolean(
-        string='Overdue',
-        compute='_compute_is_overdue',
+        string="Overdue",
+        compute="_compute_is_overdue",
         store=True,
         tracking=True,
         index=True,
     )
     can_delete = fields.Boolean(
-        string='Can Delete',
-        compute='_compute_can_delete',
+        string="Can Delete",
+        compute="_compute_can_delete",
         store=False,
     )
 
     # Tab 2: Success Criteria
     baseline_accuracy_pct = fields.Float(
-        string='Baseline Accuracy (%)',
+        string="Độ chính xác ban đầu (%)",
         digits=(5, 2),
         default=0.0,
         required=True,
     )
     target_accuracy_pct = fields.Float(
-        string='Target Accuracy (%)',
+        string="Target Accuracy (%)",
         digits=(5, 2),
         default=80.0,
         required=True,
     )
     consecutive_sessions_required = fields.Integer(
-        string='Consecutive Sessions Required',
+        string="Consecutive Sessions Required",
         default=3,
         required=True,
-        help='Number of consecutive sessions reaching target accuracy to be considered mastered. Default 3 sessions per ABA standard.',
+        help="Number of consecutive sessions reaching target accuracy to be considered mastered. Default 3 sessions per ABA standard.",
     )
     consecutive_sessions_achieved = fields.Integer(
-        string='Consecutive Sessions Achieved',
-        compute='_compute_consecutive',
+        string="Consecutive Sessions Achieved",
+        compute="_compute_consecutive",
         store=True,
     )
     measurement_method = fields.Text(
-        string='Data Collection Method',
-        default='Direct observation during session.',
+        string="Data Collection Method",
+        default="Direct observation during session.",
         required=True,
     )
     weight = fields.Float(
-        string='Weight',
+        string="Weight",
         digits=(5, 2),
         default=1.0,
-        help='Relative importance for goal weighted average. Higher = more impact on overall goal progress.',
+        help="Relative importance for goal weighted average. Higher = more impact on overall goal progress.",
     )
 
     # Tab 3: Actual Progress
     current_accuracy_pct = fields.Float(
-        string='Current Accuracy (%)',
-        compute='_compute_accuracy',
+        string="Current Accuracy (%)",
+        compute="_compute_accuracy",
         store=True,
         tracking=True,
         digits=(5, 2),
     )
     progress_pct = fields.Float(
-        string='Progress (%)',
-        compute='_compute_progress',
+        string="Progress (%)",
+        compute="_compute_progress",
         store=True,
         digits=(5, 2),
     )
     trend = fields.Selection(
         selection=TREND_VALUES,
-        string='Progress Trend',
-        compute='_compute_trend',
+        string="Progress Trend",
+        compute="_compute_trend",
         store=True,
     )
     last_session_date = fields.Date(
-        string='Last Session Date',
-        compute='_compute_last_session',
+        string="Last Session Date",
+        compute="_compute_last_session",
         store=True,
     )
     last_session_accuracy = fields.Float(
-        string='Last Session Accuracy',
-        compute='_compute_last_session',
+        string="Last Session Accuracy",
+        compute="_compute_last_session",
         store=True,
         digits=(5, 2),
     )
     total_sessions_worked = fields.Integer(
-        string='Total Sessions',
-        compute='_compute_session_count',
+        string="Total Sessions",
+        compute="_compute_session_count",
         store=True,
     )
     alert_triggered = fields.Boolean(
-        string='Alert',
-        compute='_compute_alert_triggered',
+        string="Alert",
+        compute="_compute_alert_triggered",
         store=True,
         tracking=True,
         index=True,
     )
     alert_message = fields.Char(
-        string='Alert Message',
+        string="Alert Message",
         size=256,
-        compute='_compute_alert_message',
-            # No store=True, display only
+        compute="_compute_alert_message",
+        # No store=True, display only
     )
-    discontinued_reason = fields.Text(string='Discontinued Reason', tracking=True)
-    notes = fields.Text(string='Notes / Observations')
+    discontinued_reason = fields.Text(string="Discontinued Reason", tracking=True)
+    notes = fields.Text(string="Notes / Observations")
 
     # --- Baseline & Teaching Guidance (from template) ---
     baseline_description = fields.Text(
-        string='Baseline Description',
-        help='Description of the student\'s current baseline performance.',
+        string="Mô tả mức ban đầu",
+        help="Mô tả mức hiệu suất ban đầu của học sinh.",
     )
     materials_needed = fields.Text(
-        string='Materials Needed',
-        help='List of materials or supplies required for this objective.',
+        string="Materials Needed",
+        help="List of materials or supplies required for this objective.",
     )
     implementation_steps = fields.Text(
-        string='Implementation Steps',
-        help='Step-by-step teaching instructions or guidelines.',
+        string="Implementation Steps",
+        help="Step-by-step teaching instructions or guidelines.",
     )
 
     # --- SMART Components ---
-    smart_specific = fields.Text(string='S - Specific')
-    smart_measurable = fields.Char(string='M - Measurable', size=256)
-    smart_analysis = fields.Text(string='A/R - Achievable & Relevant')
-    smart_timebound = fields.Char(string='T - Time-Bound', size=128)
+    smart_specific = fields.Text(string="S - Specific")
+    smart_measurable = fields.Char(string="M - Measurable", size=256)
+    smart_analysis = fields.Text(string="A/R - Achievable & Relevant")
+    smart_timebound = fields.Char(string="T - Time-Bound", size=128)
 
     # --- Context / Metadata (carried from template) ---
     age_min_months = fields.Integer(
-        string='Min Age (months)',
-        help='Minimum recommended age in months.',
+        string="Min Age (months)",
+        help="Minimum recommended age in months.",
     )
     age_max_months = fields.Integer(
-        string='Max Age (months)',
-        help='Maximum recommended age in months.',
+        string="Max Age (months)",
+        help="Maximum recommended age in months.",
     )
     difficulty_level = fields.Integer(
-        string='Difficulty Level',
+        string="Difficulty Level",
         default=1,
-        help='Skill difficulty level from 1 (easiest) to 5 (hardest).',
+        help="Skill difficulty level from 1 (easiest) to 5 (hardest).",
     )
     relevant_diagnosis_ids = fields.Many2many(
-        'educare.diagnosis',
-        'educare_iep_objective_diagnosis_rel',
-        'objective_id',
-        'diagnosis_id',
-        string='Relevant Diagnoses',
+        "educare.diagnosis",
+        "educare_iep_objective_diagnosis_rel",
+        "objective_id",
+        "diagnosis_id",
+        string="Relevant Diagnoses",
     )
     suggested_prompt_level_id = fields.Many2one(
-        'educare.iep.prompt.level',
-        string='Suggested Prompt Level',
-        ondelete='set null',
+        "educare.iep.prompt.level",
+        string="Suggested Prompt Level",
+        ondelete="set null",
     )
     measurement_template_id = fields.Many2one(
-        'educare.iep.measurement.template',
-        string='Measurement Template',
-        ondelete='set null',
+        "educare.iep.measurement.template",
+        string="Measurement Template",
+        ondelete="set null",
     )
     source_template_id = fields.Many2one(
-        'educare.iep.objective.template',
-        string='Source Template',
-        ondelete='set null',
+        "educare.iep.objective.template",
+        string="Source Template",
+        ondelete="set null",
         readonly=True,
-        help='The objective template this record was created from.',
+        help="The objective template this record was created from.",
     )
 
     # Relationships (placeholder)
@@ -264,21 +264,27 @@ class EducareIepObjective(models.Model):
 
     # SQL constraints
     _sql_constraints = [
-        ('target_accuracy_check',
-         'CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)',
-         'Target accuracy must be between 0 and 100.'),
-        ('baseline_accuracy_check',
-         'CHECK(baseline_accuracy_pct >= 0 AND baseline_accuracy_pct <= 100)',
-         'Baseline accuracy must be between 0 and 100.'),
-        ('baseline_lt_target_check',
-         'CHECK(baseline_accuracy_pct < target_accuracy_pct)',
-         'Baseline accuracy must be less than target accuracy.'),
-        ('consecutive_sessions_check',
-         'CHECK(consecutive_sessions_required >= 1)',
-         'Consecutive sessions required must be at least 1.'),
-        ('weight_positive',
-         'CHECK(weight > 0)',
-         'Weight must be greater than 0.'),
+        (
+            "target_accuracy_check",
+            "CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)",
+            "Target accuracy must be between 0 and 100.",
+        ),
+        (
+            "baseline_accuracy_check",
+            "CHECK(baseline_accuracy_pct >= 0 AND baseline_accuracy_pct <= 100)",
+            "Baseline accuracy must be between 0 and 100.",
+        ),
+        (
+            "baseline_lt_target_check",
+            "CHECK(baseline_accuracy_pct < target_accuracy_pct)",
+            "Baseline accuracy must be less than target accuracy.",
+        ),
+        (
+            "consecutive_sessions_check",
+            "CHECK(consecutive_sessions_required >= 1)",
+            "Consecutive sessions required must be at least 1.",
+        ),
+        ("weight_positive", "CHECK(weight > 0)", "Weight must be greater than 0."),
     ]
 
     def init(self):
@@ -300,39 +306,37 @@ class EducareIepObjective(models.Model):
         """)
 
     # Python constraints
-    @api.constrains('start_date', 'target_date', 'goal_id')
+    @api.constrains("start_date", "target_date", "goal_id")
     def _check_objective_dates(self):
         for obj in self:
             if obj.goal_id and obj.start_date and obj.goal_id.start_date:
                 if obj.start_date < obj.goal_id.start_date:
                     raise ValidationError(
-                        _('Objective start date cannot be before goal start date!')
+                        _("Objective start date cannot be before goal start date!")
                     )
             if obj.goal_id and obj.target_date and obj.goal_id.target_date:
                 if obj.target_date > obj.goal_id.target_date:
                     raise ValidationError(
-                        _('Objective target date cannot be after goal target date!')
+                        _("Objective target date cannot be after goal target date!")
                     )
             if obj.start_date and obj.target_date:
                 if obj.target_date <= obj.start_date:
-                    raise ValidationError(
-                        _('Target date must be after start date!')
-                    )
+                    raise ValidationError(_("Target date must be after start date!"))
 
-    @api.constrains('status', 'mastery_date')
+    @api.constrains("status", "mastery_date")
     def _check_mastery_date(self):
         for obj in self:
-            if obj.status == 'mastered' and not obj.mastery_date:
+            if obj.status == "mastered" and not obj.mastery_date:
                 raise ValidationError(
-                    _('Mastery date is required when marking an objective as mastered!')
+                    _("Mastery date is required when marking an objective as mastered!")
                 )
 
-    @api.constrains('status', 'discontinued_reason')
+    @api.constrains("status", "discontinued_reason")
     def _check_discontinued_reason(self):
         for obj in self:
-            if obj.status == 'discontinued' and not obj.discontinued_reason:
+            if obj.status == "discontinued" and not obj.discontinued_reason:
                 raise ValidationError(
-                    _('Please provide a reason before discontinuing this objective.')
+                    _("Please provide a reason before discontinuing this objective.")
                 )
 
     def _is_mastery_criteria_met(self):
@@ -345,29 +349,36 @@ class EducareIepObjective(models.Model):
 
     def _auto_sync_status_from_rules(self):
         """Auto transition objective status based on timeline and mastery criteria."""
-        if self.env.context.get('skip_auto_objective_status_sync'):
+        if self.env.context.get("skip_auto_objective_status_sync"):
             return
 
         today = fields.Date.today()
         for objective in self:
             # Preserve manual expert states.
-            if objective.status in ('on_hold', 'discontinued', 'mastered'):
+            if objective.status in ("on_hold", "discontinued", "mastered"):
                 continue
 
             # No auto-transition if goal is not active or plan is closed.
-            if objective.goal_id.status != 'active':
+            if objective.goal_id.status != "active":
                 continue
-            if objective.goal_id.plan_id.status == 'closed':
+            if objective.goal_id.plan_id.status == "closed":
                 continue
 
             vals = {}
-            if objective.status == 'not_started' and objective.start_date and objective.start_date <= today:
-                vals['status'] = 'in_progress'
+            if (
+                objective.status == "not_started"
+                and objective.start_date
+                and objective.start_date <= today
+            ):
+                vals["status"] = "in_progress"
 
-            target_status = vals.get('status', objective.status)
-            if target_status in ('not_started', 'in_progress') and objective._is_mastery_criteria_met():
-                vals['status'] = 'mastered'
-                vals['mastery_date'] = objective.mastery_date or today
+            target_status = vals.get("status", objective.status)
+            if (
+                target_status in ("not_started", "in_progress")
+                and objective._is_mastery_criteria_met()
+            ):
+                vals["status"] = "mastered"
+                vals["mastery_date"] = objective.mastery_date or today
 
             if vals:
                 objective.with_context(skip_auto_objective_status_sync=True).write(vals)
@@ -375,86 +386,113 @@ class EducareIepObjective(models.Model):
     @api.model
     def cron_auto_sync_objective_status(self):
         """Daily sync to keep objective status aligned with date-driven rules."""
-        objectives = self.search([
-            ('status', 'in', ['not_started', 'in_progress']),
-            ('goal_id.status', '=', 'active'),
-        ])
+        objectives = self.search(
+            [
+                ("status", "in", ["not_started", "in_progress"]),
+                ("goal_id.status", "=", "active"),
+            ]
+        )
         objectives._auto_sync_status_from_rules()
 
     # ORM overrides
     def _next_objective_code(self):
         """Generate next objective code with collision detection and UUID fallback."""
-        sequence_model = self.env['ir.sequence'].sudo()
+        sequence_model = self.env["ir.sequence"].sudo()
         for _attempt in range(100):
-            code = sequence_model.next_by_code('educare.iep.objective')
+            code = sequence_model.next_by_code("educare.iep.objective")
             if not code:
-                seq = sequence_model.search([('code', '=', 'educare.iep.objective')], limit=1)
+                seq = sequence_model.search(
+                    [("code", "=", "educare.iep.objective")], limit=1
+                )
                 if seq:
                     code = seq.next_by_id()
             if not code:
                 break
-            if not self.sudo().search_count([('objective_code', '=', code)]):
+            if not self.sudo().search_count([("objective_code", "=", code)]):
                 return code
         year = fields.Date.today().year
         code = f"STO-{year}-{uuid.uuid4().hex[:8].upper()}"
-        _logger.warning('Objective sequence exhausted or unavailable, generated fallback code: %s', code)
+        _logger.warning(
+            "Objective sequence exhausted or unavailable, generated fallback code: %s",
+            code,
+        )
         return code
 
     def _prepare_dates_from_goal(self, vals):
         """Fill objective dates from parent goal when user leaves them empty."""
-        goal_id = vals.get('goal_id')
+        goal_id = vals.get("goal_id")
         if not goal_id:
             return vals
-        goal = self.env['educare.iep.goal'].browse(goal_id)
+        goal = self.env["educare.iep.goal"].browse(goal_id)
         if goal.exists():
-            vals.setdefault('start_date', goal.start_date)
-            vals.setdefault('target_date', goal.target_date)
+            vals.setdefault("start_date", goal.start_date)
+            vals.setdefault("target_date", goal.target_date)
         return vals
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             self._prepare_dates_from_goal(vals)
-            if not vals.get('objective_code') or vals['objective_code'] == '/':
-                vals['objective_code'] = self._next_objective_code()
+            if not vals.get("objective_code") or vals["objective_code"] == "/":
+                vals["objective_code"] = self._next_objective_code()
         objectives = super().create(vals_list)
         objectives._auto_sync_status_from_rules()
-        objectives.mapped('goal_id')._auto_update_status_from_workflow()
+        objectives.mapped("goal_id")._auto_update_status_from_workflow()
         return objectives
 
     def write(self, vals):
         vals = dict(vals)
-        if 'objective_code' in vals and vals['objective_code'] == '/':
-            vals['objective_code'] = self._next_objective_code()
-        if 'objective_code' not in vals:
-            need_patch = self.filtered(lambda rec: not rec.objective_code or rec.objective_code == '/')
+        if "objective_code" in vals and vals["objective_code"] == "/":
+            vals["objective_code"] = self._next_objective_code()
+        if "objective_code" not in vals:
+            need_patch = self.filtered(
+                lambda rec: not rec.objective_code or rec.objective_code == "/"
+            )
             if need_patch:
                 for rec in need_patch:
-                    rec.with_context(skip_goal_sync=True).write({'objective_code': self._next_objective_code()})
+                    rec.with_context(skip_goal_sync=True).write(
+                        {"objective_code": self._next_objective_code()}
+                    )
         result = super().write(vals)
         _STATUS_SYNC_TRIGGERS = {
-            'status', 'start_date', 'goal_id',
-            'current_accuracy_pct', 'consecutive_sessions_achieved',
+            "status",
+            "start_date",
+            "goal_id",
+            "current_accuracy_pct",
+            "consecutive_sessions_achieved",
         }
-        if not self.env.context.get('skip_auto_objective_status_sync') and _STATUS_SYNC_TRIGGERS.intersection(vals):
+        if not self.env.context.get(
+            "skip_auto_objective_status_sync"
+        ) and _STATUS_SYNC_TRIGGERS.intersection(vals):
             self._auto_sync_status_from_rules()
-        if {'status', 'goal_id'}.intersection(vals) and not self.env.context.get('skip_goal_sync'):
-            self.mapped('goal_id')._auto_update_status_from_workflow()
+        if {"status", "goal_id"}.intersection(vals) and not self.env.context.get(
+            "skip_goal_sync"
+        ):
+            self.mapped("goal_id")._auto_update_status_from_workflow()
         return result
 
     def unlink(self):
         for obj in self:
-            if obj.goal_id and obj.goal_id.plan_id and obj.goal_id.plan_id.status != 'draft':
+            if (
+                obj.goal_id
+                and obj.goal_id.plan_id
+                and obj.goal_id.plan_id.status != "draft"
+            ):
                 raise ValidationError(
-                    _('Objectives can be deleted only when the parent plan is in Draft.')
+                    _(
+                        "Objectives can be deleted only when the parent plan is in Draft."
+                    )
                 )
             if obj.total_sessions_worked > 0:
                 raise ValidationError(
-                    _('Objective "%s" cannot be deleted because it has %d session(s) of '
-                      'tracking data. Use Discontinue instead to deactivate it.',
-                      obj.name, int(obj.total_sessions_worked))
+                    _(
+                        'Objective "%s" cannot be deleted because it has %d session(s) of '
+                        "tracking data. Use Discontinue instead to deactivate it.",
+                        obj.name,
+                        int(obj.total_sessions_worked),
+                    )
                 )
-        goals = self.mapped('goal_id')
+        goals = self.mapped("goal_id")
         result = super().unlink()
         goals._auto_update_status_from_workflow()
         return result
@@ -466,7 +504,7 @@ class EducareIepObjective(models.Model):
                 obj.display_name = f"[{obj.objective_code}] {obj.name}"
             else:
                 obj.display_name = obj.name
-    
+
     # Computed fields
 
     @api.depends()  # TODO: add 'session_result_ids.accuracy_pct'
@@ -478,11 +516,11 @@ class EducareIepObjective(models.Model):
             obj.current_accuracy_pct = 0.0
 
     @api.depends(
-        'current_accuracy_pct',
-        'target_accuracy_pct',
-        'baseline_accuracy_pct',
-        'consecutive_sessions_achieved',
-        'consecutive_sessions_required',
+        "current_accuracy_pct",
+        "target_accuracy_pct",
+        "baseline_accuracy_pct",
+        "consecutive_sessions_achieved",
+        "consecutive_sessions_required",
     )
     def _compute_progress(self):
         """Two-phase progress: accuracy-building then mastery-verification.
@@ -530,12 +568,17 @@ class EducareIepObjective(models.Model):
 
             if obj.current_accuracy_pct < obj.target_accuracy_pct:
                 # Phase 1: accuracy-building, scaled to 0-80 %
-                accuracy_ratio = max(0.0, obj.current_accuracy_pct - obj.baseline_accuracy_pct) / denominator
+                accuracy_ratio = (
+                    max(0.0, obj.current_accuracy_pct - obj.baseline_accuracy_pct)
+                    / denominator
+                )
                 obj.progress_pct = min(80.0, accuracy_ratio * 80.0)
             else:
                 # Phase 2: accuracy reached/exceeded, mastery evidence collection
                 required = obj.consecutive_sessions_required or 1
-                consecutive_ratio = min(1.0, obj.consecutive_sessions_achieved / required)
+                consecutive_ratio = min(
+                    1.0, obj.consecutive_sessions_achieved / required
+                )
                 obj.progress_pct = 80.0 + consecutive_ratio * 20.0
 
     @api.depends()  # TODO: add 'session_result_ids.accuracy_pct'
@@ -547,7 +590,7 @@ class EducareIepObjective(models.Model):
         - delta > 5% -> improving, < -5% -> declining, else stable
         """
         for obj in self:
-            obj.trend = 'insufficient_data'
+            obj.trend = "insufficient_data"
 
     @api.depends()  # TODO: add 'session_result_ids.session_date', 'session_result_ids.accuracy_pct'
     def _compute_last_session(self):
@@ -568,37 +611,40 @@ class EducareIepObjective(models.Model):
         for obj in self:
             obj.consecutive_sessions_achieved = 0
 
-    @api.depends('target_date', 'status')
+    @api.depends("target_date", "status")
     def _compute_is_overdue(self):
         today = fields.Date.today()
         for obj in self:
             obj.is_overdue = bool(
                 obj.target_date
                 and obj.target_date < today
-                and obj.status not in ('mastered', 'discontinued')
+                and obj.status not in ("mastered", "discontinued")
             )
 
-    @api.depends('goal_id.plan_id.status', 'total_sessions_worked')
+    @api.depends("goal_id.plan_id.status", "total_sessions_worked")
     def _compute_can_delete(self):
         for obj in self:
             obj.can_delete = bool(
                 obj.goal_id
                 and obj.goal_id.plan_id
-                and obj.goal_id.plan_id.status == 'draft'
+                and obj.goal_id.plan_id.status == "draft"
                 and obj.total_sessions_worked == 0
             )
 
     @api.depends(
-        'trend', 'last_session_date',
-        'current_accuracy_pct', 'target_accuracy_pct', 'status'
+        "trend",
+        "last_session_date",
+        "current_accuracy_pct",
+        "target_accuracy_pct",
+        "status",
     )
     def _compute_alert_triggered(self):
         """Stored: whether this objective has an active alert."""
         cutoff_date = fields.Date.today() - timedelta(weeks=2)
         for obj in self:
-            if obj.status != 'in_progress':
+            if obj.status != "in_progress":
                 obj.alert_triggered = False
-            elif obj.trend in ('declining', 'stagnant'):
+            elif obj.trend in ("declining", "stagnant"):
                 obj.alert_triggered = True
             elif obj.last_session_date and obj.last_session_date < cutoff_date:
                 obj.alert_triggered = True
@@ -606,31 +652,34 @@ class EducareIepObjective(models.Model):
                 obj.alert_triggered = False
 
     @api.depends(
-        'trend', 'last_session_date',
-        'current_accuracy_pct', 'target_accuracy_pct', 'status'
+        "trend",
+        "last_session_date",
+        "current_accuracy_pct",
+        "target_accuracy_pct",
+        "status",
     )
     def _compute_alert_message(self):
         """Non-stored: human-readable alert message for display."""
         cutoff_date = fields.Date.today() - timedelta(weeks=2)
         for obj in self:
-            if obj.status != 'in_progress':
-                obj.alert_message = ''
-            elif obj.trend == 'declining':
-                obj.alert_message = _('Declining trend - review teaching method')
-            elif obj.trend == 'stagnant':
-                obj.alert_message = _('No improvement - consider modifying approach')
+            if obj.status != "in_progress":
+                obj.alert_message = ""
+            elif obj.trend == "declining":
+                obj.alert_message = _("Declining trend - review teaching method")
+            elif obj.trend == "stagnant":
+                obj.alert_message = _("No improvement - consider modifying approach")
             elif obj.last_session_date and obj.last_session_date < cutoff_date:
-                obj.alert_message = _('No session in the last 2 weeks')
+                obj.alert_message = _("No session in the last 2 weeks")
             else:
-                obj.alert_message = ''
+                obj.alert_message = ""
 
     # Onchange handlers
-    @api.onchange('status')
+    @api.onchange("status")
     def _onchange_status(self):
-        if self.status == 'mastered' and not self.mastery_date:
+        if self.status == "mastered" and not self.mastery_date:
             self.mastery_date = fields.Date.today()
 
-    @api.onchange('goal_id')
+    @api.onchange("goal_id")
     def _onchange_goal_id_dates(self):
         if self.goal_id:
             if not self.start_date:
@@ -641,67 +690,75 @@ class EducareIepObjective(models.Model):
     def action_start(self):
         """Start objective: move from Not Started to In Progress."""
         for obj in self:
-            if obj.goal_id.plan_id.status != 'active':
+            if obj.goal_id.plan_id.status != "active":
                 raise ValidationError(
-                    _('Objectives can only be started when the plan is Active.')
+                    _("Objectives can only be started when the plan is Active.")
                 )
-            if obj.status != 'not_started':
+            if obj.status != "not_started":
                 continue
-            vals = {'status': 'in_progress'}
+            vals = {"status": "in_progress"}
             if not obj.start_date:
-                vals['start_date'] = fields.Date.today()
+                vals["start_date"] = fields.Date.today()
             obj.write(vals)
 
     def action_put_on_hold(self):
         """Pause objective: In Progress -> Paused."""
         for obj in self:
-            if obj.goal_id.plan_id.status != 'active':
+            if obj.goal_id.plan_id.status != "active":
                 raise ValidationError(
-                    _('Objectives can only be paused when the plan is Active.')
+                    _("Objectives can only be paused when the plan is Active.")
                 )
-            if obj.status == 'in_progress':
-                obj.write({'status': 'on_hold'})
+            if obj.status == "in_progress":
+                obj.write({"status": "on_hold"})
 
     def action_resume(self):
         """Resume objective: Paused -> In Progress."""
         for obj in self:
-            if obj.goal_id.plan_id.status != 'active':
+            if obj.goal_id.plan_id.status != "active":
                 raise ValidationError(
-                    _('Objectives can only be resumed when the plan is Active.')
+                    _("Objectives can only be resumed when the plan is Active.")
                 )
-            if obj.status == 'on_hold':
-                obj.write({'status': 'in_progress'})
+            if obj.status == "on_hold":
+                obj.write({"status": "in_progress"})
 
     def action_mark_mastered(self):
         """Mark objective as Mastered."""
         for obj in self:
-            if obj.goal_id.plan_id.status != 'active':
+            if obj.goal_id.plan_id.status != "active":
                 raise ValidationError(
-                    _('Objectives can only be marked as mastered when the plan is Active.')
+                    _(
+                        "Objectives can only be marked as mastered when the plan is Active."
+                    )
                 )
-            if obj.status not in ('in_progress', 'on_hold'):
+            if obj.status not in ("in_progress", "on_hold"):
                 continue
-            vals = {'status': 'mastered'}
+            vals = {"status": "mastered"}
             if not obj.mastery_date:
-                vals['mastery_date'] = fields.Date.today()
+                vals["mastery_date"] = fields.Date.today()
             obj.write(vals)
 
     def action_open_discontinue_wizard(self):
         """Open Discontinue Objective wizard."""
         self.ensure_one()
-        if self.status in ('mastered', 'discontinued'):
+        if self.status in ("mastered", "discontinued"):
             raise ValidationError(
-                _('Cannot discontinue an objective that is already Mastered or Discontinued.')
+                _(
+                    "Cannot discontinue an objective that is already Mastered or Discontinued."
+                )
             )
-        if self.goal_id.plan_id.status != 'active':
+        if self.goal_id.plan_id.status != "active":
             raise ValidationError(
-                _('Objectives can only be discontinued when the plan is Active.')
+                _("Objectives can only be discontinued when the plan is Active.")
             )
-        action = self.env.ref('educare_iep.action_educare_iep_objective_discontinue_wizard').sudo().read()[0]
-        action['context'] = {
-            'default_objective_id': self.id,
-            'default_reason': False,
-            'default_notes': '',
+        action = (
+            self.env.ref("educare_iep.action_educare_iep_objective_discontinue_wizard")
+            .sudo()
+            .read()[0]
+        )
+        action["context"] = {
+            "default_objective_id": self.id,
+            "default_reason": False,
+            "default_notes": "",
         }
         return action
 
@@ -710,7 +767,9 @@ class EducareIepObjective(models.Model):
         goal = self.goal_id
         self.unlink()
 
-        action = self.env.ref('educare_iep.action_educare_iep_goal_form').sudo().read()[0]
+        action = (
+            self.env.ref("educare_iep.action_educare_iep_goal_form").sudo().read()[0]
+        )
         if goal:
-            action['res_id'] = goal.id
+            action["res_id"] = goal.id
         return action

@@ -21,7 +21,6 @@
                 <field name="end_date" />
                 <field name="goal_count" optional="show" />
                 <field name="supervisor_approved" widget="boolean" optional="show" />
-                <field name="parent_consent" widget="boolean" optional="show" />
                 <field name="status" widget="badge"
                     decoration-warning="status == 'draft'"
                     decoration-info="status == 'ready_review'"
@@ -95,7 +94,7 @@
                         type="object"
                         class="btn-warning"
                         invisible="status not in ['active', 'closed']"
-                        groups="educare_security.group_supervisor,educare_security.group_admin" />
+                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin" />
                     <button name="action_open_cancel_revision_wizard"
                         string="Cancel Revision"
                         type="object"
@@ -114,11 +113,6 @@
                         class="btn-secondary"
                         invisible="status != 'ready_review'"
                         groups="educare_security.group_supervisor,educare_security.group_admin" />
-                    <button name="action_parent_consent"
-                        string="Parent Consent"
-                        type="object"
-                        invisible="status != 'supervisor_approved' or parent_consent or not supervisor_approved"
-                        groups="educare_security.group_teacher,educare_security.group_supervisor,educare_security.group_admin,educare_security.group_parent" />
                     <button name="action_open_close_wizard"
                         string="Close"
                         type="object"
@@ -126,7 +120,7 @@
                         invisible="status != 'active'"
                         groups="educare_security.group_supervisor,educare_security.group_admin" />
                     <field name="status" widget="statusbar"
-                        statusbar_visible="draft,ready_review,supervisor_approved,active,closed" />
+                        statusbar_visible="draft,ready_review,active,closed" />
                 </header>
 
                 <sheet>
@@ -169,6 +163,17 @@
 
                     <group>
                         <group string="Plan Information">
+                            <field name="student_id" readonly="status != 'draft'"
+                                domain="[('active_iep_plan_id', '=', False)]" />
+                            <field name="assigned_teacher_id" invisible="1" />
+                            <field name="supervisor_id" invisible="1" />
+                            <field name="start_date" readonly="status != 'draft'" />
+                            <field name="end_date" readonly="status != 'draft'" />
+                            <field name="review_frequency" readonly="status != 'draft'" />
+                            <field name="next_review_date" readonly="1" />
+                        </group>
+
+                        <group string="Version Information" invisible="status == 'draft'">
                             <field name="student_center_id" invisible="1" />
                             <field name="version_number" readonly="1" invisible="not id" />
                             <field name="is_latest_version" readonly="1" invisible="not id" />
@@ -184,29 +189,8 @@
                             <field name="root_plan_id" readonly="1"
                                 invisible="not id"
                                 options="{'no_open': True}" />
-                            <field name="student_id" readonly="status != 'draft'" />
-                            <field name="assigned_teacher_id"
-                                readonly="status != 'draft'"
-                                domain="[('educare_role', '=', 'teacher'), ('educare_profile_ids.center_id', '=', student_center_id)]"
-                                options="{'no_create': True, 'no_open': True}" />
-                            <field name="supervisor_id"
-                                readonly="status != 'draft'"
-                                domain="[('educare_role', '=', 'supervisor'), ('educare_profile_ids.center_id', '=', student_center_id)]"
-                                options="{'no_create': True, 'no_open': True}" />
-                            <field name="start_date" readonly="status != 'draft'" />
-                            <field name="end_date" readonly="status != 'draft'" />
-                            <field name="review_frequency" readonly="status != 'draft'" />
-                            <field name="next_review_date" readonly="1" />
                         </group>
-                        <group string="Approval" invisible="status == 'draft'">
-                            <field name="supervisor_approved" readonly="1" />
-                            <field name="approved_date" readonly="1"
-                                invisible="not supervisor_approved" />
-                            <field name="approval_notes" invisible="not supervisor_approved" />
-                            <field name="parent_consent" readonly="1" />
-                            <field name="parent_consent_date" readonly="1"
-                                invisible="not parent_consent" />
-                        </group>
+
                     </group>
 
                     <group invisible="status != 'closed'">
@@ -216,11 +200,14 @@
                                 placeholder="Reason for closing IEP plan, notes for audit trail..."
                                 readonly="1" />
                         </group>
-                    </group>
 
-                    <div class="alert alert-info" role="alert" invisible="id">
-                        <i class="fa fa-info-circle me-1" />Save the plan first, then use the <strong>Add
-                        Goal</strong> button to add goals before submitting for review. </div>
+                        <group string="Approval" invisible="status == 'draft'">
+                            <field name="supervisor_approved" readonly="1" />
+                            <field name="approved_date" readonly="1"
+                                invisible="not supervisor_approved" />
+                            <field name="approval_notes" invisible="not supervisor_approved" />
+                        </group>
+                    </group>
 
                     <notebook>
                         <page string="Goals" name="goals" invisible="not id">
@@ -253,6 +240,7 @@
                                         icon="fa-trash"
                                         type="object"
                                         string=""
+                                        title="Delete Goal"
                                         class="btn-link text-danger"
                                         confirm="Are you sure you want to delete this long-term goal? This action cannot be undone."
                                         invisible="not can_delete" />
@@ -277,9 +265,6 @@
                         </page>
                     </notebook>
 
-                    <div class="text-muted small" invisible="not id">
-                        <i class="fa fa-info-circle me-1" />Workflow: Draft → Ready for Review →
-                        Supervisor Approved → Active → Closed. </div>
                 </sheet>
 
                 <div class="oe_chatter">
