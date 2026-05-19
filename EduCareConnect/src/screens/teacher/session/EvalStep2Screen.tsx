@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, Alert } from "react-native";
 import {
   Text,
   TextInput,
   Button,
-  Divider,
   useTheme,
+  Surface,
   ProgressBar as PaperProgress,
 } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StepIndicator } from "../../../components/common/StepIndicator";
 import { Picker } from "../../../components/form/Picker";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
@@ -16,6 +17,7 @@ import {
   useSessionObjectives,
 } from "../../../hooks/useSessions";
 import { formatDate, formatFloatTime } from "../../../utils/formatters";
+import { PROMPT_LEVEL_LABELS, toPickerOptions } from "../../../utils/labels";
 import { useEvalStore } from "../../../store/evalStore";
 import type { ResultInput } from "../../../api/evalApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,30 +25,8 @@ import type { TeacherSessionStackParamList } from "../../../navigation/types";
 
 type Props = NativeStackScreenProps<TeacherSessionStackParamList, "EvalStep2">;
 
-const STEPS = ["Quan sát", "Mục tiêu", "Xác nhận"];
-
-const RESULT_TYPES = [
-  { value: "trial_by_trial", label: "Trial-by-Trial" },
-  { value: "probe", label: "Probe" },
-  { value: "whole_task", label: "Whole Task" },
-  { value: "partial_interval", label: "Khoảng thời gian một phần" },
-  { value: "momentary_time_sample", label: "Khoảng thời điểm" },
-];
-
-const PROMPT_LEVELS = [
-  { value: "independent", label: "Độc lập" },
-  { value: "verbal_prompt", label: "Nhắc bằng lời" },
-  { value: "gestural_prompt", label: "Nhắc cử chỉ" },
-  { value: "partial_physical", label: "Hỗ trợ một phần" },
-  { value: "full_physical", label: "Hỗ trợ hoàn toàn" },
-];
-
-const PHASES = [
-  { value: "baseline", label: "Cơ sở ban đầu" },
-  { value: "intervention", label: "Can thiệp" },
-  { value: "maintenance", label: "Duy trì" },
-  { value: "generalization", label: "Tổng quát hóa" },
-];
+const STEPS = ["Mục tiêu", "Xác nhận"];
+const PROMPT_LEVEL_OPTIONS = toPickerOptions(PROMPT_LEVEL_LABELS);
 
 export function EvalStep2Screen({ route, navigation }: Props) {
   const { sessionId, objectiveIndex = 0 } = route.params;
@@ -99,6 +79,14 @@ export function EvalStep2Screen({ route, navigation }: Props) {
       ? Math.round((Number(correct) / Number(totalTrials)) * 100)
       : 0;
 
+  // Color the live accuracy hint: red < 50, orange < 80, green ≥ 80.
+  const accuracyColor =
+    accuracyPct >= 80
+      ? "#2E7D32"
+      : accuracyPct >= 50
+        ? "#E65100"
+        : theme.colors.error;
+
   const handleNext = () => {
     if (objective && totalTrials) {
       const result: ResultInput = {
@@ -132,84 +120,110 @@ export function EvalStep2Screen({ route, navigation }: Props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StepIndicator steps={STEPS} currentStep={1} />
+      <StepIndicator steps={STEPS} currentStep={0} />
 
-      {/* Context bar */}
-      <View
+      {/* ── Context bar ─────────────────────────────────── */}
+      <Surface
         style={[styles.contextBar, { backgroundColor: theme.colors.surface }]}
+        elevation={1}
       >
-        <Text variant="bodySmall">
-          {studentName} · {formatDate(session.session_date)} ·{" "}
-          {formatFloatTime(session.start_time)}
-        </Text>
-        <PaperProgress
-          progress={totalCount > 0 ? objectiveIndex / totalCount : 0}
-          color={theme.colors.primary}
-          style={{ marginVertical: 4 }}
-        />
-        <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-          Mục tiêu {objectiveIndex + 1} / {totalCount}
-        </Text>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Objective info */}
-        <Text
-          variant="labelLarge"
-          style={{
-            color: theme.colors.primary,
-            fontWeight: "700",
-            marginBottom: 4,
-          }}
-        >
-          {objective.objective_code}
-        </Text>
-        <Text variant="bodyMedium" style={{ marginBottom: 6 }}>
-          {objective.name}
-        </Text>
-        {goalName ? (
+        <View style={styles.contextRow}>
+          <MaterialCommunityIcons
+            name="account-circle-outline"
+            size={16}
+            color={theme.colors.outline}
+          />
+          <Text
+            variant="labelMedium"
+            style={{ color: theme.colors.onSurface, fontWeight: "600" }}
+            numberOfLines={1}
+          >
+            {studentName}
+          </Text>
+          <View style={styles.contextDot} />
+          <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+            {formatDate(session.session_date)} ·{" "}
+            {formatFloatTime(session.start_time)}
+          </Text>
+        </View>
+        <View style={styles.progressRow}>
+          <PaperProgress
+            progress={totalCount > 0 ? (objectiveIndex + 1) / totalCount : 0}
+            color={theme.colors.primary}
+            style={styles.progressBar}
+          />
           <Text
             variant="labelSmall"
-            style={{ color: theme.colors.outline, marginBottom: 8 }}
+            style={{ color: theme.colors.primary, fontWeight: "700" }}
           >
-            🏷 {goalName}
+            {objectiveIndex + 1}/{totalCount}
           </Text>
-        ) : null}
-
-        {/* Accuracy stats */}
-        <View style={styles.statsRow}>
-          <StatChip
-            label="Mức ban đầu"
-            value={`${objective.baseline_accuracy_pct}%`}
-            theme={theme}
-            primary
-          />
-          <StatChip
-            label="Hiện tại"
-            value={`${Math.round(objective.current_accuracy_pct || 0)}%`}
-            primary
-            theme={theme}
-          />
-          <StatChip
-            label="Mục tiêu"
-            value={`${objective.target_accuracy_pct}%`}
-            theme={theme}
-            primary
-          />
         </View>
+      </Surface>
 
-        <Divider style={{ marginVertical: 12 }} />
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* ── Objective card ────────────────────────────── */}
+        <Surface style={styles.objectiveCard} elevation={1}>
+          <View style={styles.objectiveHeader}>
+            <View
+              style={[
+                styles.codeBadge,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
+            >
+              <Text style={[styles.codeText, { color: theme.colors.primary }]}>
+                {objective.objective_code}
+              </Text>
+            </View>
+            <Text
+              variant="bodyMedium"
+              style={{
+                flex: 1,
+                fontWeight: "600",
+                color: theme.colors.onSurface,
+              }}
+            >
+              {objective.name}
+            </Text>
+          </View>
 
-        {/* Eval form */}
-        <Picker
-          label="Loại kết quả"
-          value={resultType}
-          options={RESULT_TYPES}
-          onChange={setResultType}
-        />
+          {goalName ? (
+            <View style={styles.goalRow}>
+              <MaterialCommunityIcons
+                name="tag-outline"
+                size={13}
+                color={theme.colors.outline}
+              />
+              <Text
+                variant="labelSmall"
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  flexShrink: 1,
+                }}
+              >
+                {goalName}
+              </Text>
+            </View>
+          ) : null}
+        </Surface>
 
-        <View style={styles.trialRow}>
-          <View style={{ flex: 1 }}>
+        {/* ── Eval form card ────────────────────────────── */}
+        <Surface style={styles.formCard} elevation={1}>
+          <View style={styles.formHeader}>
+            <MaterialCommunityIcons
+              name="clipboard-edit-outline"
+              size={18}
+              color={theme.colors.primary}
+            />
+            <Text
+              variant="titleSmall"
+              style={{ fontWeight: "700", color: theme.colors.primary }}
+            >
+              Nhập kết quả
+            </Text>
+          </View>
+
+          <View style={styles.trialRow}>
             <TextInput
               label="Số lần đúng *"
               value={correct}
@@ -217,9 +231,9 @@ export function EvalStep2Screen({ route, navigation }: Props) {
               keyboardType="numeric"
               mode="outlined"
               dense
+              style={styles.trialInput}
+              outlineStyle={styles.inputOutline}
             />
-          </View>
-          <View style={{ flex: 1 }}>
             <TextInput
               label="Tổng số lần *"
               value={totalTrials}
@@ -227,133 +241,216 @@ export function EvalStep2Screen({ route, navigation }: Props) {
               keyboardType="numeric"
               mode="outlined"
               dense
+              style={styles.trialInput}
+              outlineStyle={styles.inputOutline}
             />
           </View>
-        </View>
 
-        {totalTrials !== "" && Number(totalTrials) > 0 ? (
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.primary, marginBottom: 8 }}
-          >
-            → Độ chính xác: {accuracyPct}%
-          </Text>
-        ) : null}
+          <View style={{ marginTop: 12 }}>
+            <Picker
+              label="Mức hỗ trợ *"
+              value={prompt}
+              options={PROMPT_LEVEL_OPTIONS}
+              onChange={setPrompt}
+            />
+          </View>
 
-        <Picker
-          label="Mức hỗ trợ *"
-          value={prompt}
-          options={PROMPT_LEVELS}
-          onChange={setPrompt}
-        />
-        <Picker
-          label="Pha thực hiện"
-          value={phase}
-          options={PHASES}
-          onChange={setPhase}
-        />
-
-        <TextInput
-          label="Ghi chú (tùy chọn)"
-          value={notes}
-          onChangeText={setNotes}
-          mode="outlined"
-          multiline
-          numberOfLines={2}
-          dense
-          style={{ marginTop: 4 }}
-        />
+          <TextInput
+            label="Ghi chú (tùy chọn)"
+            value={notes}
+            onChangeText={setNotes}
+            mode="outlined"
+            multiline
+            numberOfLines={4}
+            dense
+            outlineStyle={styles.inputOutline}
+          />
+        </Surface>
       </ScrollView>
 
-      <View style={[styles.footer, { backgroundColor: theme.colors.surface }]}>
-        <Button mode="outlined" onPress={() => navigation.goBack()}>
-          ← Quay lại
+      {/* ── Footer ────────────────────────────────────── */}
+      <Surface
+        style={[styles.footer, { backgroundColor: theme.colors.surface }]}
+        elevation={3}
+      >
+        <Button
+          mode="outlined"
+          icon="arrow-left"
+          onPress={() => navigation.goBack()}
+          style={styles.footerBtn}
+        >
+          Quay lại
         </Button>
         <Button
           mode="contained"
-          onPress={handleNext}
-          disabled={!totalTrials || Number(totalTrials) === 0}
+          icon={isLast ? "check" : "arrow-right"}
+          onPress={() => {
+            if (!totalTrials || Number(totalTrials) === 0) {
+              Alert.alert(
+                "Thiếu thông tin",
+                "Vui lòng nhập tổng số lần trước khi tiếp tục",
+              );
+              return;
+            }
+            handleNext();
+          }}
+          style={styles.footerBtn}
+          contentStyle={{ flexDirection: "row-reverse" }}
         >
-          {isLast ? "Tiếp tục →" : `Tiếp → MT ${objectiveIndex + 2}`}
+          {isLast ? "Xác nhận" : `Mục tiêu ${objectiveIndex + 2}`}
         </Button>
-      </View>
+      </Surface>
     </View>
   );
 }
 
-function StatChip({
+// ── StatPill ─────────────────────────────────────────────────────────────────────
+function StatPill({
   label,
   value,
-  primary = false,
-  theme,
+  color,
+  bg,
+  accent,
 }: {
   label: string;
   value: string;
-  primary?: boolean;
-  theme: any;
+  color: string;
+  bg: string;
+  accent?: boolean;
 }) {
   return (
     <View
       style={[
-        styles.statChip,
+        styles.statPill,
         {
-          backgroundColor: primary
-            ? theme.colors.primaryContainer
-            : theme.colors.surfaceVariant,
+          backgroundColor: bg,
+          borderWidth: accent ? 1.5 : 0,
+          borderColor: accent ? color : "transparent",
         },
       ]}
     >
-      <Text
-        variant="labelSmall"
-        style={{
-          color: primary
-            ? theme.colors.onPrimaryContainer
-            : theme.colors.outline,
-          textAlign: "center",
-        }}
-      >
-        {label}
-      </Text>
-      <Text
-        variant="labelMedium"
-        style={{
-          fontWeight: "700",
-          color: primary
-            ? theme.colors.onPrimaryContainer
-            : theme.colors.onSurface,
-          textAlign: "center",
-        }}
-      >
-        {value}
-      </Text>
+      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color }]}>{label}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   contextBar: {
-    padding: 12,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+    borderBottomColor: "rgba(0,0,0,0.06)",
   },
-  content: { padding: 16, paddingBottom: 80 },
+  contextRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8,
+  },
+  contextDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: "#BDBDBD",
+    marginHorizontal: 2,
+  },
+  progressRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  progressBar: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+  },
+
+  content: { padding: 16, paddingBottom: 100 },
+
+  // Objective card
+  objectiveCard: {
+    padding: 14,
+    borderRadius: 14,
+    marginBottom: 14,
+    backgroundColor: "#fff",
+    gap: 10,
+  },
+  objectiveHeader: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 10,
+  },
+  codeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  codeText: {
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  goalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   statsRow: {
     flexDirection: "row",
     gap: 8,
+    marginTop: 4,
+  },
+  statPill: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    alignItems: "center",
+    gap: 2,
+  },
+  statValue: { fontSize: 18, fontWeight: "800", lineHeight: 22 },
+  statLabel: { fontSize: 10, fontWeight: "600", textAlign: "center" },
+
+  // Form card
+  formCard: {
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: "#fff",
+  },
+  formHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
     marginBottom: 4,
   },
-  statChip: {
-    flex: 1,
-    padding: 8,
-    borderRadius: 8,
-    alignItems: "center",
+  trialRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 4,
   },
-  trialRow: { flexDirection: "row", gap: 12, marginBottom: 4 },
+  trialInput: { flex: 1, backgroundColor: "transparent" },
+  inputOutline: { borderRadius: 10 },
+  accuracyPreview: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignSelf: "flex-start",
+    marginTop: 10,
+  },
+
+  // Footer
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
+    padding: 12,
+    gap: 10,
     borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
+    borderTopColor: "rgba(0,0,0,0.06)",
   },
+  footerBtn: { flex: 1 },
 });

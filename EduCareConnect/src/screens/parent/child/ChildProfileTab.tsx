@@ -3,12 +3,12 @@ import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, Divider, useTheme } from "react-native-paper";
 import { SectionHeader } from "../../../components/common/SectionHeader";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
+import { formatDate } from "../../../utils/formatters";
+import { GENDER_LABELS } from "../../../utils/labels";
 
 interface ChildProfileTabProps {
   student: any;
 }
-
-const GENDER_LABELS: Record<string, string> = { male: "Nam", female: "Nữ" };
 
 function InfoCell({ label, value }: { label: string; value?: string | null }) {
   const theme = useTheme();
@@ -43,12 +43,6 @@ function InfoGrid({
   );
 }
 
-function formatDate(date: string | false | undefined): string {
-  if (!date) return "";
-  const d = new Date(date + "T00:00:00");
-  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
-}
-
 export function ChildProfileTab({ student }: ChildProfileTabProps) {
   const theme = useTheme();
   if (!student) return null;
@@ -63,7 +57,11 @@ export function ChildProfileTab({ student }: ChildProfileTabProps) {
     ? student.center_id[1]
     : undefined;
 
-  const dobStr = formatDate(student.date_of_birth);
+  // Guard against the "—" placeholder formatDate returns for falsy input
+  // so we don't render an empty-age cell.
+  const dobStr = student.date_of_birth
+    ? formatDate(student.date_of_birth)
+    : "";
   const dobWithAge = dobStr
     ? `${dobStr}${student.age ? `  (${student.age} tuổi)` : ""}`
     : undefined;

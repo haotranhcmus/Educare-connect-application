@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -13,6 +13,9 @@ import { StudentIepTab } from "./tabs/StudentIepTab";
 import { StudentSessionTab } from "./tabs/StudentSessionTab";
 import { StudentReportTab } from "./tabs/StudentReportTab";
 
+import { useLayoutEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
+
 type Props = NativeStackScreenProps<StudentStackParamList, "StudentDetail">;
 const TopTab = createMaterialTopTabNavigator();
 
@@ -20,6 +23,19 @@ export function StudentDetailScreen({ route, navigation }: Props) {
   const { studentId } = route.params;
   const theme = useTheme();
   const { data: student, isLoading } = useStudentDetail(studentId);
+
+  useLayoutEffect(() => {
+    // Ẩn tab bar khi vào màn hình này
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+    return () => {
+      // Hiện lại tab bar khi rời khỏi
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+    };
+  }, [navigation]);
 
   if (isLoading) {
     return <LoadingOverlay visible />;
@@ -50,14 +66,13 @@ export function StudentDetailScreen({ route, navigation }: Props) {
         >
           {student.name}
         </Text>
-        <View style={styles.headerRow}>
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            {student.student_code}
-          </Text>
-          <Text style={{ color: theme.colors.outline }}> · </Text>
+        <Text
+          variant="labelSmall"
+          style={{ color: theme.colors.outline, marginTop: 2 }}
+        >
+          {student.student_code}
+        </Text>
+        <View style={[styles.headerRow, { marginTop: 6 }]}>
           <StatusBadge status={student.status} />
         </View>
       </View>

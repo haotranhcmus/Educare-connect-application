@@ -43,9 +43,13 @@ export interface OdooRef {
 export interface StudentListItem {
   id: number;
   name: string;
+  /** Biệt danh — chỉ hiển thị cho giáo viên */
+  nickname?: string;
   student_code: string;
   status: StudentStatus;
   primary_diagnosis: PrimaryDiagnosis | false;
+  date_of_birth?: string;
+  enrollment_date?: string;
   /** Avatar URL nếu có */
   avatar_url?: string;
   /** Latest IEP plan info cho badge trên list */
@@ -59,9 +63,19 @@ export interface StudentDetail {
   student_code: string;
   date_of_birth: string; // "YYYY-MM-DD"
   age: number;
+  age_months?: number;
   gender: Gender;
   status: StudentStatus;
+  /** Raw base64 image as returned by Odoo (or false when unset). */
+  avatar?: string | false;
+  /** Pre-built `data:` URL — populated by hooks/utility merges, not the API. */
   avatar_url?: string;
+  /** Free-text secondary diagnosis used by ChildProfileTab. */
+  secondary_diagnosis?: string;
+  /** Free-text behaviour notes shown in the profile. */
+  behavior_notes?: string;
+  /** Free-text reinforcement preferences shown in the profile. */
+  reinforcement_preferences?: string;
 
   // Enrollment
   enrollment_date: string;
@@ -132,8 +146,6 @@ export interface IepGoal {
   priority: GoalPriority;
   goal_domain_id: OdooRef;
 
-  start_date?: string;
-  target_date: string;
   baseline_accuracy_pct: number;
   target_accuracy_pct: number;
   progress_pct: number;
@@ -167,7 +179,6 @@ export interface IepObjectiveListItem {
   last_session_date?: string;
   last_session_accuracy?: number;
   mastery_date?: string;
-  is_overdue?: boolean;
   measurement_method?: string;
   implementation_steps?: string;
   materials_needed?: string;
@@ -175,7 +186,7 @@ export interface IepObjectiveListItem {
   smart_measurable?: string;
   smart_analysis?: string;
   smart_timebound?: string;
-  difficulty_level?: number;
+  difficulty_id?: OdooRef | false;
   suggested_prompt_level_id?: OdooRef | false;
 }
 
@@ -189,8 +200,6 @@ export interface IepObjectiveDetail {
   goal_id: OdooRef;
   student_id: OdooRef;
 
-  start_date?: string;
-  target_date?: string;
   baseline_accuracy_pct: number;
   target_accuracy_pct: number;
   current_accuracy_pct: number;
@@ -205,11 +214,11 @@ export interface IepObjectiveDetail {
   last_session_date?: string;
   last_session_accuracy?: number;
   mastery_date?: string;
-  is_overdue?: boolean;
 
   measurement_method?: string;
   materials_needed?: string;
   implementation_steps?: string;
+  difficulty_id?: OdooRef | false;
 }
 
 // ===== Session =====
@@ -219,6 +228,8 @@ export interface SessionListItem {
   name: string; // session code e.g. "SL-2026-004"
   student_id: OdooRef;
   student_name?: string; // plain name without [code] prefix
+  /** Biệt danh học sinh — chỉ populate trong teacher flows */
+  student_nickname?: string;
   student_avatar_url?: string;
   session_date: string;
   start_time: number; // Float e.g. 8.0 = 08:00
@@ -285,6 +296,8 @@ export interface SessionLogDetail {
   engagement_level?: EngagementLevel;
   overall_performance?: OverallPerformance;
   notes?: string;
+  cancel_type?: string;
+  cancel_notes?: string;
 
   result_line_ids?: number[];
   objective_ids?: number[];
@@ -321,6 +334,8 @@ export interface ReportListItem {
   name: string; // e.g. "DR-S001-20260407"
   student_id: OdooRef;
   student_avatar_url?: string;
+  /** Biệt danh học sinh — chỉ populate trong teacher flows */
+  student_nickname?: string;
   report_date: string;
   status: ReportStatus;
   activity_summary?: string; // preview ~45 chars
@@ -338,8 +353,21 @@ export interface ReportDetail {
   // Session info (related)
   session_duration?: number;
   overall_performance?: OverallPerformance;
+  /** IEP objective IDs evaluated in the source session — tap to drill down. */
+  objective_ids?: number[];
+  /** Plain-text fallback (legacy / email body). */
   objectives_worked?: string;
   accuracy_summary?: string;
+
+  // Observation fields (moved from session to report)
+  attendance?: string;
+  mood?: string;
+  energy_level?: string;
+  engagement_level?: string;
+  observation_notes?: string;
+
+  // Photos
+  photo_ids?: number[];
 
   // Content
   activity_summary?: string;
@@ -383,4 +411,91 @@ export interface UserProfile {
   // Parent-specific
   parent_relation?: ParentRelation;
   preferred_contact?: PreferredContact;
+}
+
+// ===== Parent-side shapes =====
+
+/** Slim row returned by `fetchMyStudents` — child picker / list. */
+export interface ParentStudent {
+  id: number;
+  name: string;
+  student_code: string;
+  status: StudentStatus;
+  avatar: string | false;
+  date_of_birth: string;
+  age: number;
+  gender: Gender;
+  assigned_teacher_id: OdooRef | false;
+  center_id: OdooRef;
+}
+
+/** Active IEP plan + nested goals for parent overview. */
+export interface ParentIepPlanGoal {
+  id: number;
+  name: string;
+  goal_domain_id: OdooRef | false;
+  progress_pct: number;
+  status: GoalStatus;
+  objective_count?: number;
+}
+
+export interface ParentActiveIepPlan {
+  id: number;
+  iep_period: string;
+  start_date: string;
+  end_date: string;
+  status: IepPlanStatus;
+  version_number: number;
+  supervisor_id: OdooRef | false;
+  goals: ParentIepPlanGoal[];
+}
+
+/** Goal + objectives drill-down for parent progress view. */
+export interface ParentObjectiveRow {
+  id: number;
+  name: string;
+  description?: string;
+  baseline_accuracy_pct: number;
+  current_accuracy_pct: number;
+  target_accuracy_pct: number;
+  status: ObjectiveStatus;
+  trend: Trend;
+  last_session_date?: string;
+  last_session_accuracy?: number;
+}
+
+export interface ParentGoalWithObjectives extends ParentIepPlanGoal {
+  objectives: ParentObjectiveRow[];
+}
+
+/** Single row of the parent timetable list. */
+export interface ParentTimetableSession {
+  id: number;
+  name: string;
+  session_date: string;
+  start_time: number;
+  end_time: number;
+  duration: number;
+  location: SessionLocation;
+  session_type: SessionType;
+  session_purpose: SessionPurpose;
+  status: SessionStatus;
+  teacher_id: OdooRef | false;
+  avg_accuracy?: number;
+}
+
+/** Latest completed session card on Parent Home. */
+export interface ParentLatestSession {
+  id: number;
+  session_date: string;
+  start_time: number;
+  end_time: number;
+  location: SessionLocation;
+  status: SessionStatus;
+}
+
+/** Captured photo asset ready for upload. */
+export interface PhotoAsset {
+  uri: string;
+  base64: string;
 }

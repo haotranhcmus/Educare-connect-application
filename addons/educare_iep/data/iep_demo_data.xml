@@ -78,10 +78,6 @@
         <field name="name">Phát triển kỹ năng giao tiếp bằng lời nói</field>
         <field name="plan_id" ref="demo_plan_an" />
         <field name="goal_domain_id" ref="educare_base.domain_communication" />
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=4)).strftime('%Y-%m-%d')" />
         <field name="status">draft</field>
         <field name="goal_description">
             Trẻ sẽ chủ động dùng lời nói để yêu cầu đồ vật hoặc hoạt động mình muốn
@@ -106,10 +102,6 @@
         <field name="name">Yêu cầu đồ vật yêu thích bằng 1 từ đơn</field>
         <field name="goal_id" ref="demo_goal_01" />
         <field name="sequence">10</field>
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=1)).strftime('%Y-%m-%d')" />
         <field name="status">in_progress</field>
         <field name="description">Trẻ tự nói tên đồ vật để yêu cầu (ví dụ: "bóng", "nước") mà không cần giáo viên gợi ý trước</field>
         <field name="baseline_accuracy_pct">15.0</field>
@@ -117,16 +109,14 @@
         <field name="weight">3.0</field>
         <field name="consecutive_sessions_required">3</field>
         <field name="measurement_method">Trong 10 lần thử luyện tập có cấu trúc (DTT), đếm số lần trẻ nói đúng từ để yêu cầu mà không cần nhắc</field>
+        <field name="difficulty_id" ref="difficulty_weight_3" />
+        <field name="domain_ids" eval="[(4, ref('educare_base.domain_communication'))]" />
     </record>
 
     <record id="demo_obj_01_02" model="educare.iep.objective">
         <field name="name">Ghép 2 từ thành câu ngắn để yêu cầu</field>
         <field name="goal_id" ref="demo_goal_01" />
         <field name="sequence">20</field>
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=2)).strftime('%Y-%m-%d')" />
         <field name="status">not_started</field>
         <field name="description">Trẻ tự nói câu 2 từ để yêu cầu trong tình huống sinh hoạt tự nhiên (ví dụ: "muốn kẹo", "lấy xe")</field>
         <field name="baseline_accuracy_pct">0.0</field>
@@ -134,6 +124,8 @@
         <field name="weight">1.0</field>
         <field name="consecutive_sessions_required">3</field>
         <field name="measurement_method">Quan sát trong tình huống tự nhiên (NET), đếm số lần trẻ ghép đúng 2 từ chia cho tổng số cơ hội có thể yêu cầu</field>
+        <field name="difficulty_id" ref="difficulty_weight_4" />
+        <field name="domain_ids" eval="[(4, ref('educare_base.domain_communication'))]" />
     </record>
 
     <!-- ============================== -->
@@ -143,10 +135,6 @@
         <field name="name">Giảm hành vi tự kích thích trong giờ học</field>
         <field name="plan_id" ref="demo_plan_an" />
         <field name="goal_domain_id" ref="educare_base.domain_behavior" />
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=5)).strftime('%Y-%m-%d')" />
         <field name="status">draft</field>
         <field name="goal_description">
             Giảm số lần trẻ vỗ tay hoặc lắc người xuống còn dưới 5 lần trong một buổi học,
@@ -170,10 +158,6 @@
         <field name="name">Ngồi yên tại bàn liên tục 5 phút không có hành vi tự kích thích</field>
         <field name="goal_id" ref="demo_goal_02" />
         <field name="sequence">10</field>
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=2)).strftime('%Y-%m-%d')" />
         <field name="status">in_progress</field>
         <field name="description">Trẻ ngồi tại bàn học và tham gia hoạt động trong 5 phút liên tục mà không vỗ tay hay lắc người</field>
         <field name="baseline_accuracy_pct">10.0</field>
@@ -181,6 +165,8 @@
         <field name="weight">2.0</field>
         <field name="consecutive_sessions_required">5</field>
         <field name="measurement_method">Dùng đồng hồ bấm giờ đo thời gian trẻ ngồi yên liên tục không có hành vi tự kích thích, ghi nhận theo từng buổi</field>
+        <field name="difficulty_id" ref="difficulty_weight_3" />
+        <field name="domain_ids" eval="[(4, ref('educare_base.domain_behavior'))]" />
     </record>
 
     <!-- ============================== -->
@@ -190,10 +176,6 @@
         <field name="name">Nhận diện và phân loại đồ vật theo nhóm</field>
         <field name="plan_id" ref="demo_plan_binh" />
         <field name="goal_domain_id" ref="educare_base.domain_cognitive" />
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(weeks=3)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=3)).strftime('%Y-%m-%d')" />
         <field name="status">draft</field>
         <field name="goal_description">
             Trẻ sẽ nhận ra và xếp đúng ít nhất 10 loại đồ vật vào đúng nhóm của chúng
@@ -216,10 +198,6 @@
         <field name="name">Phân biệt thức ăn và đồ vật không phải thức ăn</field>
         <field name="goal_id" ref="demo_goal_03" />
         <field name="sequence">10</field>
-        <field name="start_date"
-            eval="(DateTime.today() - relativedelta(weeks=3)).strftime('%Y-%m-%d')" />
-        <field name="target_date"
-            eval="(DateTime.today() + relativedelta(months=1)).strftime('%Y-%m-%d')" />
         <field name="status">not_started</field>
         <field name="description">Trẻ xem 10 thẻ hình ảnh và xếp vào 2 rổ: "ăn được" và "không ăn được", đạt tỉ lệ đúng từ 90% trở lên</field>
         <field name="baseline_accuracy_pct">30.0</field>
@@ -227,6 +205,8 @@
         <field name="weight">1.0</field>
         <field name="consecutive_sessions_required">3</field>
         <field name="measurement_method">Trong buổi luyện tập có cấu trúc (DTT), đếm số thẻ trẻ xếp đúng trên tổng 10 thẻ</field>
+        <field name="difficulty_id" ref="difficulty_weight_2" />
+        <field name="domain_ids" eval="[(4, ref('educare_base.domain_cognitive'))]" />
     </record>
 
     <!-- Áp dụng luồng chuyển trạng thái đúng quy trình cho kế hoạch demo -->

@@ -19,5 +19,23 @@
                 }"
             />
         </function>
+
+        <!-- Backfill difficulty_id and domain_ids on demo objectives. -->
+        <record id="educare_iep.demo_obj_01_01" model="educare.iep.objective">
+            <field name="difficulty_id" ref="educare_iep.difficulty_weight_3" />
+            <field name="domain_ids" eval="[(4, ref('educare_base.domain_communication'))]" />
+        </record>
+        <record id="educare_iep.demo_obj_01_02" model="educare.iep.objective">
+            <field name="difficulty_id" ref="educare_iep.difficulty_weight_4" />
+            <field name="domain_ids" eval="[(4, ref('educare_base.domain_communication'))]" />
+        </record>
+        <record id="educare_iep.demo_obj_02_01" model="educare.iep.objective">
+            <field name="difficulty_id" ref="educare_iep.difficulty_weight_3" />
+            <field name="domain_ids" eval="[(4, ref('educare_base.domain_behavior'))]" />
+        </record>
+        <record id="educare_iep.demo_obj_03_01" model="educare.iep.objective">
+            <field name="difficulty_id" ref="educare_iep.difficulty_weight_2" />
+            <field name="domain_ids" eval="[(4, ref('educare_base.domain_cognitive'))]" />
+        </record>
     </data>
 </odoo>

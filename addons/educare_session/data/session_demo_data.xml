@@ -38,12 +38,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">neutral</field>
-        <field name="energy_level">normal</field>
-        <field name="engagement_level">somewhat_engaged</field>
-        <field name="notes">Tuần 1. Trẻ cần nhiều gợi ý hỗ trợ. Đang thiết lập nếp học và mối quan
-            hệ với giáo viên.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -80,11 +74,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">normal</field>
-        <field name="engagement_level">engaged</field>
-        <field name="notes">Động lực học cải thiện nhờ bảng thưởng. Cả hai mục tiêu đều tiến bộ nhẹ.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -119,11 +108,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">high</field>
-        <field name="engagement_level">engaged</field>
-        <field name="notes">Tiến bộ rõ rệt. Trẻ chủ động khởi xướng nhiều hơn mà không cần prompt.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -158,11 +142,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">high</field>
-        <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Tiến bộ ổn định ở cả hai mục tiêu. Bắt đầu giai đoạn giảm gợi ý.</field>
         <field name="objective_ids"
             eval="[(4, ref('educare_iep.demo_obj_01_01')), (4, ref('educare_iep.demo_obj_02_01'))]" />
     </record>
@@ -197,11 +176,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">high</field>
-        <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Buổi giao tiếp rất tốt. Trẻ chủ động thực hiện các lần thử DTT độc lập.</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_05_c" model="educare.session.result">
@@ -225,11 +199,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">high</field>
-        <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Buổi học rất tốt. Đang chuyển dần sang bối cảnh NET.</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_06_c" model="educare.session.result">
@@ -253,11 +222,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">high</field>
-        <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Trẻ tự phát khởi xướng 2 mand không cần prompt. Cột mốc rất tốt!</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_07_c" model="educare.session.result">
@@ -283,12 +247,6 @@
         <field name="start_time">8.0</field>
         <field name="end_time">9.0</field>
         <field name="status">done</field>
-        <field name="attendance">present</field>
-        <field name="mood">good</field>
-        <field name="energy_level">high</field>
-        <field name="engagement_level">highly_engaged</field>
-        <field name="notes">Tiến bộ được duy trì. Đang tiến sát mục tiêu 80%. Đã lên lịch review
-            plan.</field>
         <field name="objective_ids" eval="[(4, ref('educare_iep.demo_obj_01_01'))]" />
     </record>
     <record id="demo_result_an_08_c" model="educare.session.result">

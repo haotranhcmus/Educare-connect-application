@@ -7,6 +7,7 @@ import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { EmptyState } from "../../../components/common/EmptyState";
+import StudentPlaceholder from "../../../../assets/placeholder/student-placeholder.svg";
 import { useMyStudents } from "../../../hooks/useParent";
 import { useParentStore } from "../../../store/parentStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -45,7 +46,7 @@ export function ChildListScreen({ navigation }: Props) {
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <EmptyState
-            icon="account-child-outline"
+            image={StudentPlaceholder}
             title="Chưa có học sinh nào"
             description="Tài khoản này chưa được liên kết với học sinh nào."
           />
@@ -159,10 +160,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginBottom: 12,
     elevation: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
-    shadowRadius: 3,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.07,
+    // shadowRadius: 3,
     overflow: "hidden",
   },
   cardMain: {

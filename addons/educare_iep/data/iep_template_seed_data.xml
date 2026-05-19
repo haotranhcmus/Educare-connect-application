@@ -17,7 +17,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
-            <field name="difficulty_level">1</field>
+            <field name="difficulty_id" ref="difficulty_weight_1"/>
         </record>
 
         <!-- Mẫu STO: Giao tiếp - yêu cầu 2 từ -->
@@ -36,7 +36,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Hành vi - ngồi học -->
@@ -54,7 +54,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Nhận thức - phân loại -->
@@ -73,7 +73,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- ═══ DOMAIN: XÃ HỐI ═══ -->
@@ -93,7 +93,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
-            <field name="difficulty_level">1</field>
+            <field name="difficulty_id" ref="difficulty_weight_1"/>
         </record>
 
         <!-- Mẫu STO: Xã hội - luân phiên chơi -->
@@ -111,7 +111,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Xã hội - chủ động đến gần bạn -->
@@ -129,7 +129,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- ═══ DOMAIN: VẬN ĐỘNG THÔ ═══ -->
@@ -150,7 +150,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Vận động thô - leo cầu thang -->
@@ -169,7 +169,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- Mẫu STO: Vận động thô - ném bắt bóng -->
@@ -188,7 +188,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- ═══ DOMAIN: VẬN ĐỘNG TINH ═══ -->
@@ -209,7 +209,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
-            <field name="difficulty_level">1</field>
+            <field name="difficulty_id" ref="difficulty_weight_1"/>
         </record>
 
         <!-- Mẫu STO: Vận động tinh - vẽ đường thẳng -->
@@ -228,7 +228,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Vận động tinh - cắt bằng kéo -->
@@ -247,7 +247,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">42</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- ═══ DOMAIN: TỰ PHỤC VỤ ═══ -->
@@ -268,7 +268,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Tự phục vụ - rửa tay đúng cách -->
@@ -287,7 +287,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">1</field>
+            <field name="difficulty_id" ref="difficulty_weight_1"/>
         </record>
 
         <!-- Mẫu STO: Tự phục vụ - ăn cơm bằng muỗng -->
@@ -306,7 +306,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_level">1</field>
+            <field name="difficulty_id" ref="difficulty_weight_1"/>
         </record>
 
         <!-- ═══ DOMAIN: HỌC TẬP ═══ -->
@@ -326,7 +326,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">42</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mẫu STO: Học tập - phân biệt màu sắc cơ bản -->
@@ -344,7 +344,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">1</field>
+            <field name="difficulty_id" ref="difficulty_weight_1"/>
         </record>
 
         <!-- Mẫu STO: Học tập - viết tên -->
@@ -362,7 +362,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">54</field>
             <field name="age_max_months">96</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- ═══ DOMAIN: THÍCH ỨNG ═══ -->
@@ -382,7 +382,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- Mau STO: Thich ung - chap nhan thay doi lich -->
@@ -400,7 +400,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">96</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- Mẫu STO: Thích ứng - theo quy trình bằng hình ảnh -->
@@ -418,7 +418,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- ═══ DOMAIN: HÀNH VI (additional) ═══ -->
@@ -438,7 +438,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_level">3</field>
+            <field name="difficulty_id" ref="difficulty_weight_3"/>
         </record>
 
         <!-- Mẫu STO: Hành vi - tự yêu cầu nghỉ -->
@@ -456,7 +456,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
 
         <!-- ═══ DOMAIN: NHẬN THỨC (additional) ═══ -->
@@ -477,7 +477,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_level">2</field>
+            <field name="difficulty_id" ref="difficulty_weight_2"/>
         </record>
     </data>
 </odoo>

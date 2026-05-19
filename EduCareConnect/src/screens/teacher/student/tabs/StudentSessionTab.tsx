@@ -4,11 +4,20 @@ import { Text, useTheme } from "react-native-paper";
 import { useStudentSessions } from "../../../../hooks/useSessions";
 import { SessionListCard } from "../../../../components/session/SessionListCard";
 import { EmptyState } from "../../../../components/common/EmptyState";
+import SessionPlaceholder from "../../../../../assets/placeholder/session-placeholder.svg";
 import type { SessionListItem } from "../../../../types";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { StudentStackParamList } from "../../../../navigation/types";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+type StudentDetailNav = NativeStackNavigationProp<
+  StudentStackParamList,
+  "StudentDetail"
+>;
 
 interface Props {
   studentId: number;
-  navigation: any;
+  navigation: StudentDetailNav;
 }
 
 function groupByMonth(sessions: SessionListItem[]) {
@@ -32,46 +41,18 @@ export function StudentSessionTab({ studentId, navigation }: Props) {
   } = useStudentSessions(studentId);
   const sections = groupByMonth(sessions);
 
-  const navigateToSessionTab = (
-    screen: "SessionDetail" | "SessionCreate",
-    params: Record<string, number>,
-  ) => {
-    const parent = navigation.getParent?.();
-    const canNavigateViaParentTab = parent
-      ?.getState?.()
-      ?.routeNames?.includes("SessionTab");
-
-    if (canNavigateViaParentTab) {
-      parent.navigate("SessionTab", { screen, params });
-      return;
-    }
-
-    navigation.navigate("TeacherTabs", {
-      screen: "SessionTab",
-      params: { screen, params },
-    });
-  };
-
   const renderItem = ({ item }: { item: SessionListItem }) => (
     <SessionListCard
       session={item}
-      onPress={() =>
-        navigateToSessionTab("SessionDetail", { sessionId: item.id })
-      }
+      onPress={() => navigation.navigate("SessionDetail", { sessionId: item.id })}
     />
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <View style={styles.buttonContainer}>
-        {/* <Button
-          mode="outlined"
-          icon="plus"
-          onPress={() => navigateToSessionTab("SessionCreate", { studentId })}
-        >
-          Tạo buổi học mới
-        </Button> */}
-      </View>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      edges={["bottom"]}
+    >
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id.toString()}
@@ -92,16 +73,15 @@ export function StudentSessionTab({ studentId, navigation }: Props) {
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           !isLoading ? (
-            <EmptyState icon="calendar-blank" title="Chưa có buổi học" />
+            <EmptyState image={SessionPlaceholder} title="Chưa có buổi học" />
           ) : null
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: { padding: 16 },
   list: { flexGrow: 1, paddingHorizontal: 16, paddingBottom: 16 },
   sectionTitle: { paddingVertical: 8, fontWeight: "600" },
 });

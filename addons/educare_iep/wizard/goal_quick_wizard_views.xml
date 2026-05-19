@@ -15,7 +15,6 @@
                             placeholder="E.g.: Improve social communication skills" />
                         <field name="goal_domain_id"
                             options="{'no_create': True}" />
-                        <field name="target_date" />
                         <field name="priority" />
                         <field name="goal_description"
                             placeholder="Overall long-term goal description..."

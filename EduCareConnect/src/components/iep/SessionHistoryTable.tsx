@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { DataTable, Text, useTheme } from "react-native-paper";
 import { formatDate } from "../../utils/formatters";
+import { PROMPT_LEVEL_SHORT_LABELS } from "../../utils/labels";
 import type { SessionResult } from "../../types";
 
 interface SessionHistoryTableProps {
@@ -61,7 +62,9 @@ export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
           {/* 2. Đổi style flex-end thành prop numeric cho đồng bộ với Header */}
           <DataTable.Cell numeric>
             <Text variant="labelSmall" numberOfLines={1}>
-              {PROMPT_SHORT[r.prompt_level_used] || r.prompt_level_used || "—"}
+              {PROMPT_LEVEL_SHORT_LABELS[r.prompt_level_used] ||
+                r.prompt_level_used ||
+                "—"}
             </Text>
           </DataTable.Cell>
         </DataTable.Row>
@@ -69,14 +72,6 @@ export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
     </DataTable>
   );
 }
-
-const PROMPT_SHORT: Record<string, string> = {
-  independent: "ĐL",
-  verbal_prompt: "Lời",
-  gestural_prompt: "Cử chỉ",
-  partial_physical: "Một phần",
-  full_physical: "Hoàn toàn",
-};
 
 const styles = StyleSheet.create({
   empty: { alignItems: "center", paddingVertical: 24 },

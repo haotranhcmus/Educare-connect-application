@@ -59,7 +59,6 @@ const OBJECTIVE_FIELDS = [
   "last_session_accuracy",
   "total_sessions_worked",
   "mastery_date",
-  "is_overdue",
 ];
 
 // Extra fields only needed for detail view
@@ -69,8 +68,6 @@ const OBJECTIVE_DETAIL_FIELDS = [
   "measurement_method",
   "materials_needed",
   "implementation_steps",
-  "start_date",
-  "target_date",
 ];
 
 export async function fetchIepPlanDetail(planId: number): Promise<IepPlan> {
@@ -91,6 +88,16 @@ export async function fetchGoalsForPlan(planId: number): Promise<IepGoal[]> {
     { order: "goal_code asc" },
   );
   return records;
+}
+
+export async function fetchGoalsByIds(ids: number[]): Promise<IepGoal[]> {
+  if (!ids.length) return [];
+  return searchRead<IepGoal>(
+    "educare.iep.goal",
+    [["id", "in", ids]],
+    GOAL_FIELDS,
+    { order: "goal_code asc" },
+  );
 }
 
 export async function fetchObjectivesForGoal(

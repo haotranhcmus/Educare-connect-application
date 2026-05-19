@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackActions } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { useParentStore } from "../store/parentStore";
 import type {
   ParentTabParamList,
@@ -31,9 +32,22 @@ const TimetableStack =
 const ReportStack = createNativeStackNavigator<ParentReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
 
+const GRADIENT_HEADER: NativeStackNavigationOptions = {
+  headerShown: true,
+  headerTintColor: "#FFFFFF",
+  headerTitleStyle: {
+    color: "#FFFFFF",
+    fontWeight: "700" as const,
+    fontSize: 17,
+  },
+  headerStyle: { backgroundColor: "#2E7D32" },
+};
+
+// ── Stack navigators ──────────────────────────────────────────────
+
 function ChildStackNavigator() {
   return (
-    <ChildStack.Navigator>
+    <ChildStack.Navigator screenOptions={GRADIENT_HEADER}>
       <ChildStack.Screen
         name="ChildList"
         component={ChildListScreen}
@@ -42,10 +56,7 @@ function ChildStackNavigator() {
       <ChildStack.Screen
         name="ChildDetail"
         component={ChildProfileScreen}
-        options={({ route }) => ({
-          title: "Hồ sơ " + (route.params as any)?.studentName,
-          headerShown: false,
-        })}
+        options={{ headerShown: false }}
       />
       <ChildStack.Screen
         name="ChildIepHistory"
@@ -60,7 +71,7 @@ function ChildStackNavigator() {
       <ChildStack.Screen
         name="ChildIepObjectiveDetail"
         component={IepObjectiveDetailScreen as any}
-        options={{ title: "Chi tiết mục tiêu ngắn hạn" }}
+        options={{ title: "Chi tiết mục tiêu" }}
       />
       <ChildStack.Screen
         name="ChildTimetable"
@@ -73,7 +84,7 @@ function ChildStackNavigator() {
 
 function TimetableStackNavigator() {
   return (
-    <TimetableStack.Navigator>
+    <TimetableStack.Navigator screenOptions={GRADIENT_HEADER}>
       <TimetableStack.Screen
         name="Timetable"
         component={ChildTimetableScreen}
@@ -92,7 +103,7 @@ function TimetableStackNavigator() {
       <TimetableStack.Screen
         name="ChildIepObjectiveDetail"
         component={IepObjectiveDetailScreen as any}
-        options={{ title: "Chi tiết mục tiêu ngắn hạn" }}
+        options={{ title: "Chi tiết mục tiêu" }}
       />
     </TimetableStack.Navigator>
   );
@@ -100,7 +111,7 @@ function TimetableStackNavigator() {
 
 function ReportStackNavigator() {
   return (
-    <ReportStack.Navigator>
+    <ReportStack.Navigator screenOptions={GRADIENT_HEADER}>
       <ReportStack.Screen
         name="ParentReportList"
         component={ParentReportListScreen}
@@ -117,7 +128,7 @@ function ReportStackNavigator() {
 
 function ProfileStackNavigator() {
   return (
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator screenOptions={GRADIENT_HEADER}>
       <ProfileStack.Screen
         name="Profile"
         component={ParentProfileScreen}
@@ -131,6 +142,8 @@ function ProfileStackNavigator() {
     </ProfileStack.Navigator>
   );
 }
+
+// ── Tab navigator ─────────────────────────────────────────────────
 
 export function ParentNavigator() {
   const theme = useTheme();

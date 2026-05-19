@@ -157,31 +157,6 @@ export function ParentProfileScreen({ navigation }: Props) {
         <InfoRow label="Email" value={profile?.email || "—"} />
         <InfoRow label="Điện thoại" value={profile?.phone || "—"} />
       </View>
-
-      {/* ── Con tôi ───────────────────────────────────── */}
-      {student && (
-        <>
-          <SectionHeader icon="baby-face-outline" title="Con tôi" />
-          <View
-            style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
-          >
-            <InfoRow label="Họ và tên" value={student.name} />
-            <InfoRow label="Mã học sinh" value={student.student_code} />
-            {centerName ? (
-              <InfoRow label="Trung tâm" value={centerName} />
-            ) : null}
-            <InfoRow
-              label="Giáo viên phụ trách"
-              value={
-                Array.isArray(student.assigned_teacher_id)
-                  ? student.assigned_teacher_id[1]
-                  : "—"
-              }
-            />
-          </View>
-        </>
-      )}
-
       {/* ── Tài Khoản ─────────────────────────────────── */}
       <SectionHeader icon="cog-outline" title="Tài Khoản" />
       <View

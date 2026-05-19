@@ -73,7 +73,9 @@ class EducareIepObjectiveTemplateImportWizard(models.TransientModel):
                     ),
                     "age_min_months": tpl.age_min_months or False,
                     "age_max_months": tpl.age_max_months or False,
-                    "difficulty_level": tpl.difficulty_level or 1,
+                    "difficulty_id": (
+                        tpl.difficulty_id.id if tpl.difficulty_id else False
+                    ),
                 }
             )
 

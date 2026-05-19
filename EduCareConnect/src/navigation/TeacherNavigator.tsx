@@ -1,9 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StackActions } from "@react-navigation/native";
+import { StackActions, getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { GradientHeader } from "../components/common/GradientHeader";
 import type {
   TeacherTabParamList,
   TeacherRootStackParamList,
@@ -13,8 +14,6 @@ import type {
   ProfileStackParamList,
 } from "./types";
 
-// Placeholder screens — sẽ replace trong Week 3-7
-import { PlaceholderScreen } from "../screens/PlaceholderScreen";
 import { StudentListScreen } from "../screens/teacher/student/StudentListScreen";
 import { StudentDetailScreen } from "../screens/teacher/student/StudentDetailScreen";
 import { HomeScreen } from "../screens/teacher/HomeScreen";
@@ -24,16 +23,17 @@ import { SessionListScreen } from "../screens/teacher/session/SessionListScreen"
 import { SessionCreateScreen } from "../screens/teacher/session/SessionCreateScreen";
 import { SessionDetailScreen } from "../screens/teacher/session/SessionDetailScreen";
 import { SessionEditScreen } from "../screens/teacher/session/SessionEditScreen";
-import { EvalStep1Screen } from "../screens/teacher/session/EvalStep1Screen";
 import { EvalStep2Screen } from "../screens/teacher/session/EvalStep2Screen";
 import { EvalStep3Screen } from "../screens/teacher/session/EvalStep3Screen";
-import { EvalDetailViewScreen } from "../screens/teacher/session/EvalDetailViewScreen";
 import { ReportListScreen } from "../screens/teacher/report/ReportListScreen";
 import { TeacherProfileScreen } from "../screens/teacher/profile/TeacherProfileScreen";
 import { ReportCreateScreen } from "../screens/teacher/report/ReportCreateScreen";
 import { ReportDetailScreen } from "../screens/teacher/report/ReportDetailScreen";
 import { SessionPickerScreen } from "../screens/teacher/report/SessionPickerScreen";
 import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen";
+import { LinearGradient } from "expo-linear-gradient";
+import { ImageBackgroundComponent } from "react-native";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 
 const Tab = createBottomTabNavigator<TeacherTabParamList>();
 const TeacherRootStack =
@@ -43,11 +43,41 @@ const SessionStack = createNativeStackNavigator<SessionStackParamList>();
 const ReportStack = createNativeStackNavigator<ReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
+// Shared gradient header options for all stack navigators
+const GRADIENT_HEADER_OPTIONS: NativeStackNavigationOptions = {
+  headerShown: true,
+  // headerBackground: () => (
+  //   <LinearGradient
+  //     colors={["#1B5E20", "#2E7D32", "#388E3C"]}
+  //     start={{ x: 0, y: 0 }}
+  //     end={{ x: 1, y: 0 }}
+  //     style={{ flex: 1 }}
+  //   />
+  // ),
+  headerTintColor: "#FFFFFF",
+  headerTitleStyle: {
+    color: "#FFFFFF",
+    fontWeight: "700" as const,
+    fontSize: 17,
+  },
+  headerStyle: {
+    backgroundColor: "#2E7D32",
+    // ImageBackgroundComponent: (
+    //   <LinearGradient
+    //     colors={["#1B5E20", "#2E7D32", "#388E3C"]}
+    //     start={{ x: 0, y: 0 }}
+    //     end={{ x: 1, y: 0 }}
+    //     style={{ flex: 1 }}
+    //   />
+    // ), // Use LinearGradient for header background
+  },
+};
+
 // --- Stack Navigators ---
 
 function StudentStackNavigator() {
   return (
-    <StudentStack.Navigator screenOptions={{ headerShown: true }}>
+    <StudentStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <StudentStack.Screen
         name="StudentList"
         component={StudentListScreen}
@@ -56,21 +86,49 @@ function StudentStackNavigator() {
       <StudentStack.Screen
         name="StudentDetail"
         component={StudentDetailScreen}
-        options={({ route }) => ({ title: "Chi tiết học sinh" })}
+        options={{ title: "Chi tiết học sinh" }}
       />
       <StudentStack.Screen
         name="IepPlanDetail"
         component={IepPlanDetailScreen}
-        options={({ route }) => ({
-          title: route.params?.studentName || "Kế hoạch IEP",
-        })}
+        options={{ title: "Kế hoạch IEP" }}
       />
       <StudentStack.Screen
         name="IepObjectiveDetail"
-        component={IepObjectiveDetailScreen}
+        component={IepObjectiveDetailScreen as any}
         options={({ route }) => ({
-          title: route.params?.objectiveName || "Chi tiết mục tiêu",
+          title: (route.params as any)?.objectiveName || "Chi tiết mục tiêu",
         })}
+      />
+      <StudentStack.Screen
+        name="SessionDetail"
+        component={SessionDetailScreen as any}
+        options={{ title: "Chi tiết buổi học" }}
+      />
+      <StudentStack.Screen
+        name="SessionEdit"
+        component={SessionEditScreen as any}
+        options={{ title: "Sửa buổi học" }}
+      />
+      <StudentStack.Screen
+        name="EvalStep2"
+        component={EvalStep2Screen as any}
+        options={{ title: "Đánh giá mục tiêu" }}
+      />
+      <StudentStack.Screen
+        name="EvalStep3"
+        component={EvalStep3Screen as any}
+        options={{ title: "Xác nhận & Hoàn thành" }}
+      />
+      <StudentStack.Screen
+        name="ReportDetail"
+        component={ReportDetailScreen as any}
+        options={{ title: "Chi tiết báo cáo" }}
+      />
+      <StudentStack.Screen
+        name="ReportCreate"
+        component={ReportCreateScreen as any}
+        options={{ title: "Tạo báo cáo" }}
       />
     </StudentStack.Navigator>
   );
@@ -78,7 +136,7 @@ function StudentStackNavigator() {
 
 function SessionStackNavigator() {
   return (
-    <SessionStack.Navigator screenOptions={{ headerShown: true }}>
+    <SessionStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <SessionStack.Screen
         name="SessionList"
         component={SessionListScreen}
@@ -100,11 +158,6 @@ function SessionStackNavigator() {
         options={{ title: "Sửa buổi học" }}
       />
       <SessionStack.Screen
-        name="EvalStep1"
-        component={EvalStep1Screen}
-        options={{ title: "Quan sát chung", headerBackTitle: "Hủy" }}
-      />
-      <SessionStack.Screen
         name="EvalStep2"
         component={EvalStep2Screen}
         options={{ title: "Đánh giá mục tiêu" }}
@@ -115,9 +168,14 @@ function SessionStackNavigator() {
         options={{ title: "Xác nhận & Hoàn thành" }}
       />
       <SessionStack.Screen
-        name="EvalDetailView"
-        component={EvalDetailViewScreen}
-        options={{ title: "Chi tiết đánh giá" }}
+        name="ReportDetail"
+        component={ReportDetailScreen as any}
+        options={{ title: "Chi tiết báo cáo" }}
+      />
+      <SessionStack.Screen
+        name="ReportCreate"
+        component={ReportCreateScreen as any}
+        options={{ title: "Tạo báo cáo" }}
       />
     </SessionStack.Navigator>
   );
@@ -125,7 +183,7 @@ function SessionStackNavigator() {
 
 function ReportStackNavigator() {
   return (
-    <ReportStack.Navigator screenOptions={{ headerShown: true }}>
+    <ReportStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <ReportStack.Screen
         name="ReportList"
         component={ReportListScreen}
@@ -152,7 +210,7 @@ function ReportStackNavigator() {
 
 function ProfileStackNavigator() {
   return (
-    <ProfileStack.Navigator screenOptions={{ headerShown: true }}>
+    <ProfileStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <ProfileStack.Screen
         name="Profile"
         component={TeacherProfileScreen}
@@ -198,15 +256,18 @@ function TeacherTabsNavigator() {
       <Tab.Screen
         name="StudentTab"
         component={StudentStackNavigator}
-        options={{
-          title: "Học sinh",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="account-group"
-              size={size}
-              color={color}
-            />
-          ),
+        options={({ route }) => {
+          const focused = getFocusedRouteNameFromRoute(route) ?? "StudentList";
+          return {
+            title: "Học sinh",
+            tabBarStyle:
+              focused === "StudentList"
+                ? { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }
+                : { display: "none" },
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="account-group" size={size} color={color} />
+            ),
+          };
         }}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
@@ -225,15 +286,18 @@ function TeacherTabsNavigator() {
       <Tab.Screen
         name="SessionTab"
         component={SessionStackNavigator}
-        options={{
-          title: "Buổi học",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="calendar-check"
-              size={size}
-              color={color}
-            />
-          ),
+        options={({ route }) => {
+          const focused = getFocusedRouteNameFromRoute(route) ?? "SessionList";
+          return {
+            title: "Buổi học",
+            tabBarStyle:
+              focused === "SessionList"
+                ? { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }
+                : { display: "none" },
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="calendar-check" size={size} color={color} />
+            ),
+          };
         }}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
@@ -252,15 +316,18 @@ function TeacherTabsNavigator() {
       <Tab.Screen
         name="ReportTab"
         component={ReportStackNavigator}
-        options={{
-          title: "Báo cáo",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="file-document"
-              size={size}
-              color={color}
-            />
-          ),
+        options={({ route }) => {
+          const focused = getFocusedRouteNameFromRoute(route) ?? "ReportList";
+          return {
+            title: "Báo cáo",
+            tabBarStyle:
+              focused === "ReportList"
+                ? { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }
+                : { display: "none" },
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="file-document" size={size} color={color} />
+            ),
+          };
         }}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
@@ -309,7 +376,7 @@ function TeacherTabsNavigator() {
 
 export function TeacherNavigator() {
   return (
-    <TeacherRootStack.Navigator screenOptions={{ headerShown: true }}>
+    <TeacherRootStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <TeacherRootStack.Screen
         name="TeacherTabs"
         component={TeacherTabsNavigator}
@@ -323,16 +390,44 @@ export function TeacherNavigator() {
       <TeacherRootStack.Screen
         name="IepPlanDetail"
         component={IepPlanDetailScreen}
-        options={({ route }) => ({
-          title: route.params?.studentName || "Kế hoạch IEP",
-        })}
+        options={{ title: "Kế hoạch IEP" }}
       />
       <TeacherRootStack.Screen
         name="IepObjectiveDetail"
-        component={IepObjectiveDetailScreen}
+        component={IepObjectiveDetailScreen as any}
         options={({ route }) => ({
-          title: route.params?.objectiveName || "Chi tiết mục tiêu",
+          title: (route.params as any)?.objectiveName || "Chi tiết mục tiêu",
         })}
+      />
+      <TeacherRootStack.Screen
+        name="SessionDetail"
+        component={SessionDetailScreen as any}
+        options={{ title: "Chi tiết buổi học" }}
+      />
+      <TeacherRootStack.Screen
+        name="SessionEdit"
+        component={SessionEditScreen as any}
+        options={{ title: "Sửa buổi học" }}
+      />
+      <TeacherRootStack.Screen
+        name="EvalStep2"
+        component={EvalStep2Screen as any}
+        options={{ title: "Đánh giá mục tiêu" }}
+      />
+      <TeacherRootStack.Screen
+        name="EvalStep3"
+        component={EvalStep3Screen as any}
+        options={{ title: "Xác nhận & Hoàn thành" }}
+      />
+      <TeacherRootStack.Screen
+        name="ReportDetail"
+        component={ReportDetailScreen as any}
+        options={{ title: "Chi tiết báo cáo" }}
+      />
+      <TeacherRootStack.Screen
+        name="ReportCreate"
+        component={ReportCreateScreen as any}
+        options={{ title: "Tạo báo cáo" }}
       />
     </TeacherRootStack.Navigator>
   );

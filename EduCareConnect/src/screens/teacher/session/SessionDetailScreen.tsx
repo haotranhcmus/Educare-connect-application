@@ -5,9 +5,8 @@ import {
   StyleSheet,
   RefreshControl,
   Modal,
-  Alert,
   TextInput as RNTextInput,
-  TouchableOpacity,
+  Platform,
 } from "react-native";
 import {
   Text,
@@ -17,14 +16,19 @@ import {
   RadioButton,
   ActivityIndicator,
   Snackbar,
-  Chip,
 } from "react-native-paper";
-import { cancelSession, scheduleSession } from "../../../api/sessionApi";
+import { LinearGradient } from "expo-linear-gradient";
+import {
+  cancelSession,
+  scheduleSession,
+  deleteSession,
+} from "../../../api/sessionApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
 import { SectionHeader } from "../../../components/common/SectionHeader";
 import { ResultSummaryCard } from "../../../components/session/ResultSummaryCard";
+import { ObjectiveDetailCard } from "../../../components/session/ObjectiveDetailCard";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import {
   useSessionDetail,
@@ -33,63 +37,24 @@ import {
 } from "../../../hooks/useSessions";
 import { useReportForSession } from "../../../hooks/useReports";
 import { formatDate, formatFloatTime } from "../../../utils/formatters";
+import {
+  LOCATION_LABELS,
+  SESSION_TYPE_SHORT_LABELS,
+  SESSION_PURPOSE_LABELS,
+  CANCEL_TYPE_LABELS,
+} from "../../../utils/labels";
 import { logger } from "../../../utils/logger";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
-import { IepObjectiveListItem, SessionResult } from "@/src/types/models";
+import { SessionResult } from "@/src/types/models";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionDetail">;
 
-const OBSERVATION_LABELS: Record<string, Record<string, string>> = {
-  attendance: {
-    present: "Có mặt",
-    absent_excused: "Vắng có phép",
-    absent_unexcused: "Vắng không phép",
-    cancelled_center: "Huỷ bởi trung tâm",
-    cancelled_family: "Huỷ bởi gia đình",
-  },
-  mood: {
-    very_good: "Rất tốt",
-    good: "Tốt",
-    neutral: "Bình thường",
-    difficult: "Khó khăn",
-    very_difficult: "Rất khó khăn",
-  },
-  energy_level: { high: "Cao", normal: "Bình thường", low: "Thấp" },
-  engagement_level: {
-    highly_engaged: "Rất tập trung",
-    engaged: "Tham gia",
-    somewhat_engaged: "Tham gia một phần",
-    disengaged: "Không tham gia",
-  },
-  overall_performance: {
-    excellent: "Xuất sắc",
-    good: "Tốt",
-    fair: "Bình thường",
-    poor: "Kém",
-  },
-};
-
-const TYPE_LABEL: Record<string, string> = {
-  individual: "1:1",
-  small_group: "Nhóm nhỏ",
-  consultation: "Tư vấn",
-};
-
-const LOCATION_LABEL: Record<string, string> = {
-  center: "Tại trung tâm",
-  home: "Tại nhà",
-  school: "Tại trường",
-  online: "Online",
-};
-
-const PURPOSE_LABEL: Record<string, string> = {
-  intervention: "Can thiệp",
-  maintenance_probe: "Đánh giá duy trì",
-  generalization_probe: "Đánh giá tổng quát hóa",
-  parent_training: "Hướng dẫn phụ huynh",
-};
+const G1 = "#2E7D32";
+const G2 = "#43A047";
+const G_LIGHT = "#E8F5E9";
+const G_TEXT = "#1B5E20";
 
 export function SessionDetailScreen({ route, navigation }: Props) {
   const { sessionId } = route.params;
@@ -102,14 +67,20 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
   const [isScheduling, setIsScheduling] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [cancelError, setCancelError] = useState("");
   const [snackMessage, setSnackMessage] = useState("");
   const [snackVisible, setSnackVisible] = useState(false);
+  const [scheduleErrorModal, setScheduleErrorModal] = useState<string | null>(
+    null,
+  );
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
 
   const showSnack = (msg: string) => {
     setSnackMessage(msg);
     setSnackVisible(true);
   };
+
   const {
     data: session,
     isLoading,
@@ -181,12 +152,13 @@ export function SessionDetailScreen({ route, navigation }: Props) {
     (Array.isArray(session.student_id) ? session.student_id[1] : "");
   const isCancelled = session.status === "cancelled";
   const isDone = session.status === "done";
-  const canSchedule = session.status === "draft";
+  const isDraft = session.status === "draft";
+  const canSchedule = isDraft;
   const canEval =
     session.status === "scheduled" || session.status === "completed";
-  const canEdit = session.status === "draft" || session.status === "scheduled";
-  const canCancel =
-    session.status === "draft" || session.status === "scheduled";
+  const canEdit = isDraft || session.status === "scheduled";
+  const canDelete = isDraft;
+  const canCancel = session.status === "scheduled";
 
   const handleSchedule = async () => {
     setIsScheduling(true);
@@ -197,11 +169,27 @@ export function SessionDetailScreen({ route, navigation }: Props) {
       refetch();
       showSnack("Đã lên lịch buổi học thành công");
     } catch (e: any) {
-      Alert.alert("Lỗi", e?.message || "Không thể lên lịch buổi học.");
+      setScheduleErrorModal(e?.message || "Không thể lên lịch buổi học.");
     } finally {
       setIsScheduling(false);
     }
   };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteSession(sessionId);
+      await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      setDeleteConfirmVisible(false);
+      navigation.goBack();
+    } catch (e: any) {
+      setDeleteConfirmVisible(false);
+      showSnack(e?.message || "Không thể xóa buổi học.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const duration = Math.round((session.end_time - session.start_time) * 60);
 
   const handleConfirmCancel = async () => {
@@ -231,53 +219,124 @@ export function SessionDetailScreen({ route, navigation }: Props) {
           <RefreshControl refreshing={false} onRefresh={refetch} />
         }
       >
-        {/* Header */}
-        <View
-          style={[styles.header, { backgroundColor: theme.colors.surface }]}
-        >
-          <Text variant="titleMedium" style={{ fontWeight: "700" }}>
-            {session.name}
-          </Text>
-          <StatusBadge status={session.status} />
-        </View>
-
-        {/* Info section */}
-        <SectionHeader icon="information-outline" title="Thông Tin Buổi Học" />
+        {/* ── SESSION INFO CARD ─────────────────────────────── */}
         <View
           style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
         >
-          <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
-            <AvatarLabel
-              uri={session.student_avatar_url}
-              name={studentName}
-              size={40}
-            />
-            <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
-              {studentName}
-            </Text>
+          {/* Gradient header: time is hero */}
+          <LinearGradient
+            colors={[G1, G2]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.cardHeader}
+          >
+            {/* Time block */}
+            <View style={styles.timeBlock}>
+              <View style={{ width: "70%" }}>
+                <MaterialCommunityIcons
+                  name="clock-outline"
+                  size={14}
+                  color="rgba(255,255,255,0.75)"
+                />
+                <Text style={styles.timeText}>
+                  {formatFloatTime(session.start_time)}
+                  <Text style={styles.timeSep}> – </Text>
+                  {formatFloatTime(session.end_time)}
+                </Text>
+              </View>
+              <View style={styles.durationPill}>
+                <Text style={styles.durationText}>{duration} phút</Text>
+              </View>
+            </View>
+
+            {/* Session code + status */}
+            <View style={styles.headerMeta}>
+              <Text style={styles.sessionCode}>{session.name}</Text>
+              <StatusBadge status={session.status} size="small" />
+            </View>
+          </LinearGradient>
+
+          {/* Student row */}
+          <View style={styles.studentRow}>
+            <View style={styles.avatarRing}>
+              <AvatarLabel
+                uri={session.student_avatar_url}
+                name={studentName}
+                size={42}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text
+                style={[styles.studentName, { color: theme.colors.onSurface }]}
+              >
+                {studentName}
+              </Text>
+              <Text
+                style={[styles.studentSub, { color: theme.colors.outline }]}
+              >
+                Học sinh
+              </Text>
+            </View>
           </View>
-          <Divider style={{ marginVertical: 8 }} />
-          <InfoRow label="Ngày" value={formatDate(session.session_date)} />
-          <InfoRow
-            label="Thời gian"
-            value={`${formatFloatTime(session.start_time)} – ${formatFloatTime(session.end_time)} (${duration} phút)`}
-          />
-          <InfoRow
-            label="Địa điểm"
-            value={LOCATION_LABEL[session.location ?? ""] || ""}
-          />
-          <InfoRow
-            label="Loại"
-            value={TYPE_LABEL[session.session_type ?? ""] || ""}
-          />
-          <InfoRow
-            label="Mục đích"
-            value={PURPOSE_LABEL[session.session_purpose ?? ""] || ""}
+
+          {/* Divider */}
+          <View
+            style={[
+              styles.divider,
+              { backgroundColor: theme.colors.outlineVariant },
+            ]}
           />
 
+          {/* Info rows */}
+          <View style={styles.infoRows}>
+            <View style={styles.infoRowGrid}>
+              <View style={styles.infoRowCol}>
+                <InfoRowNew
+                  icon="calendar-outline"
+                  label="Ngày học"
+                  value={formatDate(session.session_date)}
+                  accent
+                />
+              </View>
+              <View style={styles.infoRowCol}>
+                <InfoRowNew
+                  icon="map-marker-outline"
+                  label="Địa điểm"
+                  value={LOCATION_LABELS[session.location ?? ""] || "—"}
+                />
+              </View>
+            </View>
+            <View style={styles.infoRowGrid}>
+              <View style={styles.infoRowCol}>
+                <InfoRowNew
+                  icon="shape-outline"
+                  label="Loại buổi"
+                  value={
+                    SESSION_TYPE_SHORT_LABELS[session.session_type ?? ""] || "—"
+                  }
+                />
+              </View>
+              <View style={styles.infoRowCol}>
+                <InfoRowNew
+                  icon="flag-outline"
+                  label="Mục đích"
+                  value={
+                    SESSION_PURPOSE_LABELS[session.session_purpose ?? ""] || "—"
+                  }
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Cancelled banner */}
           {isCancelled && (
             <>
-              <Divider style={{ marginVertical: 8 }} />
+              <View
+                style={[
+                  styles.divider,
+                  { backgroundColor: theme.colors.outlineVariant },
+                ]}
+              />
               <View
                 style={[
                   styles.cancelBanner,
@@ -293,7 +352,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
                   variant="labelMedium"
                   style={{
                     color: theme.colors.onErrorContainer,
-                    marginLeft: 6,
+                    marginLeft: 8,
                     flex: 1,
                     fontWeight: "700",
                   }}
@@ -301,59 +360,25 @@ export function SessionDetailScreen({ route, navigation }: Props) {
                   Buổi học đã bị hủy
                 </Text>
               </View>
-              <InfoRow
-                label="Lý do hủy"
-                value={
-                  OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
-                }
-              />
-              {session.notes ? (
-                <InfoRow label="Ghi chú" value={session.notes} />
-              ) : null}
-            </>
-          )}
-
-          {isDone && (
-            <>
-              <Divider style={{ marginVertical: 8 }} />
-              <InfoRow
-                label="Điểm danh"
-                value={
-                  OBSERVATION_LABELS.attendance[session.attendance ?? ""] || ""
-                }
-              />
-              <InfoRow
-                label="Tâm trạng"
-                value={OBSERVATION_LABELS.mood[session.mood ?? ""] || ""}
-              />
-              <InfoRow
-                label="Năng lượng"
-                value={
-                  OBSERVATION_LABELS.energy_level[session.energy_level ?? ""] ||
-                  ""
-                }
-              />
-              <InfoRow
-                label="Tập trung"
-                value={
-                  OBSERVATION_LABELS.engagement_level[
-                    session.engagement_level ?? ""
-                  ] || ""
-                }
-              />
-              <InfoRow
-                label="Kết quả tổng"
-                value={
-                  OBSERVATION_LABELS.overall_performance[
-                    session.overall_performance ?? ""
-                  ] || ""
-                }
-              />
+              <View style={[styles.infoRows, { paddingTop: 0 }]}>
+                <InfoRowNew
+                  icon="alert-circle-outline"
+                  label="Lý do hủy"
+                  value={CANCEL_TYPE_LABELS[session.cancel_type ?? ""] || "—"}
+                />
+                {session.cancel_notes ? (
+                  <InfoRowNew
+                    icon="note-text-outline"
+                    label="Ghi chú hủy"
+                    value={session.cancel_notes}
+                  />
+                ) : null}
+              </View>
             </>
           )}
         </View>
 
-        {/* Objectives taught in session */}
+        {/* ── Objectives ─────────────────────────────────────── */}
         {sessionObjectives.length > 0 && (
           <>
             <SectionHeader
@@ -366,7 +391,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
           </>
         )}
 
-        {/* Results section (done) */}
+        {/* ── Results ────────────────────────────────────────── */}
         {isDone && results.length > 0 && (
           <>
             <SectionHeader
@@ -387,20 +412,10 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             {results.map((r: SessionResult) => (
               <ResultSummaryCard key={r.id} result={r} />
             ))}
-            {/* <Button
-              mode="outlined"
-              icon="magnify"
-              onPress={() =>
-                navigation.navigate("EvalDetailView", { sessionId })
-              }
-              style={{ marginTop: 8 }}
-            >
-              Xem chi tiết đánh giá
-            </Button> */}
           </>
         )}
 
-        {/* Cancel session modal */}
+        {/* ── Cancel modal ───────────────────────────────────── */}
         <Modal
           visible={cancelModalVisible}
           transparent
@@ -429,7 +444,6 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               >
                 Chọn lý do hủy buổi học:
               </Text>
-
               <RadioButton.Group
                 onValueChange={(val) =>
                   setCancelType(val as "cancelled_center" | "cancelled_family")
@@ -445,7 +459,6 @@ export function SessionDetailScreen({ route, navigation }: Props) {
                   <Text variant="bodyMedium">Gia đình hủy</Text>
                 </View>
               </RadioButton.Group>
-
               <Text
                 variant="labelSmall"
                 style={{
@@ -472,7 +485,6 @@ export function SessionDetailScreen({ route, navigation }: Props) {
                   },
                 ]}
               />
-
               {cancelError ? (
                 <Text
                   variant="labelSmall"
@@ -481,7 +493,6 @@ export function SessionDetailScreen({ route, navigation }: Props) {
                   {cancelError}
                 </Text>
               ) : null}
-
               <View style={styles.modalActions}>
                 <Button
                   mode="outlined"
@@ -513,7 +524,131 @@ export function SessionDetailScreen({ route, navigation }: Props) {
           </View>
         </Modal>
 
-        {/* Action buttons */}
+        {/* ── Schedule Error Modal ───────────────────────────── */}
+        <Modal
+          visible={scheduleErrorModal !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setScheduleErrorModal(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
+            >
+              <View style={styles.errorModalIcon}>
+                <MaterialCommunityIcons
+                  name="calendar-alert"
+                  size={36}
+                  color={theme.colors.error}
+                />
+              </View>
+              <Text
+                variant="titleMedium"
+                style={{
+                  fontWeight: "700",
+                  textAlign: "center",
+                  marginBottom: 8,
+                }}
+              >
+                Không thể lên lịch
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  textAlign: "center",
+                  marginBottom: 20,
+                  lineHeight: 20,
+                }}
+              >
+                {scheduleErrorModal}
+              </Text>
+              <Button
+                mode="contained"
+                onPress={() => setScheduleErrorModal(null)}
+                style={{ width: "100%" }}
+              >
+                Đã hiểu
+              </Button>
+            </View>
+          </View>
+        </Modal>
+
+        {/* ── Delete Confirm Modal ───────────────────────────── */}
+        <Modal
+          visible={deleteConfirmVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setDeleteConfirmVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
+            >
+              <View style={styles.errorModalIcon}>
+                <MaterialCommunityIcons
+                  name="delete-alert-outline"
+                  size={36}
+                  color={theme.colors.error}
+                />
+              </View>
+              <Text
+                variant="titleMedium"
+                style={{
+                  fontWeight: "700",
+                  textAlign: "center",
+                  marginBottom: 8,
+                }}
+              >
+                Xóa buổi học?
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  textAlign: "center",
+                  marginBottom: 20,
+                  lineHeight: 20,
+                }}
+              >
+                Bạn có chắc muốn xóa buổi học này không? Thao tác này không thể
+                hoàn tác.
+              </Text>
+              <View style={styles.modalActions}>
+                <Button
+                  mode="outlined"
+                  onPress={() => setDeleteConfirmVisible(false)}
+                  style={{ flex: 1 }}
+                  disabled={isDeleting}
+                >
+                  Hủy bỏ
+                </Button>
+                <Button
+                  mode="contained"
+                  buttonColor={theme.colors.error}
+                  onPress={handleDelete}
+                  style={{ flex: 1, marginLeft: 8 }}
+                  disabled={isDeleting}
+                  icon={isDeleting ? undefined : "delete"}
+                >
+                  {isDeleting ? (
+                    <ActivityIndicator size={16} color={theme.colors.onError} />
+                  ) : (
+                    "Xóa"
+                  )}
+                </Button>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* ── Action buttons ─────────────────────────────────── */}
         <View style={styles.actions}>
           {canSchedule && (
             <Button
@@ -530,7 +665,12 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             <Button
               mode="contained"
               icon="clipboard-edit-outline"
-              onPress={() => navigation.navigate("EvalStep1", { sessionId })}
+              onPress={() =>
+                navigation.navigate("EvalStep2", {
+                  sessionId,
+                  objectiveIndex: 0,
+                })
+              }
             >
               {session.status === "completed"
                 ? "Tiếp tục nhập kết quả"
@@ -561,16 +701,26 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               Hủy buổi học
             </Button>
           )}
+          {canDelete && (
+            <Button
+              mode="outlined"
+              icon="delete-outline"
+              textColor={theme.colors.error}
+              style={{ marginTop: 8, borderColor: theme.colors.error }}
+              onPress={() => setDeleteConfirmVisible(true)}
+            >
+              Xóa buổi học
+            </Button>
+          )}
           {isDone && existingReport ? (
             <Button
               mode="contained"
               icon="file-document-outline"
-              onPress={() => {
-                navigation.getParent()?.navigate("ReportTab" as any, {
-                  screen: "ReportDetail",
-                  params: { reportId: existingReport.id },
-                });
-              }}
+              onPress={() =>
+                navigation.navigate("ReportDetail", {
+                  reportId: existingReport.id,
+                })
+              }
               style={{ marginTop: 8 }}
             >
               Xem báo cáo đã gửi
@@ -579,12 +729,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
             <Button
               mode="contained"
               icon="file-document-edit-outline"
-              onPress={() => {
-                navigation.getParent()?.navigate("ReportTab" as any, {
-                  screen: "ReportCreate",
-                  params: { sessionId },
-                });
-              }}
+              onPress={() => navigation.navigate("ReportCreate", { sessionId })}
               style={{ marginTop: 8 }}
             >
               Tạo báo cáo buổi học
@@ -592,6 +737,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
           ) : null}
         </View>
       </ScrollView>
+
       <Snackbar
         visible={snackVisible}
         onDismiss={() => setSnackVisible(false)}
@@ -604,241 +750,206 @@ export function SessionDetailScreen({ route, navigation }: Props) {
   );
 }
 
-function ObjectiveDetailCard({
-  objective,
-}: {
-  objective: IepObjectiveListItem;
-}) {
-  const theme = useTheme();
-  const [expanded, setExpanded] = useState(false);
-  const domains = Array.isArray(objective.domain_ids)
-    ? (objective.domain_ids as any[]).filter(Boolean)
-    : [];
-
-  return (
-    <TouchableOpacity
-      onPress={() => setExpanded((v) => !v)}
-      activeOpacity={0.8}
-    >
-      <View
-        style={[
-          styles.objectiveCard,
-          { backgroundColor: theme.colors.surface },
-        ]}
-      >
-        <View style={styles.objectiveHeader}>
-          <View style={{ flex: 1 }}>
-            <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-              {objective.objective_code}
-            </Text>
-            <Text
-              variant="bodyMedium"
-              style={{ fontWeight: "600", marginTop: 2 }}
-            >
-              {objective.name}
-            </Text>
-          </View>
-          <MaterialCommunityIcons
-            name={expanded ? "chevron-up" : "chevron-down"}
-            size={20}
-            color={theme.colors.onSurfaceVariant}
-          />
-        </View>
-
-        {/* Domain chips */}
-        {domains.length > 0 && (
-          <View style={styles.chipRow}>
-            {domains.map((d: any) => (
-              <Chip
-                key={typeof d === "object" ? d.id : d}
-                compact
-                style={{ marginRight: 4, marginTop: 4 }}
-                textStyle={{ fontSize: 11 }}
-              >
-                {typeof d === "object" ? (d[1] ?? d.name ?? d.id) : d}
-              </Chip>
-            ))}
-          </View>
-        )}
-
-        {objective.description ? (
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant, marginTop: 6 }}
-            numberOfLines={expanded ? undefined : 2}
-          >
-            {objective.description}
-          </Text>
-        ) : null}
-
-        {expanded && (
-          <>
-            <Divider style={{ marginVertical: 8 }} />
-            {objective.measurement_method ? (
-              <DetailRow
-                icon="ruler"
-                label="Phương pháp đo lường"
-                value={objective.measurement_method}
-              />
-            ) : null}
-            {objective.implementation_steps ? (
-              <DetailRow
-                icon="format-list-checks"
-                label="Các bước thực hiện"
-                value={objective.implementation_steps}
-              />
-            ) : null}
-            {objective.materials_needed ? (
-              <DetailRow
-                icon="package-variant-closed"
-                label="Vật liệu cần thiết"
-                value={objective.materials_needed}
-              />
-            ) : null}
-            {objective.consecutive_sessions_required ? (
-              <DetailRow
-                icon="calendar-check-outline"
-                label="Buổi đạt liên tiếp"
-                value={`${objective.consecutive_sessions_achieved || 0}/${objective.consecutive_sessions_required} buổi`}
-              />
-            ) : null}
-            {objective.smart_specific ? (
-              <DetailRow
-                icon="target"
-                label="Cụ thể (S)"
-                value={objective.smart_specific}
-              />
-            ) : null}
-            {objective.smart_measurable ? (
-              <DetailRow
-                icon="chart-line"
-                label="Đo lường (M)"
-                value={objective.smart_measurable}
-              />
-            ) : null}
-            {objective.smart_analysis ? (
-              <DetailRow
-                icon="check-decagram-outline"
-                label="Khả thi (A/R)"
-                value={objective.smart_analysis}
-              />
-            ) : null}
-            {objective.smart_timebound ? (
-              <DetailRow
-                icon="clock-outline"
-                label="Thời hạn (T)"
-                value={objective.smart_timebound}
-              />
-            ) : null}
-            {typeof objective.difficulty_level === "number" ? (
-              <DetailRow
-                icon="alert-circle-outline"
-                label="Độ khó"
-                value={`${objective.difficulty_level}/5`}
-              />
-            ) : null}
-            {objective.suggested_prompt_level_id &&
-            typeof objective.suggested_prompt_level_id === "object" ? (
-              <DetailRow
-                icon="account-question-outline"
-                label="Mức gợi ý"
-                value={(objective.suggested_prompt_level_id as any)[1] ?? ""}
-              />
-            ) : null}
-          </>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-function DetailRow({
+// ── New InfoRow with icon ─────────────────────────────────────
+function InfoRowNew({
   icon,
   label,
   value,
+  accent = false,
 }: {
   icon: string;
   label: string;
   value: string;
+  accent?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <View style={styles.detailRow}>
-      <MaterialCommunityIcons
-        name={icon as any}
-        size={15}
-        color={theme.colors.primary}
-        style={{ marginRight: 6, marginTop: 2 }}
-      />
-      <View style={{ flex: 1 }}>
-        <Text
-          variant="labelSmall"
-          style={{ color: theme.colors.outline, marginBottom: 1 }}
-        >
+    <View style={styles.infoRowNew}>
+      <View
+        style={[
+          styles.infoIconWrap,
+          { backgroundColor: accent ? G_LIGHT : theme.colors.surfaceVariant },
+        ]}
+      >
+        <MaterialCommunityIcons
+          name={icon as any}
+          size={15}
+          color={accent ? G1 : theme.colors.onSurfaceVariant}
+        />
+      </View>
+      <View style={styles.infoRowContent}>
+        <Text style={[styles.infoLabel, { color: theme.colors.outline }]}>
           {label}
         </Text>
-        <Text variant="bodySmall">{value}</Text>
+        <Text style={[styles.infoValue, { color: theme.colors.onSurface }]}>
+          {value}
+        </Text>
       </View>
-    </View>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  const theme = useTheme();
-  return (
-    <View style={styles.infoRow}>
-      <Text
-        variant="labelSmall"
-        style={{ color: theme.colors.outline, width: 100 }}
-      >
-        {label}
-      </Text>
-      <Text variant="bodySmall">{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 32 },
+
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
   },
-  header: {
+
+  // ── Info card ────────────────────────────────────────────────
+  infoCard: {
+    borderRadius: 18,
+    overflow: "hidden",
+    marginBottom: 20,
+    ...Platform.select({
+      ios: {
+        // shadowColor: G1,
+        // shadowOffset: { width: 0, height: 5 },
+        // shadowOpacity: 0.12,
+        // shadowRadius: 14,
+      },
+      android: { elevation: 5 },
+    }),
+  },
+
+  // Gradient header
+  cardHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 8,
+  },
+  timeBlock: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    elevation: 1,
+    gap: 7,
+    justifyContent: "space-between",
   },
-  infoCard: { padding: 16, borderRadius: 12, elevation: 1, marginBottom: 16 },
-  infoRow: { flexDirection: "row", marginVertical: 2 },
-  objectiveCard: {
-    padding: 14,
-    borderRadius: 12,
-    elevation: 1,
-    marginBottom: 10,
+  timeText: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#fff",
+    letterSpacing: 0.4,
   },
-  objectiveHeader: { flexDirection: "row", alignItems: "flex-start" },
-  detailRow: {
+  timeSep: {
+    fontSize: 20,
+    fontWeight: "300",
+    color: "rgba(255,255,255,0.65)",
+  },
+  durationPill: {
+    backgroundColor: "rgba(255,255,255,0.22)",
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    marginLeft: 4,
+  },
+  durationText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#fff",
+  },
+  headerMeta: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginVertical: 4,
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  chipRow: { flexDirection: "row", flexWrap: "wrap" },
+  sessionCode: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.80)",
+    letterSpacing: 0.4,
+  },
+
+  // Student row
+  studentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  avatarRing: {
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: G_LIGHT,
+    overflow: "hidden",
+  },
+  studentName: {
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.1,
+  },
+  studentSub: {
+    fontSize: 11,
+    fontWeight: "500",
+    marginTop: 1,
+  },
+
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: 16,
+  },
+
+  // Info rows
+  infoRows: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 10,
+  },
+  infoRowGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  infoRowCol: {
+    flex: 1,
+  },
+  infoRowNew: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  infoIconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoRowContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 1,
+  },
+  infoValue: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
+
+  // Cancel banner
   cancelBanner: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 8,
     padding: 10,
-    marginBottom: 6,
+    marginHorizontal: 14,
+    marginTop: 12,
+    marginBottom: 4,
   },
+
+  // Results
   avgCard: { padding: 12, borderRadius: 10, marginBottom: 8 },
+
+  // Actions
   actions: { marginTop: 24 },
+
+  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -851,11 +962,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     elevation: 8,
   },
-  radioRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 2,
-  },
+  radioRow: { flexDirection: "row", alignItems: "center", marginVertical: 2 },
   reasonInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -864,8 +971,21 @@ const styles = StyleSheet.create({
     minHeight: 72,
     textAlignVertical: "top",
   },
-  modalActions: {
-    flexDirection: "row",
-    marginTop: 16,
+  modalActions: { flexDirection: "row", marginTop: 16 },
+  errorModalIcon: {
+    alignItems: "center",
+    marginBottom: 12,
   },
+
+  // (legacy — kept for safety, no longer used in infoCard)
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    elevation: 1,
+  },
+  infoRow: { flexDirection: "row", marginVertical: 2 },
 });

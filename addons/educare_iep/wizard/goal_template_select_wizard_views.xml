@@ -50,7 +50,7 @@
                             <field name="template_id" readonly="1" string="Template Name" />
                             <field name="template_domain_ids" readonly="1" string="Domains"
                                 widget="many2many_tags" />
-                            <field name="difficulty_level" readonly="1" string="Difficulty" />
+                            <field name="difficulty_id" readonly="1" string="Độ khó" />
                             <field name="default_target_accuracy_pct" readonly="1"
                                 string="Suggested Target (%)" />
                             <field name="sequence" column_invisible="1" />

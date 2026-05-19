@@ -62,10 +62,11 @@ class EducareIepObjectiveTemplate(models.Model):
         string="Max Age (months)",
         help="Maximum recommended age in months.",
     )
-    difficulty_level = fields.Integer(
-        string="Difficulty Level",
-        default=1,
-        help="Skill difficulty level from 1 (easiest) to 5 (hardest).",
+    difficulty_id = fields.Many2one(
+        "educare.iep.difficulty.weight",
+        string="Độ khó",
+        ondelete="set null",
+        help="Mức độ khó của kỹ năng này. Trọng số sẽ được tự động gán khi import.",
     )
     relevant_diagnosis_ids = fields.Many2many(
         "educare.diagnosis",
@@ -114,11 +115,6 @@ class EducareIepObjectiveTemplate(models.Model):
             "age_range_check",
             "CHECK(age_min_months IS NULL OR age_max_months IS NULL OR age_min_months <= age_max_months)",
             "Minimum age must be less than or equal to maximum age.",
-        ),
-        (
-            "difficulty_range",
-            "CHECK(difficulty_level >= 1 AND difficulty_level <= 5)",
-            "Difficulty level must be between 1 and 5.",
         ),
         (
             "default_baseline_pct_range",

@@ -11,6 +11,7 @@ import {
   updateSession,
 } from "../api/sessionApi";
 import { useAuthStore } from "../store/authStore";
+import dayjs from "dayjs";
 
 export function useStudentSessions(studentId: number) {
   return useQuery({
@@ -39,6 +40,46 @@ export function useMySessions(filters?: {
     queryFn: () => fetchMySessions(uid!, filters),
     enabled: !!uid,
   });
+}
+
+/** Returns { week, month } completed session counts for the teacher. */
+export function useWeekMonthStats() {
+  const uid = useAuthStore((s) => s.uid);
+  // dayjs().startOf("week") defaults to Sunday (US convention).
+  // Vietnam uses Monday as first day of week — calculate manually.
+  const today = dayjs();
+  const dayOfWeek = today.day(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const weekFrom = today.subtract(daysFromMonday, "day").format("YYYY-MM-DD");
+  const monthFrom = today.startOf("month").format("YYYY-MM-DD");
+  const todayStr = today.format("YYYY-MM-DD");
+
+  const weekQ = useQuery({
+    queryKey: ["sessions", "my", uid, { dateFrom: weekFrom, dateTo: todayStr }],
+    queryFn: () =>
+      fetchMySessions(uid!, { dateFrom: weekFrom, dateTo: todayStr }),
+    enabled: !!uid,
+    select: (data) =>
+      data.filter((s) => s.status === "done" || s.status === "completed")
+        .length,
+  });
+
+  const monthQ = useQuery({
+    queryKey: [
+      "sessions",
+      "my",
+      uid,
+      { dateFrom: monthFrom, dateTo: todayStr },
+    ],
+    queryFn: () =>
+      fetchMySessions(uid!, { dateFrom: monthFrom, dateTo: todayStr }),
+    enabled: !!uid,
+    select: (data) =>
+      data.filter((s) => s.status === "done" || s.status === "completed")
+        .length,
+  });
+
+  return { week: weekQ.data ?? 0, month: monthQ.data ?? 0 };
 }
 
 export function useSessionDetail(sessionId: number) {

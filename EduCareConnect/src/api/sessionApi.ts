@@ -11,10 +11,10 @@ function toAvatarUrl(b64?: string | false): string | undefined {
   return b64 ? `data:image/png;base64,${b64}` : undefined;
 }
 
-/** Batch-fetch student avatars and merge into session/record list. */
+/** Batch-fetch student avatars + nickname and merge into session/record list. */
 async function mergeStudentAvatars<
-  T extends { student_id: any; student_avatar_url?: string },
->(records: T[]): Promise<T[]> {
+  T extends { student_id: any; student_avatar_url?: string; student_nickname?: string },
+>(records: T[], fetchNickname = false): Promise<T[]> {
   if (records.length === 0) return records;
   const studentIds = [
     ...new Set(
@@ -29,22 +29,29 @@ async function mergeStudentAvatars<
   ];
   if (studentIds.length === 0) return records;
   try {
-    const students = await searchRead<{ id: number; avatar: string | false }>(
+    const fields = fetchNickname
+      ? ["id", "avatar", "nickname"]
+      : ["id", "avatar"];
+    const students = await searchRead<{ id: number; avatar: string | false; nickname?: string | false }>(
       "educare.student",
       [["id", "in", studentIds]],
-      ["id", "avatar"],
+      fields,
     );
     const avatarMap = new Map<number, string | undefined>(
       students.map((s) => [s.id, toAvatarUrl(s.avatar)]),
+    );
+    const nicknameMap = new Map<number, string | undefined>(
+      students.map((s) => [s.id, s.nickname || undefined]),
     );
     return records.map((r) => {
       const sid = Array.isArray(r.student_id)
         ? r.student_id[0]
         : ((r.student_id as any)?.id ?? 0);
-      return { ...r, student_avatar_url: avatarMap.get(sid) };
+      const merged: any = { ...r, student_avatar_url: avatarMap.get(sid) };
+      if (fetchNickname) merged.student_nickname = nicknameMap.get(sid);
+      return merged as T;
     });
   } catch {
-    // Avatar fetch is non-critical — return records as-is
     return records;
   }
 }
@@ -70,12 +77,8 @@ const SESSION_DETAIL_FIELDS = [
   ...SESSION_LIST_FIELDS,
   "teacher_id",
   "center_id",
-  "attendance",
-  "mood",
-  "energy_level",
-  "engagement_level",
-  "overall_performance",
-  "notes",
+  "cancel_type",
+  "cancel_notes",
   "result_line_ids",
   "objective_ids",
 ];
@@ -92,7 +95,7 @@ export async function fetchStudentSessions(
       { order: "session_date desc, start_time desc", limit: 50 },
     );
     logger.session("fetchStudentSessions", `ok — ${records.length} records`);
-    return mergeStudentAvatars<SessionListItem>(records);
+    return mergeStudentAvatars<SessionListItem>(records, true);
   } catch (e) {
     logger.error("fetchStudentSessions", "failed", e);
     throw e;
@@ -115,7 +118,7 @@ export async function fetchTodaySessions(
       { order: "start_time asc" },
     );
     logger.session("fetchTodaySessions", `ok — ${records.length} records`);
-    return mergeStudentAvatars<SessionListItem>(records);
+    return mergeStudentAvatars<SessionListItem>(records, true);
   } catch (e) {
     logger.error("fetchTodaySessions", "failed", e);
     throw e;
@@ -127,7 +130,7 @@ export async function fetchMySessions(
   filters?: { dateFrom?: string; dateTo?: string },
 ): Promise<SessionListItem[]> {
   logger.session("fetchMySessions", "start", { teacherId, filters });
-  const domain: any[] = [["teacher_id", "=", teacherId]];
+  const domain: unknown[] = [["teacher_id", "=", teacherId]];
   if (filters?.dateFrom) domain.push(["session_date", ">=", filters.dateFrom]);
   if (filters?.dateTo) domain.push(["session_date", "<=", filters.dateTo]);
 
@@ -139,7 +142,7 @@ export async function fetchMySessions(
       { limit: 200, order: "session_date desc, start_time desc" },
     );
     logger.session("fetchMySessions", `ok — ${records.length} records`);
-    return mergeStudentAvatars<SessionListItem>(records);
+    return mergeStudentAvatars<SessionListItem>(records, true);
   } catch (e) {
     logger.error("fetchMySessions", "failed", e);
     throw e;
@@ -290,7 +293,7 @@ type ActiveObjective = Pick<
   | "smart_measurable"
   | "smart_analysis"
   | "smart_timebound"
-  | "difficulty_level"
+  | "difficulty_id"
   | "suggested_prompt_level_id"
 >;
 
@@ -311,6 +314,7 @@ export async function fetchStudentActiveObjectives(
         "name",
         "status",
         "goal_id",
+        "domain_ids",
         "current_accuracy_pct",
         "baseline_accuracy_pct",
         "progress_pct",
@@ -324,6 +328,33 @@ export async function fetchStudentActiveObjectives(
         "materials_needed",
       ],
     );
+
+    // Resolve domain IDs → [id, name] pairs
+    const allDomainIds = [
+      ...new Set(
+        records.flatMap((r) =>
+          Array.isArray(r.domain_ids)
+            ? (r.domain_ids as any[]).filter((d) => typeof d === "number")
+            : [],
+        ),
+      ),
+    ];
+    if (allDomainIds.length > 0) {
+      const domainRecords = await searchRead<{ id: number; name: string }>(
+        "educare.domain",
+        [["id", "in", allDomainIds]],
+        ["id", "name"],
+      );
+      const domainMap = new Map(domainRecords.map((d) => [d.id, d.name]));
+      for (const rec of records) {
+        if (Array.isArray(rec.domain_ids)) {
+          rec.domain_ids = (rec.domain_ids as any[]).map((d) =>
+            typeof d === "number" ? [d, domainMap.get(d) ?? String(d)] : d,
+          ) as any;
+        }
+      }
+    }
+
     logger.session(
       "fetchStudentActiveObjectives",
       `ok — ${records.length} objectives for student ${studentId}`,
@@ -371,7 +402,7 @@ export async function fetchObjectivesByIds(
         "smart_measurable",
         "smart_analysis",
         "smart_timebound",
-        "difficulty_level",
+        "difficulty_id",
         "suggested_prompt_level_id",
       ],
     );
@@ -385,6 +416,33 @@ export async function fetchObjectivesByIds(
         `Expected ${ids.length} objectives but got ${records.length}. Missing ids: ${ids.filter((id) => !records.find((r) => r.id === id)).join(", ")}`,
       );
     }
+
+    // Resolve domain IDs → [id, name] pairs (Many2many returns plain IDs only)
+    const allDomainIds = [
+      ...new Set(
+        records.flatMap((r) =>
+          Array.isArray(r.domain_ids)
+            ? (r.domain_ids as any[]).filter((d) => typeof d === "number")
+            : [],
+        ),
+      ),
+    ];
+    if (allDomainIds.length > 0) {
+      const domainRecords = await searchRead<{ id: number; name: string }>(
+        "educare.domain",
+        [["id", "in", allDomainIds]],
+        ["id", "name"],
+      );
+      const domainMap = new Map(domainRecords.map((d) => [d.id, d.name]));
+      for (const rec of records) {
+        if (Array.isArray(rec.domain_ids)) {
+          rec.domain_ids = (rec.domain_ids as any[]).map((d) =>
+            typeof d === "number" ? [d, domainMap.get(d) ?? String(d)] : d,
+          ) as any;
+        }
+      }
+    }
+
     return records;
   } catch (e: any) {
     logger.error("fetchObjectivesByIds", "failed", { ids, error: e?.message });
@@ -416,7 +474,32 @@ export async function checkStudentSessionConflict(
 }
 
 export async function scheduleSession(sessionId: number): Promise<boolean> {
-  return callKw("educare.session.log", "action_schedule", [[sessionId]], {});
+  return callKw<boolean>(
+    "educare.session.log",
+    "action_schedule",
+    [[sessionId]],
+    {},
+  );
+}
+
+export async function deleteSession(sessionId: number): Promise<boolean> {
+  logger.session("deleteSession", "start", { sessionId });
+  try {
+    const response = await callKw<boolean>(
+      "educare.session.log",
+      "unlink",
+      [[sessionId]],
+      {},
+    );
+    logger.session("deleteSession", `ok — session ${sessionId} deleted`);
+    return response;
+  } catch (e: any) {
+    logger.error("deleteSession", `failed for sessionId=${sessionId}`, {
+      message: e?.message,
+      odooError: e?.odooError,
+    });
+    throw e;
+  }
 }
 
 export async function cancelSession(
@@ -426,7 +509,7 @@ export async function cancelSession(
 ): Promise<boolean> {
   logger.session("cancelSession", "start", { sessionId, cancelType });
   try {
-    const response = await callKw(
+    const response = await callKw<boolean>(
       "educare.session.log",
       "action_cancel_session",
       [[sessionId], cancelType, reason],

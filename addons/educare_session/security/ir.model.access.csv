@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_session_log_teacher,educare.session.log.teacher,model_educare_session_log,educare_security.group_teacher,1,1,1,0
+access_session_log_teacher,educare.session.log.teacher,model_educare_session_log,educare_security.group_teacher,1,1,1,1
 access_session_log_supervisor,educare.session.log.supervisor,model_educare_session_log,educare_security.group_supervisor,1,1,1,1
 access_session_log_admin,educare.session.log.admin,model_educare_session_log,educare_security.group_admin,1,1,1,1
 access_session_log_parent,educare.session.log.parent,model_educare_session_log,educare_security.group_parent,1,0,0,0

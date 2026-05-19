@@ -1,40 +1,51 @@
 import { searchRead, searchCount, create, write, callKw } from "./odooClient";
-import type { ReportListItem, ReportDetail } from "../types";
+import type { ReportListItem, ReportDetail, PhotoAsset } from "../types";
 
 function toAvatarUrl(b64?: string | false): string | undefined {
   return b64 ? `data:image/png;base64,${b64}` : undefined;
 }
 
-async function mergeStudentAvatars(
-  records: ReportListItem[],
-): Promise<ReportListItem[]> {
+/** Odoo Many2one rendered as raw tuple `[id, display_name]` or `false`. */
+type Many2oneTuple = [number, string] | false;
+
+function pickStudentId(value: Many2oneTuple | { id: number }): number {
+  if (Array.isArray(value)) return value[0];
+  if (value && typeof value === "object" && "id" in value) return value.id;
+  return 0;
+}
+
+async function mergeStudentAvatars<
+  T extends {
+    student_id: Many2oneTuple | { id: number };
+    student_avatar_url?: string;
+    student_nickname?: string;
+  },
+>(records: T[], fetchNickname = false): Promise<T[]> {
   if (records.length === 0) return records;
   const studentIds = [
-    ...new Set(
-      records
-        .map((r) =>
-          Array.isArray(r.student_id)
-            ? r.student_id[0]
-            : ((r.student_id as any)?.id ?? 0),
-        )
-        .filter(Boolean),
-    ),
+    ...new Set(records.map((r) => pickStudentId(r.student_id)).filter(Boolean)),
   ];
   if (studentIds.length === 0) return records;
   try {
-    const students = await searchRead<{ id: number; avatar: string | false }>(
+    const fields = fetchNickname
+      ? ["id", "avatar", "nickname"]
+      : ["id", "avatar"];
+    const students = await searchRead<{ id: number; avatar: string | false; nickname?: string | false }>(
       "educare.student",
       [["id", "in", studentIds]],
-      ["id", "avatar"],
+      fields,
     );
     const avatarMap = new Map<number, string | undefined>(
       students.map((s) => [s.id, toAvatarUrl(s.avatar)]),
     );
+    const nicknameMap = new Map<number, string | undefined>(
+      students.map((s) => [s.id, s.nickname || undefined]),
+    );
     return records.map((r) => {
-      const sid = Array.isArray(r.student_id)
-        ? r.student_id[0]
-        : ((r.student_id as any)?.id ?? 0);
-      return { ...r, student_avatar_url: avatarMap.get(sid) };
+      const sid = pickStudentId(r.student_id);
+      const merged: any = { ...r, student_avatar_url: avatarMap.get(sid) };
+      if (fetchNickname) merged.student_nickname = nicknameMap.get(sid);
+      return merged as T;
     });
   } catch {
     return records;
@@ -64,9 +75,16 @@ const REPORT_DETAIL_FIELDS = [
   "teacher_note",
   "session_duration",
   "overall_performance",
+  "attendance",
+  "mood",
+  "energy_level",
+  "engagement_level",
+  "observation_notes",
+  "objective_ids",
   "objectives_worked",
   "accuracy_summary",
   "write_date",
+  "photo_ids",
 ];
 
 export async function fetchStudentReports(
@@ -78,7 +96,7 @@ export async function fetchStudentReports(
     REPORT_LIST_FIELDS,
     { order: "report_date desc", limit: 50 },
   );
-  return mergeStudentAvatars(records);
+  return mergeStudentAvatars(records, true);
 }
 
 export async function fetchPendingReportCount(
@@ -99,7 +117,7 @@ export async function fetchMyReports(
     REPORT_LIST_FIELDS,
     { order: "report_date desc", limit: 100 },
   );
-  return mergeStudentAvatars(records);
+  return mergeStudentAvatars(records, true);
 }
 
 export async function fetchReportDetail(
@@ -121,7 +139,6 @@ export interface SessionAvailableItem {
   student_avatar_url?: string;
   session_date: string;
   duration: number;
-  overall_performance: string | false;
   result_count: number;
 }
 
@@ -144,7 +161,6 @@ export async function fetchSessionsAvailableForReport(
       "duration",
       "start_time",
       "end_time",
-      "overall_performance",
       "result_count",
       "avg_accuracy",
     ],
@@ -162,18 +178,16 @@ export async function fetchSessionsAvailableForReport(
 
   const reportedSessionIds = new Set(
     existingReports
-      .map((r: any) =>
+      .map((r) =>
         Array.isArray(r.session_log_id)
           ? r.session_log_id[0]
-          : r.session_log_id,
+          : (r.session_log_id as number | false),
       )
-      .filter(Boolean),
+      .filter((id): id is number => typeof id === "number"),
   );
 
   const filtered = sessions.filter((s) => !reportedSessionIds.has(s.id));
-  return mergeStudentAvatars(filtered as any) as Promise<
-    SessionAvailableItem[]
-  >;
+  return mergeStudentAvatars(filtered, true);
 }
 
 export async function fetchReportForSession(
@@ -201,4 +215,42 @@ export async function updateReport(
 
 export async function sendReport(reportId: number): Promise<boolean> {
   return callKw("educare.daily.report", "action_send_to_parent", [[reportId]]);
+}
+
+export async function fetchReportPhotoUrls(
+  attachmentIds: number[],
+): Promise<string[]> {
+  if (attachmentIds.length === 0) return [];
+  const records = await searchRead<{ id: number; datas: string | false }>(
+    "ir.attachment",
+    [["id", "in", attachmentIds]],
+    ["id", "datas"],
+  );
+  return records
+    .filter((r) => r.datas)
+    .map((r) => `data:image/jpeg;base64,${r.datas}`);
+}
+
+export async function uploadReportPhotos(
+  reportId: number,
+  photoAssets: PhotoAsset[],
+): Promise<void> {
+  if (photoAssets.length === 0) return;
+  const attachmentIds: number[] = [];
+  for (const asset of photoAssets) {
+    const fileName = asset.uri.split("/").pop() || "photo.jpg";
+    const id = await create("ir.attachment", {
+      name: fileName,
+      datas: asset.base64,
+      res_model: "educare.daily.report",
+      res_id: reportId,
+      type: "binary",
+    });
+    attachmentIds.push(id);
+  }
+  if (attachmentIds.length > 0) {
+    await write("educare.daily.report", [reportId], {
+      photo_ids: attachmentIds.map((id) => [4, id]),
+    });
+  }
 }

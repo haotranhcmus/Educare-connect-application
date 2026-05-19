@@ -228,8 +228,6 @@
                                     <field name="goal_domain_id" />
                                     <field name="objective_count" string="Objectives"
                                         optional="show" />
-                                    <field name="start_date" />
-                                    <field name="target_date" />
                                     <field name="progress_pct" widget="progressbar" />
                                     <field name="status" widget="badge"
                                         decoration-info="status == 'active'"

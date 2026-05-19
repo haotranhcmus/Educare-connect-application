@@ -12,30 +12,20 @@ import {
   useUpdateSession,
   useStudentActiveObjectives,
 } from "../../../hooks/useSessions";
+import {
+  LOCATION_LABELS,
+  SESSION_TYPE_LABELS,
+  SESSION_PURPOSE_LABELS,
+  toPickerOptions,
+} from "../../../utils/labels";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionEdit">;
 
-const LOCATION_OPTIONS = [
-  { value: "center", label: "Tại trung tâm" },
-  { value: "home", label: "Tại nhà" },
-  { value: "school", label: "Tại trường" },
-  { value: "online", label: "Online" },
-];
-
-const TYPE_OPTIONS = [
-  { value: "individual", label: "1:1 Cá nhân" },
-  { value: "small_group", label: "Nhóm nhỏ" },
-  { value: "consultation", label: "Tư vấn" },
-];
-
-const PURPOSE_OPTIONS = [
-  { value: "intervention", label: "Can thiệp" },
-  { value: "maintenance_probe", label: "Đánh giá duy trì" },
-  { value: "generalization_probe", label: "Đánh giá tổng quát hóa" },
-  { value: "parent_training", label: "Hướng dẫn phụ huynh" },
-];
+const LOCATION_OPTIONS = toPickerOptions(LOCATION_LABELS);
+const TYPE_OPTIONS = toPickerOptions(SESSION_TYPE_LABELS);
+const PURPOSE_OPTIONS = toPickerOptions(SESSION_PURPOSE_LABELS);
 
 function floatToTime(f: number) {
   const hours = Math.floor(f);

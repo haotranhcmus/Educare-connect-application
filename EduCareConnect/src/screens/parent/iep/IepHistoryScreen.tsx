@@ -5,8 +5,15 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { useParentStore } from "../../../store/parentStore";
 import { StudentIepTab } from "../../teacher/student/tabs/StudentIepTab";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { ParentChildStackParamList } from "../../../navigation/types";
 
-type Props = { navigation: any };
+type Props = {
+  navigation: NativeStackNavigationProp<
+    ParentChildStackParamList,
+    "ChildIepHistory"
+  >;
+};
 
 export function IepHistoryScreen({ navigation }: Props) {
   const theme = useTheme();
@@ -41,6 +48,7 @@ export function IepHistoryScreen({ navigation }: Props) {
           studentId={selectedStudentId}
           navigation={navigation}
           detailRouteName="ChildIepPlanDetail"
+          objectiveRouteName="ChildIepObjectiveDetail"
         />
       ) : (
         <View style={styles.emptyWrap}>

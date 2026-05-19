@@ -99,29 +99,13 @@
                                 </tree>
                             </field>
                         </page>
-                        <!-- Observations only visible after session is completed -->
-                        <page string="Observations" name="observations"
-                            invisible="status not in ('completed', 'done')">
-                            <group>
-                                <group>
-                                    <field name="attendance" />
-                                    <field name="mood" />
-                                    <field name="energy_level" />
-                                </group>
-                                <group>
-                                    <field name="engagement_level" />
-                                    <field name="overall_performance" />
-                                </group>
-                            </group>
-                            <field name="notes" placeholder="Session notes..." />
-                        </page>
                         <!-- Cancellation info visible when cancelled -->
                         <page string="Thông tin hủy" name="cancellation"
                             invisible="status != 'cancelled'">
                             <group>
-                                <field name="attendance" string="Lý do hủy" />
+                                <field name="cancel_type" string="Loại hủy" />
                             </group>
-                            <field name="notes" string="Ghi chú" placeholder="Ghi chú lý do hủy..." />
+                            <field name="cancel_notes" string="Ghi chú" placeholder="Ghi chú lý do hủy..." />
                         </page>
                         <page string="Summary" name="summary"
                             invisible="status not in ('completed', 'done')">

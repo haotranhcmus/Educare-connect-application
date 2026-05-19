@@ -53,6 +53,12 @@ REINFORCEMENT_EFFECTIVENESS = [
     ("low", "Thấp - Học viên phản ứng hạn chế"),
 ]
 
+# Cancel type for session cancellation
+CANCEL_TYPES = [
+    ("cancelled_center", "Trung tâm hủy"),
+    ("cancelled_family", "Gia đình hủy"),
+]
+
 # Session status workflow
 SESSION_STATUS = [
     ("draft", "Bản nháp"),
@@ -60,43 +66,6 @@ SESSION_STATUS = [
     ("completed", "Đã hoàn thành"),
     ("done", "Đã xét duyệt"),
     ("cancelled", "Đã hủy"),
-]
-
-ATTENDANCE_STATUS = [
-    ("present", "Có mặt"),
-    ("absent_excused", "Vắng có phép"),
-    ("absent_unexcused", "Vắng không phép"),
-    ("cancelled_center", "Trung tâm hủy"),
-    ("cancelled_family", "Gia đình hủy"),
-]
-
-# Environmental factors during session
-MOOD_LEVELS = [
-    ("very_good", "Rất tốt"),
-    ("good", "Tốt"),
-    ("neutral", "Bình thường"),
-    ("difficult", "Khó khăn"),
-    ("very_difficult", "Rất khó khăn"),
-]
-
-ENERGY_LEVELS = [
-    ("high", "Cao"),
-    ("normal", "Bình thường"),
-    ("low", "Thấp"),
-]
-
-ENGAGEMENT_LEVELS = [
-    ("highly_engaged", "Rất tập trung"),
-    ("engaged", "Tập trung"),
-    ("somewhat_engaged", "Khá tập trung"),
-    ("disengaged", "Mất tập trung"),
-]
-
-PERFORMANCE_LEVELS = [
-    ("excellent", "Xuất sắc"),
-    ("good", "Tốt"),
-    ("fair", "Khá"),
-    ("poor", "Cần cải thiện"),
 ]
 
 LOCATIONS = [

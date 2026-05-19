@@ -42,6 +42,11 @@ class EducareStudent(models.Model):
         required=True,
         tracking=True,
     )
+    nickname = fields.Char(
+        string="Biệt danh",
+        size=64,
+        help="Biệt danh học sinh (chỉ giáo viên thấy, không hiển thị cho phụ huynh)",
+    )
     student_code = fields.Char(
         string="Student Code",
         size=32,
@@ -248,12 +253,12 @@ class EducareStudent(models.Model):
     # ── Tab 4: Learning Abilities ─────────────────────────────────────────────────
     learning_style = fields.Selection(
         [
-            ("visual", "Thị giác"),
-            ("auditory", "Thính giác"),
-            ("kinesthetic", "Vận động"),
+            ("visual", "Trực quan"),
+            ("auditory", "Nghe"),
+            ("kinesthetic", "Vận động / Thực hành"),
             ("mixed", "Kết hợp"),
         ],
-        string="Learning Style",
+        string="Kênh tiếp nhận ưu thế",
     )
 
     communication_level = fields.Selection(

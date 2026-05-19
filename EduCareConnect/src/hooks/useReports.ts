@@ -9,7 +9,13 @@ import {
   createReport,
   updateReport,
   sendReport,
+  fetchReportPhotoUrls,
 } from "../api/reportApi";
+import {
+  persistReport,
+  persistAndSendReport,
+} from "../services/reportService";
+import type { PhotoAsset } from "../types";
 import { useAuthStore } from "../store/authStore";
 
 export function useStudentReports(studentId: number) {
@@ -99,6 +105,54 @@ export function useSendReport() {
     onSuccess: (_, reportId) => {
       qc.invalidateQueries({ queryKey: ["reports", "detail", reportId] });
       qc.invalidateQueries({ queryKey: ["reports"] });
+      qc.invalidateQueries({ queryKey: ["sessions", "available-for-report"] });
+      qc.invalidateQueries({ queryKey: ["pendingReportCount"] });
+    },
+  });
+}
+
+export function useReportPhotos(attachmentIds: number[] | undefined) {
+  return useQuery({
+    queryKey: ["report-photos", attachmentIds],
+    queryFn: () => fetchReportPhotoUrls(attachmentIds!),
+    enabled: !!attachmentIds && attachmentIds.length > 0,
+  });
+}
+
+interface PersistReportArgs {
+  reportId?: number | null;
+  payload: Record<string, unknown>;
+  photoAssets: PhotoAsset[];
+}
+
+/**
+ * Persist a draft report (create-or-update + upload photos) and invalidate
+ * affected caches. Use this in place of chaining `useCreateReport` /
+ * `useUpdateReport` + a manual `uploadReportPhotos` call.
+ */
+export function usePersistReport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: PersistReportArgs) => persistReport(args),
+    onSuccess: (reportId) => {
+      qc.invalidateQueries({ queryKey: ["reports"] });
+      qc.invalidateQueries({ queryKey: ["reports", "detail", reportId] });
+      qc.invalidateQueries({ queryKey: ["sessions", "available-for-report"] });
+      qc.invalidateQueries({ queryKey: ["pendingReportCount"] });
+    },
+  });
+}
+
+/**
+ * Persist then transition the report to "sent". One-shot save+send flow.
+ */
+export function usePersistAndSendReport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: PersistReportArgs) => persistAndSendReport(args),
+    onSuccess: (reportId) => {
+      qc.invalidateQueries({ queryKey: ["reports"] });
+      qc.invalidateQueries({ queryKey: ["reports", "detail", reportId] });
       qc.invalidateQueries({ queryKey: ["sessions", "available-for-report"] });
       qc.invalidateQueries({ queryKey: ["pendingReportCount"] });
     },

@@ -3,6 +3,7 @@ import {
   fetchStudentIepPlans,
   fetchIepPlanDetail,
   fetchGoalsForPlan,
+  fetchGoalsByIds,
   fetchObjectivesForGoal,
   fetchObjectiveDetail,
   fetchObjectiveResults,
@@ -29,6 +30,15 @@ export function useGoalsForPlan(planId: number) {
     queryKey: ["iep-goals", "plan", planId],
     queryFn: () => fetchGoalsForPlan(planId),
     enabled: !!planId,
+  });
+}
+
+export function useGoalsByIds(goalIds: number[]) {
+  const key = goalIds.slice().sort().join(",");
+  return useQuery({
+    queryKey: ["iep-goals", "by-ids", key],
+    queryFn: () => fetchGoalsByIds(goalIds),
+    enabled: goalIds.length > 0,
   });
 }
 

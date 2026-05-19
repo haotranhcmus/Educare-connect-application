@@ -25,13 +25,9 @@
                             </group>
                             <group string="Mastery Criteria">
                                 <field name="consecutive_sessions_required" />
-                                <field name="weight" />
+                                <field name="difficulty_id" readonly="1" />
+                                <field name="weight" readonly="1" />
                                 <field name="measurement_template_id" />
-                            </group>
-                            <group string="Baseline Notes" col="1">
-                                <field name="baseline_description"
-                                    placeholder="Describe the student's current baseline performance..."
-                                    nolabel="1" />
                             </group>
                         </page>
 
@@ -52,10 +48,9 @@
                         <!-- Tab 3: Guidance info read from template (readonly preview) -->
                         <page string="Guidance (từ template)" name="guidance_preview">
                             <div class="text-muted small mb-3">
-                                <i class="fa fa-info-circle me-1" /> Thông tin hướng dẫn được đọc từ
-                                objective template và sẽ được copy sang objective khi import. </div>
+                                <i class="fa fa-info-circle me-1" /> Thông tin hướng dẫn được đọc từ objective template và sẽ được copy sang objective khi import. </div>
                             <group string="Độ khó &amp; Đối tượng">
-                                <field name="difficulty_level" readonly="1" />
+                                <field name="difficulty_id" readonly="1" />
                                 <field name="age_min_months" readonly="1" />
                                 <field name="age_max_months" readonly="1" />
                                 <field name="suggested_prompt_level" readonly="1" />
@@ -98,9 +93,6 @@
                             <field name="baseline_accuracy_pct" string="Mức ban đầu (%)" />
                             <field name="target_accuracy_pct" string="Mục tiêu (%)" />
                             <field name="consecutive_sessions_required" string="Số buổi liên tiếp" />
-                            <field name="weight" />
-                            <field name="baseline_description" string="Mô tả mức ban đầu"
-                                optional="show" />
                             <field name="template_id" column_invisible="1" />
                         </tree>
                     </field>

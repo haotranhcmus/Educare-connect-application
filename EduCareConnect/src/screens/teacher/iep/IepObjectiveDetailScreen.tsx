@@ -5,6 +5,7 @@ import { StatusBadge } from "../../../components/common/StatusBadge";
 import { SectionHeader } from "../../../components/common/SectionHeader";
 import { MetricsCard } from "../../../components/iep/MetricsCard";
 import { SessionHistoryTable } from "../../../components/iep/SessionHistoryTable";
+import { ProgressLineChart } from "../../../components/iep/ProgressLineChart";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { useObjectiveDetail, useObjectiveResults } from "../../../hooks/useIep";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,7 +24,8 @@ export function IepObjectiveDetailScreen({ route }: Props) {
     isLoading,
     refetch,
   } = useObjectiveDetail(objectiveId);
-  const { data: results = [] } = useObjectiveResults(objectiveId);
+  // Fetch up to 90 sessions so the chart spans ~3 months of data.
+  const { data: results = [] } = useObjectiveResults(objectiveId, 90);
 
   if (isLoading && !objective) return <LoadingOverlay visible />;
   if (!objective) return null;
@@ -75,8 +77,20 @@ export function IepObjectiveDetailScreen({ route }: Props) {
       <SectionHeader icon="chart-box-outline" title="Chỉ số hiệu suất" />
       <MetricsCard objective={objective} />
 
+      {/* Progress line chart */}
+      {results.length >= 2 && (
+        <View style={{ paddingHorizontal: 4, marginTop: 4 }}>
+          <SectionHeader icon="chart-line" title="Tiến độ theo thời gian" />
+          <ProgressLineChart
+            results={results}
+            targetAccuracy={objective.target_accuracy_pct}
+            baselineAccuracy={objective.baseline_accuracy_pct}
+          />
+        </View>
+      )}
+
       {/* Session history */}
-      <View style={{ marginTop: 16 }}>
+      <View style={{ marginTop: 16, width: "100%" }}>
         <SectionHeader
           icon="table-clock"
           title={`Lịch sử buổi học (${results.length})`}
@@ -101,7 +115,10 @@ export function IepObjectiveDetailScreen({ route }: Props) {
             />
           </View>
           <View
-            style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+            style={[
+              styles.infoCard,
+              { backgroundColor: theme.colors.surface, marginBottom: 16 },
+            ]}
           >
             {objective.measurement_method && (
               <View style={styles.infoRow}>

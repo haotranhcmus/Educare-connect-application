@@ -1,6 +1,41 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+# General observation constants (formerly on educare.session.log)
+ATTENDANCE_STATUS = [
+    ("present", "Có mặt"),
+    ("absent_excused", "Vắng có phép"),
+    ("absent_unexcused", "Vắng không phép"),
+]
+
+MOOD_LEVELS = [
+    ("very_good", "Rất tốt"),
+    ("good", "Tốt"),
+    ("neutral", "Bình thường"),
+    ("difficult", "Khó khăn"),
+    ("very_difficult", "Rất khó khăn"),
+]
+
+ENERGY_LEVELS = [
+    ("high", "Cao"),
+    ("normal", "Bình thường"),
+    ("low", "Thấp"),
+]
+
+ENGAGEMENT_LEVELS = [
+    ("highly_engaged", "Rất tập trung"),
+    ("engaged", "Tập trung"),
+    ("somewhat_engaged", "Khá tập trung"),
+    ("disengaged", "Mất tập trung"),
+]
+
+PERFORMANCE_LEVELS = [
+    ("excellent", "Xuất sắc"),
+    ("good", "Tốt"),
+    ("fair", "Khá"),
+    ("poor", "Cần cải thiện"),
+]
+
 REPORT_STATUS = [
     ("draft", "Bản nháp"),
     ("sent", "Đã gửi"),
@@ -120,12 +155,49 @@ class EducareDailyReport(models.Model):
         string="Personal note from teacher",
         help="Encouraging personal message for the family",
     )
+    photo_ids = fields.Many2many(
+        "ir.attachment",
+        "educare_report_photo_rel",
+        "report_id",
+        "attachment_id",
+        string="Session Photos",
+        help="Up to 5 photos from the session shared with parents",
+    )
+
+    # === Section 2b: General Observations (entered when creating report) ===
+    attendance = fields.Selection(
+        ATTENDANCE_STATUS,
+        string="Điểm danh",
+        default="present",
+    )
+    mood = fields.Selection(MOOD_LEVELS, string="Tâm trạng học sinh")
+    energy_level = fields.Selection(ENERGY_LEVELS, string="Mức năng lượng")
+    engagement_level = fields.Selection(ENGAGEMENT_LEVELS, string="Mức độ tập trung")
+    overall_performance = fields.Selection(
+        PERFORMANCE_LEVELS, string="Kết quả tổng thể", default="good"
+    )
+    observation_notes = fields.Text(string="Ghi chú quan sát")
 
     # === Section 3: Technical Reference (staff only) ===
-    objectives_worked = fields.Text(
+    # Many2many references to the IEP objectives that were actually evaluated
+    # in the source session. Populated automatically from the session's result
+    # lines so the report viewer can drill into each objective's progress
+    # page. Replaces the legacy ``objectives_worked`` plain-text field, which
+    # is retained for backwards-compatible email rendering.
+    objective_ids = fields.Many2many(
+        "educare.iep.objective",
+        "educare_daily_report_objective_rel",
+        "report_id",
+        "objective_id",
         string="Objectives Worked",
         compute="_compute_session_summary",
         store=True,
+    )
+    objectives_worked = fields.Text(
+        string="Objectives Worked (text)",
+        compute="_compute_session_summary",
+        store=True,
+        help="Plain-text summary; kept for email templates. UI should use objective_ids.",
     )
     accuracy_summary = fields.Text(
         string="Accuracy Summary",
@@ -137,11 +209,6 @@ class EducareDailyReport(models.Model):
         related="session_log_id.duration",
         store=True,
     )
-    overall_performance = fields.Selection(
-        related="session_log_id.overall_performance",
-        string="Overall Performance",
-        store=True,
-    )
 
     _sql_constraints = [
         (
@@ -150,6 +217,12 @@ class EducareDailyReport(models.Model):
             "Only one report can be created per session.",
         ),
     ]
+
+    @api.constrains("photo_ids")
+    def _check_photo_limit(self):
+        for record in self:
+            if len(record.photo_ids) > 5:
+                raise ValidationError(_("A report may contain at most 5 photos."))
 
     # ── Create ────────────────────────────────────────────────────
 
@@ -178,11 +251,14 @@ class EducareDailyReport(models.Model):
     def _compute_session_summary(self):
         for report in self:
             if not report.session_log_id:
+                report.objective_ids = [(5, 0, 0)]
                 report.objectives_worked = False
                 report.accuracy_summary = False
                 continue
             results = report.session_log_id.result_line_ids
-            obj_names = results.mapped("objective_id.name")
+            objectives = results.mapped("objective_id")
+            report.objective_ids = [(6, 0, objectives.ids)]
+            obj_names = objectives.mapped("name")
             report.objectives_worked = (
                 "\n".join(f"- {n}" for n in obj_names) if obj_names else False
             )

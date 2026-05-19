@@ -1,24 +1,18 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
+import { PROMPT_LEVEL_LABELS } from "../../utils/labels";
 import type { SessionResult } from "../../types";
-
-const PROMPT_LABEL: Record<string, string> = {
-  independent: "Độc lập",
-  verbal_prompt: "Gợi ý ngôn ngữ",
-  gestural_prompt: "Gợi ý cử chỉ",
-  partial_physical: "Hỗ trợ một phần",
-  full_physical: "Hỗ trợ hoàn toàn",
-};
 
 /** Map accuracy → { color, bg, label } */
 function getAccuracyMeta(
   accuracy: number,
   primary: string,
-  error: string
+  error: string,
 ): { color: string; bg: string; label: string } {
   if (accuracy >= 80) return { color: primary, bg: "#E8F5E9", label: "Tốt" };
-  if (accuracy >= 50) return { color: "#E67E22", bg: "#FFF3E0", label: "Trung bình" };
+  if (accuracy >= 50)
+    return { color: "#E67E22", bg: "#FFF3E0", label: "Trung bình" };
   return { color: error, bg: "#FFEBEE", label: "Cần cải thiện" };
 }
 
@@ -26,16 +20,24 @@ interface ResultSummaryCardProps {
   result: SessionResult;
 }
 
-export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
+function ResultSummaryCardImpl({ result }: ResultSummaryCardProps) {
   const theme = useTheme();
-  const objName = Array.isArray(result.objective_id) ? result.objective_id[1] : "";
+  const objName = Array.isArray(result.objective_id)
+    ? result.objective_id[1]
+    : "";
   const objCode = objName.split(" ")[0];
   const displayObjName = objName.substring(objCode.length).trim();
 
   const accuracy = Math.round(result.accuracy_pct);
-  const accMeta = getAccuracyMeta(accuracy, theme.colors.primary, theme.colors.error);
+  const accMeta = getAccuracyMeta(
+    accuracy,
+    theme.colors.primary,
+    theme.colors.error,
+  );
   const promptLabel =
-    PROMPT_LABEL[result.prompt_level_used] || result.prompt_level_used || "—";
+    PROMPT_LEVEL_LABELS[result.prompt_level_used] ||
+    result.prompt_level_used ||
+    "—";
 
   return (
     <View
@@ -50,7 +52,10 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
       {/* ── Header: code badge + tên mục tiêu ── */}
       <View style={styles.header}>
         <View
-          style={[styles.codeBadge, { backgroundColor: theme.colors.primaryContainer }]}
+          style={[
+            styles.codeBadge,
+            { backgroundColor: theme.colors.primaryContainer },
+          ]}
         >
           <Text style={[styles.codeText, { color: theme.colors.primary }]}>
             {objCode}
@@ -67,7 +72,10 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
       {/* ── Progress bar + accuracy badge ── */}
       <View style={styles.barSection}>
         <View
-          style={[styles.barTrack, { backgroundColor: theme.colors.surfaceVariant }]}
+          style={[
+            styles.barTrack,
+            { backgroundColor: theme.colors.surfaceVariant },
+          ]}
         >
           <View
             style={[
@@ -79,8 +87,12 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
             ]}
           />
         </View>
-        <View style={[styles.accBadge, { backgroundColor: accMeta.bg }]}>
-          <Text style={[styles.accPct, { color: accMeta.color }]}>{accuracy}%</Text>
+        <View
+          style={[styles.accBadge, { backgroundColor: theme.colors.surface }]}
+        >
+          <Text style={[styles.accPct, { color: accMeta.color }]}>
+            {accuracy}%
+          </Text>
         </View>
       </View>
 
@@ -89,7 +101,7 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
         style={[
           styles.statsRow,
           {
-            backgroundColor: theme.colors.surfaceVariant,
+            backgroundColor: theme.colors.surface,
             borderColor: theme.colors.outlineVariant,
           },
         ]}
@@ -101,13 +113,23 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
             <Text style={[styles.statBig, { color: theme.colors.onSurface }]}>
               {result.correct_trials}
             </Text>
-            <Text style={[styles.statSmall, { color: theme.colors.onSurfaceVariant }]}>
+            <Text
+              style={[
+                styles.statSmall,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
+            >
               /{result.total_trials}
             </Text>
           </View>
         </View>
 
-        <View style={[styles.vRule, { backgroundColor: theme.colors.outlineVariant }]} />
+        <View
+          style={[
+            styles.vRule,
+            { backgroundColor: theme.colors.outlineVariant },
+          ]}
+        />
 
         {/* Kết quả */}
         <View style={styles.statCell}>
@@ -117,7 +139,12 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
           </Text>
         </View>
 
-        <View style={[styles.vRule, { backgroundColor: theme.colors.outlineVariant }]} />
+        <View
+          style={[
+            styles.vRule,
+            { backgroundColor: theme.colors.outlineVariant },
+          ]}
+        />
 
         {/* Mức gợi ý */}
         <View style={[styles.statCell, styles.statCellWide]}>
@@ -136,6 +163,8 @@ export function ResultSummaryCard({ result }: ResultSummaryCardProps) {
   );
 }
 
+export const ResultSummaryCard = React.memo(ResultSummaryCardImpl);
+
 const styles = StyleSheet.create({
   card: {
     borderRadius: 14,
@@ -143,10 +172,11 @@ const styles = StyleSheet.create({
     gap: 10,
     borderWidth: 1,
     elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
+    // shadowColor: "#000",
+    // shadowOpacity: 0.07,
+    // shadowRadius: 6,
+    // shadowOffset: { width: 0, height: 3 },
+    marginBottom: 12,
   },
   header: {
     flexDirection: "row",

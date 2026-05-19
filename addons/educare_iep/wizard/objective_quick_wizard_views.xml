@@ -25,10 +25,6 @@
                                     <field name="baseline_accuracy_pct" />
                                     <field name="target_accuracy_pct" />
                                 </group>
-                                <group string="Timeline">
-                                    <field name="start_date" />
-                                    <field name="target_date" />
-                                </group>
                             </group>
                             <group string="Mastery Criteria">
                                 <field name="consecutive_sessions_required" />
@@ -51,8 +47,7 @@
                         <!-- Tab 3: SMART framework -->
                         <page string="SMART" name="smart">
                             <div class="text-muted small mb-3">
-                                <i class="fa fa-info-circle me-1" /> Điền thông tin SMART để đảm bảo
-                                mục tiêu rõ ràng, đo lường được và có thời hạn cụ thể. </div>
+                                <i class="fa fa-info-circle me-1" /> Điền thông tin SMART để đảm bảo mục tiêu rõ ràng, đo lường được và có thời hạn cụ thể. </div>
                             <group>
                                 <field name="smart_specific"
                                     placeholder="Mô tả cụ thể mục tiêu là gì..." />
@@ -68,7 +63,7 @@
                         <!-- Tab 4: Guidance and difficulty -->
                         <page string="Hướng dẫn" name="guidance">
                             <group string="Đối tượng &amp; Độ khó">
-                                <field name="difficulty_level" />
+                                <field name="difficulty_id" />
                                 <field name="age_min_months" />
                                 <field name="age_max_months" />
                                 <field name="relevant_diagnosis_ids" widget="many2many_tags" />

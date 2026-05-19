@@ -6,11 +6,7 @@ from odoo.exceptions import ValidationError, UserError
 
 from ..constants import (
     SESSION_STATUS,
-    ATTENDANCE_STATUS,
-    MOOD_LEVELS,
-    ENERGY_LEVELS,
-    ENGAGEMENT_LEVELS,
-    PERFORMANCE_LEVELS,
+    CANCEL_TYPES,
     LOCATIONS,
     SESSION_TYPES,
     SESSION_PURPOSES,
@@ -158,19 +154,12 @@ class EducareSessionLog(models.Model):
         string="Session Results",
     )
 
-    # ── Observations ──────────────────────────────────────────────
-    attendance = fields.Selection(
-        ATTENDANCE_STATUS,
-        string="Attendance",
-        default="present",
+    # ── Cancellation Info ────────────────────────────────────────
+    cancel_type = fields.Selection(
+        CANCEL_TYPES,
+        string="Loại hủy",
     )
-    mood = fields.Selection(MOOD_LEVELS, string="Student Mood")
-    energy_level = fields.Selection(ENERGY_LEVELS, string="Energy Level")
-    engagement_level = fields.Selection(ENGAGEMENT_LEVELS, string="Engagement Level")
-    overall_performance = fields.Selection(
-        PERFORMANCE_LEVELS, string="Overall Performance"
-    )
-    notes = fields.Text(string="Session Notes")
+    cancel_notes = fields.Text(string="Ghi chú lý do hủy")
 
     # ── Computed Summary ──────────────────────────────────────────
     result_count = fields.Integer(
@@ -519,6 +508,17 @@ class EducareSessionLog(models.Model):
 
     # ── Workflow Actions ──────────────────────────────────────────
 
+    def unlink(self):
+        """Only allow deleting sessions in draft status."""
+        for rec in self:
+            if rec.status != "draft":
+                raise UserError(
+                    _(
+                        "Chỉ có thể xóa buổi học ở trạng thái Nháp. Buổi học đã lên lịch hoặc hoàn thành không thể xóa."
+                    )
+                )
+        return super().unlink()
+
     def action_schedule(self):
         """Draft → Scheduled: validate and populate result lines."""
         for rec in self:
@@ -606,7 +606,7 @@ class EducareSessionLog(models.Model):
 
         Args:
             cancel_type: 'cancelled_center' | 'cancelled_family'
-            reason: optional text reason stored in notes
+            reason: optional text reason stored in cancel_notes
         """
         valid_cancel_types = ("cancelled_center", "cancelled_family")
         if cancel_type not in valid_cancel_types:
@@ -620,12 +620,10 @@ class EducareSessionLog(models.Model):
                 )
             write_vals = {
                 "status": "cancelled",
-                "attendance": cancel_type,
+                "cancel_type": cancel_type,
             }
             if reason:
-                existing = rec.notes or ""
-                separator = "\n---\n" if existing else ""
-                write_vals["notes"] = existing + separator + _("[Hủy] ") + reason
+                write_vals["cancel_notes"] = reason
             rec.write(write_vals)
         return True
 

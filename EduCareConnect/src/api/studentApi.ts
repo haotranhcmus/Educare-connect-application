@@ -12,12 +12,14 @@ function toAvatarUrl(avatar?: string | false): string | undefined {
 const STUDENT_LIST_FIELDS = [
   "id",
   "name",
+  "nickname",
   "student_code",
   "status",
   "avatar",
   "center_id",
   "primary_diagnosis",
   "date_of_birth",
+  "enrollment_date",
   "gender",
 ];
 

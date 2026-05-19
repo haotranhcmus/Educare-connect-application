@@ -3,6 +3,7 @@ import { View, SectionList, StyleSheet, RefreshControl } from "react-native";
 import { Chip, Text, useTheme } from "react-native-paper";
 import { ParentReportCard } from "../../../components/parent/ParentReportCard";
 import { EmptyState } from "../../../components/common/EmptyState";
+import ReportPlaceholder from "../../../../assets/placeholder/report-placeholder.svg";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { useParentReports } from "../../../hooks/useParent";
 import { useParentStore } from "../../../store/parentStore";
@@ -96,10 +97,7 @@ export function ParentReportListScreen({ navigation }: Props) {
           />
         )}
         ListEmptyComponent={
-          <EmptyState
-            icon="file-document-outline"
-            title="Chưa có báo cáo nào"
-          />
+          <EmptyState image={ReportPlaceholder} title="Chưa có báo cáo nào" />
         }
       />
     </View>

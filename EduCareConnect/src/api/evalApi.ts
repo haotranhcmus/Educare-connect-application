@@ -14,15 +14,6 @@ export interface ResultInput {
   notes?: string;
 }
 
-export interface ObservationInput {
-  attendance: string;
-  mood: string;
-  energy_level: string;
-  engagement_level: string;
-  overall_performance: string;
-  notes?: string;
-}
-
 interface SessionResultRow {
   id: number;
   objective_id: [number, string] | number;
@@ -34,24 +25,18 @@ interface SessionStateRow {
 }
 
 /**
- * Submit all results + observations and finalize session
- * Steps: create results → update session observations → confirm (status=done)
+ * Submit all results and finalize session
+ * Steps: create/update results → confirm (status=done)
  */
 export async function submitEvaluation(
   sessionId: number,
   results: ResultInput[],
-  observation: ObservationInput,
 ): Promise<boolean> {
   logger.eval("submitEvaluation", "start", {
     sessionId,
     resultCount: results.length,
-    observation: {
-      attendance: observation.attendance,
-      mood: observation.mood,
-    },
   });
 
-  // 1. Upsert session results by objective (avoid duplicate rows per objective/session)
   logger.eval("submitEvaluation", "step 1 — fetching existing result rows...");
   const existingRows = await searchRead<SessionResultRow>(
     RESULT_MODEL,
@@ -100,22 +85,7 @@ export async function submitEvaluation(
     }
   }
 
-  // 2. Update session with observations
-  logger.eval(
-    "submitEvaluation",
-    "step 2 — writing observations to session...",
-  );
-  await write(SESSION_MODEL, [sessionId], {
-    attendance: observation.attendance,
-    mood: observation.mood,
-    energy_level: observation.energy_level,
-    engagement_level: observation.engagement_level,
-    overall_performance: observation.overall_performance,
-    notes: observation.notes || "",
-  });
-
-  // 3. Advance workflow to done via real backend actions.
-  logger.eval("submitEvaluation", "step 3 — reading current session status...");
+  // 2. Advance workflow to done via real backend actions.
   const [session] = await read<SessionStateRow>(
     SESSION_MODEL,
     [sessionId],
@@ -125,10 +95,10 @@ export async function submitEvaluation(
   if (!session) {
     logger.error(
       "submitEvaluation",
-      `Cannot read session ${sessionId} after write — access control issue or record deleted`,
+      `Cannot read session ${sessionId} — access control issue or record deleted`,
     );
     throw new Error(
-      `Không thể đọc trạng thái buổi học #${sessionId} sau khi ghi. Kiểm tra quyền truy cập.`,
+      `Không thể đọc trạng thái buổi học #${sessionId}. Kiểm tra quyền truy cập.`,
     );
   }
 

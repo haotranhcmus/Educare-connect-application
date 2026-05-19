@@ -1,123 +1,399 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useFocusEffect } from "@react-navigation/native";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../../store/authStore";
 import { useMyStudents } from "../../hooks/useStudents";
-import { useTodaySessions } from "../../hooks/useSessions";
-import { usePendingReportCount } from "../../hooks/useReports";
+import { useTodaySessions, useWeekMonthStats } from "../../hooks/useSessions";
+import { useSessionsForReport } from "../../hooks/useReports";
 import { useMyProfile } from "../../hooks/useProfile";
-import { AvatarLabel } from "../../components/common/AvatarLabel";
-import { SectionHeader } from "../../components/common/SectionHeader";
-import { SessionListCard } from "../../components/student/SessionListCard";
+import { AvatarLabel, ProgressRingAvatar } from "../../components/common";
+import CoffeeSvg from "../../../assets/placeholder/coffee-chill.svg";
+import { SessionListCard } from "../../components/session/SessionListCard";
 import { StatusBadge } from "../../components/common/StatusBadge";
+import { formatFloatTime } from "../../utils/formatters";
+import {
+  SESSION_PURPOSE_LABELS,
+  SESSION_TYPE_SHORT_LABELS,
+  LOCATION_LABELS,
+} from "../../utils/labels";
 
 export function HomeScreen({ navigation }: any) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { userName, centerName } = useAuthStore();
+  const uid = useAuthStore((s) => s.uid);
+  const queryClient = useQueryClient();
   const { data: todaySessions = [] } = useTodaySessions();
-  const { data: pendingCount = 0 } = usePendingReportCount();
+
+  // Invalidate today's sessions every time HomeScreen comes into focus
+  // to ensure edits made in detail/edit screens are reflected immediately.
+  useFocusEffect(
+    useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["sessions", "today", uid] });
+    }, [queryClient, uid]),
+  );
+  const { data: noReportSessions = [] } = useSessionsForReport();
+  const noReportIds = React.useMemo(
+    () => new Set(noReportSessions.map((s) => s.id)),
+    [noReportSessions],
+  );
+  const pendingCount = noReportSessions.length;
   const { data: students = [] } = useMyStudents();
   const { data: myProfile } = useMyProfile();
+  const { week: weekCount, month: monthCount } = useWeekMonthStats();
   const teacherAvatarUri = myProfile?.avatar
     ? `data:image/png;base64,${myProfile.avatar}`
     : undefined;
 
   const today = new Date();
+  const greeting = (() => {
+    const h = today.getHours();
+    if (h < 12) return "Chào buổi sáng";
+    if (h < 18) return "Chào buổi chiều";
+    return "Chào buổi tối";
+  })();
   const dateStr = today.toLocaleDateString("vi-VN", {
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
-    year: "numeric",
   });
 
   const handleSessionPress = (sessionId: number) => {
-    navigation.navigate("SessionTab", {
-      screen: "SessionDetail",
-      params: { sessionId },
-    });
+    navigation.getParent()?.navigate("SessionDetail" as any, { sessionId });
   };
 
   const handleStudentPress = (studentId: number) => {
     navigation.getParent()?.navigate("StudentDetail", { studentId });
   };
 
+  // Helper: Odoo float time (e.g. 8.5 = 08:30) → minutes since midnight (integer, no float drift)
+  const toMinutes = (floatTime: number): number => {
+    const h = Math.floor(floatTime);
+    return h * 60 + Math.round((floatTime - h) * 60);
+  };
+  const nowMinutes = today.getHours() * 60 + today.getMinutes();
+  const scheduledToday = todaySessions.filter((s) => s.status === "scheduled");
+
+  // Ongoing: đã bắt đầu nhưng chưa kết thúc
+  const ongoingSession =
+    scheduledToday.find(
+      (s) =>
+        toMinutes(s.start_time) <= nowMinutes &&
+        nowMinutes < toMinutes(s.end_time),
+    ) ?? null;
+
+  // Upcoming: chưa bắt đầu, lấy buổi gần nhất
+  const upcomingSession =
+    scheduledToday
+      .filter((s) => toMinutes(s.start_time) > nowMinutes)
+      .sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time))[0] ??
+    null;
+
+  // Số phút đến khi buổi tiếp theo bắt đầu
+  const minsUntilStart =
+    upcomingSession != null
+      ? toMinutes(upcomingSession.start_time) - nowMinutes
+      : null;
+  // "Sắp bắt đầu" khi upcoming chưa có ongoing và còn ≤15 phút
+  const isStartingSoon =
+    !ongoingSession && minsUntilStart !== null && minsUntilStart <= 15;
+
   return (
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      {/* ── Top Header Banner ───────────────────────────────── */}
-      <View
-        style={[
-          styles.header,
-          {
-            backgroundColor: theme.colors.primary,
-            paddingTop: insets.top + 12,
-          },
-        ]}
+      {/* ── Compact Header ──────────────────────────────────── */}
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryContainer]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 8 }]}
       >
-        {/* Row: avatar + name/center + date */}
         <View style={styles.headerRow}>
           <AvatarLabel
             uri={teacherAvatarUri}
             name={userName || "?"}
-            size={48}
+            size={42}
           />
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.greetLabel}>Xin chào,</Text>
+            <Text style={styles.greetLabel}>{greeting},</Text>
             <Text style={styles.greetName} numberOfLines={1}>
               {userName}
             </Text>
-            {centerName ? (
-              <Text style={styles.greetCenter} numberOfLines={1}>
-                {centerName}
-              </Text>
-            ) : null}
+          </View>
+          <View style={styles.datePill}>
+            <Text style={styles.dateText}>{dateStr}</Text>
           </View>
         </View>
+      </LinearGradient>
 
-        <Text style={styles.dateLabel}>{dateStr}</Text>
-
-        {/* Quick-stat chips */}
-        <View style={styles.statsRow}>
-          <View style={styles.statChip}>
-            <MaterialCommunityIcons
-              name="calendar-today"
-              size={14}
-              color="#fff"
-            />
-            <Text style={styles.statText}>
-              {todaySessions.length} buổi hôm nay
-            </Text>
-          </View>
-          {pendingCount > 0 && (
-            <TouchableOpacity
-              style={[
-                styles.statChip,
-                { backgroundColor: "rgba(255,255,255,0.30)" },
-              ]}
-              onPress={() =>
-                navigation.navigate("ReportTab", { screen: "ReportList" })
-              }
-            >
-              <MaterialCommunityIcons
-                name="file-document-alert"
-                size={14}
-                color="#fff"
-              />
-              <Text style={styles.statText}>{pendingCount} báo cáo chờ</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+      {/* ── Quick Stats Row — always 4 equal pills ─────────── */}
+      <View style={styles.statsRow}>
+        <StatPill
+          icon="calendar-today"
+          label="Hôm nay"
+          value={String(todaySessions.length)}
+          color="#1565C0"
+          bg="#E3F2FD"
+        />
+        <StatPill
+          icon="calendar-week"
+          label="Tuần này"
+          value={String(weekCount)}
+          color="#2E7D32"
+          bg="#E8F5E9"
+        />
+        <StatPill
+          icon="calendar-month"
+          label="Tháng này"
+          value={String(monthCount)}
+          color="#6A1B9A"
+          bg="#F3E5F5"
+        />
+        <StatPill
+          icon="file-document-alert"
+          label="Chưa báo cáo"
+          value={String(pendingCount)}
+          color={pendingCount > 0 ? "#E65100" : "#9E9E9E"}
+          bg={pendingCount > 0 ? "#FFF3E0" : "#F5F5F5"}
+          urgent={pendingCount > 0}
+          onPress={
+            pendingCount > 0
+              ? () =>
+                  navigation.navigate("SessionTab", {
+                    screen: "SessionList",
+                    params: { filterNoReport: true },
+                  })
+              : undefined
+          }
+        />
       </View>
 
       {/* ── Scrollable Content ─────────────────────────────── */}
-      <ScrollView style={{ flex: 1 }}>
-        <SectionHeader
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {/* ── Buổi sắp tới / Đang diễn ra / Motivational card ─── */}
+        {/* Case A: đang diễn ra — luôn hiển thị trước */}
+        {ongoingSession && (
+          <TouchableOpacity
+            onPress={() => handleSessionPress(ongoingSession.id)}
+            activeOpacity={0.85}
+            style={{ paddingHorizontal: 16, marginTop: 12 }}
+          >
+            <LinearGradient
+              colors={["#1B5E20", "#388E3C"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.upcomingCard}
+            >
+              <View style={styles.upcomingRow}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    flex: 1,
+                    gap: 5,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="play-circle-outline"
+                    size={16}
+                    color="rgba(255,255,255,0.85)"
+                  />
+                  <Text style={styles.upcomingLabel}>Đang diễn ra</Text>
+                  <View style={styles.liveDot} />
+                </View>
+                <Text style={styles.upcomingTimeText}>
+                  {formatFloatTime(ongoingSession.start_time)} –{" "}
+                  {formatFloatTime(ongoingSession.end_time)}
+                </Text>
+              </View>
+              <Text style={styles.upcomingStudent} numberOfLines={1}>
+                {ongoingSession.student_name ||
+                  (Array.isArray(ongoingSession.student_id)
+                    ? ongoingSession.student_id[1]
+                    : "")}
+              </Text>
+              <View style={styles.upcomingRow}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 6,
+                    flexWrap: "wrap",
+                    flex: 1,
+                  }}
+                >
+                  <View style={styles.upcomingBadge}>
+                    <Text style={styles.upcomingBadgeText}>
+                      {SESSION_PURPOSE_LABELS[ongoingSession.session_purpose] ||
+                        ongoingSession.session_purpose}
+                    </Text>
+                  </View>
+                  <View style={styles.upcomingBadge}>
+                    <Text style={styles.upcomingBadgeText}>
+                      {SESSION_TYPE_SHORT_LABELS[ongoingSession.session_type] ||
+                        ongoingSession.session_type}
+                    </Text>
+                  </View>
+                  <View style={styles.upcomingBadge}>
+                    <Text style={styles.upcomingBadgeText}>
+                      {LOCATION_LABELS[ongoingSession.location] ||
+                        ongoingSession.location}
+                    </Text>
+                  </View>
+                </View>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={20}
+                  color="rgba(255,255,255,0.7)"
+                />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+
+        {/* Case B: buổi tiếp theo (upcoming) — hiển thị dù có hay không có ongoing */}
+        {upcomingSession ? (
+          <TouchableOpacity
+            onPress={() => handleSessionPress(upcomingSession.id)}
+            activeOpacity={0.85}
+            style={{
+              paddingHorizontal: 16,
+              marginTop: ongoingSession ? 8 : 12,
+            }}
+          >
+            <LinearGradient
+              colors={
+                isStartingSoon ? ["#BF360C", "#E64A19"] : ["#1565C0", "#1976D2"]
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={ongoingSession ? styles.nextCard : styles.upcomingCard}
+            >
+              <View style={styles.upcomingRow}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    flex: 1,
+                    gap: 5,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name={isStartingSoon ? "clock-alert-outline" : "clock-fast"}
+                    size={ongoingSession ? 14 : 16}
+                    color="rgba(255,255,255,0.85)"
+                  />
+                  <Text
+                    style={
+                      ongoingSession ? styles.nextLabel : styles.upcomingLabel
+                    }
+                  >
+                    {ongoingSession
+                      ? "Tiếp theo"
+                      : isStartingSoon
+                        ? `Sau ${minsUntilStart} phút`
+                        : "Buổi sắp tới"}
+                  </Text>
+                </View>
+                <Text
+                  style={
+                    ongoingSession
+                      ? styles.nextTimeText
+                      : styles.upcomingTimeText
+                  }
+                >
+                  {formatFloatTime(upcomingSession.start_time)} –{" "}
+                  {formatFloatTime(upcomingSession.end_time)}
+                </Text>
+              </View>
+              <Text
+                style={
+                  ongoingSession ? styles.nextStudent : styles.upcomingStudent
+                }
+                numberOfLines={1}
+              >
+                {upcomingSession.student_name ||
+                  (Array.isArray(upcomingSession.student_id)
+                    ? upcomingSession.student_id[1]
+                    : "")}
+              </Text>
+              <View style={styles.upcomingRow}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 6,
+                    flexWrap: "wrap",
+                    flex: 1,
+                  }}
+                >
+                  <View style={styles.upcomingBadge}>
+                    <Text style={styles.upcomingBadgeText}>
+                      {SESSION_PURPOSE_LABELS[
+                        upcomingSession.session_purpose
+                      ] || upcomingSession.session_purpose}
+                    </Text>
+                  </View>
+                  <View style={styles.upcomingBadge}>
+                    <Text style={styles.upcomingBadgeText}>
+                      {SESSION_TYPE_SHORT_LABELS[
+                        upcomingSession.session_type
+                      ] || upcomingSession.session_type}
+                    </Text>
+                  </View>
+                  <View style={styles.upcomingBadge}>
+                    <Text style={styles.upcomingBadgeText}>
+                      {LOCATION_LABELS[upcomingSession.location] ||
+                        upcomingSession.location}
+                    </Text>
+                  </View>
+                </View>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={20}
+                  color="rgba(255,255,255,0.7)"
+                />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        ) : !ongoingSession ? (
+          <View style={styles.motivationalCard}>
+            <MaterialCommunityIcons
+              name="star-circle-outline"
+              size={32}
+              color={theme.colors.primary}
+            />
+            <View style={{ marginLeft: 12, flex: 1 }}>
+              <Text
+                variant="titleSmall"
+                style={{ fontWeight: "700", color: theme.colors.onSurface }}
+              >
+                {weekCount > 0
+                  ? `${weekCount} buổi đã dạy tuần này 🎉`
+                  : "Bắt đầu một ngày tuyệt vời!"}
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}
+              >
+                {monthCount > 0
+                  ? `Tổng ${monthCount} buổi trong tháng này`
+                  : "Chưa có buổi học hôm nay"}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        {/* ── Hôm nay ─── */}
+        <HomeSectionLabel
           icon="calendar-today"
-          title={`Hôm nay — ${todaySessions.length} buổi học`}
+          label="Hôm nay"
+          count={todaySessions.length}
+          countUnit="buổi học"
         />
         <View style={styles.section}>
           {todaySessions.length > 0 ? (
@@ -125,23 +401,35 @@ export function HomeScreen({ navigation }: any) {
               <SessionListCard
                 key={s.id}
                 session={s}
-                onPress={handleSessionPress}
+                onPress={() => handleSessionPress(s.id)}
+                hasReport={!noReportIds.has(s.id)}
               />
             ))
           ) : (
-            <Text
-              variant="bodyMedium"
-              style={{ color: theme.colors.outline, paddingHorizontal: 16 }}
-            >
-              Không có buổi học hôm nay
-            </Text>
+            <View style={styles.emptyDay}>
+              <CoffeeSvg width={120} height={120} />
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.outline, marginTop: 12 }}
+              >
+                Không có buổi học hôm nay
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.outlineVariant, marginTop: 4 }}
+              >
+                Hãy tận dụng thời gian chuẩn bị kế hoạch 📋
+              </Text>
+            </View>
           )}
         </View>
 
-        {/* My Students */}
-        <SectionHeader
+        {/* ── Học sinh của tôi ─── */}
+        <HomeSectionLabel
           icon="account-group"
-          title={`Học sinh của tôi — ${students.length} học sinh`}
+          label="Học sinh"
+          count={students.length}
+          countUnit="em"
           action={{
             label: "Xem tất cả",
             onPress: () =>
@@ -149,7 +437,7 @@ export function HomeScreen({ navigation }: any) {
           }}
         />
         <View style={styles.section}>
-          {students.slice(0, 3).map((s) => (
+          {students.slice(0, 4).map((s) => (
             <TouchableOpacity
               key={s.id}
               onPress={() => handleStudentPress(s.id)}
@@ -161,15 +449,41 @@ export function HomeScreen({ navigation }: any) {
                   { backgroundColor: theme.colors.surface },
                 ]}
               >
-                <AvatarLabel uri={s.avatar_url} name={s.name} size={36} />
-                <Text variant="bodyMedium" style={{ flex: 1, marginLeft: 12 }}>
-                  {s.name}
-                </Text>
+                {/* Avatar with IEP progress ring */}
+                <ProgressRingAvatar
+                  uri={s.avatar_url}
+                  name={s.name}
+                  size={44}
+                  progress={(s as any).iep_progress_pct ?? 0}
+                  ringColor={theme.colors.primary}
+                  trackColor={theme.colors.outlineVariant}
+                />
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text variant="bodyMedium" style={{ fontWeight: "700" }}>
+                    {s.nickname || s.name}
+                  </Text>
+                  {s.nickname && (
+                    <Text
+                      variant="labelSmall"
+                      style={{ color: theme.colors.onSurfaceVariant, marginTop: 1 }}
+                    >
+                      {s.name}
+                    </Text>
+                  )}
+                  {(s as any).iep_progress_pct != null && (
+                    <Text
+                      variant="labelSmall"
+                      style={{ color: theme.colors.outline, marginTop: 1 }}
+                    >
+                      IEP {Math.round((s as any).iep_progress_pct)}%
+                    </Text>
+                  )}
+                </View>
                 <StatusBadge status={s.status} size="small" />
               </View>
             </TouchableOpacity>
           ))}
-          {students.length > 3 && (
+          {students.length > 4 && (
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("StudentTab", { screen: "StudentList" })
@@ -179,11 +493,11 @@ export function HomeScreen({ navigation }: any) {
                 variant="labelMedium"
                 style={{
                   color: theme.colors.primary,
-                  paddingHorizontal: 16,
+                  paddingHorizontal: 4,
                   paddingVertical: 8,
                 }}
               >
-                + {students.length - 3} học sinh khác →
+                + {students.length - 4} học sinh khác →
               </Text>
             </TouchableOpacity>
           )}
@@ -195,44 +509,314 @@ export function HomeScreen({ navigation }: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  // Banner header
-  header: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  headerRow: { flexDirection: "row", alignItems: "center" },
-  greetLabel: { color: "rgba(255,255,255,0.75)", fontSize: 12 },
-  greetName: { color: "#fff", fontSize: 17, fontWeight: "700", lineHeight: 22 },
-  greetCenter: { color: "rgba(255,255,255,0.80)", fontSize: 12, marginTop: 1 },
-  dateLabel: {
-    color: "rgba(255,255,255,0.80)",
-    fontSize: 12,
-    marginTop: 10,
-    marginBottom: 12,
-  },
-  statsRow: { flexDirection: "row", gap: 8 },
-  statChip: {
+// ── Home Section Label ────────────────────────────────────────
+function HomeSectionLabel({
+  icon,
+  label,
+  count,
+  countUnit,
+  action,
+}: {
+  icon: string;
+  label: string;
+  count?: number;
+  countUnit?: string;
+  action?: { label: string; onPress: () => void };
+}) {
+  const theme = useTheme();
+  return (
+    <View style={hlStyles.row}>
+      {/* Icon bubble */}
+      <View
+        style={[
+          hlStyles.iconBubble,
+          { backgroundColor: `${theme.colors.primary}18` },
+        ]}
+      >
+        <MaterialCommunityIcons
+          name={icon as any}
+          size={15}
+          color={theme.colors.primary}
+        />
+      </View>
+
+      {/* Label + count pill */}
+      <View style={hlStyles.titleBlock}>
+        <Text style={[hlStyles.label, { color: theme.colors.onSurface }]}>
+          {label}
+        </Text>
+        {count !== undefined && (
+          <View
+            style={[
+              hlStyles.countPill,
+              { backgroundColor: `${theme.colors.primary}14` },
+            ]}
+          >
+            <Text style={[hlStyles.countText, { color: theme.colors.primary }]}>
+              {count} {countUnit}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Action link */}
+      {action && (
+        <TouchableOpacity
+          onPress={action.onPress}
+          style={hlStyles.actionBtn}
+          activeOpacity={0.65}
+        >
+          <Text style={[hlStyles.actionText, { color: theme.colors.primary }]}>
+            {action.label}
+          </Text>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={14}
+            color={theme.colors.primary}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const hlStyles = StyleSheet.create({
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.18)",
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    gap: 5,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 10,
+    gap: 10,
   },
-  statText: { color: "#fff", fontSize: 12, fontWeight: "600" },
+  iconBubble: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  titleBlock: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "700",
+    letterSpacing: 0.1,
+  },
+  countPill: {
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  countText: {
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  actionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+  },
+  actionText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+});
+
+// ── Stat Pill ──────────────────────────────────────────────────
+function StatPill({
+  icon,
+  label,
+  value,
+  color,
+  bg,
+  urgent,
+  onPress,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+  color: string;
+  bg: string;
+  urgent?: boolean;
+  onPress?: () => void;
+}) {
+  const inner = (
+    <View style={[styles.statPill, { backgroundColor: bg }]}>
+      <MaterialCommunityIcons name={icon as any} size={16} color={color} />
+      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color }]}>{label}</Text>
+      {urgent && <View style={styles.urgentDot} />}
+    </View>
+  );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={styles.statPillWrapper}
+        activeOpacity={0.75}
+      >
+        {inner}
+      </TouchableOpacity>
+    );
+  }
+  return <View style={styles.statPillWrapper}>{inner}</View>;
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  // Header
+  header: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  headerRow: { flexDirection: "row", alignItems: "center" },
+  greetLabel: { color: "rgba(255,255,255,0.80)", fontSize: 11 },
+  greetName: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  datePill: {
+    backgroundColor: "rgba(255,255,255,0.18)",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  dateText: { color: "#fff", fontSize: 11, fontWeight: "500" },
+  // Quick stats
+  statsRow: {
+    flexDirection: "row",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  statPillWrapper: { flex: 1 },
+  statPill: {
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    alignItems: "center",
+    gap: 2,
+    elevation: 2,
+  },
+  statValue: { fontSize: 20, fontWeight: "800", lineHeight: 24 },
+  statLabel: { fontSize: 9, fontWeight: "600", textAlign: "center" },
+  urgentDot: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#E65100",
+  },
+  // Cards
+  upcomingCard: {
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 4,
+    elevation: 4,
+    gap: 6,
+  },
+  upcomingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  upcomingLabel: {
+    color: "rgba(255,255,255,0.80)",
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  upcomingTimeText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  upcomingStudent: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "800",
+    letterSpacing: 0.1,
+  },
+  upcomingBadge: {
+    backgroundColor: "rgba(255,255,255,0.18)",
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  upcomingBadgeText: {
+    color: "rgba(255,255,255,0.92)",
+    fontSize: 10,
+    fontWeight: "600",
+  },
+  liveDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#69F0AE",
+  },
+  // Compact "Tiếp theo" card shown below the ongoing card
+  nextCard: {
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 4,
+    elevation: 3,
+    gap: 4,
+  },
+  nextLabel: {
+    color: "rgba(255,255,255,0.75)",
+    fontSize: 10,
+    fontWeight: "500",
+  },
+  nextStudent: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 0.1,
+  },
+  nextTimeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  motivationalCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 4,
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: "#E8F5E9",
+    // shadowColor: "#000",
+    // shadowOpacity: 0.05,
+    // shadowRadius: 4,
+    // shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
   // Content
   section: { paddingHorizontal: 16, marginBottom: 16 },
-  infoCard: { borderRadius: 12 },
+  emptyDay: {
+    alignItems: "center",
+    paddingVertical: 28,
+    paddingHorizontal: 24,
+    backgroundColor: "transparent",
+  },
   studentRow: {
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    borderRadius: 12,
-    marginBottom: 4,
+    borderRadius: 14,
+    marginBottom: 6,
+    // shadowColor: "#000",
+    // shadowOpacity: 0.04,
+    // shadowRadius: 4,
+    // shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
 });

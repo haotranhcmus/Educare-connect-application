@@ -4,6 +4,7 @@
         <!-- Hoc sinh 1: Dang hoc, Tu ky, Canh bao y te -->
         <record id="student_demo_01" model="educare.student">
             <field name="name">Michael Nguyen</field>
+            <field name="nickname">Mikey</field>
             <field name="date_of_birth">2021-03-15</field>
             <field name="gender">male</field>
             <field name="enrollment_date">2025-01-10</field>
@@ -32,6 +33,7 @@
         <!-- Hoc sinh 2: Dang hoc, ADHD -->
         <record id="student_demo_02" model="educare.student">
             <field name="name">Linh Tran</field>
+            <field name="nickname">Linh Linh</field>
             <field name="date_of_birth">2020-08-22</field>
             <field name="gender">female</field>
             <field name="enrollment_date">2024-09-01</field>
@@ -104,6 +106,7 @@
         <!-- Hoc sinh 5: Dang hoc, Hoi chung Down, muc do 3 -->
         <record id="student_demo_05" model="educare.student">
             <field name="name">Bao Hoang</field>
+            <field name="nickname">Bảo</field>
             <field name="date_of_birth">2018-05-20</field>
             <field name="gender">male</field>
             <field name="enrollment_date">2022-09-01</field>
@@ -151,6 +154,7 @@
         <!-- Hoc sinh 6: Dang hoc, Bai nao, muc do 2 -->
         <record id="student_demo_06" model="educare.student">
             <field name="name">Ngoc Anh Vo</field>
+            <field name="nickname">Ngọc</field>
             <field name="date_of_birth">2020-02-14</field>
             <field name="gender">female</field>
             <field name="enrollment_date">2024-03-01</field>

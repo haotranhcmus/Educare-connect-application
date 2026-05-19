@@ -5,9 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
+  Pressable,
+  Platform,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
 import { useMyStudents } from "../../../hooks/useParent";
@@ -19,6 +22,10 @@ interface ChildSelectorModalProps {
 }
 
 const GENDER_LABELS: Record<string, string> = { male: "Nam", female: "Nữ" };
+const G1 = "#2E7D32";
+const G2 = "#43A047";
+const G_LIGHT = "#E8F5E9";
+const G_TEXT = "#1B5E20";
 
 export function ChildSelectorModal({
   visible,
@@ -38,172 +45,396 @@ export function ChildSelectorModal({
       visible={visible}
       animationType="slide"
       transparent
+      statusBarTranslucent
       onRequestClose={onClose}
     >
-      {/* Backdrop */}
-      <TouchableOpacity
-        style={styles.backdrop}
-        activeOpacity={1}
-        onPress={onClose}
-      />
+      <View style={styles.overlay}>
+        <Pressable style={{ flex: 1 }} onPress={onClose} />
 
-      {/* Sheet */}
-      <View style={[styles.sheet, { backgroundColor: theme.colors.surface }]}>
-        {/* Handle */}
-        <View
-          style={[
-            styles.handle,
-            { backgroundColor: theme.colors.outlineVariant },
-          ]}
-        />
-
-        {/* Title */}
-        <View style={styles.header}>
-          <Text
-            variant="titleMedium"
-            style={{ fontWeight: "700", color: theme.colors.onSurface }}
-          >
-            Chọn con
-          </Text>
-          <TouchableOpacity
-            onPress={onClose}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <MaterialCommunityIcons
-              name="close"
-              size={22}
-              color={theme.colors.outline}
+        <View style={[styles.sheet, { backgroundColor: theme.colors.surface }]}>
+          {/* ── Drag handle ─────────────────────────────
+          <View style={styles.handleWrap}>
+            <View
+              style={[
+                styles.handle,
+                { backgroundColor: theme.colors.outlineVariant },
+              ]}
             />
-          </TouchableOpacity>
-        </View>
+          </View> */}
 
-        <FlatList
-          data={students}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
-          renderItem={({ item }) => {
-            const isSelected = item.id === selectedStudentId;
-            const teacherName = Array.isArray(item.assigned_teacher_id)
-              ? item.assigned_teacher_id[1]
-              : null;
-            return (
-              <TouchableOpacity
-                style={[
-                  styles.studentRow,
-                  {
-                    backgroundColor: isSelected
-                      ? theme.colors.primaryContainer
-                      : theme.colors.surfaceVariant,
-                  },
-                ]}
-                activeOpacity={0.75}
-                onPress={() => handleSelect(item)}
-              >
-                <AvatarLabel
-                  uri={
-                    item.avatar
-                      ? `data:image/png;base64,${item.avatar}`
-                      : undefined
-                  }
-                  name={item.name}
-                  size={44}
-                />
-                <View style={{ flex: 1, marginLeft: 12 }}>
+          {/* ── Gradient header ───────────────────────── */}
+          <LinearGradient
+            colors={[G1, G2]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradHeader}
+          >
+            {/* Icon bubble */}
+            <View style={styles.iconBubble}>
+              <MaterialCommunityIcons
+                name="account-child-outline"
+                size={20}
+                color="#fff"
+              />
+            </View>
+
+            {/* Title */}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.headerSub}>Danh sách</Text>
+              <Text style={styles.headerTitle}>
+                Chọn con
+                <Text style={styles.headerCount}> ({students.length})</Text>
+              </Text>
+            </View>
+
+            {/* Close button */}
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={styles.closeBtn}
+            >
+              <MaterialCommunityIcons name="close" size={16} color="#fff" />
+            </TouchableOpacity>
+          </LinearGradient>
+
+          {/* ── Divider ───────────────────────────────── */}
+          <View
+            style={[
+              styles.divider,
+              { backgroundColor: theme.colors.outlineVariant },
+            ]}
+          />
+
+          {/* ── Student list ──────────────────────────── */}
+          <FlatList
+            data={students}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => {
+              const isSelected = item.id === selectedStudentId;
+              const teacherName = Array.isArray(item.assigned_teacher_id)
+                ? item.assigned_teacher_id[1]
+                : null;
+
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.82}
+                  onPress={() => handleSelect(item)}
+                  style={styles.cardWrapper}
+                >
                   <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
+                    style={[
+                      styles.card,
+                      {
+                        backgroundColor: isSelected
+                          ? G_LIGHT
+                          : theme.colors.surface,
+                        borderColor: isSelected
+                          ? G1
+                          : theme.colors.outlineVariant,
+                        borderLeftWidth: isSelected ? 4 : 0,
+                      },
+                    ]}
                   >
-                    <Text
-                      variant="titleSmall"
-                      style={{
-                        color: theme.colors.onSurface,
-                        fontWeight: "700",
-                      }}
+                    {/* Avatar */}
+                    <View
+                      style={[
+                        styles.avatarRing,
+                        { borderColor: isSelected ? G1 : "transparent" },
+                      ]}
                     >
-                      {item.name}
-                    </Text>
-                    <StatusBadge status={item.status} />
-                  </View>
-                  {teacherName && (
-                    <View style={styles.metaRow}>
-                      <MaterialCommunityIcons
-                        name="account-tie-outline"
-                        size={12}
-                        color={theme.colors.outline}
+                      <AvatarLabel
+                        uri={
+                          item.avatar
+                            ? `data:image/png;base64,${item.avatar}`
+                            : undefined
+                        }
+                        name={item.name}
+                        size={44}
                       />
-                      <Text
-                        variant="bodySmall"
-                        style={{ color: theme.colors.outline, marginLeft: 4 }}
-                      >
-                        {teacherName}
-                      </Text>
                     </View>
-                  )}
-                  {item.gender && (
-                    <Text
-                      variant="bodySmall"
-                      style={{ color: theme.colors.outline }}
-                    >
-                      {GENDER_LABELS[item.gender] ?? item.gender}
-                      {item.age ? ` · ${item.age} tuổi` : ""}
-                    </Text>
-                  )}
-                </View>
-                {isSelected && (
-                  <MaterialCommunityIcons
-                    name="check-circle"
-                    size={22}
-                    color={theme.colors.primary}
-                  />
-                )}
-              </TouchableOpacity>
-            );
-          }}
-        />
+
+                    {/* Info */}
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      {/* Name + status */}
+                      <View style={styles.nameRow}>
+                        <Text
+                          style={[
+                            styles.studentName,
+                            {
+                              color: isSelected
+                                ? G_TEXT
+                                : theme.colors.onSurface,
+                            },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {item.name}
+                        </Text>
+                        <StatusBadge status={item.status} size="small" />
+                      </View>
+
+                      {/* Sub info row */}
+                      <View style={styles.subRow}>
+                        {item.gender ? (
+                          <View style={styles.subChip}>
+                            <MaterialCommunityIcons
+                              name={
+                                item.gender === "male"
+                                  ? "gender-male"
+                                  : "gender-female"
+                              }
+                              size={11}
+                              color={isSelected ? G1 : theme.colors.outline}
+                            />
+                            <Text
+                              style={[
+                                styles.subChipText,
+                                {
+                                  color: isSelected ? G1 : theme.colors.outline,
+                                },
+                              ]}
+                            >
+                              {GENDER_LABELS[item.gender] ?? item.gender}
+                              {item.age ? ` · ${item.age} tuổi` : ""}
+                            </Text>
+                          </View>
+                        ) : null}
+                        {teacherName ? (
+                          <View style={styles.subChip}>
+                            <MaterialCommunityIcons
+                              name="account-tie-outline"
+                              size={11}
+                              color={isSelected ? G1 : theme.colors.outline}
+                            />
+                            <Text
+                              style={[
+                                styles.subChipText,
+                                {
+                                  color: isSelected ? G1 : theme.colors.outline,
+                                },
+                              ]}
+                              numberOfLines={1}
+                            >
+                              {teacherName}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+
+                    {/* Right indicator */}
+                    {isSelected ? (
+                      <View style={styles.checkCircle}>
+                        <MaterialCommunityIcons
+                          name="check"
+                          size={14}
+                          color="#fff"
+                        />
+                      </View>
+                    ) : (
+                      <View
+                        style={[styles.arrowBtn, { backgroundColor: G_LIGHT }]}
+                      >
+                        <MaterialCommunityIcons
+                          name="circle-outline"
+                          size={15}
+                          color={G1}
+                        />
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)",
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+    paddingBottom: Platform.OS === "ios" ? 20 : 10,
   },
+
+  // ── Sheet ───────────────────────────────────────────────────
   sheet: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: "70%",
-    paddingTop: 12,
-    elevation: 16,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    maxHeight: "75%",
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        // shadowColor: "#000",
+        // shadowOffset: { width: 0, height: -4 },
+        // shadowOpacity: 0.15,
+        // shadowRadius: 16,
+      },
+      android: { elevation: 20 },
+    }),
+  },
+
+  // ── Handle ──────────────────────────────────────────────────
+  handleWrap: {
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: 6,
   },
   handle: {
-    width: 40,
+    width: 36,
     height: 4,
     borderRadius: 2,
-    alignSelf: "center",
-    marginBottom: 12,
   },
-  header: {
+
+  // ── Gradient header ─────────────────────────────────────────
+  gradHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 12,
   },
-  studentRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  iconBubble: {
+    width: 40,
+    height: 40,
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  metaRow: { flexDirection: "row", alignItems: "center", marginTop: 2 },
+  headerSub: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.72)",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 2,
+  },
+  headerTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: "#fff",
+    letterSpacing: 0.1,
+  },
+  headerCount: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.72)",
+  },
+  closeBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  divider: {
+    height: StyleSheet.hairlineWidth,
+  },
+
+  // ── List ────────────────────────────────────────────────────
+  listContent: {
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 36,
+    gap: 8,
+  },
+
+  // ── Student card ────────────────────────────────────────────
+  cardWrapper: {
+    borderRadius: 16,
+    ...Platform.select({
+      ios: {
+        // shadowColor: G1,
+        // shadowOffset: { width: 0, height: 2 },
+        // shadowOpacity: 0.07,
+        // shadowRadius: 8,
+      },
+      android: { elevation: 2 },
+    }),
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 16,
+    borderWidth: 1.5,
+    paddingVertical: 12,
+    paddingRight: 12,
+    paddingLeft: 0,
+    overflow: "hidden",
+  },
+
+  // Selected left stripe
+  selectedStripe: {
+    width: 4,
+    alignSelf: "stretch",
+    backgroundColor: G1,
+    marginRight: 12,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+  },
+
+  avatarRing: {
+    borderRadius: 24,
+    borderWidth: 2,
+    overflow: "hidden",
+    marginLeft: 10,
+  },
+
+  // Name row
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 4,
+  },
+  studentName: {
+    fontSize: 14,
+    fontWeight: "700",
+    flex: 1,
+    letterSpacing: 0.1,
+  },
+
+  // Sub info
+  subRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  subChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  subChipText: {
+    fontSize: 11,
+    fontWeight: "500",
+  },
+
+  // Right indicators
+  checkCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: G1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+  },
+  arrowBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+  },
 });

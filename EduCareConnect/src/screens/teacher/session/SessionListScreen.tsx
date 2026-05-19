@@ -1,4 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+  useEffect,
+} from "react";
 import {
   View,
   SectionList,
@@ -6,38 +12,50 @@ import {
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
-  Text as RNText,
+  Modal,
+  Pressable,
 } from "react-native";
 import {
   Searchbar,
   Chip,
   Text,
   FAB,
-  IconButton,
   useTheme,
   Button,
+  IconButton,
+  Badge,
 } from "react-native-paper";
-import dayjs, { Dayjs } from "dayjs";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import dayjs from "dayjs";
 import { SessionListCard } from "../../../components/session/SessionListCard";
 import { EmptyState } from "../../../components/common/EmptyState";
+import SessionPlaceholder from "../../../../assets/placeholder/session-placeholder.svg";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
+import { MiniCalendar } from "../../../components/common/MiniCalendar";
 import { useMySessions } from "../../../hooks/useSessions";
+import { useSessionsForReport } from "../../../hooks/useReports";
 import { formatDate } from "../../../utils/formatters";
+import { groupByDate } from "../../../utils/groupByDate";
 import { logger } from "../../../utils/logger";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "../../../navigation/types";
 import type { SessionListItem } from "../../../types";
 import { theme as appTheme } from "@/src/theme/theme";
-import { is } from "zod/v4/locales";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionList">;
-
-const WEEKDAY_LABELS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
 const DATE_FILTERS = [
   { key: "all", label: "Tất cả" },
   { key: "today", label: "Hôm nay" },
   { key: "week", label: "Tuần này" },
+  { key: "month", label: "Tháng này" },
+];
+
+const STATUS_FILTERS = [
+  { key: "all", label: "Tất cả" },
+  { key: "scheduled", label: "Lên lịch" },
+  { key: "done", label: "Đã dạy" },
+  { key: "cancelled", label: "Đã hủy" },
 ];
 
 function getDateRange(key: string) {
@@ -47,6 +65,8 @@ function getDateRange(key: string) {
   if (key === "week") {
     const day = now.getDay();
     dateFrom.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  } else if (key === "month") {
+    dateFrom.setDate(1);
   }
   return {
     dateFrom: dateFrom.toISOString().split("T")[0],
@@ -54,160 +74,59 @@ function getDateRange(key: string) {
   };
 }
 
-function groupByDate(sessions: SessionListItem[]) {
-  const map = new Map<string, SessionListItem[]>();
-  for (const s of sessions) {
-    const key = s.session_date;
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(s);
-  }
-  return Array.from(map.entries())
-    .sort((a, b) => b[0].localeCompare(a[0]))
-    .map(([date, data]) => ({ title: date, data }));
-}
+// Header search styles defined outside component to avoid recreation
+const headerSearchStyle = {
+  backgroundColor: "rgba(255,255,255,0.18)",
+  elevation: 0,
+  height: 40,
+  borderRadius: 10,
+};
+const headerSearchInputStyle = {
+  color: "#fff",
+  fontSize: 13,
+  paddingLeft: 0,
+};
+const headerBadgeStyle = {
+  position: "absolute" as const,
+  top: 4,
+  right: 4,
+  backgroundColor: "#E65100",
+};
 
-// ─── Mini Calendar ─────────────────────────────────────────────────────────────
+const ACTIVE_CHIP_TEXT_STYLE = {
+  color: "#1B5E20",
+  fontWeight: "600" as const,
+  fontSize: 12,
+  lineHeight: 16,
+  includeFontPadding: false, // Android: tắt extra padding mặc định quanh text
+};
 
-interface MiniCalendarProps {
-  month: Dayjs;
-  sessionDates: Set<string>;
-  selectedDate: string | null;
-  onSelectDate: (date: string) => void;
-  onPrevMonth: () => void;
-  onNextMonth: () => void;
-}
+// ─── Main Screen ────────────────────────────────────────────────────────────
 
-function MiniCalendar({
-  month,
-  sessionDates,
-  selectedDate,
-  onSelectDate,
-  onPrevMonth,
-  onNextMonth,
-}: MiniCalendarProps) {
-  const theme = useTheme();
-  const today = dayjs().format("YYYY-MM-DD");
-
-  // Build grid: ISO week starts Monday
-  const firstOfMonth = month.startOf("month");
-  // dayjs isoWeekday: 1=Mon … 7=Sun; fallback with day()
-  const startOffset = (firstOfMonth.day() + 6) % 7; // Mon=0
-  const daysInMonth = month.daysInMonth();
-
-  // Pad front with nulls then fill days
-  const cells: (number | null)[] = [
-    ...Array(startOffset).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-  // Pad to full weeks
-  while (cells.length % 7 !== 0) cells.push(null);
-  const weeks: (number | null)[][] = [];
-  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
-
-  const monthLabel = month.format("MM / YYYY");
-
-  return (
-    <View
-      style={[calStyles.wrapper, { backgroundColor: theme.colors.surface }]}
-    >
-      {/* Month navigation */}
-      <View style={calStyles.header}>
-        <IconButton icon="chevron-left" size={20} onPress={onPrevMonth} />
-        <Text variant="titleSmall" style={{ fontWeight: "700" }}>
-          Tháng {monthLabel}
-        </Text>
-        <IconButton icon="chevron-right" size={20} onPress={onNextMonth} />
-      </View>
-
-      {/* Weekday labels */}
-      <View style={calStyles.row}>
-        {WEEKDAY_LABELS.map((d) => (
-          <Text
-            key={d}
-            style={[calStyles.weekLabel, { color: theme.colors.outline }]}
-          >
-            {d}
-          </Text>
-        ))}
-      </View>
-
-      {/* Day cells */}
-      {weeks.map((week, wi) => (
-        <View key={wi} style={calStyles.row}>
-          {week.map((day, di) => {
-            if (!day) return <View key={di} style={calStyles.cell} />;
-            const dateStr = month.date(day).format("YYYY-MM-DD");
-            const hasSession = sessionDates.has(dateStr);
-            const isSelected = dateStr === selectedDate;
-            const isToday = dateStr === today;
-            return (
-              <TouchableOpacity
-                key={di}
-                style={calStyles.cell}
-                onPress={() => onSelectDate(isSelected ? "" : dateStr)}
-                activeOpacity={0.7}
-              >
-                <View
-                  style={[
-                    calStyles.dayCircle,
-                    isSelected && {
-                      backgroundColor: theme.colors.primary,
-                    },
-                    isToday &&
-                      !isSelected && {
-                        borderWidth: 1,
-                        borderColor: theme.colors.primary,
-                      },
-                    isToday &&
-                      isSelected && {
-                        backgroundColor: theme.colors.primary,
-                        borderWidth: 1,
-                        borderColor: theme.colors.primary,
-                      },
-                  ]}
-                >
-                  <RNText
-                    style={[
-                      calStyles.dayText,
-                      isSelected
-                        ? { color: theme.colors.onPrimary }
-                        : { color: theme.colors.onSurface },
-                      isToday && !isSelected && { color: theme.colors.primary },
-                    ]}
-                  >
-                    {day}
-                  </RNText>
-                </View>
-                {hasSession && (
-                  <View
-                    style={[
-                      calStyles.dot,
-                      {
-                        backgroundColor: isSelected
-                          ? theme.colors.onPrimary
-                          : theme.colors.primary,
-                      },
-                    ]}
-                  />
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      ))}
-    </View>
-  );
-}
-
-// ─── Main Screen ───────────────────────────────────────────────────────────────
-
-export function SessionListScreen({ navigation }: Props) {
+export function SessionListScreen({ navigation, route }: Props) {
   const theme = useTheme();
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [filterNoReport, setFilterNoReport] = useState(
+    route.params?.filterNoReport ?? false,
+  );
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [calMonth, setCalMonth] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [showFilterModal, setShowFilterModal] = useState(false);
+
+  // Pending state inside the filter modal
+  const [pendingDateFilter, setPendingDateFilter] = useState("all");
+  const [pendingStatusFilter, setPendingStatusFilter] = useState("all");
+  const [pendingFilterNoReport, setPendingFilterNoReport] = useState(false);
+
+  // Re-apply when navigated here with filterNoReport param (e.g. from HomeScreen)
+  useEffect(() => {
+    if (route.params?.filterNoReport) {
+      setFilterNoReport(true);
+    }
+  }, [route.params?.filterNoReport]);
 
   const filters = useMemo(() => getDateRange(dateFilter), [dateFilter]);
   const {
@@ -217,6 +136,72 @@ export function SessionListScreen({ navigation }: Props) {
     error,
     refetch,
   } = useMySessions(filters);
+
+  const { data: noReportSessions = [] } = useSessionsForReport();
+  const noReportIds = useMemo(
+    () => new Set(noReportSessions.map((s) => s.id)),
+    [noReportSessions],
+  );
+
+  const activeFilterCount = useMemo(() => {
+    let n = 0;
+    if (dateFilter !== "all") n++;
+    if (statusFilter !== "all") n++;
+    if (filterNoReport) n++;
+    return n;
+  }, [dateFilter, statusFilter, filterNoReport]);
+
+  const toggleView = useCallback(() => {
+    setViewMode((v) => (v === "list" ? "calendar" : "list"));
+    setSelectedDate("");
+  }, []);
+
+  const openFilterModal = useCallback(() => {
+    setPendingDateFilter(dateFilter);
+    setPendingStatusFilter(statusFilter);
+    setPendingFilterNoReport(filterNoReport);
+    setShowFilterModal(true);
+  }, [dateFilter, statusFilter, filterNoReport]);
+
+  // Search + filter + calendar toggle all live in the navigation header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Searchbar
+          placeholder="Tìm theo tên học sinh"
+          value={search}
+          onChangeText={setSearch}
+          style={headerSearchStyle}
+          inputStyle={headerSearchInputStyle}
+          iconColor="rgba(255,255,255,0.75)"
+          placeholderTextColor="rgba(255,255,255,0.55)"
+        />
+      ),
+      headerRight: () => (
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View>
+            <IconButton
+              icon="filter-variant"
+              size={22}
+              iconColor={activeFilterCount > 0 ? "#A5D6A7" : "#fff"}
+              onPress={openFilterModal}
+            />
+            {activeFilterCount > 0 && (
+              <Badge style={headerBadgeStyle} size={14}>
+                {activeFilterCount}
+              </Badge>
+            )}
+          </View>
+          <IconButton
+            icon={viewMode === "list" ? "calendar-month-outline" : "format-list-bulleted"}
+            size={22}
+            iconColor="#fff"
+            onPress={toggleView}
+          />
+        </View>
+      ),
+    });
+  }, [navigation, search, viewMode, activeFilterCount, openFilterModal, toggleView]);
 
   if (isError) {
     const errorMsg =
@@ -243,75 +228,112 @@ export function SessionListScreen({ navigation }: Props) {
         );
       });
     }
+    if (filterNoReport) {
+      list = list.filter((s) => noReportIds.has(s.id));
+    }
+    if (statusFilter !== "all") {
+      list = list.filter((s) => s.status === statusFilter);
+    }
     if (viewMode === "calendar" && selectedDate) {
       list = list.filter((s) => s.session_date === selectedDate);
     }
     return list;
-  }, [sessions, search, viewMode, selectedDate]);
+  }, [
+    sessions,
+    search,
+    filterNoReport,
+    statusFilter,
+    viewMode,
+    selectedDate,
+    noReportIds,
+  ]);
 
-  const sections = useMemo(() => groupByDate(filtered), [filtered]);
+  const sections = useMemo(
+    () => groupByDate(filtered, (s) => s.session_date),
+    [filtered],
+  );
 
-  const toggleView = () => {
-    setViewMode((v) => (v === "list" ? "calendar" : "list"));
-    setSelectedDate("");
+  const handleSessionPress = useCallback(
+    (sessionId: number) => navigation.navigate("SessionDetail", { sessionId }),
+    [navigation],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: SessionListItem }) => (
+      <SessionListCard
+        session={item}
+        onPress={() => handleSessionPress(item.id)}
+        hasReport={!noReportIds.has(item.id)}
+      />
+    ),
+    [handleSessionPress, noReportIds],
+  );
+
+  const keyExtractor = useCallback(
+    (item: SessionListItem) => String(item.id),
+    [],
+  );
+
+  const applyFilters = () => {
+    setDateFilter(pendingDateFilter);
+    setStatusFilter(pendingStatusFilter);
+    setFilterNoReport(pendingFilterNoReport);
+    setShowFilterModal(false);
   };
 
-  const handleSelectDate = (date: string) => {
-    setSelectedDate(date);
+  const resetPending = () => {
+    setPendingDateFilter("all");
+    setPendingStatusFilter("all");
+    setPendingFilterNoReport(false);
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {/* Search + view toggle */}
-      <View style={styles.searchRow}>
-        <Searchbar
-          placeholder="Tìm theo tên học sinh..."
-          value={search}
-          onChangeText={setSearch}
-          style={styles.search}
-        />
-        <IconButton
-          icon={
-            viewMode === "list"
-              ? "calendar-month-outline"
-              : "format-list-bulleted"
-          }
-          size={24}
-          iconColor={theme.colors.primary}
-          onPress={toggleView}
-          style={styles.toggleBtn}
-        />
-      </View>
-
-      {/* Date chips — hidden in calendar mode */}
-      {viewMode === "list" && (
-        <View style={styles.chips}>
-          {DATE_FILTERS.map((f) => (
+      {/* ── Active filter summary ──────────────────────────────── */}
+      {activeFilterCount > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.activeFilterRow}
+          style={styles.activeFilterScroll}
+        >
+          {dateFilter !== "all" && (
             <Chip
-              key={f.key}
-              selected={dateFilter === f.key}
-              onPress={() => setDateFilter(f.key)}
-              style={[
-                styles.chip,
-                dateFilter === f.key && {
-                  backgroundColor: theme.colors.primary,
-                },
-              ]}
-              showSelectedCheck={false}
-              textStyle={[
-                dateFilter === f.key && { color: theme.colors.onPrimary },
-              ]}
+              compact
+              onClose={() => setDateFilter("all")}
+              style={styles.activeChip}
+              textStyle={ACTIVE_CHIP_TEXT_STYLE}
             >
-              {f.label}
+              {DATE_FILTERS.find((f) => f.key === dateFilter)?.label}
             </Chip>
-          ))}
-        </View>
+          )}
+          {statusFilter !== "all" && (
+            <Chip
+              compact
+              onClose={() => setStatusFilter("all")}
+              style={styles.activeChip}
+              textStyle={ACTIVE_CHIP_TEXT_STYLE}
+            >
+              {STATUS_FILTERS.find((f) => f.key === statusFilter)?.label}
+            </Chip>
+          )}
+          {filterNoReport && (
+            <Chip
+              compact
+              onClose={() => setFilterNoReport(false)}
+              style={styles.activeChip}
+              textStyle={ACTIVE_CHIP_TEXT_STYLE}
+            >
+              Chưa báo cáo
+            </Chip>
+          )}
+        </ScrollView>
       )}
 
       {isLoading ? (
         <LoadingOverlay visible={isLoading} />
       ) : isError ? (
-        /* ── Error State ───────────────────────────────────────── */
+        /* ── Error State ─────────────────────────────────────── */
         <View style={styles.errorContainer}>
           <Text
             variant="titleSmall"
@@ -339,13 +361,13 @@ export function SessionListScreen({ navigation }: Props) {
           </Button>
         </View>
       ) : viewMode === "calendar" ? (
-        /* ── Calendar View ─────────────────────────────────────── */
+        /* ── Calendar View ───────────────────────────────────── */
         <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
           <MiniCalendar
             month={calMonth}
             sessionDates={sessionDates}
             selectedDate={selectedDate}
-            onSelectDate={handleSelectDate}
+            onSelectDate={setSelectedDate}
             onPrevMonth={() => setCalMonth((m) => m.subtract(1, "month"))}
             onNextMonth={() => setCalMonth((m) => m.add(1, "month"))}
           />
@@ -362,7 +384,7 @@ export function SessionListScreen({ navigation }: Props) {
               </Text>
               {sections.length === 0 ? (
                 <EmptyState
-                  icon="calendar-blank-outline"
+                  image={SessionPlaceholder}
                   title="Không có buổi học ngày này"
                 />
               ) : (
@@ -376,6 +398,7 @@ export function SessionListScreen({ navigation }: Props) {
                             sessionId: item.id,
                           })
                         }
+                        hasReport={!noReportIds.has(item.id)}
                       />
                     </View>
                   )),
@@ -390,11 +413,12 @@ export function SessionListScreen({ navigation }: Props) {
           )}
         </ScrollView>
       ) : (
-        /* ── List View ─────────────────────────────────────────── */
+        /* ── List View ───────────────────────────────────────── */
         <SectionList
+          style={styles.sectionList}
           sections={sections}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
+          keyExtractor={keyExtractor}
+          contentContainerStyle={styles.sectionListContent}
           refreshControl={
             <RefreshControl refreshing={false} onRefresh={refetch} />
           }
@@ -406,19 +430,9 @@ export function SessionListScreen({ navigation }: Props) {
               {formatDate(section.title)}
             </Text>
           )}
-          renderItem={({ item }) => (
-            <SessionListCard
-              session={item}
-              onPress={() =>
-                navigation.navigate("SessionDetail", { sessionId: item.id })
-              }
-            />
-          )}
+          renderItem={renderItem}
           ListEmptyComponent={
-            <EmptyState
-              icon="calendar-blank-outline"
-              title="Không có buổi học"
-            />
+            <EmptyState image={SessionPlaceholder} title="Không có buổi học" />
           }
         />
       )}
@@ -430,27 +444,180 @@ export function SessionListScreen({ navigation }: Props) {
         color="#fff"
         onPress={() => navigation.navigate("SessionCreate", {})}
       />
+
+      {/* ── Filter bottom sheet ───────────────────────────────── */}
+      <Modal
+        visible={showFilterModal}
+        transparent
+        animationType="none"
+        onRequestClose={() => setShowFilterModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowFilterModal(false)}
+        >
+          <Pressable
+            onPress={() => {}}
+            style={[
+              styles.filterSheet,
+              { backgroundColor: theme.colors.surface },
+            ]}
+          >
+            <View style={styles.sheetHandle} />
+
+            <View style={styles.filterHeader}>
+              <Text variant="titleMedium" style={{ fontWeight: "700" }}>
+                Bộ lọc
+              </Text>
+              <Button onPress={resetPending} compact>
+                Đặt lại
+              </Button>
+            </View>
+
+            <Text
+              variant="labelSmall"
+              style={[
+                styles.filterSectionLabel,
+                { color: theme.colors.outline },
+              ]}
+            >
+              KHOẢNG THỜI GIAN
+            </Text>
+            <View style={styles.chipRow}>
+              {DATE_FILTERS.map((f) => (
+                <Chip
+                  key={f.key}
+                  selected={pendingDateFilter === f.key}
+                  onPress={() => setPendingDateFilter(f.key)}
+                  style={[
+                    styles.chip,
+                    pendingDateFilter === f.key && {
+                      backgroundColor: theme.colors.primary,
+                    },
+                  ]}
+                  showSelectedCheck={false}
+                  textStyle={
+                    pendingDateFilter === f.key
+                      ? { color: theme.colors.onPrimary }
+                      : undefined
+                  }
+                >
+                  {f.label}
+                </Chip>
+              ))}
+            </View>
+
+            <Text
+              variant="labelSmall"
+              style={[
+                styles.filterSectionLabel,
+                { color: theme.colors.outline },
+              ]}
+            >
+              TRẠNG THÁI
+            </Text>
+            <View style={styles.chipRow}>
+              {STATUS_FILTERS.map((f) => (
+                <Chip
+                  key={f.key}
+                  selected={pendingStatusFilter === f.key}
+                  onPress={() => setPendingStatusFilter(f.key)}
+                  style={[
+                    styles.chip,
+                    pendingStatusFilter === f.key && {
+                      backgroundColor: theme.colors.primary,
+                    },
+                  ]}
+                  showSelectedCheck={false}
+                  textStyle={
+                    pendingStatusFilter === f.key
+                      ? { color: theme.colors.onPrimary }
+                      : undefined
+                  }
+                >
+                  {f.label}
+                </Chip>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.noReportRow,
+                {
+                  backgroundColor: pendingFilterNoReport
+                    ? "#F0FBF1"
+                    : theme.colors.surfaceVariant,
+                },
+              ]}
+              onPress={() => setPendingFilterNoReport((v) => !v)}
+              activeOpacity={0.7}
+            >
+              <MaterialCommunityIcons
+                name={
+                  pendingFilterNoReport
+                    ? "checkbox-marked"
+                    : "checkbox-blank-outline"
+                }
+                size={24}
+                color={pendingFilterNoReport ? "#2E7D32" : theme.colors.outline}
+              />
+              <View style={{ marginLeft: 12, flex: 1 }}>
+                <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
+                  Chưa có báo cáo
+                </Text>
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.outline, marginTop: 1 }}
+                >
+                  Chỉ hiện buổi học chưa gửi báo cáo cho phụ huynh
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <Button
+              mode="contained"
+              onPress={applyFilters}
+              style={styles.applyBtn}
+              contentStyle={{ paddingVertical: 4 }}
+            >
+              Áp dụng
+            </Button>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  searchRow: {
+  // ScrollView wrapper: không cho nó stretch theo flex
+  activeFilterScroll: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  // contentContainer của ScrollView horizontal
+  activeFilterRow: {
+    paddingHorizontal: 12,
+    paddingTop: 4,
+    paddingBottom: 8,
+    gap: 6,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 16,
-    paddingRight: 4,
-    paddingTop: 8,
-    paddingBottom: 4,
   },
-  search: { flex: 1 },
-  toggleBtn: { marginLeft: 4 },
-  chips: { flexDirection: "row", paddingHorizontal: 16, marginBottom: 8 },
+  activeChip: {
+    backgroundColor: "#E8F5E9",
+    borderColor: "#2E7D32",
+    borderWidth: 1.5,
+    borderRadius: 20,
+    // Không set height cứng — để chip tự size theo content
+    // Không set alignSelf — để alignItems của parent (center) điều khiển
+  },
   sectionHeader: { paddingVertical: 8, fontWeight: "600" },
   fab: { position: "absolute", right: 16, bottom: 16, borderRadius: 16 },
   chip: {
     borderRadius: 20,
     marginRight: 8,
+    marginBottom: 8,
     backgroundColor: appTheme.colors.surface,
     borderColor: appTheme.colors.outline,
     borderWidth: 1,
@@ -461,52 +628,64 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 32,
   },
-});
-
-const calStyles = StyleSheet.create({
-  wrapper: {
-    margin: 16,
-    borderRadius: 16,
-    padding: 8,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+  // SectionList cần flex: 1 để fill hết không gian còn lại
+  sectionList: {
+    flex: 1,
   },
-  header: {
+  sectionListContent: {
+    padding: 16,
+    paddingBottom: 80,
+    // flexGrow: 1 đảm bảo EmptyState được center khi không có items
+    flexGrow: 1,
+  },
+  // Filter modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "flex-end",
+  },
+  filterSheet: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 36,
+    elevation: 8,
+  },
+  sheetHandle: {
+    alignSelf: "center",
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#ddd",
+    marginBottom: 16,
+  },
+  filterHeader: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 4,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  filterSectionLabel: {
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    marginTop: 4,
+  },
+  chipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 4,
   },
-  row: { flexDirection: "row" },
-  weekLabel: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 11,
-    fontWeight: "600",
-    paddingVertical: 6,
-  },
-  cell: {
-    flex: 1,
+  noReportRow: {
+    flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 4,
+    marginTop: 12,
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 12,
   },
-  dayCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  dayText: { fontSize: 13 },
-  dot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    marginTop: 2,
+  applyBtn: {
+    marginTop: 4,
+    borderRadius: 12,
   },
 });

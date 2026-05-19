@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 import { Text, useTheme, Divider } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBadge } from "../common/StatusBadge";
-import { ProgressBar } from "../common/ProgressBar";
 import { TrendChip } from "../common/TrendChip";
 import type { IepObjectiveListItem } from "../../types";
 import { formatDate } from "../../utils/formatters";
+import { theme } from "../../theme";
 
 interface ObjectiveCardProps {
   objective: IepObjectiveListItem;
@@ -16,7 +16,7 @@ interface ObjectiveCardProps {
   onPress?: (id: number) => void;
 }
 
-export function ObjectiveCard({
+function ObjectiveCardImpl({
   objective,
   selectable = false,
   selected = false,
@@ -42,6 +42,10 @@ export function ObjectiveCard({
       objective.materials_needed ||
       objective.consecutive_sessions_required);
 
+  // Progress fill: từ baseline → current trên thang đến target
+  const progressPct = objective.progress_pct ?? 0;
+  const currentPct = Math.round(objective.current_accuracy_pct ?? 0);
+
   return (
     <View
       style={[
@@ -51,13 +55,17 @@ export function ObjectiveCard({
           borderColor: selected
             ? theme.colors.primary
             : theme.colors.outlineVariant,
-          borderWidth: selectable ? 1.5 : 0,
+          borderWidth: selected ? 2 : 0.75,
         },
       ]}
     >
-      {/* Main row — tap to select/navigate */}
-      <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
-        {/* Header */}
+      {/* ─── Main tappable row ─── */}
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={0.75}
+        style={styles.cardInner}
+      >
+        {/* Header: code + checkbox (selectable) + status badge */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             {selectable && (
@@ -65,74 +73,105 @@ export function ObjectiveCard({
                 name={selected ? "checkbox-marked" : "checkbox-blank-outline"}
                 size={20}
                 color={selected ? theme.colors.primary : theme.colors.outline}
-                style={{ marginRight: 8 }}
+                style={{ marginRight: 6 }}
               />
             )}
-            <Text variant="labelMedium" style={{ color: theme.colors.primary }}>
-              {objective.objective_code}:
+            <Text
+              variant="labelSmall"
+              style={[styles.codeLabel, { color: theme.colors.primary }]}
+            >
+              {objective.objective_code}
             </Text>
           </View>
           <StatusBadge status={objective.status} size="small" />
         </View>
 
+        {/* Objective name */}
         <Text
           variant="bodySmall"
           numberOfLines={expanded ? undefined : 2}
-          style={{ marginVertical: 4 }}
+          style={[styles.name, { color: theme.colors.onSurface }]}
         >
           {objective.name}
         </Text>
 
-        {/* Accuracy row */}
-        <View style={styles.accuracyRow}>
-          <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-            Mức ban đầu: {objective.baseline_accuracy_pct}%
-          </Text>
-          <Text
-            variant="labelSmall"
-            style={{ color: theme.colors.onSurface, fontWeight: "600" }}
-          >
-            Hiện tại: {Math.round(objective.current_accuracy_pct || 0)}%
-          </Text>
-          <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-            Mục tiêu: {objective.target_accuracy_pct}%
-          </Text>
+        {/* ─── Stats row ─── */}
+        <View
+          style={[styles.statsRow, { backgroundColor: theme.colors.surface }]}
+        >
+          <StatCell
+            value={`${objective.baseline_accuracy_pct}%`}
+            label="Ban đầu"
+            theme={theme}
+          />
+          <View
+            style={[
+              styles.statDivider,
+              { backgroundColor: theme.colors.outlineVariant },
+            ]}
+          />
+          <StatCell
+            value={`${currentPct}%`}
+            label="Hiện tại"
+            highlight
+            theme={theme}
+          />
+          <View
+            style={[
+              styles.statDivider,
+              { backgroundColor: theme.colors.outlineVariant },
+            ]}
+          />
+          <StatCell
+            value={`${objective.target_accuracy_pct}%`}
+            label="Mục tiêu"
+            theme={theme}
+          />
         </View>
 
+        {/* ─── Footer: trend + date + chevron ─── */}
         <View style={styles.footer}>
-          {objective.trend && (
+          {objective.trend ? (
             <TrendChip trend={objective.trend} size="small" />
+          ) : (
+            <View />
           )}
-          {objective.last_session_date && (
-            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-              Gần nhất: {formatDate(objective.last_session_date)}
-            </Text>
-          )}
-          {!selectable && (
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={18}
-              color={theme.colors.outline}
-            />
-          )}
+          <View style={styles.footerRight}>
+            {objective.last_session_date && (
+              <Text
+                variant="labelSmall"
+                style={{ color: theme.colors.outline }}
+              >
+                {formatDate(objective.last_session_date)}
+              </Text>
+            )}
+            {!selectable && (
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={16}
+                color={theme.colors.outline}
+              />
+            )}
+          </View>
         </View>
       </TouchableOpacity>
 
-      {/* Expand toggle — only in selectable mode when detail exists */}
+      {/* ─── Expand toggle — selectable mode only ─── */}
       {hasDetail && (
         <>
-          <Divider style={{ marginTop: 8 }} />
+          <Divider />
           <TouchableOpacity
             style={styles.expandRow}
             onPress={() => setExpanded((v) => !v)}
             activeOpacity={0.6}
           >
-            <Text
+            {/* <Text
               variant="labelSmall"
               style={{ color: theme.colors.primary, flex: 1 }}
             >
               {expanded ? "Ẩn chi tiết" : "Xem chi tiết mục tiêu"}
-            </Text>
+              
+            </Text> */}
             <MaterialCommunityIcons
               name={expanded ? "chevron-up" : "chevron-down"}
               size={16}
@@ -142,26 +181,44 @@ export function ObjectiveCard({
 
           {expanded && (
             <View style={styles.detailSection}>
-              {/* Progress bar — only shown in detail view */}
-              <View style={{ marginBottom: 4 }}>
-                <ProgressBar
-                  progress={objective.progress_pct || 0}
-                  size="small"
-                  label="Tiến độ hoàn thành"
-                />
-                {/* <Text
-                  variant="labelSmall"
-                  style={{
-                    color: theme.colors.onSurfaceVariant,
-                    marginTop: 1,
-                    fontStyle: "italic",
-                  }}
+              {/* Progress bar */}
+              <View style={styles.progressWrap}>
+                <View style={styles.progressLabelRow}>
+                  <Text
+                    variant="labelSmall"
+                    style={{ color: theme.colors.outline }}
+                  >
+                    Tiến độ hoàn thành
+                  </Text>
+                  <Text
+                    variant="labelSmall"
+                    style={{
+                      color: theme.colors.onSurface,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {Math.round(progressPct)}%
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.progressTrack,
+                    { backgroundColor: theme.colors.surfaceVariant },
+                  ]}
                 >
-                  (Độ chính xác hiện tại:{" "}
-                  {Math.round(objective.current_accuracy_pct || 0)}% · Mục tiêu:{" "}
-                  {Math.round(objective.target_accuracy_pct || 0)}%)
-                </Text> */}
+                  <View
+                    style={[
+                      styles.progressFill,
+                      {
+                        width: `${Math.min(progressPct, 100)}%` as any,
+                        backgroundColor: theme.colors.primary,
+                      },
+                    ]}
+                  />
+                </View>
               </View>
+
+              {/* Detail rows */}
               {objective.description ? (
                 <DetailRow
                   icon="text-box-outline"
@@ -190,12 +247,37 @@ export function ObjectiveCard({
                   value={objective.materials_needed}
                 />
               ) : null}
+
+              {/* Consecutive sessions — pill style */}
               {objective.consecutive_sessions_required ? (
-                <DetailRow
-                  icon="calendar-check-outline"
-                  label="Buổi đạt liên tiếp"
-                  value={`${objective.consecutive_sessions_achieved || 0}/${objective.consecutive_sessions_required} buổi`}
-                />
+                <View
+                  style={[
+                    styles.consecutivePill,
+                    { backgroundColor: theme.colors.surfaceVariant },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="calendar-check-outline"
+                    size={15}
+                    color={theme.colors.primary}
+                  />
+                  <Text
+                    variant="labelSmall"
+                    style={{ color: theme.colors.outline, flex: 1 }}
+                  >
+                    Buổi đạt liên tiếp
+                  </Text>
+                  <Text
+                    variant="labelSmall"
+                    style={{
+                      color: theme.colors.onSurface,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {objective.consecutive_sessions_achieved ?? 0} /{" "}
+                    {objective.consecutive_sessions_required} buổi
+                  </Text>
+                </View>
               ) : null}
             </View>
           )}
@@ -205,6 +287,38 @@ export function ObjectiveCard({
   );
 }
 
+/* ─── StatCell ─── */
+function StatCell({
+  value,
+  label,
+  highlight,
+  theme,
+}: {
+  value: string;
+  label: string;
+  highlight?: boolean;
+  theme: ReturnType<typeof useTheme>;
+}) {
+  return (
+    <View style={styles.statCell}>
+      <Text
+        variant="titleSmall"
+        style={{
+          color: highlight ? theme.colors.primary : theme.colors.onSurface,
+          fontWeight: highlight ? "700" : "500",
+          fontSize: 15,
+        }}
+      >
+        {value}
+      </Text>
+      <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+/* ─── DetailRow ─── */
 function DetailRow({
   icon,
   label,
@@ -221,46 +335,129 @@ function DetailRow({
         name={icon as any}
         size={15}
         color={theme.colors.primary}
-        style={{ marginRight: 6, marginTop: 2 }}
+        style={{ marginRight: 8, marginTop: 1 }}
       />
       <View style={{ flex: 1 }}>
         <Text
           variant="labelSmall"
-          style={{ color: theme.colors.outline, marginBottom: 1 }}
+          style={{
+            color: theme.colors.outline,
+            textTransform: "uppercase",
+            letterSpacing: 0.4,
+            marginBottom: 2,
+            fontSize: 10,
+          }}
         >
           {label}
         </Text>
-        <Text variant="bodySmall">{value}</Text>
+        <Text variant="bodySmall" style={{ color: theme.colors.onSurface }}>
+          {value}
+        </Text>
       </View>
     </View>
   );
 }
 
+export const ObjectiveCard = React.memo(ObjectiveCardImpl);
+
 const styles = StyleSheet.create({
-  card: { padding: 10, borderRadius: 10, marginBottom: 8 },
+  card: {
+    borderRadius: 12,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  cardInner: {
+    padding: 14,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 6,
   },
-  headerLeft: { flexDirection: "row", alignItems: "center" },
-  accuracyRow: {
+  headerLeft: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
+    alignItems: "center",
   },
+  codeLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  name: {
+    lineHeight: 19,
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  /* Stats */
+  statsRow: {
+    flexDirection: "row",
+    borderRadius: 8,
+    overflow: "hidden",
+    marginBottom: 10,
+  },
+  statCell: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    alignItems: "center",
+    gap: 2,
+  },
+  statDivider: {
+    width: 0.5,
+    alignSelf: "stretch",
+  },
+  /* Footer */
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
   },
+  footerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  /* Expand */
   expandRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 8,
-    paddingBottom: 2,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
   },
-  detailSection: { paddingTop: 8, gap: 10 },
-  detailRow: { flexDirection: "row", alignItems: "flex-start" },
+  /* Detail */
+  detailSection: {
+    paddingHorizontal: 14,
+    paddingBottom: 14,
+    gap: 12,
+  },
+  progressWrap: {
+    gap: 4,
+  },
+  progressLabelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  progressTrack: {
+    height: 5,
+    borderRadius: 99,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 99,
+  },
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  consecutivePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 8,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    gap: 8,
+  },
 });

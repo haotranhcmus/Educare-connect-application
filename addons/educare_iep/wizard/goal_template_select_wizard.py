@@ -121,6 +121,7 @@ class EducareIepGoalTemplateSelectWizard(models.TransientModel):
         )
         for line in selected_lines.sorted("sequence"):
             tpl = line.template_id
+            weight = tpl.difficulty_id.weight if tpl.difficulty_id else 1.0
             self.env["educare.iep.objective.configure.wizard.line"].create(
                 {
                     "wizard_id": config.id,
@@ -131,7 +132,7 @@ class EducareIepGoalTemplateSelectWizard(models.TransientModel):
                     "target_accuracy_pct": tpl.default_target_accuracy_pct or 80.0,
                     "consecutive_sessions_required": tpl.default_consecutive_sessions
                     or 3,
-                    "weight": 1.0,
+                    "weight": weight,
                 }
             )
         return {
@@ -181,9 +182,9 @@ class EducareIepGoalTemplateSelectWizardLine(models.TransientModel):
         string="Domains",
         readonly=True,
     )
-    difficulty_level = fields.Integer(
-        related="template_id.difficulty_level",
-        string="Difficulty",
+    difficulty_id = fields.Many2one(
+        related="template_id.difficulty_id",
+        string="Độ khó",
         readonly=True,
     )
     default_target_accuracy_pct = fields.Float(

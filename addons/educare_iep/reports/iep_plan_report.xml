@@ -6,7 +6,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">educare_iep.report_educare_iep_plan_document</field>
         <field name="report_file">educare_iep.report_educare_iep_plan_document</field>
-        <field name="print_report_name">'IEP Plan - %s' % (object.iep_period or '')</field>
+        <field name="print_report_name">'KeHoachIEP_%s_%s' % ((object.student_id.name or 'HocSinh').replace(' ', '_'), (object.iep_period or 'KI').replace('/', '-').replace(' ', '_'))</field>
         <field name="binding_model_id" ref="model_educare_iep_plan" />
         <field name="binding_type">report</field>
     </record>

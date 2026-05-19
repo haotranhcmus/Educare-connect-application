@@ -12,12 +12,12 @@
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="template_domain_ids" widget="many2many_tags" />
-                <field name="difficulty_level" />
-                <field name="age_min_months" string="Min Age" optional="show" />
+                <field name="difficulty_id" />
+                <!-- <field name="age_min_months" string="Min Age" optional="show" />
                 <field name="age_max_months" string="Max Age" optional="show" />
                 <field name="default_target_accuracy_pct" string="Mục tiêu (%)"
                     optional="show" />
-                <field name="active" widget="boolean_toggle" optional="hide" />
+                <field name="active" widget="boolean_toggle" optional="hide" /> -->
             </tree>
         </field>
     </record>
@@ -46,7 +46,7 @@
 
                             <field name="age_min_months" />
                             <field name="age_max_months" />
-                            <field name="difficulty_level" />
+                            <field name="difficulty_id" />
 
                         </group>
                         <group string="Mặc định đề xuất">
@@ -115,7 +115,7 @@
                 <separator />
                 <group expand="0" string="Group By">
                     <filter name="group_difficulty" string="Difficulty"
-                        context="{'group_by': 'difficulty_level'}" />
+                        context="{'group_by': 'difficulty_id'}" />
                 </group>
             </search>
         </field>

@@ -92,16 +92,7 @@ class EducareIepObjective(models.Model):
         tracking=True,
         index=True,
     )
-    start_date = fields.Date(string="Start Date")
-    target_date = fields.Date(string="Target Date")
     mastery_date = fields.Date(string="Mastery Date", tracking=True)
-    is_overdue = fields.Boolean(
-        string="Overdue",
-        compute="_compute_is_overdue",
-        store=True,
-        tracking=True,
-        index=True,
-    )
     can_delete = fields.Boolean(
         string="Can Delete",
         compute="_compute_can_delete",
@@ -225,10 +216,11 @@ class EducareIepObjective(models.Model):
         string="Max Age (months)",
         help="Maximum recommended age in months.",
     )
-    difficulty_level = fields.Integer(
-        string="Difficulty Level",
-        default=1,
-        help="Skill difficulty level from 1 (easiest) to 5 (hardest).",
+    difficulty_id = fields.Many2one(
+        "educare.iep.difficulty.weight",
+        string="Độ khó",
+        ondelete="set null",
+        help="Mức độ khó của mục tiêu ngắn hạn này.",
     )
     relevant_diagnosis_ids = fields.Many2many(
         "educare.diagnosis",
@@ -306,23 +298,6 @@ class EducareIepObjective(models.Model):
         """)
 
     # Python constraints
-    @api.constrains("start_date", "target_date", "goal_id")
-    def _check_objective_dates(self):
-        for obj in self:
-            if obj.goal_id and obj.start_date and obj.goal_id.start_date:
-                if obj.start_date < obj.goal_id.start_date:
-                    raise ValidationError(
-                        _("Objective start date cannot be before goal start date!")
-                    )
-            if obj.goal_id and obj.target_date and obj.goal_id.target_date:
-                if obj.target_date > obj.goal_id.target_date:
-                    raise ValidationError(
-                        _("Objective target date cannot be after goal target date!")
-                    )
-            if obj.start_date and obj.target_date:
-                if obj.target_date <= obj.start_date:
-                    raise ValidationError(_("Target date must be after start date!"))
-
     @api.constrains("status", "mastery_date")
     def _check_mastery_date(self):
         for obj in self:
@@ -365,13 +340,6 @@ class EducareIepObjective(models.Model):
                 continue
 
             vals = {}
-            if (
-                objective.status == "not_started"
-                and objective.start_date
-                and objective.start_date <= today
-            ):
-                vals["status"] = "in_progress"
-
             target_status = vals.get("status", objective.status)
             if (
                 target_status in ("not_started", "in_progress")
@@ -418,21 +386,9 @@ class EducareIepObjective(models.Model):
         )
         return code
 
-    def _prepare_dates_from_goal(self, vals):
-        """Fill objective dates from parent goal when user leaves them empty."""
-        goal_id = vals.get("goal_id")
-        if not goal_id:
-            return vals
-        goal = self.env["educare.iep.goal"].browse(goal_id)
-        if goal.exists():
-            vals.setdefault("start_date", goal.start_date)
-            vals.setdefault("target_date", goal.target_date)
-        return vals
-
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            self._prepare_dates_from_goal(vals)
             if not vals.get("objective_code") or vals["objective_code"] == "/":
                 vals["objective_code"] = self._next_objective_code()
         objectives = super().create(vals_list)
@@ -456,7 +412,6 @@ class EducareIepObjective(models.Model):
         result = super().write(vals)
         _STATUS_SYNC_TRIGGERS = {
             "status",
-            "start_date",
             "goal_id",
             "current_accuracy_pct",
             "consecutive_sessions_achieved",
@@ -611,16 +566,6 @@ class EducareIepObjective(models.Model):
         for obj in self:
             obj.consecutive_sessions_achieved = 0
 
-    @api.depends("target_date", "status")
-    def _compute_is_overdue(self):
-        today = fields.Date.today()
-        for obj in self:
-            obj.is_overdue = bool(
-                obj.target_date
-                and obj.target_date < today
-                and obj.status not in ("mastered", "discontinued")
-            )
-
     @api.depends("goal_id.plan_id.status", "total_sessions_worked")
     def _compute_can_delete(self):
         for obj in self:
@@ -679,14 +624,6 @@ class EducareIepObjective(models.Model):
         if self.status == "mastered" and not self.mastery_date:
             self.mastery_date = fields.Date.today()
 
-    @api.onchange("goal_id")
-    def _onchange_goal_id_dates(self):
-        if self.goal_id:
-            if not self.start_date:
-                self.start_date = self.goal_id.start_date
-            if not self.target_date:
-                self.target_date = self.goal_id.target_date
-
     def action_start(self):
         """Start objective: move from Not Started to In Progress."""
         for obj in self:
@@ -696,10 +633,7 @@ class EducareIepObjective(models.Model):
                 )
             if obj.status != "not_started":
                 continue
-            vals = {"status": "in_progress"}
-            if not obj.start_date:
-                vals["start_date"] = fields.Date.today()
-            obj.write(vals)
+            obj.write({"status": "in_progress"})
 
     def action_put_on_hold(self):
         """Pause objective: In Progress -> Paused."""

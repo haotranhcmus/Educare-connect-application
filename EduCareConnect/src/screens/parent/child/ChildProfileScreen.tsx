@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
@@ -29,66 +29,72 @@ export function ChildProfileScreen({ route, navigation }: Props) {
   if (isLoading || !student) return <LoadingOverlay visible />;
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
-        <AvatarLabel
-          uri={
-            student.avatar
-              ? `data:image/png;base64,${student.avatar}`
-              : undefined
-          }
-          name={student.name}
-          size={64}
-        />
-        <Text
-          variant="titleLarge"
-          style={[styles.name, { color: theme.colors.onSurface }]}
-        >
-          {student.name}
-        </Text>
-        <View style={styles.headerRow}>
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            {student.student_code}
-          </Text>
-          <Text style={{ color: theme.colors.outline }}> · </Text>
-          <StatusBadge status={student.status} />
-        </View>
-      </View>
-
-      {/* Top Tabs */}
-      <TopTab.Navigator
-        screenOptions={{
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: "600",
-            textTransform: "none",
-          },
-          tabBarIndicatorStyle: { backgroundColor: theme.colors.primary },
-          tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.outline,
-          tabBarStyle: { backgroundColor: theme.colors.surface },
-        }}
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.surface }]}
+        edges={Platform.OS === "android" ? ["top"] : ["top", "bottom"]}
       >
-        <TopTab.Screen name="Hồ sơ">
-          {() => <ChildProfileTab student={student} />}
-        </TopTab.Screen>
-        <TopTab.Screen name="Tiến độ IEP">
-          {() => (
-            <ChildProgressTab
-              studentId={student.id}
-              navigation={navigation}
-              detailRouteName="ChildIepPlanDetail"
-            />
-          )}
-        </TopTab.Screen>
-      </TopTab.Navigator>
-    </SafeAreaView>
+        {/* Header */}
+        <View
+          style={[styles.header, { backgroundColor: theme.colors.surface }]}
+        >
+          <AvatarLabel
+            uri={
+              student.avatar
+                ? `data:image/png;base64,${student.avatar}`
+                : undefined
+            }
+            name={student.name}
+            size={64}
+          />
+          <Text
+            variant="titleLarge"
+            style={[styles.name, { color: theme.colors.onSurface }]}
+          >
+            {student.name}
+          </Text>
+          <View style={styles.headerRow}>
+            <Text
+              variant="bodySmall"
+              style={{ color: theme.colors.onSurfaceVariant }}
+            >
+              {student.student_code}
+            </Text>
+            <Text style={{ color: theme.colors.outline }}> · </Text>
+            <StatusBadge status={student.status} />
+          </View>
+        </View>
+
+        {/* Top Tabs */}
+        <TopTab.Navigator
+          screenOptions={{
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: "600",
+              textTransform: "none",
+            },
+            tabBarIndicatorStyle: { backgroundColor: theme.colors.primary },
+            tabBarActiveTintColor: theme.colors.primary,
+            tabBarInactiveTintColor: theme.colors.outline,
+            tabBarStyle: { backgroundColor: theme.colors.surface },
+          }}
+        >
+          <TopTab.Screen name="Hồ sơ">
+            {() => <ChildProfileTab student={student} />}
+          </TopTab.Screen>
+          <TopTab.Screen name="Tiến độ IEP">
+            {() => (
+              <ChildProgressTab
+                studentId={student.id}
+                navigation={navigation}
+                detailRouteName="ChildIepPlanDetail"
+                objectiveRouteName="ChildIepObjectiveDetail"
+              />
+            )}
+          </TopTab.Screen>
+        </TopTab.Navigator>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     paddingTop: 16,
-    paddingBottom: 12,
+    // paddingBottom: 12,
     paddingHorizontal: 16,
   },
   name: { fontWeight: "bold", marginTop: 8 },

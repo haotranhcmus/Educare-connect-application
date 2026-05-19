@@ -660,10 +660,6 @@ class EducareIepPlan(models.Model):
                         "description": obj.description,
                         "sequence": obj.sequence,
                         "status": obj.status,
-                        "start_date": str(obj.start_date) if obj.start_date else False,
-                        "target_date": (
-                            str(obj.target_date) if obj.target_date else False
-                        ),
                         "baseline_accuracy_pct": obj.baseline_accuracy_pct,
                         "target_accuracy_pct": obj.target_accuracy_pct,
                         "consecutive_sessions_required": obj.consecutive_sessions_required,
@@ -680,8 +676,6 @@ class EducareIepPlan(models.Model):
                     "goal_domain_id": goal.goal_domain_id.id,
                     "priority": goal.priority,
                     "status": goal.status,
-                    "start_date": str(goal.start_date) if goal.start_date else False,
-                    "target_date": str(goal.target_date) if goal.target_date else False,
                     "baseline_accuracy_pct": goal.baseline_accuracy_pct,
                     "target_accuracy_pct": goal.target_accuracy_pct,
                     "discontinue_reason": goal.discontinue_reason,
@@ -705,12 +699,9 @@ class EducareIepPlan(models.Model):
         """
         self.ensure_one()
         for goal in self.goal_ids:
-            # Pass start_date explicitly to prevent goal.write() from overwriting it
-            # with the new revision plan's start_date (goals retain their original start_date).
             goal.with_context(skip_auto_goal_status_sync=True).write(
                 {
                     "plan_id": revision.id,
-                    "start_date": goal.start_date,
                 }
             )
 
@@ -890,8 +881,6 @@ class EducareIepPlan(models.Model):
                     "goal_domain_id": gdata["goal_domain_id"],
                     "priority": gdata["priority"],
                     "status": gdata["status"],
-                    "start_date": gdata["start_date"] or False,
-                    "target_date": gdata["target_date"],
                     "baseline_accuracy_pct": gdata["baseline_accuracy_pct"],
                     "target_accuracy_pct": gdata["target_accuracy_pct"],
                     "discontinue_reason": gdata["discontinue_reason"],
@@ -910,8 +899,6 @@ class EducareIepPlan(models.Model):
                         "description": odata["description"],
                         "sequence": odata["sequence"],
                         "status": odata["status"],
-                        "start_date": odata["start_date"] or False,
-                        "target_date": odata["target_date"] or False,
                         "baseline_accuracy_pct": odata["baseline_accuracy_pct"],
                         "target_accuracy_pct": odata["target_accuracy_pct"],
                         "consecutive_sessions_required": odata[

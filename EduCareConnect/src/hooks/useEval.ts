@@ -1,9 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  submitEvaluation,
-  ResultInput,
-  ObservationInput,
-} from "../api/evalApi";
+import { submitEvaluation, ResultInput } from "../api/evalApi";
 
 export function useSubmitEval() {
   const queryClient = useQueryClient();
@@ -12,12 +8,10 @@ export function useSubmitEval() {
     mutationFn: ({
       sessionId,
       results,
-      observation,
     }: {
       sessionId: number;
       results: ResultInput[];
-      observation: ObservationInput;
-    }) => submitEvaluation(sessionId, results, observation),
+    }) => submitEvaluation(sessionId, results),
     onSuccess: (_, { sessionId }) => {
       queryClient.invalidateQueries({
         queryKey: ["sessions", "detail", sessionId],

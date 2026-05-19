@@ -25,7 +25,7 @@ class EducareIepGoal(models.Model):
     _name = "educare.iep.goal"
     _description = "IEP Long-term Goal"
     _rec_name = "name"
-    _order = "start_date desc, id"
+    _order = "id desc"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
     # Tab 1: General Information
@@ -102,14 +102,6 @@ class EducareIepGoal(models.Model):
         related="plan_id.supervisor_id",
         store=True,
         readonly=True,
-    )
-    start_date = fields.Date(
-        string="Start Date",
-        index=True,
-    )
-    target_date = fields.Date(
-        string="Target Date",
-        required=True,
     )
     achieved_date = fields.Date(string="Achieved Date")
 
@@ -257,16 +249,6 @@ class EducareIepGoal(models.Model):
         """)
 
     # Python constraints
-
-    @api.constrains("start_date", "target_date")
-    def _check_goal_dates(self):
-        for goal in self:
-            if (
-                goal.start_date
-                and goal.target_date
-                and goal.target_date <= goal.start_date
-            ):
-                raise ValidationError(_("Target date must be after start date!"))
 
     @api.constrains("status", "achieved_date")
     def _check_achieved_date(self):
@@ -449,10 +431,6 @@ class EducareIepGoal(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if not vals.get("start_date") and vals.get("plan_id"):
-                plan = self.env["educare.iep.plan"].browse(vals["plan_id"])
-                if plan.exists() and plan.start_date:
-                    vals["start_date"] = plan.start_date
             if not vals.get("goal_code") or vals["goal_code"] == "/":
                 vals["goal_code"] = self._next_goal_code()
         goals = super().create(vals_list)
@@ -461,10 +439,6 @@ class EducareIepGoal(models.Model):
 
     def write(self, vals):
         vals = dict(vals)
-        if "plan_id" in vals and "start_date" not in vals and vals.get("plan_id"):
-            plan = self.env["educare.iep.plan"].browse(vals["plan_id"])
-            if plan.exists() and plan.start_date:
-                vals["start_date"] = plan.start_date
         old_plans = self.mapped("plan_id")
         res = super().write(vals)
         if "status" in vals:
@@ -558,8 +532,6 @@ class EducareIepGoal(models.Model):
         )
         action["context"] = {
             "default_goal_id": self.id,
-            "default_start_date": self.start_date,
-            "default_target_date": self.target_date,
         }
         return action
 

@@ -65,15 +65,12 @@
                                     <field name="domain_ids" widget="many2many_tags"
                                         readonly="plan_status != 'draft'" />
                                     <field name="sequence" readonly="plan_status != 'draft'" />
-                                    <field name="start_date" readonly="1" />
-                                    <field name="target_date" readonly="1" />
                                     <field name="mastery_date"
                                         invisible="status != 'mastered'" />
                                 </group>
                                 <group string="Method &amp; Workflow">
                                     <field name="weight" readonly="plan_status != 'draft'" />
                                     <field name="status" readonly="1" />
-                                    <field name="is_overdue" readonly="1" />
                                     <field name="trend" widget="badge"
                                         decoration-success="trend == 'improving'"
                                         decoration-warning="trend == 'stable'"
@@ -162,7 +159,7 @@
                         <page string="Guidance" name="guidance">
                             <group>
                                 <group string="Student Context">
-                                    <field name="difficulty_level"
+                                    <field name="difficulty_id"
                                         readonly="plan_status != 'draft'" />
                                     <field name="age_min_months"
                                         readonly="plan_status != 'draft'" />
@@ -205,7 +202,6 @@
                                 <group string="Statistics">
                                     <field name="total_sessions_worked" />
                                     <field name="trend" widget="badge" />
-                                    <field name="is_overdue" />
                                     <field name="alert_triggered" />
                                     <field name="alert_message"
                                         invisible="not alert_triggered" />

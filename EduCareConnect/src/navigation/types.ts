@@ -19,7 +19,7 @@ export type AuthStackParamList = {
 export type TeacherTabParamList = {
   HomeTab: undefined;
   StudentTab: undefined;
-  SessionTab: undefined;
+  SessionTab: NavigatorScreenParams<SessionStackParamList> | undefined;
   ReportTab: undefined;
   ProfileTab: undefined;
 };
@@ -29,6 +29,13 @@ export type TeacherRootStackParamList = {
   StudentDetail: { studentId: number };
   IepPlanDetail: { planId: number; studentName?: string };
   IepObjectiveDetail: { objectiveId: number; objectiveName?: string };
+  // Session/report screens accessible above tabs (e.g. from HomeScreen)
+  SessionDetail: { sessionId: number };
+  SessionEdit: { sessionId: number };
+  EvalStep2: { sessionId: number; objectiveIndex?: number };
+  EvalStep3: { sessionId: number };
+  ReportDetail: { reportId: number };
+  ReportCreate: { sessionId?: number; reportId?: number };
 };
 
 // -- Teacher: Student Stack --
@@ -37,18 +44,26 @@ export type StudentStackParamList = {
   StudentDetail: { studentId: number };
   IepPlanDetail: { planId: number; studentName?: string };
   IepObjectiveDetail: { objectiveId: number; objectiveName?: string };
+  // Session/report screens within student context (no tab switch)
+  SessionDetail: { sessionId: number };
+  SessionEdit: { sessionId: number };
+  EvalStep2: { sessionId: number; objectiveIndex?: number };
+  EvalStep3: { sessionId: number };
+  ReportDetail: { reportId: number };
+  ReportCreate: { sessionId?: number; reportId?: number };
 };
 
 // -- Teacher: Session Stack --
 export type SessionStackParamList = {
-  SessionList: undefined;
+  SessionList: { filterNoReport?: boolean } | undefined;
   SessionCreate: { studentId?: number };
   SessionDetail: { sessionId: number };
   SessionEdit: { sessionId: number };
-  EvalStep1: { sessionId: number };
   EvalStep2: { sessionId: number; objectiveIndex?: number };
   EvalStep3: { sessionId: number };
-  EvalDetailView: { sessionId: number };
+  // Report screens reachable from session detail (no tab switch)
+  ReportDetail: { reportId: number };
+  ReportCreate: { sessionId?: number; reportId?: number };
 };
 
 // Backward-compatible alias for old imports.

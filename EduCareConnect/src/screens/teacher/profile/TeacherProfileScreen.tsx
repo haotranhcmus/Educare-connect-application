@@ -129,7 +129,7 @@ export function TeacherProfileScreen({ navigation }: Props) {
           variant="titleLarge"
           style={{ fontWeight: "700", textAlign: "center", marginBottom: 6 }}
         >
-          {profile.display_name}
+          {profile.display_name.replace(/\s*\(.*?\)\s*$/, "").trim()}
         </Text>
         <View
           style={[
@@ -165,8 +165,8 @@ export function TeacherProfileScreen({ navigation }: Props) {
       <View
         style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
       >
-        <InfoRow label="Email" value={profile.email || "—"} />
-        <InfoRow label="Điện thoại" value={profile.phone || "—"} />
+        <InfoRow label="Email" value={profile.email || "Chưa cập nhật"} />
+        <InfoRow label="Điện thoại" value={profile.phone || "Chưa cập nhật"} />
       </View>
 
       {/* ── Thông Tin Chuyên Môn ──────────────────────── */}
@@ -176,11 +176,15 @@ export function TeacherProfileScreen({ navigation }: Props) {
       >
         <InfoRow
           label="Chứng chỉ / Bằng cấp"
-          value={profile.certification || "—"}
+          value={profile.certification || "Chưa cập nhật"}
         />
         <InfoRow
           label="Kinh nghiệm"
-          value={`${profile.years_experience ?? 0} năm`}
+          value={
+            profile.years_experience
+              ? `${profile.years_experience} năm`
+              : "Chưa cập nhật"
+          }
         />
       </View>
 

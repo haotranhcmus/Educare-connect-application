@@ -2,9 +2,11 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, Button, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SvgProps } from "react-native-svg";
 
 interface EmptyStateProps {
   icon?: string;
+  image?: React.FC<SvgProps>;
   title: string;
   description?: string;
   action?: {
@@ -15,6 +17,7 @@ interface EmptyStateProps {
 
 export function EmptyState({
   icon,
+  image: ImageComponent,
   title,
   description,
   action,
@@ -23,14 +26,16 @@ export function EmptyState({
 
   return (
     <View style={styles.container}>
-      {icon && (
+      {ImageComponent ? (
+        <ImageComponent width={160} height={160} style={styles.icon} />
+      ) : icon ? (
         <MaterialCommunityIcons
           name={icon as any}
           size={56}
           color={theme.colors.outlineVariant}
           style={styles.icon}
         />
-      )}
+      ) : null}
       <Text
         variant="titleMedium"
         style={{ color: theme.colors.onSurfaceVariant }}

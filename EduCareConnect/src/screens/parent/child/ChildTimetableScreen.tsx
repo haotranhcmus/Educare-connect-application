@@ -1,35 +1,21 @@
 import React, { useMemo, useState } from "react";
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, StyleSheet, RefreshControl } from "react-native";
 import { Text, useTheme, type MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import dayjs from "dayjs";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import { EmptyState } from "../../../components/common/EmptyState";
+import SessionPlaceholder from "../../../../assets/placeholder/session-placeholder.svg";
+import { MiniCalendar } from "../../../components/common/MiniCalendar";
 import { useStudentTimetable } from "../../../hooks/useParent";
 import { useParentStore } from "../../../store/parentStore";
-import { formatFloatTime } from "../../../utils/formatters";
+import {
+  formatFloatTime,
+  formatWeekdayDayMonth,
+} from "../../../utils/formatters";
+import { getInitials, hashColor } from "../../../components/common/AvatarLabel";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-
-const LOCATION_LABELS: Record<string, string> = {
-  center: "Tại trung tâm",
-  home: "Tại nhà",
-  online: "Trực tuyến",
-};
-
-const LOCATION_ICONS: Record<
-  string,
-  keyof typeof MaterialCommunityIcons.glyphMap
-> = {
-  center: "home-city-outline",
-  home: "home-outline",
-  online: "laptop",
-};
 
 const STATUS_CONFIG: Record<
   string,
@@ -47,13 +33,13 @@ const STATUS_CONFIG: Record<
     icon: "calendar-clock",
   },
   completed: {
-    label: "Hoàn thành",
+    label: "Đã học",
     bg: "#E8F5E9",
     color: "#2E7D32",
     icon: "check-circle-outline",
   },
   done: {
-    label: "Hoàn thành",
+    label: "Đã học",
     bg: "#E8F5E9",
     color: "#2E7D32",
     icon: "check-circle-outline",
@@ -72,57 +58,15 @@ const STATUS_CONFIG: Record<
   },
 };
 
-const WEEK_DAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+const SESSION_TYPE_LABELS: Record<string, string> = {
+  individual: "Cá nhân (1:1)",
+  small_group: "Nhóm nhỏ (2-4 học viên)",
+  consultation: "Tư vấn",
+};
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-function getMondayOfWeek(d: Date): Date {
-  const date = new Date(d);
-  const day = date.getDay(); // 0=Sun
-  const diff = day === 0 ? -6 : 1 - day;
-  date.setDate(date.getDate() + diff);
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
-function addDays(d: Date, n: number): Date {
-  const date = new Date(d);
-  date.setDate(d.getDate() + n);
-  return date;
-}
-
-function toISODate(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function formatDayLabel(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  const dayNames = [
-    "Chủ Nhật",
-    "Thứ Hai",
-    "Thứ Ba",
-    "Thứ Tư",
-    "Thứ Năm",
-    "Thứ Sáu",
-    "Thứ Bảy",
-  ];
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dayNames[d.getDay()]} ${dd}/${mm}`;
-}
-
-function formatMonthRange(monday: Date): string {
-  const sunday = addDays(monday, 6);
-  const mmStart = String(monday.getMonth() + 1).padStart(2, "0");
-  const mmEnd = String(sunday.getMonth() + 1).padStart(2, "0");
-  if (mmStart === mmEnd) {
-    return `Tuần ${String(monday.getDate()).padStart(2, "0")}–${String(sunday.getDate()).padStart(2, "0")}/${mmEnd}/${sunday.getFullYear()}`;
-  }
-  return `${String(monday.getDate()).padStart(2, "0")}/${mmStart}–${String(sunday.getDate()).padStart(2, "0")}/${mmEnd}/${sunday.getFullYear()}`;
-}
+// ("individual", "Cá nhân (1:1)"),
+// ("small_group", "Nhóm nhỏ (2-4 học viên)"),
+// ("consultation", "Tư vấn"),
 
 // ── SessionCard ────────────────────────────────────────────────────────────────
 
@@ -133,95 +77,77 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
     color: "#757575",
     icon: "calendar-blank-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
   };
-  const locationIcon = LOCATION_ICONS[session.location] ?? "map-marker-outline";
   const teacherName = Array.isArray(session.teacher_id)
     ? session.teacher_id[1]
     : null;
+  const timeRange = `${formatFloatTime(session.start_time)}–${formatFloatTime(session.end_time)}`;
+  const sessionTypeLabel =
+    SESSION_TYPE_LABELS[session.session_type] ?? session.session_type ?? "";
+  const initials = teacherName ? getInitials(teacherName) : "?";
+  const avatarColor = teacherName
+    ? hashColor(teacherName)
+    : theme.colors.primary;
 
   return (
     <View
-      style={[styles.sessionCard, { backgroundColor: theme.colors.surface }]}
+      style={[
+        styles.sessionCard,
+        {
+          backgroundColor: theme.colors.surface,
+          borderLeftColor: cfg.color,
+        },
+      ]}
     >
-      {/* Time column */}
-      <View style={styles.timeCol}>
+      {/* Time + status */}
+      <View style={styles.timeRow}>
         <Text
-          variant="labelMedium"
-          style={{ color: theme.colors.primary, fontWeight: "700" }}
+          variant="titleSmall"
+          style={{ fontWeight: "800", color: theme.colors.onSurface, flex: 1 }}
         >
-          {formatFloatTime(session.start_time)}
+          {timeRange}
         </Text>
-        <View
-          style={[
-            styles.timeLine,
-            { backgroundColor: theme.colors.primaryContainer },
-          ]}
-        />
-        <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-          {formatFloatTime(session.end_time)}
-        </Text>
-      </View>
-
-      {/* Content */}
-      <View style={styles.sessionContent}>
-        {/* Status badge */}
-        <View style={[styles.statusBadge, { backgroundColor: cfg.bg }]}>
+        <View style={[styles.statusChip, { backgroundColor: cfg.bg }]}>
           <MaterialCommunityIcons name={cfg.icon} size={12} color={cfg.color} />
-          <Text style={[styles.statusText, { color: cfg.color }]}>
+          <Text style={[styles.chipText, { color: cfg.color }]}>
             {cfg.label}
           </Text>
         </View>
-
-        {/* Duration */}
-        {session.duration > 0 && (
-          <View style={styles.metaRow}>
-            <MaterialCommunityIcons
-              name="clock-outline"
-              size={13}
-              color={theme.colors.outline}
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.outline, marginLeft: 4 }}
-            >
-              {Math.round(session.duration * 60)} phút
-            </Text>
-          </View>
-        )}
-
-        {/* Location */}
-        {session.location && (
-          <View style={styles.metaRow}>
-            <MaterialCommunityIcons
-              name={locationIcon}
-              size={13}
-              color={theme.colors.outline}
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.outline, marginLeft: 4 }}
-            >
-              {LOCATION_LABELS[session.location] ?? session.location}
-            </Text>
-          </View>
-        )}
-
-        {/* Teacher */}
-        {teacherName && (
-          <View style={styles.metaRow}>
-            <MaterialCommunityIcons
-              name="account-outline"
-              size={13}
-              color={theme.colors.outline}
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.outline, marginLeft: 4 }}
-            >
-              {teacherName}
-            </Text>
-          </View>
-        )}
       </View>
+
+      {/* Teacher */}
+      {teacherName && (
+        <View style={styles.teacherRow}>
+          <View style={[styles.avatarCircle, { backgroundColor: avatarColor }]}>
+            <Text style={styles.avatarText}>{initials}</Text>
+          </View>
+          <Text
+            variant="bodySmall"
+            style={{ color: theme.colors.onSurfaceVariant, marginLeft: 8 }}
+          >
+            {teacherName}
+          </Text>
+          {sessionTypeLabel ? (
+            <View
+              style={[
+                styles.typeChip,
+                {
+                  borderColor: theme.colors.outlineVariant,
+                  marginLeft: "auto",
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.chipText,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
+                {sessionTypeLabel}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+      )}
     </View>
   );
 }
@@ -265,7 +191,7 @@ function DaySection({
             color: isToday ? theme.colors.primary : theme.colors.onSurface,
           }}
         >
-          {formatDayLabel(dateStr)}
+          {formatWeekdayDayMonth(dateStr)}
         </Text>
         {isToday && (
           <View
@@ -291,88 +217,6 @@ function DaySection({
   );
 }
 
-// ── WeekStrip ──────────────────────────────────────────────────────────────────
-
-function WeekStrip({
-  monday,
-  sessionDates,
-  onPrev,
-  onNext,
-  theme,
-}: {
-  monday: Date;
-  sessionDates: Set<string>;
-  onPrev: () => void;
-  onNext: () => void;
-  theme: MD3Theme;
-}) {
-  const today = toISODate(new Date());
-  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
-
-  return (
-    <View style={[styles.weekStrip, { backgroundColor: theme.colors.surface }]}>
-      <TouchableOpacity onPress={onPrev} style={styles.weekNav}>
-        <MaterialCommunityIcons
-          name="chevron-left"
-          size={22}
-          color={theme.colors.primary}
-        />
-      </TouchableOpacity>
-
-      <View style={styles.weekDays}>
-        {days.map((d, i) => {
-          const dateStr = toISODate(d);
-          const isToday = dateStr === today;
-          const hasSessions = sessionDates.has(dateStr);
-          return (
-            <View key={dateStr} style={styles.dayCol}>
-              <Text
-                variant="labelSmall"
-                style={{
-                  color: isToday ? theme.colors.primary : theme.colors.outline,
-                  fontWeight: isToday ? "700" : "400",
-                }}
-              >
-                {WEEK_DAYS[i]}
-              </Text>
-              <Text
-                variant="labelMedium"
-                style={{
-                  fontWeight: isToday ? "700" : "500",
-                  color: isToday
-                    ? theme.colors.primary
-                    : theme.colors.onSurface,
-                  marginTop: 2,
-                }}
-              >
-                {d.getDate()}
-              </Text>
-              <View
-                style={[
-                  styles.sessionDot,
-                  {
-                    backgroundColor: hasSessions
-                      ? theme.colors.primary
-                      : "transparent",
-                  },
-                ]}
-              />
-            </View>
-          );
-        })}
-      </View>
-
-      <TouchableOpacity onPress={onNext} style={styles.weekNav}>
-        <MaterialCommunityIcons
-          name="chevron-right"
-          size={22}
-          color={theme.colors.primary}
-        />
-      </TouchableOpacity>
-    </View>
-  );
-}
-
 // ── Main Screen ────────────────────────────────────────────────────────────────
 
 export function ChildTimetableScreen() {
@@ -380,15 +224,13 @@ export function ChildTimetableScreen() {
   const { selectedStudentId } = useParentStore();
   const studentId = selectedStudentId ?? 0;
 
-  const [weekOffset, setWeekOffset] = useState(0);
+  const [calMonth, setCalMonth] = useState(dayjs());
+  const [selectedDate, setSelectedDate] = useState<string>(
+    dayjs().format("YYYY-MM-DD"),
+  );
 
-  const thisMonday = useMemo(() => {
-    const base = getMondayOfWeek(new Date());
-    return addDays(base, weekOffset * 7);
-  }, [weekOffset]);
-
-  const dateFrom = toISODate(thisMonday);
-  const dateTo = toISODate(addDays(thisMonday, 6));
+  const dateFrom = calMonth.startOf("month").format("YYYY-MM-DD");
+  const dateTo = calMonth.endOf("month").format("YYYY-MM-DD");
 
   const {
     data: sessions = [],
@@ -402,7 +244,7 @@ export function ChildTimetableScreen() {
     [sessions],
   );
 
-  const today = toISODate(new Date());
+  const today = dayjs().format("YYYY-MM-DD");
 
   const sessionDates = useMemo(
     () => new Set(visibleSessions.map((s: any) => s.session_date as string)),
@@ -410,61 +252,42 @@ export function ChildTimetableScreen() {
   );
 
   const grouped = useMemo(() => {
+    const filtered = selectedDate
+      ? visibleSessions.filter((s: any) => s.session_date === selectedDate)
+      : visibleSessions;
     const map = new Map<string, any[]>();
-    // Fill all 7 days so we display all days
-    for (let i = 0; i < 7; i++) {
-      const d = toISODate(addDays(thisMonday, i));
-      map.set(d, []);
-    }
-    for (const s of visibleSessions) {
+    for (const s of filtered) {
       const key = s.session_date as string;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(s);
     }
-    return Array.from(map.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .filter(([, items]) => items.length > 0); // only show days with sessions
-  }, [visibleSessions, thisMonday]);
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [visibleSessions, selectedDate]);
 
   if (isLoading) return <LoadingOverlay visible />;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {/* Week range label */}
-      <View
-        style={[
-          styles.rangeBar,
-          { backgroundColor: theme.colors.surfaceVariant },
-        ]}
-      >
-        <MaterialCommunityIcons
-          name="calendar-week"
-          size={16}
-          color={theme.colors.primary}
-        />
-        <Text
-          variant="labelMedium"
-          style={{ marginLeft: 6, color: theme.colors.onSurfaceVariant }}
-        >
-          {formatMonthRange(thisMonday)}
-        </Text>
-      </View>
-
-      {/* Week strip */}
-      <WeekStrip
-        monday={thisMonday}
+      {/* Month calendar */}
+      <MiniCalendar
+        month={calMonth}
         sessionDates={sessionDates}
-        onPrev={() => setWeekOffset((n) => n - 1)}
-        onNext={() => setWeekOffset((n) => n + 1)}
-        theme={theme}
+        selectedDate={selectedDate}
+        onSelectDate={setSelectedDate}
+        onPrevMonth={() => setCalMonth((m) => m.subtract(1, "month"))}
+        onNextMonth={() => setCalMonth((m) => m.add(1, "month"))}
       />
 
       {/* Session list */}
       {grouped.length === 0 ? (
         <EmptyState
-          icon="calendar-blank-outline"
+          image={SessionPlaceholder}
           title="Không có buổi học nào"
-          description="Không có buổi học nào được lên lịch trong tuần này"
+          description={
+            selectedDate
+              ? `Không có buổi học nào vào ngày ${dayjs(selectedDate).format("DD/MM/YYYY")}`
+              : "Không có buổi học nào trong tháng này"
+          }
         />
       ) : (
         <FlatList
@@ -491,23 +314,6 @@ export function ChildTimetableScreen() {
 // ── Styles ─────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  rangeBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  weekStrip: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 4,
-    elevation: 1,
-  },
-  weekNav: { width: 36, alignItems: "center" },
-  weekDays: { flex: 1, flexDirection: "row", justifyContent: "space-around" },
-  dayCol: { alignItems: "center", gap: 2 },
-  sessionDot: { width: 6, height: 6, borderRadius: 3, marginTop: 2 },
   daySection: { marginBottom: 8 },
   dayHeader: {
     flexDirection: "row",
@@ -527,31 +333,50 @@ const styles = StyleSheet.create({
   },
   todayChipText: { fontSize: 10, color: "#fff", fontWeight: "700" },
   sessionCard: {
-    flexDirection: "row",
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 8,
     padding: 12,
+    paddingLeft: 14,
     elevation: 1,
+    gap: 8,
+    borderLeftWidth: 4,
   },
-  timeCol: { alignItems: "center", width: 52, marginRight: 12 },
-  timeLine: {
-    width: 2,
-    flex: 1,
-    minHeight: 20,
-    marginVertical: 4,
-    borderRadius: 2,
-  },
-  sessionContent: { flex: 1, gap: 4 },
-  statusBadge: {
+  timeRow: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    gap: 4,
-    marginBottom: 4,
   },
-  statusText: { fontSize: 11, fontWeight: "600" },
-  metaRow: { flexDirection: "row", alignItems: "center" },
+  teacherRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  avatarCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#fff",
+  },
+  typeChip: {
+    borderRadius: 20,
+    borderWidth: 1.5,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  statusChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  chipText: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
 });

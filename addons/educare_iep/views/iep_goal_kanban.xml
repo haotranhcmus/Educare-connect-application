@@ -11,7 +11,6 @@
                 <field name="plan_id" />
                 <field name="student_id" />
                 <field name="assigned_teacher_id" />
-                <field name="target_date" />
                 <field name="progress_pct" />
                 <field name="status" />
                 <templates>
@@ -37,9 +36,6 @@
                                     </div>
                                     <div>
                                         <field name="assigned_teacher_id" />
-                                    </div>
-                                    <div>
-                                        <field name="target_date" />
                                     </div>
                                     <div class="mt-2">
                                         <field name="progress_pct"

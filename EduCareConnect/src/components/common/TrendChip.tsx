@@ -45,7 +45,7 @@ const TREND_CONFIG: Record<
   },
   insufficient_data: {
     icon: "help-circle-outline",
-    label: "Chưa đủ DL",
+    label: "Chưa đủ dữ liệu",
     color: "#9E9E9E",
     bg: "#EEEEEE",
   },

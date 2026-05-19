@@ -31,15 +31,29 @@
                         <group>
                             <field name="teacher_id" />
                             <field name="report_code" />
-                            <field name="overall_performance" widget="badge"
-                                decoration-success="overall_performance == 'excellent'"
-                                decoration-info="overall_performance == 'good'"
-                                decoration-warning="overall_performance == 'fair'"
-                                decoration-danger="overall_performance == 'poor'" />
                             <field name="session_duration" widget="float_time" />
                         </group>
                     </group>
                     <notebook>
+                        <!-- Tab 0: General Observations -->
+                        <page string="Quan Sát Chung" name="observations">
+                            <group>
+                                <group>
+                                    <field name="attendance" />
+                                    <field name="mood" />
+                                    <field name="energy_level" />
+                                </group>
+                                <group>
+                                    <field name="engagement_level" />
+                                    <field name="overall_performance" widget="badge"
+                                        decoration-success="overall_performance == 'excellent'"
+                                        decoration-info="overall_performance == 'good'"
+                                        decoration-warning="overall_performance == 'fair'"
+                                        decoration-danger="overall_performance == 'poor'" />
+                                </group>
+                            </group>
+                            <field name="observation_notes" placeholder="Ghi chú quan sát chung..." />
+                        </page>
                         <!-- Tab 1: Parent-facing content -->
                         <page string="Parent Report Content" name="content">
                             <group>
@@ -63,6 +77,10 @@
                         <page string="Technical Summary" name="technical"
                             groups="educare_security.group_teacher">
                             <group>
+                                <field name="objective_ids"
+                                    widget="many2many_tags"
+                                    options="{'no_create': True, 'no_quick_create': True}"
+                                    readonly="1" />
                                 <field name="objectives_worked" />
                                 <field name="accuracy_summary" />
                             </group>

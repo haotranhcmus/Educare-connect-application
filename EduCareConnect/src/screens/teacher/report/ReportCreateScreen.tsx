@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, ScrollView, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import {
   TextInput,
   Button,
@@ -12,6 +20,7 @@ import {
   Portal,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,26 +29,36 @@ import { CommonActions } from "@react-navigation/native";
 import { SessionInfoCard } from "../../../components/report/SessionInfoCard";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import {
-  useCreateReport,
-  useUpdateReport,
-  useSendReport,
+  usePersistReport,
+  usePersistAndSendReport,
   useReportDetail,
 } from "../../../hooks/useReports";
 import {
   fetchSessionDetail,
   fetchSessionResults,
 } from "../../../api/sessionApi";
+import { Picker } from "../../../components/form/Picker";
+import {
+  PERFORMANCE_LABELS,
+  ATTENDANCE_LABELS,
+  MOOD_LABELS,
+  ENERGY_LABELS,
+  ENGAGEMENT_LABELS,
+  toPickerOptions,
+} from "../../../utils/labels";
+import { REPORT_FIELDS } from "../../../constants/reportFields";
+import { formatDate } from "../../../utils/formatters";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { ReportStackParamList } from "../../../navigation/types";
+import type { PhotoAsset } from "../../../types";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "ReportCreate">;
 
-const PERF_LABELS: Record<string, string> = {
-  excellent: "Xuất sắc",
-  good: "Tốt",
-  average: "Trung bình",
-  needs_support: "Cần hỗ trợ",
-};
+const ATTENDANCE_OPTIONS = toPickerOptions(ATTENDANCE_LABELS);
+const MOOD_OPTIONS = toPickerOptions(MOOD_LABELS);
+const ENERGY_OPTIONS = toPickerOptions(ENERGY_LABELS);
+const ENGAGEMENT_OPTIONS = toPickerOptions(ENGAGEMENT_LABELS);
+const PERFORMANCE_OPTIONS = toPickerOptions(PERFORMANCE_LABELS);
 
 // ── Validation Schema ─────────────────────────────────────────
 const reportSchema = z.object({
@@ -64,67 +83,6 @@ interface SessionInfo {
   avgAccuracy: number;
 }
 
-// Report fields config
-const REPORT_FIELDS: {
-  name: keyof ReportFormData;
-  label: string;
-  icon: string;
-  placeholder: string;
-  lines: number;
-  required?: boolean;
-}[] = [
-  {
-    name: "activity_summary",
-    label: "Tóm tắt hoạt động",
-    icon: "clipboard-text-outline",
-    placeholder: "Hôm nay bé đã làm gì trong buổi học?",
-    lines: 4,
-    required: true,
-  },
-  {
-    name: "achievements",
-    label: "Thành tích nổi bật",
-    icon: "star-outline",
-    placeholder: "Bé đã đạt được gì đáng khen?",
-    lines: 3,
-  },
-  {
-    name: "challenges_noted",
-    label: "Điểm cần hỗ trợ thêm",
-    icon: "lightbulb-outline",
-    placeholder: "Những điểm cần tiếp tục luyện tập...",
-    lines: 3,
-  },
-  {
-    name: "highlight_moment",
-    label: "Khoảnh khắc đáng nhớ",
-    icon: "heart-outline",
-    placeholder: "Một khoảnh khắc đặc biệt trong buổi học...",
-    lines: 2,
-  },
-  {
-    name: "parent_action_guide",
-    label: "Hướng dẫn luyện tập tại nhà",
-    icon: "home-heart",
-    placeholder: "Phụ huynh có thể hỗ trợ bé bằng cách...",
-    lines: 3,
-  },
-  {
-    name: "next_session_preview",
-    label: "Nội dung buổi học tới",
-    icon: "calendar-arrow-right",
-    placeholder: "Buổi học tiếp theo chúng ta sẽ...",
-    lines: 2,
-  },
-  {
-    name: "teacher_note",
-    label: "Ghi chú nội bộ (chỉ giáo viên thấy)",
-    icon: "lock-outline",
-    placeholder: "Ghi chú dành riêng cho giáo viên...",
-    lines: 2,
-  },
-];
-
 export function ReportCreateScreen({ navigation, route }: Props) {
   const theme = useTheme();
   const { sessionId: routeSessionId, reportId } = route.params ?? {};
@@ -147,13 +105,21 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     }
   }, []);
 
-  const createReport = useCreateReport();
-  const updateReport = useUpdateReport();
-  const sendReport = useSendReport();
+  const persistReportMutation = usePersistReport();
+  const persistAndSendMutation = usePersistAndSendReport();
   const { data: existingReport } = useReportDetail(reportId ?? 0);
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(false);
+  const [photoAssets, setPhotoAssets] = useState<PhotoAsset[]>([]);
+  const [obs, setObs] = useState({
+    attendance: "present",
+    mood: "good",
+    energy_level: "normal",
+    engagement_level: "engaged",
+    overall_performance: "good",
+    observation_notes: "",
+  });
   const [successModal, setSuccessModal] = useState<{
     visible: boolean;
     type: "draft" | "sent";
@@ -190,6 +156,15 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         parent_action_guide: existingReport.parent_action_guide || "",
         next_session_preview: existingReport.next_session_preview || "",
         teacher_note: existingReport.teacher_note || "",
+      });
+      setObs({
+        attendance: (existingReport as any).attendance || "present",
+        mood: (existingReport as any).mood || "good",
+        energy_level: (existingReport as any).energy_level || "normal",
+        engagement_level: (existingReport as any).engagement_level || "engaged",
+        overall_performance:
+          (existingReport as any).overall_performance || "good",
+        observation_notes: (existingReport as any).observation_notes || "",
       });
       const sid = Array.isArray(existingReport.session_log_id)
         ? existingReport.session_log_id[0]
@@ -237,7 +212,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         : "";
       const durationMinutes = Math.round((session.duration || 0) * 60);
       const perf = session.overall_performance
-        ? PERF_LABELS[session.overall_performance] || null
+        ? PERFORMANCE_LABELS[session.overall_performance] || null
         : null;
       const objectives = results
         .filter((r: any) => r.total_trials > 0)
@@ -256,8 +231,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
                 objectives.length,
             )
           : 0;
-      const d = new Date(session.session_date + "T00:00:00");
-      const dateStr = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+      const dateStr = formatDate(session.session_date);
       setSessionInfo({
         sessionId,
         studentId: Array.isArray(session.student_id)
@@ -320,12 +294,48 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     }
   }
 
+  async function pickPhotos() {
+    const remaining = 5 - photoAssets.length;
+    if (remaining <= 0) {
+      Alert.alert("Giới hạn ảnh", "Bạn đã thêm tối đa 5 ảnh");
+      return;
+    }
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Cần quyền truy cập",
+        "Hãy cấp quyền thư viện ảnh trong cài đặt",
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      selectionLimit: remaining,
+      quality: 0.7,
+      base64: true,
+    });
+    if (!result.canceled) {
+      const newAssets = result.assets.map((a) => ({
+        uri: a.uri,
+        base64: a.base64 ?? "",
+      }));
+      setPhotoAssets((prev) => [...prev, ...newAssets].slice(0, 5));
+    }
+  }
+
   function buildPayload(data: ReportFormData) {
     if (!sessionInfo) return null;
     return {
       session_log_id: sessionInfo.sessionId,
       student_id: sessionInfo.studentId,
       report_date: sessionInfo.reportDate.split("/").reverse().join("-"),
+      attendance: obs.attendance,
+      mood: obs.mood,
+      energy_level: obs.energy_level,
+      engagement_level: obs.engagement_level,
+      overall_performance: obs.overall_performance,
+      observation_notes: obs.observation_notes,
       ...data,
     };
   }
@@ -334,12 +344,11 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     const payload = buildPayload(data);
     if (!payload) return;
     try {
-      let rptId: number | null = reportId ?? null;
-      if (isEdit && reportId) {
-        await updateReport.mutateAsync({ reportId, vals: payload });
-      } else {
-        rptId = await createReport.mutateAsync(payload);
-      }
+      const rptId = await persistReportMutation.mutateAsync({
+        reportId: isEdit ? reportId : null,
+        payload,
+        photoAssets,
+      });
       setSuccessModal({ visible: true, type: "draft", reportId: rptId });
     } catch {
       Alert.alert("Lỗi", "Không thể lưu báo cáo");
@@ -358,20 +367,16 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           text: "Gửi",
           onPress: async () => {
             try {
-              let rptId = reportId;
-              if (isEdit && reportId) {
-                await updateReport.mutateAsync({ reportId, vals: payload });
-              } else {
-                rptId = await createReport.mutateAsync(payload);
-              }
-              if (rptId) {
-                await sendReport.mutateAsync(rptId);
-                setSuccessModal({
-                  visible: true,
-                  type: "sent",
-                  reportId: rptId,
-                });
-              }
+              const rptId = await persistAndSendMutation.mutateAsync({
+                reportId: isEdit ? reportId : null,
+                payload,
+                photoAssets,
+              });
+              setSuccessModal({
+                visible: true,
+                type: "sent",
+                reportId: rptId,
+              });
             } catch (e: any) {
               Alert.alert("Lỗi", e?.message || "Không thể gửi báo cáo");
             }
@@ -442,6 +447,114 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           </View>
         )}
 
+        {/* ── Ảnh/Video ─────────────────────────────────── */}
+        <SectionHeader
+          icon="image-multiple-outline"
+          title="Ảnh buổi học"
+          theme={theme}
+        />
+        <View style={styles.photoSection}>
+          {/* Existing photo thumbnails */}
+          {photoAssets.length > 0 && (
+            <FlatList
+              horizontal
+              data={photoAssets}
+              keyExtractor={(a, i) => `${a.uri}-${i}`}
+              renderItem={({ item: asset, index }) => (
+                <View style={styles.photoThumb}>
+                  <Image source={{ uri: asset.uri }} style={styles.photoImg} />
+                  <TouchableOpacity
+                    style={styles.photoRemove}
+                    onPress={() =>
+                      setPhotoAssets((p) => p.filter((_, i) => i !== index))
+                    }
+                  >
+                    <MaterialCommunityIcons
+                      name="close-circle"
+                      size={18}
+                      color="#fff"
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+              style={{ marginBottom: 10 }}
+              showsHorizontalScrollIndicator={false}
+            />
+          )}
+          {/* Add photo button */}
+          {photoAssets.length < 5 && (
+            <TouchableOpacity
+              onPress={pickPhotos}
+              style={[
+                styles.addPhotoBtn,
+                { borderColor: theme.colors.outline },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="image-plus"
+                size={24}
+                color={theme.colors.primary}
+              />
+              <Text
+                variant="labelMedium"
+                style={{ color: theme.colors.primary, marginTop: 4 }}
+              >
+                Thêm ảnh ({photoAssets.length}/5)
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* ── Quan Sát Chung ────────────────────────────── */}
+        <SectionHeader
+          icon="eye-outline"
+          title="Quan Sát Chung"
+          theme={theme}
+        />
+        <View style={styles.obsSection}>
+          <Picker
+            label="Điểm danh"
+            value={obs.attendance}
+            options={ATTENDANCE_OPTIONS}
+            onChange={(v) => setObs((p) => ({ ...p, attendance: v }))}
+          />
+          <Picker
+            label="Tâm trạng"
+            value={obs.mood}
+            options={MOOD_OPTIONS}
+            onChange={(v) => setObs((p) => ({ ...p, mood: v }))}
+          />
+          <Picker
+            label="Mức năng lượng"
+            value={obs.energy_level}
+            options={ENERGY_OPTIONS}
+            onChange={(v) => setObs((p) => ({ ...p, energy_level: v }))}
+          />
+          <Picker
+            label="Mức tập trung"
+            value={obs.engagement_level}
+            options={ENGAGEMENT_OPTIONS}
+            onChange={(v) => setObs((p) => ({ ...p, engagement_level: v }))}
+          />
+          <Picker
+            label="Kết quả tổng thể"
+            value={obs.overall_performance}
+            options={PERFORMANCE_OPTIONS}
+            onChange={(v) => setObs((p) => ({ ...p, overall_performance: v }))}
+          />
+          <TextInput
+            label="Ghi chú quan sát"
+            value={obs.observation_notes}
+            onChangeText={(v) =>
+              setObs((p) => ({ ...p, observation_notes: v }))
+            }
+            mode="outlined"
+            multiline
+            numberOfLines={3}
+            style={styles.obsNotes}
+          />
+        </View>
+
         {/* ── Nội dung báo cáo ─────────────────────────── */}
         <SectionHeader
           icon="file-document-edit-outline"
@@ -465,20 +578,18 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           <Button
             mode="outlined"
             onPress={onSaveDraft}
-            loading={createReport.isPending || updateReport.isPending}
+            loading={persistReportMutation.isPending}
             icon="content-save-outline"
             style={styles.actionBtn}
-            disabled={!sessionInfo}
+            disabled={!sessionInfo || persistAndSendMutation.isPending}
           >
             Lưu nháp
           </Button>
           <Button
             mode="contained"
             onPress={onSend}
-            loading={sendReport.isPending}
-            disabled={
-              !sessionInfo || createReport.isPending || updateReport.isPending
-            }
+            loading={persistAndSendMutation.isPending}
+            disabled={!sessionInfo || persistReportMutation.isPending}
             icon="send"
             style={styles.actionBtn}
           >
@@ -683,6 +794,50 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   actionBtn: { flex: 1 },
+  // Photo section
+  photoSection: {
+    marginBottom: 8,
+  },
+  photoThumb: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 8,
+    overflow: "hidden",
+    position: "relative",
+  },
+  photoImg: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  photoRemove: {
+    position: "absolute",
+    top: 3,
+    right: 3,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    borderRadius: 9,
+    width: 18,
+    height: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addPhotoBtn: {
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    borderRadius: 12,
+    alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+  },
+  // Observation section
+  obsSection: {
+    gap: 8,
+    marginBottom: 8,
+  },
+  obsNotes: {
+    marginTop: 4,
+  },
   modal: {
     marginHorizontal: 32,
     borderRadius: 20,
