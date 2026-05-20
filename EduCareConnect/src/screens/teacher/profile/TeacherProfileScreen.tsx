@@ -16,9 +16,9 @@ import { useMyProfile, useUploadAvatar } from "../../../hooks/useProfile";
 import { useAuthStore } from "../../../store/authStore";
 import Constants from "expo-constants";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { TeacherProfileStackParamList } from "../../../navigation/types";
+import type { ProfileStackParamList } from "../../../navigation/types";
 
-type Props = NativeStackScreenProps<TeacherProfileStackParamList, "Profile">;
+type Props = NativeStackScreenProps<ProfileStackParamList, "Profile">;
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Quản trị viên",

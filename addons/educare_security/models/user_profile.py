@@ -39,6 +39,18 @@ class EducareUserProfile(models.Model):
         string="Avatar",
         related="user_id.image_128",
     )
+    has_custom_avatar = fields.Boolean(
+        string="Has Custom Avatar",
+        compute="_compute_has_custom_avatar",
+    )
+
+    @api.depends("user_id.image_1920")
+    def _compute_has_custom_avatar(self):
+        # image_1920 is only stored when the user actually uploads an avatar;
+        # image_128 is auto-generated as a letter avatar by Odoo and therefore
+        # always truthy.
+        for rec in self:
+            rec.has_custom_avatar = bool(rec.user_id and rec.user_id.image_1920)
 
     # Group 2: Role and Organization
     role = fields.Selection(

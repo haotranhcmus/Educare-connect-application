@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useMemo, useCallback, useLayoutEffect } from "react";
 import {
   View,
   SectionList,
@@ -44,7 +39,7 @@ const STATUS_FILTERS = [
   { key: "all", label: "Tất cả" },
   { key: "draft", label: "Nháp" },
   { key: "sent", label: "Đã gửi" },
-  { key: "read", label: "PH đã đọc" },
+  { key: "read", label: "Phụ huynh đã đọc" },
 ];
 
 const DATE_PRESETS = [
@@ -56,7 +51,10 @@ const DATE_PRESETS = [
   { key: "custom", label: "Tùy chỉnh" },
 ];
 
-function getPresetRange(key: string): { from: string | null; to: string | null } {
+function getPresetRange(key: string): {
+  from: string | null;
+  to: string | null;
+} {
   const today = dayjs();
   if (key === "today") {
     const d = today.format("YYYY-MM-DD");
@@ -87,8 +85,10 @@ function getPresetRange(key: string): { from: string | null; to: string | null }
 const headerSearchStyle = {
   backgroundColor: "rgba(255,255,255,0.18)",
   elevation: 0,
-  height: 40,
+  height: 50,
   borderRadius: 10,
+  padding: 0,
+  marginBottom: 10,
 };
 const headerSearchInputStyle = { color: "#fff", fontSize: 13, paddingLeft: 0 };
 const headerBadgeStyle = {
@@ -138,7 +138,23 @@ export function ReportListScreen({ navigation }: Props) {
     setShowFilterModal(true);
   }, [statusFilter, datePreset, customFrom, customTo]);
 
+  // Validate the custom date range: only an error when BOTH ends are set and
+  // "from" is strictly after "to". Either end empty means "không giới hạn phía
+  // đó" and is allowed.
+  const customRangeError = useMemo(() => {
+    if (pendingDatePreset !== "custom") return "";
+    if (
+      pendingCustomFrom &&
+      pendingCustomTo &&
+      pendingCustomFrom > pendingCustomTo
+    ) {
+      return "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc";
+    }
+    return "";
+  }, [pendingDatePreset, pendingCustomFrom, pendingCustomTo]);
+
   const applyFilters = () => {
+    if (customRangeError) return;
     setStatusFilter(pendingStatus);
     setDatePreset(pendingDatePreset);
     setCustomFrom(pendingCustomFrom);
@@ -196,8 +212,7 @@ export function ReportListScreen({ navigation }: Props) {
       const name = Array.isArray(r.student_id) ? r.student_id[1] : "";
       const matchSearch =
         !search || name.toLowerCase().includes(search.toLowerCase());
-      const matchStatus =
-        statusFilter === "all" || r.status === statusFilter;
+      const matchStatus = statusFilter === "all" || r.status === statusFilter;
       const matchDate =
         (!dateFrom || r.report_date >= dateFrom) &&
         (!dateTo || r.report_date <= dateTo);
@@ -320,7 +335,10 @@ export function ReportListScreen({ navigation }: Props) {
         >
           <Pressable
             onPress={() => {}}
-            style={[styles.filterSheet, { backgroundColor: theme.colors.surface }]}
+            style={[
+              styles.filterSheet,
+              { backgroundColor: theme.colors.surface },
+            ]}
           >
             <View style={styles.sheetHandle} />
 
@@ -402,29 +420,35 @@ export function ReportListScreen({ navigation }: Props) {
               </View>
 
               {/* Preset range preview */}
-              {pendingDatePreset !== "all" && pendingDatePreset !== "custom" && (() => {
-                const { from, to } = getPresetRange(pendingDatePreset);
-                return (
-                  <View
-                    style={[
-                      styles.rangePreview,
-                      { backgroundColor: theme.colors.surfaceVariant },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="calendar-range"
-                      size={14}
-                      color={theme.colors.primary}
-                    />
-                    <Text
-                      variant="labelSmall"
-                      style={{ color: theme.colors.onSurfaceVariant, marginLeft: 6 }}
+              {pendingDatePreset !== "all" &&
+                pendingDatePreset !== "custom" &&
+                (() => {
+                  const { from, to } = getPresetRange(pendingDatePreset);
+                  return (
+                    <View
+                      style={[
+                        styles.rangePreview,
+                        { backgroundColor: theme.colors.surfaceVariant },
+                      ]}
                     >
-                      {from ? formatDate(from) : "—"} → {to ? formatDate(to) : "—"}
-                    </Text>
-                  </View>
-                );
-              })()}
+                      <MaterialCommunityIcons
+                        name="calendar-range"
+                        size={14}
+                        color={theme.colors.primary}
+                      />
+                      <Text
+                        variant="labelSmall"
+                        style={{
+                          color: theme.colors.onSurfaceVariant,
+                          marginLeft: 6,
+                        }}
+                      >
+                        {from ? formatDate(from) : "—"} →{" "}
+                        {to ? formatDate(to) : "—"}
+                      </Text>
+                    </View>
+                  );
+                })()}
 
               {/* Custom date pickers — shown when "Tùy chỉnh" is selected */}
               {pendingDatePreset === "custom" && (
@@ -439,6 +463,43 @@ export function ReportListScreen({ navigation }: Props) {
                     value={pendingCustomTo}
                     onChange={setPendingCustomTo}
                   />
+                  {customRangeError ? (
+                    <View style={styles.rangeHintRow}>
+                      <MaterialCommunityIcons
+                        name="alert-circle-outline"
+                        size={13}
+                        color={theme.colors.error}
+                      />
+                      <Text
+                        variant="labelSmall"
+                        style={{
+                          color: theme.colors.error,
+                          marginLeft: 6,
+                          flex: 1,
+                        }}
+                      >
+                        {customRangeError}
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={styles.rangeHintRow}>
+                      <MaterialCommunityIcons
+                        name="information-outline"
+                        size={13}
+                        color={theme.colors.outline}
+                      />
+                      <Text
+                        variant="labelSmall"
+                        style={{
+                          color: theme.colors.outline,
+                          marginLeft: 6,
+                          flex: 1,
+                        }}
+                      >
+                        Tùy chỉnh chỉ lọc các báo cáo theo khoảng thời gian
+                      </Text>
+                    </View>
+                  )}
                 </View>
               )}
             </ScrollView>
@@ -446,6 +507,7 @@ export function ReportListScreen({ navigation }: Props) {
             <Button
               mode="contained"
               onPress={applyFilters}
+              disabled={!!customRangeError}
               style={styles.applyBtn}
               contentStyle={{ paddingVertical: 4 }}
             >
@@ -530,6 +592,12 @@ const styles = StyleSheet.create({
   customDateBlock: {
     marginTop: 8,
     gap: 0,
+  },
+  rangeHintRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginTop: 4,
+    paddingHorizontal: 2,
   },
   applyBtn: { marginTop: 12, borderRadius: 12 },
 });

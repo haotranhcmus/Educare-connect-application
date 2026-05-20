@@ -78,8 +78,9 @@ function getDateRange(key: string) {
 const headerSearchStyle = {
   backgroundColor: "rgba(255,255,255,0.18)",
   elevation: 0,
-  height: 40,
+  height: 50,
   borderRadius: 10,
+  marginBottom: 10,
 };
 const headerSearchInputStyle = {
   color: "#fff",
@@ -193,7 +194,11 @@ export function SessionListScreen({ navigation, route }: Props) {
             )}
           </View>
           <IconButton
-            icon={viewMode === "list" ? "calendar-month-outline" : "format-list-bulleted"}
+            icon={
+              viewMode === "list"
+                ? "calendar-month-outline"
+                : "format-list-bulleted"
+            }
             size={22}
             iconColor="#fff"
             onPress={toggleView}
@@ -201,7 +206,14 @@ export function SessionListScreen({ navigation, route }: Props) {
         </View>
       ),
     });
-  }, [navigation, search, viewMode, activeFilterCount, openFilterModal, toggleView]);
+  }, [
+    navigation,
+    search,
+    viewMode,
+    activeFilterCount,
+    openFilterModal,
+    toggleView,
+  ]);
 
   if (isError) {
     const errorMsg =

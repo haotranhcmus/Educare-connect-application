@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackActions } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { useParentStore } from "../store/parentStore";
 import type {
   ParentTabParamList,
@@ -13,11 +12,15 @@ import type {
   ParentReportStackParamList,
   ParentProfileStackParamList,
 } from "./types";
+import {
+  GRADIENT_HEADER_OPTIONS,
+  popToTopOnTabPress,
+} from "./navigationHelpers";
 import { ParentHomeScreen } from "../screens/parent/home/ParentHomeScreen";
 import { ChildListScreen } from "../screens/parent/child/ChildListScreen";
 import { ChildProfileScreen } from "../screens/parent/child/ChildProfileScreen";
 import { ChildTimetableScreen } from "../screens/parent/child/ChildTimetableScreen";
-import { IepHistoryScreen } from "../screens/parent/iep/IepHistoryScreen";
+import { ChildIepHistoryScreen } from "../screens/parent/iep/ChildIepHistoryScreen";
 import { IepPlanDetailScreen } from "../screens/teacher/iep/IepPlanDetailScreen";
 import { IepObjectiveDetailScreen } from "../screens/teacher/iep/IepObjectiveDetailScreen";
 import { ParentReportListScreen } from "../screens/parent/report/ParentReportListScreen";
@@ -32,22 +35,11 @@ const TimetableStack =
 const ReportStack = createNativeStackNavigator<ParentReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
 
-const GRADIENT_HEADER: NativeStackNavigationOptions = {
-  headerShown: true,
-  headerTintColor: "#FFFFFF",
-  headerTitleStyle: {
-    color: "#FFFFFF",
-    fontWeight: "700" as const,
-    fontSize: 17,
-  },
-  headerStyle: { backgroundColor: "#2E7D32" },
-};
-
 // ── Stack navigators ──────────────────────────────────────────────
 
 function ChildStackNavigator() {
   return (
-    <ChildStack.Navigator screenOptions={GRADIENT_HEADER}>
+    <ChildStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <ChildStack.Screen
         name="ChildList"
         component={ChildListScreen}
@@ -60,7 +52,7 @@ function ChildStackNavigator() {
       />
       <ChildStack.Screen
         name="ChildIepHistory"
-        component={IepHistoryScreen}
+        component={ChildIepHistoryScreen}
         options={{ title: "Kế hoạch IEP" }}
       />
       <ChildStack.Screen
@@ -84,7 +76,7 @@ function ChildStackNavigator() {
 
 function TimetableStackNavigator() {
   return (
-    <TimetableStack.Navigator screenOptions={GRADIENT_HEADER}>
+    <TimetableStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <TimetableStack.Screen
         name="Timetable"
         component={ChildTimetableScreen}
@@ -92,7 +84,7 @@ function TimetableStackNavigator() {
       />
       <TimetableStack.Screen
         name="ChildIepHistory"
-        component={IepHistoryScreen}
+        component={ChildIepHistoryScreen}
         options={{ title: "Kế hoạch IEP" }}
       />
       <TimetableStack.Screen
@@ -111,7 +103,7 @@ function TimetableStackNavigator() {
 
 function ReportStackNavigator() {
   return (
-    <ReportStack.Navigator screenOptions={GRADIENT_HEADER}>
+    <ReportStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <ReportStack.Screen
         name="ParentReportList"
         component={ParentReportListScreen}
@@ -128,7 +120,7 @@ function ReportStackNavigator() {
 
 function ProfileStackNavigator() {
   return (
-    <ProfileStack.Navigator screenOptions={GRADIENT_HEADER}>
+    <ProfileStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
       <ProfileStack.Screen
         name="Profile"
         component={ParentProfileScreen}
@@ -185,6 +177,8 @@ export function ParentNavigator() {
           ),
         }}
         listeners={({ navigation, route }) => ({
+          // ChildTab: jump straight into the previously-selected child's detail
+          // screen (if any). Otherwise reset the inner stack and focus the tab.
           tabPress: (e) => {
             e.preventDefault();
             const { selectedStudentId, selectedStudent } =
@@ -197,16 +191,16 @@ export function ParentNavigator() {
                   studentName: selectedStudent.name,
                 },
               });
-            } else {
-              const r = route as any;
-              if (r.state && r.state.index > 0) {
-                navigation.dispatch({
-                  ...StackActions.popToTop(),
-                  target: r.state.key,
-                });
-              }
-              navigation.navigate(route.name as any);
+              return;
             }
+            const r = route as any;
+            if (r.state && r.state.index > 0) {
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: r.state.key,
+              });
+            }
+            navigation.navigate(route.name as any);
           },
         })}
       />
@@ -223,19 +217,7 @@ export function ParentNavigator() {
             />
           ),
         }}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const r = route as any;
-            if (r.state && r.state.index > 0) {
-              e.preventDefault();
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: r.state.key,
-              });
-              navigation.navigate(route.name as any);
-            }
-          },
-        })}
+        listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="ReportTab"
@@ -250,19 +232,7 @@ export function ParentNavigator() {
             />
           ),
         }}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const r = route as any;
-            if (r.state && r.state.index > 0) {
-              e.preventDefault();
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: r.state.key,
-              });
-              navigation.navigate(route.name as any);
-            }
-          },
-        })}
+        listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="ParentProfileTab"
@@ -277,19 +247,7 @@ export function ParentNavigator() {
             />
           ),
         }}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const r = route as any;
-            if (r.state && r.state.index > 0) {
-              e.preventDefault();
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: r.state.key,
-              });
-              navigation.navigate(route.name as any);
-            }
-          },
-        })}
+        listeners={popToTopOnTabPress}
       />
     </Tab.Navigator>
   );

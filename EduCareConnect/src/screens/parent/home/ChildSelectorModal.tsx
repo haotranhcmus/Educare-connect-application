@@ -269,15 +269,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     maxHeight: "75%",
     overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        // shadowColor: "#000",
-        // shadowOffset: { width: 0, height: -4 },
-        // shadowOpacity: 0.15,
-        // shadowRadius: 16,
-      },
-      android: { elevation: 20 },
-    }),
+    elevation: 20,
   },
 
   // ── Handle ──────────────────────────────────────────────────
@@ -351,15 +343,7 @@ const styles = StyleSheet.create({
   // ── Student card ────────────────────────────────────────────
   cardWrapper: {
     borderRadius: 16,
-    ...Platform.select({
-      ios: {
-        // shadowColor: G1,
-        // shadowOffset: { width: 0, height: 2 },
-        // shadowOpacity: 0.07,
-        // shadowRadius: 8,
-      },
-      android: { elevation: 2 },
-    }),
+    elevation: 2,
   },
   card: {
     flexDirection: "row",

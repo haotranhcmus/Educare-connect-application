@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -214,15 +213,7 @@ const styles = StyleSheet.create({
 
   cardWrapper: {
     borderRadius: 16,
-    ...Platform.select({
-      ios: {
-        // shadowColor: "#000",
-        // shadowOffset: { width: 0, height: 4 },
-        // shadowOpacity: 0.1,
-        // shadowRadius: 12,
-      },
-      android: { elevation: 5 },
-    }),
+    elevation: 5,
   },
 
   card: {

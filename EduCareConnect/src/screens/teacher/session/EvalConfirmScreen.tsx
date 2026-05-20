@@ -2,7 +2,7 @@ import React from "react";
 import { View, ScrollView, StyleSheet, Alert } from "react-native";
 import { Text, Button, Surface, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StepIndicator } from "../../../components/common/StepIndicator";
+import { StackActions } from "@react-navigation/native";
 import { useEvalStore } from "../../../store/evalStore";
 import { useSubmitEval } from "../../../hooks/useEval";
 import {
@@ -14,20 +14,21 @@ import { PROMPT_LEVEL_LABELS } from "../../../utils/labels";
 import type { ResultInput } from "../../../api/evalApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { TeacherSessionStackParamList } from "../../../navigation/types";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type Props = NativeStackScreenProps<TeacherSessionStackParamList, "EvalStep3">;
-
-const STEPS = ["Mục tiêu", "Xác nhận"];
+type Props = NativeStackScreenProps<
+  TeacherSessionStackParamList,
+  "EvalConfirm"
+>;
 
 function getAccuracyMeta(accuracy: number, theme: any) {
-  if (accuracy >= 80)
-    return { color: "#2E7D32", bg: "#E8F5E9", label: "Tốt" };
+  if (accuracy >= 80) return { color: "#2E7D32", bg: "#E8F5E9", label: "Tốt" };
   if (accuracy >= 50)
     return { color: "#E65100", bg: "#FFF3E0", label: "Trung bình" };
   return { color: theme.colors.error, bg: "#FFEBEE", label: "Cần cải thiện" };
 }
 
-export function EvalStep3Screen({ route, navigation }: Props) {
+export function EvalConfirmScreen({ route, navigation }: Props) {
   const { sessionId } = route.params;
   const theme = useTheme();
   const { data: session } = useSessionDetail(sessionId);
@@ -46,10 +47,7 @@ export function EvalStep3Screen({ route, navigation }: Props) {
     (sum, r) => sum + r.correct_trials,
     0,
   );
-  const totalTrials = resultsArray.reduce(
-    (sum, r) => sum + r.total_trials,
-    0,
-  );
+  const totalTrials = resultsArray.reduce((sum, r) => sum + r.total_trials, 0);
   const avgAccuracy =
     resultsArray.length > 0
       ? Math.round(
@@ -71,7 +69,18 @@ export function EvalStep3Screen({ route, navigation }: Props) {
         results: resultsArray,
       });
       reset();
-      navigation.navigate("SessionDetail", { sessionId });
+      // Pop back to the existing SessionDetail, discarding the EvalObjective
+      // and EvalConfirm frames. `navigate` alone may push a duplicate
+      // SessionDetail in native-stack v7, so use `popTo` for an explicit pop.
+      // Fall back to navigate if SessionDetail is somehow not in the stack.
+      const routes = navigation.getState().routes;
+      if (routes.some((r) => r.name === "SessionDetail")) {
+        navigation.dispatch(
+          StackActions.popTo("SessionDetail", { sessionId }),
+        );
+      } else {
+        navigation.navigate("SessionDetail", { sessionId });
+      }
     } catch (e: any) {
       Alert.alert("Lỗi", e.message || "Không thể hoàn thành đánh giá");
     }
@@ -79,8 +88,6 @@ export function EvalStep3Screen({ route, navigation }: Props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StepIndicator steps={STEPS} currentStep={1} />
-
       <ScrollView contentContainerStyle={styles.content}>
         {/* ── Hero summary card ───────────────────────── */}
         <Surface
@@ -91,54 +98,115 @@ export function EvalStep3Screen({ route, navigation }: Props) {
           elevation={0}
         >
           <View style={styles.heroTop}>
-            <MaterialCommunityIcons
-              name="clipboard-check-outline"
-              size={36}
-              color={theme.colors.primary}
-            />
-            <View style={{ flex: 1 }}>
+            <View
+              style={[
+                styles.heroIconWrap,
+                { backgroundColor: "rgba(255,255,255,0.35)" },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="clipboard-check-outline"
+                size={26}
+                color={theme.colors.primary}
+              />
+            </View>
+            <View style={{ flex: 1, gap: 8 }}>
               <Text
                 variant="titleMedium"
                 style={{
-                  fontWeight: "700",
+                  fontWeight: "800",
                   color: theme.colors.onPrimaryContainer,
+                  letterSpacing: 0.2,
                 }}
               >
                 Tóm Tắt Buổi Học
               </Text>
-              <Text
-                variant="bodySmall"
-                style={{
-                  color: theme.colors.onPrimaryContainer,
-                  opacity: 0.85,
-                  marginTop: 2,
-                }}
-                numberOfLines={1}
-              >
-                {studentName} · {formatDate(session?.session_date || "")} ·{" "}
-                {formatFloatTime(session?.start_time || 0)}
-              </Text>
+              <View style={styles.metaBadgeRow}>
+                {studentName ? (
+                  <View
+                    style={[
+                      styles.metaBadge,
+                      { backgroundColor: "rgba(255,255,255,0.5)" },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="account-outline"
+                      size={11}
+                      color={theme.colors.primary}
+                    />
+                    <Text
+                      style={[
+                        styles.metaBadgeText,
+                        { color: theme.colors.onPrimaryContainer },
+                      ]}
+                    >
+                      {studentName}
+                    </Text>
+                  </View>
+                ) : null}
+                {session?.session_date ? (
+                  <View
+                    style={[
+                      styles.metaBadge,
+                      { backgroundColor: "rgba(255,255,255,0.5)" },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="calendar-outline"
+                      size={11}
+                      color={theme.colors.primary}
+                    />
+                    <Text
+                      style={[
+                        styles.metaBadgeText,
+                        { color: theme.colors.onPrimaryContainer },
+                      ]}
+                    >
+                      {formatDate(session.session_date)}
+                    </Text>
+                  </View>
+                ) : null}
+                {session?.start_time ? (
+                  <View
+                    style={[
+                      styles.metaBadge,
+                      { backgroundColor: "rgba(255,255,255,0.5)" },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="clock-outline"
+                      size={11}
+                      color={theme.colors.primary}
+                    />
+                    <Text
+                      style={[
+                        styles.metaBadgeText,
+                        { color: theme.colors.onPrimaryContainer },
+                      ]}
+                    >
+                      {formatFloatTime(session.start_time)}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
             </View>
           </View>
 
           {/* Aggregate stats */}
           <View style={styles.heroStatsRow}>
             <HeroStat
-              icon="target"
               label="Mục tiêu"
               value={String(resultsArray.length)}
               color={theme.colors.primary}
             />
             <View style={styles.heroDivider} />
             <HeroStat
-              icon="check-circle-outline"
               label="Đúng / Tổng"
               value={`${totalCorrect}/${totalTrials}`}
               color={theme.colors.primary}
             />
             <View style={styles.heroDivider} />
             <HeroStat
-              icon="percent-outline"
               label="Trung bình"
               value={`${avgAccuracy}%`}
               color={theme.colors.primary}
@@ -175,9 +243,9 @@ export function EvalStep3Screen({ route, navigation }: Props) {
       </ScrollView>
 
       {/* ── Footer ────────────────────────────────── */}
-      <Surface
+      <SafeAreaView
         style={[styles.footer, { backgroundColor: theme.colors.surface }]}
-        elevation={3}
+        edges={["bottom"]}
       >
         <Button
           mode="outlined"
@@ -198,20 +266,18 @@ export function EvalStep3Screen({ route, navigation }: Props) {
         >
           Hoàn tất
         </Button>
-      </Surface>
+      </SafeAreaView>
     </View>
   );
 }
 
 // ── Hero stat ────────────────────────────────────────────────────────────────────
 function HeroStat({
-  icon,
   label,
   value,
   color,
   emphasis,
 }: {
-  icon: any;
   label: string;
   value: string;
   color: string;
@@ -219,13 +285,8 @@ function HeroStat({
 }) {
   return (
     <View style={styles.heroStat}>
-      <MaterialCommunityIcons name={icon} size={16} color={color} />
       <Text
-        style={[
-          styles.heroStatValue,
-          emphasis && { fontSize: 22 },
-          { color },
-        ]}
+        style={[styles.heroStatValue, emphasis && { fontSize: 22 }, { color }]}
       >
         {value}
       </Text>
@@ -357,7 +418,10 @@ function ResultCard({
           </View>
         </View>
         <View
-          style={[styles.vRule, { backgroundColor: theme.colors.outlineVariant }]}
+          style={[
+            styles.vRule,
+            { backgroundColor: theme.colors.outlineVariant },
+          ]}
         />
         <View style={styles.statCell}>
           <Text style={styles.statLabel}>Kết quả</Text>
@@ -366,7 +430,10 @@ function ResultCard({
           </Text>
         </View>
         <View
-          style={[styles.vRule, { backgroundColor: theme.colors.outlineVariant }]}
+          style={[
+            styles.vRule,
+            { backgroundColor: theme.colors.outlineVariant },
+          ]}
         />
         <View style={[styles.statCell, { flex: 1.3 }]}>
           <Text style={styles.statLabel}>Mức gợi ý</Text>
@@ -411,7 +478,31 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 14,
   },
-  heroTop: { flexDirection: "row", alignItems: "center", gap: 12 },
+  heroTop: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  heroIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  metaBadgeRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  metaBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 20,
+  },
+  metaBadgeText: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
   heroStatsRow: {
     flexDirection: "row",
     alignItems: "center",

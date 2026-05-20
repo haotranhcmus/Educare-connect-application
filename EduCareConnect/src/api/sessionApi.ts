@@ -13,7 +13,11 @@ function toAvatarUrl(b64?: string | false): string | undefined {
 
 /** Batch-fetch student avatars + nickname and merge into session/record list. */
 async function mergeStudentAvatars<
-  T extends { student_id: any; student_avatar_url?: string; student_nickname?: string },
+  T extends {
+    student_id: any;
+    student_avatar_url?: string;
+    student_nickname?: string;
+  },
 >(records: T[], fetchNickname = false): Promise<T[]> {
   if (records.length === 0) return records;
   const studentIds = [
@@ -32,11 +36,11 @@ async function mergeStudentAvatars<
     const fields = fetchNickname
       ? ["id", "avatar", "nickname"]
       : ["id", "avatar"];
-    const students = await searchRead<{ id: number; avatar: string | false; nickname?: string | false }>(
-      "educare.student",
-      [["id", "in", studentIds]],
-      fields,
-    );
+    const students = await searchRead<{
+      id: number;
+      avatar: string | false;
+      nickname?: string | false;
+    }>("educare.student", [["id", "in", studentIds]], fields);
     const avatarMap = new Map<number, string | undefined>(
       students.map((s) => [s.id, toAvatarUrl(s.avatar)]),
     );
@@ -237,7 +241,21 @@ export async function createSession(vals: {
       "createSession",
       `record created id=${newId}, scheduling...`,
     );
-    await callKw("educare.session.log", "action_schedule", [[newId]]);
+    try {
+      await callKw("educare.session.log", "action_schedule", [[newId]]);
+    } catch (scheduleErr: any) {
+      // action_schedule failed — clean up the orphaned draft so it doesn't pollute the list
+      logger.session(
+        "createSession",
+        `action_schedule failed for id=${newId}, deleting orphan draft...`,
+      );
+      try {
+        await callKw("educare.session.log", "unlink", [[newId]], {});
+      } catch {
+        // best-effort cleanup; ignore secondary error
+      }
+      throw scheduleErr;
+    }
     logger.session("createSession", `ok — session ${newId} scheduled`);
     return newId;
   } catch (e: any) {

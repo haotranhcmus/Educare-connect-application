@@ -25,7 +25,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect } from "@react-navigation/native";
-import { CommonActions } from "@react-navigation/native";
+import { StackActions } from "@react-navigation/native";
 import { SessionInfoCard } from "../../../components/report/SessionInfoCard";
 import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import {
@@ -88,22 +88,11 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   const { sessionId: routeSessionId, reportId } = route.params ?? {};
   const isEdit = !!reportId;
 
-  // Ensure ReportList is always behind us so hardware back doesn't get stuck
-  useEffect(() => {
-    const state = navigation.getState();
-    const hasListBehind = state.routes.some(
-      (r: any) => r.name === "ReportList",
-    );
-    if (!hasListBehind) {
-      navigation.reset({
-        index: 1,
-        routes: [
-          { name: "ReportList" },
-          { name: "ReportCreate", params: route.params },
-        ],
-      });
-    }
-  }, []);
+  // Only the ReportStack has SessionPicker; in SessionStack/StudentStack the
+  // sessionId is always passed in via route params, so the picker is hidden.
+  const canPickSession = navigation
+    .getState()
+    .routeNames.includes("SessionPicker");
 
   const persistReportMutation = usePersistReport();
   const persistAndSendMutation = usePersistAndSendReport();
@@ -414,14 +403,18 @@ export function ReportCreateScreen({ navigation, route }: Props) {
             >
               Chưa chọn buổi học
             </Text>
-            <Button
-              mode="contained"
-              onPress={() => navigation.navigate("SessionPicker")}
-              style={{ marginTop: 12 }}
-              icon="magnify"
-            >
-              Chọn buổi học
-            </Button>
+            {canPickSession && (
+              <Button
+                mode="contained"
+                onPress={() =>
+                  (navigation as any).navigate("SessionPicker")
+                }
+                style={{ marginTop: 12 }}
+                icon="magnify"
+              >
+                Chọn buổi học
+              </Button>
+            )}
           </Surface>
         ) : (
           <View>
@@ -433,12 +426,12 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               objectives={sessionInfo.objectives}
               avgAccuracy={sessionInfo.avgAccuracy}
             />
-            {!isEdit && (
+            {!isEdit && canPickSession && (
               <Button
                 mode="text"
                 compact
                 icon="pencil"
-                onPress={() => navigation.navigate("SessionPicker")}
+                onPress={() => (navigation as any).navigate("SessionPicker")}
                 style={{ alignSelf: "flex-start", marginTop: -4 }}
               >
                 Đổi buổi học
@@ -640,16 +633,14 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               onPress={() => {
                 setSuccessModal((s) => ({ ...s, visible: false }));
                 if (successModal.type === "sent" && successModal.reportId) {
+                  // Replace ReportCreate with ReportDetail in the current
+                  // stack so back navigation returns to whichever screen
+                  // launched the create flow (ReportList, SessionDetail,
+                  // StudentDetail, …) instead of relying on ReportList being
+                  // available globally.
                   navigation.dispatch(
-                    CommonActions.reset({
-                      index: 1,
-                      routes: [
-                        { name: "ReportList" },
-                        {
-                          name: "ReportDetail",
-                          params: { reportId: successModal.reportId },
-                        },
-                      ],
+                    StackActions.replace("ReportDetail", {
+                      reportId: successModal.reportId,
                     }),
                   );
                 } else {

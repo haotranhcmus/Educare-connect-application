@@ -15,7 +15,7 @@ type Props = {
   >;
 };
 
-export function IepHistoryScreen({ navigation }: Props) {
+export function ChildIepHistoryScreen({ navigation }: Props) {
   const theme = useTheme();
   const { selectedStudentId, selectedStudent } = useParentStore();
   const studentName = selectedStudent?.name;

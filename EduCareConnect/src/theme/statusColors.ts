@@ -117,7 +117,7 @@ export const STATUS_COLORS: Record<string, StatusConfig> = {
     icon: "send-check",
   },
   read: {
-    label: "PH đã đọc",
+    label: "Phụ huynh đã đọc",
     color: "#2E7D32", // Xanh lá — hoàn thành
     backgroundColor: "#C8E6C9",
     icon: "eye-check",

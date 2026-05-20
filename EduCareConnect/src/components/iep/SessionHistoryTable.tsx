@@ -29,7 +29,7 @@ export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
         <DataTable.Title numeric>Đúng/Tổng</DataTable.Title>
         <DataTable.Title numeric>%</DataTable.Title>
         {/* 1. Thêm numeric vào Title để nó căn phải giống dữ liệu bên dưới */}
-        <DataTable.Title numeric>Prompt</DataTable.Title>
+        <DataTable.Title numeric>Mức hỗ trợ</DataTable.Title>
       </DataTable.Header>
 
       {results.slice(0, 10).map((r) => (

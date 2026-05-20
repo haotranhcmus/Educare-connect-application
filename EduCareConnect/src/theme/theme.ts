@@ -39,7 +39,7 @@ export const theme: MD3Theme = {
     surface: "#FAFDF6",
     onSurface: "#1C1B1F",
     surfaceVariant: "#e9eaebbf",
-    onSurfaceVariant: "#c0bec4",
+    onSurfaceVariant: "#000",
 
     // Outline
     outline: "#4d4b508f",

@@ -535,7 +535,7 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
                 variant="bodySmall"
                 style={[
                   screenStyles.planMetaText,
-                  { color: theme.colors.onSurfaceVariant },
+                  { color: theme.colors.onSurface },
                 ]}
               >
                 {formatDate(plan.start_date)} – {formatDate(plan.end_date)}
@@ -553,7 +553,7 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
                 variant="bodySmall"
                 style={[
                   screenStyles.planMetaText,
-                  { color: theme.colors.onSurfaceVariant },
+                  { color: theme.colors.onSurface },
                 ]}
               >
                 {teacherName}
@@ -571,7 +571,7 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
                 variant="bodySmall"
                 style={[
                   screenStyles.planMetaText,
-                  { color: theme.colors.onSurfaceVariant },
+                  { color: theme.colors.onSurface },
                 ]}
               >
                 {supervisorName}
@@ -584,7 +584,7 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
               variant="bodySmall"
               style={[
                 screenStyles.planMetaText,
-                { color: theme.colors.onSurfaceVariant },
+                { color: theme.colors.onSurface },
               ]}
             >
               Phiên bản {plan.version_number}
@@ -604,7 +604,7 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
           <IepPlaceholder width={140} height={140} />
           <Text
             variant="bodyMedium"
-            style={{ color: theme.colors.onSurfaceVariant, marginTop: 12 }}
+            style={{ color: theme.colors.onSurface, marginTop: 12 }}
           >
             Chưa có mục tiêu nào
           </Text>

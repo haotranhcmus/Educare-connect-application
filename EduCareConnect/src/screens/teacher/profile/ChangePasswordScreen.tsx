@@ -6,10 +6,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useChangePassword } from "../../../hooks/useProfile";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { TeacherProfileStackParamList } from "../../../navigation/types";
+import type { ProfileStackParamList } from "../../../navigation/types";
 
 type Props = NativeStackScreenProps<
-  TeacherProfileStackParamList,
+  ProfileStackParamList,
   "ChangePassword"
 >;
 

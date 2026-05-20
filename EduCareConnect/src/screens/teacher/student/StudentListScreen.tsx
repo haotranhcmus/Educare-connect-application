@@ -22,8 +22,9 @@ type StatusFilter = "all" | "active" | "inactive";
 const headerSearchStyle = {
   backgroundColor: "rgba(255,255,255,0.18)",
   elevation: 0,
-  height: 40,
+  height: 50,
   borderRadius: 10,
+  marginBottom: 10,
 };
 const headerSearchInputStyle = { color: "#fff", fontSize: 13, paddingLeft: 0 };
 
@@ -158,6 +159,6 @@ export function StudentListScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, paddingVertical: 16 },
   list: { flexGrow: 1, paddingBottom: 32 },
 });

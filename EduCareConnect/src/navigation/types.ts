@@ -1,14 +1,4 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { CompositeScreenProps } from "@react-navigation/native";
 import type { NavigatorScreenParams } from "@react-navigation/native";
-import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-
-// -- Root --
-export type RootStackParamList = {
-  Auth: undefined;
-  TeacherTabs: undefined;
-  ParentTabs: undefined;
-};
 
 // -- Auth --
 export type AuthStackParamList = {
@@ -32,8 +22,8 @@ export type TeacherRootStackParamList = {
   // Session/report screens accessible above tabs (e.g. from HomeScreen)
   SessionDetail: { sessionId: number };
   SessionEdit: { sessionId: number };
-  EvalStep2: { sessionId: number; objectiveIndex?: number };
-  EvalStep3: { sessionId: number };
+  EvalObjective: { sessionId: number; objectiveIndex?: number };
+  EvalConfirm: { sessionId: number };
   ReportDetail: { reportId: number };
   ReportCreate: { sessionId?: number; reportId?: number };
 };
@@ -47,8 +37,8 @@ export type StudentStackParamList = {
   // Session/report screens within student context (no tab switch)
   SessionDetail: { sessionId: number };
   SessionEdit: { sessionId: number };
-  EvalStep2: { sessionId: number; objectiveIndex?: number };
-  EvalStep3: { sessionId: number };
+  EvalObjective: { sessionId: number; objectiveIndex?: number };
+  EvalConfirm: { sessionId: number };
   ReportDetail: { reportId: number };
   ReportCreate: { sessionId?: number; reportId?: number };
 };
@@ -59,14 +49,14 @@ export type SessionStackParamList = {
   SessionCreate: { studentId?: number };
   SessionDetail: { sessionId: number };
   SessionEdit: { sessionId: number };
-  EvalStep2: { sessionId: number; objectiveIndex?: number };
-  EvalStep3: { sessionId: number };
+  EvalObjective: { sessionId: number; objectiveIndex?: number };
+  EvalConfirm: { sessionId: number };
   // Report screens reachable from session detail (no tab switch)
   ReportDetail: { reportId: number };
   ReportCreate: { sessionId?: number; reportId?: number };
 };
 
-// Backward-compatible alias for old imports.
+// Backward-compatible alias used by EvalObjective/EvalConfirm screens.
 export type TeacherSessionStackParamList = SessionStackParamList;
 
 // -- Teacher: Report Stack --
@@ -77,13 +67,20 @@ export type ReportStackParamList = {
   ReportDetail: { reportId: number };
 };
 
-// -- Teacher: Profile Stack --
+// -- Profile Stack (shared shape between teacher and parent) --
 export type ProfileStackParamList = {
   Profile: undefined;
   ChangePassword: undefined;
 };
 
 export type ParentProfileStackParamList = ProfileStackParamList;
+
+// IEP stack type still imported by IepObjectiveDetailScreen for its route props.
+export type TeacherIepStackParamList = {
+  IepPlanList: undefined;
+  IepPlanDetail: { planId: number };
+  IepObjectiveDetail: { objectiveId: number };
+};
 
 // -- Parent Bottom Tabs --
 export type ParentTabParamList = {
@@ -110,37 +107,6 @@ export type ParentTimetableStackParamList = {
   ChildIepHistory: undefined;
   ChildIepPlanDetail: { planId: number };
   ChildIepObjectiveDetail: { objectiveId: number };
-};
-
-// -- Parent: IEP Stack (legacy – kept for backward-compat) --
-export type ParentIepStackParamList = {
-  ParentIepPlan: undefined;
-  ParentIepPlanDetail: { planId: number };
-};
-
-// -- Composite types for screens that need both tab + stack navigation --
-export type StudentListScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<StudentStackParamList, "StudentList">,
-  BottomTabScreenProps<TeacherTabParamList>
->;
-
-export type TeacherIepStackParamList = {
-  IepPlanList: undefined;
-  IepPlanDetail: { planId: number };
-  IepObjectiveDetail: { objectiveId: number };
-};
-
-export type TeacherProfileStackParamList = {
-  Profile: undefined;
-  ChangePassword: undefined;
-};
-
-// Update TeacherReportStackParamList
-export type TeacherReportStackParamList = {
-  ReportList: undefined;
-  ReportCreate: { sessionId?: number; reportId?: number } | undefined;
-  ReportDetail: { reportId: number };
-  SessionPicker: undefined;
 };
 
 export type ParentReportStackParamList = {

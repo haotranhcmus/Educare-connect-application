@@ -5,7 +5,6 @@ import {
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -583,15 +582,7 @@ const styles = StyleSheet.create({
     marginTop: -28, // overlap into header
     marginBottom: 14,
     borderRadius: 18,
-    ...Platform.select({
-      ios: {
-        // shadowColor: G1,
-        // shadowOffset: { width: 0, height: 6 },
-        // shadowOpacity: 0.14,
-        // shadowRadius: 16,
-      },
-      android: { elevation: 6 },
-    }),
+    elevation: 6,
   },
   childCard: {
     borderRadius: 18,
@@ -650,15 +641,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 12,
     alignItems: "center",
-    ...Platform.select({
-      ios: {
-        // shadowColor: "#000",
-        // shadowOffset: { width: 0, height: 2 },
-        // shadowOpacity: 0.06,
-        // shadowRadius: 6,
-      },
-      android: { elevation: 2 },
-    }),
+    elevation: 2,
     position: "relative",
   },
   quickIcon: {
@@ -710,15 +693,7 @@ const styles = StyleSheet.create({
   sessionCardOuter: {
     marginHorizontal: 16,
     borderRadius: 16,
-    ...Platform.select({
-      ios: {
-        // shadowColor: "#000",
-        // shadowOffset: { width: 0, height: 3 },
-        // shadowOpacity: 0.07,
-        // shadowRadius: 10,
-      },
-      android: { elevation: 3 },
-    }),
+    elevation: 3,
   },
   sessionCard: {
     borderRadius: 16,

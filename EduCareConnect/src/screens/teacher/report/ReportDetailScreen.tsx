@@ -60,6 +60,7 @@ export function ReportDetailScreen({ navigation, route }: Props) {
     report?.objective_ids ?? [],
   );
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [sentModalVisible, setSentModalVisible] = useState(false);
 
   const handleObjectivePress = (objectiveId: number) => {
     navigation
@@ -100,6 +101,7 @@ export function ReportDetailScreen({ navigation, route }: Props) {
           onPress: async () => {
             try {
               await sendReport.mutateAsync(report.id);
+              setSentModalVisible(true);
             } catch {
               Alert.alert("Lỗi", "Không thể gửi báo cáo");
             }
@@ -110,6 +112,7 @@ export function ReportDetailScreen({ navigation, route }: Props) {
   };
 
   return (
+    <>
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.colors.background }}
       contentContainerStyle={styles.container}
@@ -476,6 +479,57 @@ export function ReportDetailScreen({ navigation, route }: Props) {
         </>
       )}
     </ScrollView>
+
+    {/* ── Sent success modal ──────────────────────────── */}
+    <Modal
+      visible={sentModalVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setSentModalVisible(false)}
+    >
+      <View style={styles.sentModalOverlay}>
+        <View
+          style={[
+            styles.sentModalCard,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name="send-check"
+            size={56}
+            color={theme.colors.primary}
+          />
+          <Text
+            variant="titleMedium"
+            style={{
+              fontWeight: "700",
+              marginTop: 16,
+              textAlign: "center",
+            }}
+          >
+            Đã gửi báo cáo!
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={{
+              color: theme.colors.onSurfaceVariant,
+              marginTop: 8,
+              textAlign: "center",
+            }}
+          >
+            Báo cáo đã được gửi đến phụ huynh qua email.
+          </Text>
+          <Button
+            mode="contained"
+            style={{ marginTop: 24, minWidth: 120 }}
+            onPress={() => setSentModalVisible(false)}
+          >
+            Đóng
+          </Button>
+        </View>
+      </View>
+    </Modal>
+    </>
   );
 }
 
@@ -721,4 +775,21 @@ const styles = StyleSheet.create({
   // ── Actions ──────────────────────────────────────────────────
   actions: { flexDirection: "row", gap: 10 },
   actionBtn: { flex: 1 },
+
+  // ── Sent success modal ──────────────────────────────────────
+  sentModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+  },
+  sentModalCard: {
+    width: "100%",
+    maxWidth: 360,
+    padding: 32,
+    borderRadius: 20,
+    alignItems: "center",
+    elevation: 8,
+  },
 });

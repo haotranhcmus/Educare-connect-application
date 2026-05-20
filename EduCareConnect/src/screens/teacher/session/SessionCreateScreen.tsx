@@ -370,6 +370,8 @@ export function SessionCreateScreen({ route, navigation }: Props) {
   // ── Conflict check ───────────────────────────────────────────────
   const [daySessions, setDaySessions] = useState<ConflictSession[]>([]);
   const [conflictModalVisible, setConflictModalVisible] = useState(false);
+  const [noObjectivesModalVisible, setNoObjectivesModalVisible] =
+    useState(false);
   const [conflictChecking, setConflictChecking] = useState(false);
 
   // Debounced fetch — only for inline red-border UI feedback while user edits
@@ -486,6 +488,13 @@ export function SessionCreateScreen({ route, navigation }: Props) {
   };
 
   const handleSave = async () => {
+    if (
+      selectedObjIds.size === 0 &&
+      form.session_purpose !== "parent_training"
+    ) {
+      setNoObjectivesModalVisible(true);
+      return;
+    }
     try {
       const toFloat = (t: TimeValue) => t.hours + t.minutes / 60;
       await createMutation.mutateAsync({
@@ -796,6 +805,55 @@ export function SessionCreateScreen({ route, navigation }: Props) {
               onPress={() => setConflictModalVisible(false)}
             >
               Đóng và chỉnh sửa lại
+            </Button>
+          </View>
+        </Modal>
+
+        {/* ── No objectives modal ──────────────────────────────────── */}
+        <Modal
+          visible={noObjectivesModalVisible}
+          onDismiss={() => setNoObjectivesModalVisible(false)}
+          contentContainerStyle={[
+            styles.modal,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.modalContent}>
+            <MaterialCommunityIcons
+              name="checkbox-blank-off-outline"
+              size={48}
+              color="#E65100"
+            />
+            <Text
+              variant="titleMedium"
+              style={{
+                fontWeight: "800",
+                textAlign: "center",
+                marginTop: 12,
+                color: "#B71C1C",
+              }}
+            >
+              Chưa chọn mục tiêu
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                textAlign: "center",
+                marginTop: 8,
+                lineHeight: 18,
+              }}
+            >
+              Vui lòng chọn ít nhất một mục tiêu trước khi lưu buổi học.
+            </Text>
+            <Button
+              mode="contained"
+              buttonColor="#E65100"
+              style={{ marginTop: 20, borderRadius: 10 }}
+              contentStyle={{ paddingVertical: 4 }}
+              onPress={() => setNoObjectivesModalVisible(false)}
+            >
+              Quay lại để chọn
             </Button>
           </View>
         </Modal>

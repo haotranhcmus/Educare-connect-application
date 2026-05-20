@@ -46,9 +46,13 @@ export function HomeScreen({ navigation }: any) {
   const { data: students = [] } = useMyStudents();
   const { data: myProfile } = useMyProfile();
   const { week: weekCount, month: monthCount } = useWeekMonthStats();
-  const teacherAvatarUri = myProfile?.avatar
-    ? `data:image/png;base64,${myProfile.avatar}`
-    : undefined;
+  // Odoo's image_128 always returns a default letter avatar, so we additionally
+  // gate on has_custom_avatar to fall back to the AvatarLabel initials when the
+  // teacher hasn't actually uploaded a photo.
+  const teacherAvatarUri =
+    myProfile?.has_custom_avatar && myProfile?.avatar
+      ? `data:image/png;base64,${myProfile.avatar}`
+      : undefined;
 
   const today = new Date();
   const greeting = (() => {
@@ -294,10 +298,10 @@ export function HomeScreen({ navigation }: any) {
                     }
                   >
                     {ongoingSession
-                      ? "Tiếp theo"
+                      ? `Tiếp theo hôm nay`
                       : isStartingSoon
-                        ? `Sau ${minsUntilStart} phút`
-                        : "Buổi sắp tới"}
+                        ? `Sắp bắt đầu sau ${minsUntilStart} phút`
+                        : "Buổi học sắp tới hôm nay"}
                   </Text>
                 </View>
                 <Text
@@ -429,7 +433,7 @@ export function HomeScreen({ navigation }: any) {
           icon="account-group"
           label="Học sinh"
           count={students.length}
-          countUnit="em"
+          countUnit="HS"
           action={{
             label: "Xem tất cả",
             onPress: () =>
@@ -465,7 +469,10 @@ export function HomeScreen({ navigation }: any) {
                   {s.nickname && (
                     <Text
                       variant="labelSmall"
-                      style={{ color: theme.colors.onSurfaceVariant, marginTop: 1 }}
+                      style={{
+                        color: theme.colors.onSurfaceVariant,
+                        marginTop: 1,
+                      }}
                     >
                       {s.name}
                     </Text>

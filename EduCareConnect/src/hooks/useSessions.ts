@@ -87,6 +87,8 @@ export function useSessionDetail(sessionId: number) {
     queryKey: ["sessions", "detail", sessionId],
     queryFn: () => fetchSessionDetail(sessionId),
     enabled: sessionId > 0,
+    retry: false, // "not found" errors won't resolve by retrying
+    staleTime: 30_000,
   });
 }
 

@@ -36,7 +36,7 @@ function GoalCardImpl({
       <Text
         variant="labelLarge"
         style={{
-          color: theme.colors.onSurfaceVariant,
+          color: theme.colors.onSurface,
           marginLeft: 4,
           fontWeight: "700",
         }}

@@ -1,10 +1,12 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StackActions, getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import { useTheme } from "react-native-paper";
+import {
+  StackActions,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
+import { useTheme, MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { GradientHeader } from "../components/common/GradientHeader";
 import type {
   TeacherTabParamList,
   TeacherRootStackParamList,
@@ -13,6 +15,10 @@ import type {
   ReportStackParamList,
   ProfileStackParamList,
 } from "./types";
+import {
+  GRADIENT_HEADER_OPTIONS,
+  popToTopOnTabPress,
+} from "./navigationHelpers";
 
 import { StudentListScreen } from "../screens/teacher/student/StudentListScreen";
 import { StudentDetailScreen } from "../screens/teacher/student/StudentDetailScreen";
@@ -23,17 +29,14 @@ import { SessionListScreen } from "../screens/teacher/session/SessionListScreen"
 import { SessionCreateScreen } from "../screens/teacher/session/SessionCreateScreen";
 import { SessionDetailScreen } from "../screens/teacher/session/SessionDetailScreen";
 import { SessionEditScreen } from "../screens/teacher/session/SessionEditScreen";
-import { EvalStep2Screen } from "../screens/teacher/session/EvalStep2Screen";
-import { EvalStep3Screen } from "../screens/teacher/session/EvalStep3Screen";
+import { EvalObjectiveScreen } from "../screens/teacher/session/EvalObjectiveScreen";
+import { EvalConfirmScreen } from "../screens/teacher/session/EvalConfirmScreen";
 import { ReportListScreen } from "../screens/teacher/report/ReportListScreen";
 import { TeacherProfileScreen } from "../screens/teacher/profile/TeacherProfileScreen";
 import { ReportCreateScreen } from "../screens/teacher/report/ReportCreateScreen";
 import { ReportDetailScreen } from "../screens/teacher/report/ReportDetailScreen";
 import { SessionPickerScreen } from "../screens/teacher/report/SessionPickerScreen";
 import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen";
-import { LinearGradient } from "expo-linear-gradient";
-import { ImageBackgroundComponent } from "react-native";
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 
 const Tab = createBottomTabNavigator<TeacherTabParamList>();
 const TeacherRootStack =
@@ -42,36 +45,6 @@ const StudentStack = createNativeStackNavigator<StudentStackParamList>();
 const SessionStack = createNativeStackNavigator<SessionStackParamList>();
 const ReportStack = createNativeStackNavigator<ReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
-
-// Shared gradient header options for all stack navigators
-const GRADIENT_HEADER_OPTIONS: NativeStackNavigationOptions = {
-  headerShown: true,
-  // headerBackground: () => (
-  //   <LinearGradient
-  //     colors={["#1B5E20", "#2E7D32", "#388E3C"]}
-  //     start={{ x: 0, y: 0 }}
-  //     end={{ x: 1, y: 0 }}
-  //     style={{ flex: 1 }}
-  //   />
-  // ),
-  headerTintColor: "#FFFFFF",
-  headerTitleStyle: {
-    color: "#FFFFFF",
-    fontWeight: "700" as const,
-    fontSize: 17,
-  },
-  headerStyle: {
-    backgroundColor: "#2E7D32",
-    // ImageBackgroundComponent: (
-    //   <LinearGradient
-    //     colors={["#1B5E20", "#2E7D32", "#388E3C"]}
-    //     start={{ x: 0, y: 0 }}
-    //     end={{ x: 1, y: 0 }}
-    //     style={{ flex: 1 }}
-    //   />
-    // ), // Use LinearGradient for header background
-  },
-};
 
 // --- Stack Navigators ---
 
@@ -111,14 +84,14 @@ function StudentStackNavigator() {
         options={{ title: "Sửa buổi học" }}
       />
       <StudentStack.Screen
-        name="EvalStep2"
-        component={EvalStep2Screen as any}
+        name="EvalObjective"
+        component={EvalObjectiveScreen as any}
         options={{ title: "Đánh giá mục tiêu" }}
       />
       <StudentStack.Screen
-        name="EvalStep3"
-        component={EvalStep3Screen as any}
-        options={{ title: "Xác nhận & Hoàn thành" }}
+        name="EvalConfirm"
+        component={EvalConfirmScreen as any}
+        options={{ title: "Xác nhận" }}
       />
       <StudentStack.Screen
         name="ReportDetail"
@@ -158,14 +131,14 @@ function SessionStackNavigator() {
         options={{ title: "Sửa buổi học" }}
       />
       <SessionStack.Screen
-        name="EvalStep2"
-        component={EvalStep2Screen}
+        name="EvalObjective"
+        component={EvalObjectiveScreen}
         options={{ title: "Đánh giá mục tiêu" }}
       />
       <SessionStack.Screen
-        name="EvalStep3"
-        component={EvalStep3Screen}
-        options={{ title: "Xác nhận & Hoàn thành" }}
+        name="EvalConfirm"
+        component={EvalConfirmScreen}
+        options={{ title: "Xác nhận" }}
       />
       <SessionStack.Screen
         name="ReportDetail"
@@ -225,6 +198,38 @@ function ProfileStackNavigator() {
   );
 }
 
+// --- Helpers for the tab bar ---
+
+/**
+ * Build the screenOptions function used by stack-backed tabs. Hides the tab
+ * bar whenever the focused screen is deeper than the stack's root, so detail
+ * screens get the full canvas.
+ */
+function makeStackTabOptions(
+  theme: MD3Theme,
+  rootScreenName: string,
+  title: string,
+  iconName: keyof typeof MaterialCommunityIcons.glyphMap,
+) {
+  const visibleTabBarStyle = {
+    backgroundColor: theme.colors.surface,
+    borderTopColor: theme.colors.outlineVariant,
+  };
+  return ({ route }: { route: any }) => {
+    const focused = getFocusedRouteNameFromRoute(route) ?? rootScreenName;
+    return {
+      title,
+      tabBarStyle:
+        focused === rootScreenName
+          ? visibleTabBarStyle
+          : { display: "none" as const },
+      tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+        <MaterialCommunityIcons name={iconName} size={size} color={color} />
+      ),
+    };
+  };
+}
+
 // --- Main Tab Navigator ---
 
 function TeacherTabsNavigator() {
@@ -256,50 +261,26 @@ function TeacherTabsNavigator() {
       <Tab.Screen
         name="StudentTab"
         component={StudentStackNavigator}
-        options={({ route }) => {
-          const focused = getFocusedRouteNameFromRoute(route) ?? "StudentList";
-          return {
-            title: "Học sinh",
-            tabBarStyle:
-              focused === "StudentList"
-                ? { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }
-                : { display: "none" },
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="account-group" size={size} color={color} />
-            ),
-          };
-        }}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const r = route as any;
-            if (r.state && r.state.index > 0) {
-              e.preventDefault();
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: r.state.key,
-              });
-              navigation.navigate(route.name as any);
-            }
-          },
-        })}
+        options={makeStackTabOptions(
+          theme,
+          "StudentList",
+          "Học sinh",
+          "account-group",
+        )}
+        listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="SessionTab"
         component={SessionStackNavigator}
-        options={({ route }) => {
-          const focused = getFocusedRouteNameFromRoute(route) ?? "SessionList";
-          return {
-            title: "Buổi học",
-            tabBarStyle:
-              focused === "SessionList"
-                ? { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }
-                : { display: "none" },
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="calendar-check" size={size} color={color} />
-            ),
-          };
-        }}
+        options={makeStackTabOptions(
+          theme,
+          "SessionList",
+          "Buổi học",
+          "calendar-check",
+        )}
         listeners={({ navigation, route }) => ({
+          // SessionTab always re-focuses SessionList (clears any inbound
+          // params like `filterNoReport` passed from HomeScreen).
           tabPress: (e) => {
             e.preventDefault();
             const r = route as any;
@@ -316,32 +297,13 @@ function TeacherTabsNavigator() {
       <Tab.Screen
         name="ReportTab"
         component={ReportStackNavigator}
-        options={({ route }) => {
-          const focused = getFocusedRouteNameFromRoute(route) ?? "ReportList";
-          return {
-            title: "Báo cáo",
-            tabBarStyle:
-              focused === "ReportList"
-                ? { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }
-                : { display: "none" },
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="file-document" size={size} color={color} />
-            ),
-          };
-        }}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const r = route as any;
-            if (r.state && r.state.index > 0) {
-              e.preventDefault();
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: r.state.key,
-              });
-              navigation.navigate(route.name as any);
-            }
-          },
-        })}
+        options={makeStackTabOptions(
+          theme,
+          "ReportList",
+          "Báo cáo",
+          "file-document",
+        )}
+        listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="ProfileTab"
@@ -356,19 +318,7 @@ function TeacherTabsNavigator() {
             />
           ),
         }}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const r = route as any;
-            if (r.state && r.state.index > 0) {
-              e.preventDefault();
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: r.state.key,
-              });
-              navigation.navigate(route.name as any);
-            }
-          },
-        })}
+        listeners={popToTopOnTabPress}
       />
     </Tab.Navigator>
   );
@@ -410,14 +360,14 @@ export function TeacherNavigator() {
         options={{ title: "Sửa buổi học" }}
       />
       <TeacherRootStack.Screen
-        name="EvalStep2"
-        component={EvalStep2Screen as any}
+        name="EvalObjective"
+        component={EvalObjectiveScreen as any}
         options={{ title: "Đánh giá mục tiêu" }}
       />
       <TeacherRootStack.Screen
-        name="EvalStep3"
-        component={EvalStep3Screen as any}
-        options={{ title: "Xác nhận & Hoàn thành" }}
+        name="EvalConfirm"
+        component={EvalConfirmScreen as any}
+        options={{ title: "Xác nhận" }}
       />
       <TeacherRootStack.Screen
         name="ReportDetail"

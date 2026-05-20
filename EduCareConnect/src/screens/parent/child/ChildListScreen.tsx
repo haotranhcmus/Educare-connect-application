@@ -160,10 +160,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginBottom: 12,
     elevation: 1,
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.07,
-    // shadowRadius: 3,
     overflow: "hidden",
   },
   cardMain: {

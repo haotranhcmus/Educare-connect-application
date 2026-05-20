@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import {
   Text,
   TextInput,
@@ -22,13 +29,17 @@ import { useEvalStore } from "../../../store/evalStore";
 import type { ResultInput } from "../../../api/evalApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { TeacherSessionStackParamList } from "../../../navigation/types";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type Props = NativeStackScreenProps<TeacherSessionStackParamList, "EvalStep2">;
+type Props = NativeStackScreenProps<
+  TeacherSessionStackParamList,
+  "EvalObjective"
+>;
 
 const STEPS = ["Mục tiêu", "Xác nhận"];
 const PROMPT_LEVEL_OPTIONS = toPickerOptions(PROMPT_LEVEL_LABELS);
 
-export function EvalStep2Screen({ route, navigation }: Props) {
+export function EvalObjectiveScreen({ route, navigation }: Props) {
   const { sessionId, objectiveIndex = 0 } = route.params;
   const theme = useTheme();
   const { setResult: storeSetResult } = useEvalStore();
@@ -44,6 +55,7 @@ export function EvalStep2Screen({ route, navigation }: Props) {
   const savedResult = objective ? results.get(objective.id) : undefined;
   const totalCount = objectives.length;
   const isLast = objectiveIndex >= totalCount - 1;
+  const isFirst = objectiveIndex === 0;
 
   // Form state
   const [resultType, setResultType] = useState(
@@ -61,6 +73,10 @@ export function EvalStep2Screen({ route, navigation }: Props) {
   const [phase, setPhase] = useState(savedResult?.phase || "intervention");
   const [notes, setNotes] = useState(savedResult?.notes || "");
 
+  // Inline validation errors
+  const [correctError, setCorrectError] = useState("");
+  const [totalTrialsError, setTotalTrialsError] = useState("");
+
   // Reset form when objective changes
   useEffect(() => {
     if (!objective) return;
@@ -71,8 +87,35 @@ export function EvalStep2Screen({ route, navigation }: Props) {
     setPrompt(saved?.prompt_level_used || "independent");
     setPhase(saved?.phase || "intervention");
     setNotes(saved?.notes || "");
+    setCorrectError("");
+    setTotalTrialsError("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [objective?.id]);
+
+  const validate = (): boolean => {
+    const totalNum = Number(totalTrials);
+    const correctNum = Number(correct);
+    let valid = true;
+
+    if (!totalTrials || isNaN(totalNum) || totalNum <= 0) {
+      setTotalTrialsError("Tổng số lần phải lớn hơn 0");
+      valid = false;
+    } else {
+      setTotalTrialsError("");
+    }
+
+    if (correct === "" || isNaN(correctNum) || correctNum < 0) {
+      setCorrectError("Số lần đúng không hợp lệ (≥ 0)");
+      valid = false;
+    } else if (totalNum > 0 && correctNum > totalNum) {
+      setCorrectError("Không thể lớn hơn tổng số lần thử");
+      valid = false;
+    } else {
+      setCorrectError("");
+    }
+
+    return valid;
+  };
 
   const accuracyPct =
     totalTrials && Number(totalTrials) > 0
@@ -101,9 +144,9 @@ export function EvalStep2Screen({ route, navigation }: Props) {
       storeSetResult(objective.id, result);
     }
     if (isLast) {
-      navigation.navigate("EvalStep3", { sessionId });
+      navigation.navigate("EvalConfirm", { sessionId });
     } else {
-      navigation.push("EvalStep2", {
+      navigation.push("EvalObjective", {
         sessionId,
         objectiveIndex: objectiveIndex + 1,
       });
@@ -120,186 +163,175 @@ export function EvalStep2Screen({ route, navigation }: Props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StepIndicator steps={STEPS} currentStep={0} />
+      <StepIndicator
+        steps={STEPS}
+        currentStep={0}
+        objectiveIndex={objectiveIndex}
+        totalObjectives={totalCount}
+      />
 
-      {/* ── Context bar ─────────────────────────────────── */}
-      <Surface
-        style={[styles.contextBar, { backgroundColor: theme.colors.surface }]}
-        elevation={1}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
       >
-        <View style={styles.contextRow}>
-          <MaterialCommunityIcons
-            name="account-circle-outline"
-            size={16}
-            color={theme.colors.outline}
-          />
-          <Text
-            variant="labelMedium"
-            style={{ color: theme.colors.onSurface, fontWeight: "600" }}
-            numberOfLines={1}
-          >
-            {studentName}
-          </Text>
-          <View style={styles.contextDot} />
-          <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-            {formatDate(session.session_date)} ·{" "}
-            {formatFloatTime(session.start_time)}
-          </Text>
-        </View>
-        <View style={styles.progressRow}>
-          <PaperProgress
-            progress={totalCount > 0 ? (objectiveIndex + 1) / totalCount : 0}
-            color={theme.colors.primary}
-            style={styles.progressBar}
-          />
-          <Text
-            variant="labelSmall"
-            style={{ color: theme.colors.primary, fontWeight: "700" }}
-          >
-            {objectiveIndex + 1}/{totalCount}
-          </Text>
-        </View>
-      </Surface>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* ── Objective card ────────────────────────────── */}
-        <Surface style={styles.objectiveCard} elevation={1}>
-          <View style={styles.objectiveHeader}>
-            <View
-              style={[
-                styles.codeBadge,
-                { backgroundColor: theme.colors.primaryContainer },
-              ]}
-            >
-              <Text style={[styles.codeText, { color: theme.colors.primary }]}>
-                {objective.objective_code}
-              </Text>
-            </View>
-            <Text
-              variant="bodyMedium"
-              style={{
-                flex: 1,
-                fontWeight: "600",
-                color: theme.colors.onSurface,
-              }}
-            >
-              {objective.name}
-            </Text>
-          </View>
-
-          {goalName ? (
-            <View style={styles.goalRow}>
-              <MaterialCommunityIcons
-                name="tag-outline"
-                size={13}
-                color={theme.colors.outline}
-              />
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* ── Objective card ────────────────────────────── */}
+          <Surface style={styles.objectiveCard} elevation={1}>
+            <View style={styles.objectiveHeader}>
+              <View
+                style={[
+                  styles.codeBadge,
+                  { backgroundColor: theme.colors.primaryContainer },
+                ]}
+              >
+                <Text
+                  style={[styles.codeText, { color: theme.colors.primary }]}
+                >
+                  {objective.objective_code}
+                </Text>
+              </View>
               <Text
-                variant="labelSmall"
+                variant="bodyMedium"
                 style={{
-                  color: theme.colors.onSurfaceVariant,
-                  flexShrink: 1,
+                  flex: 1,
+                  fontWeight: "600",
+                  color: theme.colors.onSurface,
                 }}
               >
-                {goalName}
+                {objective.name}
               </Text>
             </View>
-          ) : null}
-        </Surface>
 
-        {/* ── Eval form card ────────────────────────────── */}
-        <Surface style={styles.formCard} elevation={1}>
-          <View style={styles.formHeader}>
-            <MaterialCommunityIcons
-              name="clipboard-edit-outline"
-              size={18}
-              color={theme.colors.primary}
-            />
-            <Text
-              variant="titleSmall"
-              style={{ fontWeight: "700", color: theme.colors.primary }}
-            >
-              Nhập kết quả
-            </Text>
-          </View>
+            {goalName ? (
+              <View style={styles.goalRow}>
+                <MaterialCommunityIcons
+                  name="tag-outline"
+                  size={13}
+                  color={theme.colors.outline}
+                />
+                <Text
+                  variant="labelSmall"
+                  style={{
+                    color: theme.colors.onSurfaceVariant,
+                    flexShrink: 1,
+                  }}
+                >
+                  {goalName}
+                </Text>
+              </View>
+            ) : null}
+          </Surface>
 
-          <View style={styles.trialRow}>
+          {/* ── Eval form card ────────────────────────────── */}
+          <Surface style={styles.formCard} elevation={1}>
+            <View style={styles.formHeader}>
+              <MaterialCommunityIcons
+                name="clipboard-edit-outline"
+                size={18}
+                color={theme.colors.primary}
+              />
+              <Text
+                variant="titleSmall"
+                style={{ fontWeight: "700", color: theme.colors.primary }}
+              >
+                Nhập kết quả
+              </Text>
+            </View>
+
+            <View style={styles.trialRow}>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="Số lần đúng *"
+                  value={correct}
+                  onChangeText={(v) => {
+                    setCorrect(v);
+                    if (correctError) setCorrectError("");
+                  }}
+                  keyboardType="numeric"
+                  mode="outlined"
+                  dense
+                  error={!!correctError}
+                  style={styles.trialInput}
+                  outlineStyle={styles.inputOutline}
+                />
+                {correctError ? (
+                  <Text style={styles.errorText}>{correctError}</Text>
+                ) : null}
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="Tổng số lần *"
+                  value={totalTrials}
+                  onChangeText={(v) => {
+                    setTotalTrials(v);
+                    if (totalTrialsError) setTotalTrialsError("");
+                  }}
+                  keyboardType="numeric"
+                  mode="outlined"
+                  dense
+                  error={!!totalTrialsError}
+                  style={styles.trialInput}
+                  outlineStyle={styles.inputOutline}
+                />
+                {totalTrialsError ? (
+                  <Text style={styles.errorText}>{totalTrialsError}</Text>
+                ) : null}
+              </View>
+            </View>
+
+            <View style={{ marginTop: 12 }}>
+              <Picker
+                label="Mức hỗ trợ *"
+                value={prompt}
+                options={PROMPT_LEVEL_OPTIONS}
+                onChange={setPrompt}
+              />
+            </View>
+
             <TextInput
-              label="Số lần đúng *"
-              value={correct}
-              onChangeText={setCorrect}
-              keyboardType="numeric"
+              label="Ghi chú (tùy chọn)"
+              value={notes}
+              onChangeText={setNotes}
               mode="outlined"
+              multiline
+              numberOfLines={4}
               dense
-              style={styles.trialInput}
               outlineStyle={styles.inputOutline}
             />
-            <TextInput
-              label="Tổng số lần *"
-              value={totalTrials}
-              onChangeText={setTotalTrials}
-              keyboardType="numeric"
-              mode="outlined"
-              dense
-              style={styles.trialInput}
-              outlineStyle={styles.inputOutline}
-            />
-          </View>
-
-          <View style={{ marginTop: 12 }}>
-            <Picker
-              label="Mức hỗ trợ *"
-              value={prompt}
-              options={PROMPT_LEVEL_OPTIONS}
-              onChange={setPrompt}
-            />
-          </View>
-
-          <TextInput
-            label="Ghi chú (tùy chọn)"
-            value={notes}
-            onChangeText={setNotes}
-            mode="outlined"
-            multiline
-            numberOfLines={4}
-            dense
-            outlineStyle={styles.inputOutline}
-          />
-        </Surface>
-      </ScrollView>
+          </Surface>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* ── Footer ────────────────────────────────────── */}
-      <Surface
+      <SafeAreaView
         style={[styles.footer, { backgroundColor: theme.colors.surface }]}
-        elevation={3}
+        edges={["bottom"]}
       >
         <Button
           mode="outlined"
-          icon="arrow-left"
+          icon={isFirst ? "" : "arrow-left"}
           onPress={() => navigation.goBack()}
           style={styles.footerBtn}
         >
-          Quay lại
+          {isFirst ? "Hủy" : "Quay lại"}
         </Button>
         <Button
           mode="contained"
-          icon={isLast ? "check" : "arrow-right"}
+          icon={isLast ? "" : "arrow-right"}
           onPress={() => {
-            if (!totalTrials || Number(totalTrials) === 0) {
-              Alert.alert(
-                "Thiếu thông tin",
-                "Vui lòng nhập tổng số lần trước khi tiếp tục",
-              );
-              return;
-            }
+            if (!validate()) return;
             handleNext();
           }}
           style={styles.footerBtn}
           contentStyle={{ flexDirection: "row-reverse" }}
         >
-          {isLast ? "Xác nhận" : `Mục tiêu ${objectiveIndex + 2}`}
+          {isLast ? "Xác nhận" : `Tiếp tục`}
         </Button>
-      </Surface>
+      </SafeAreaView>
     </View>
   );
 }
@@ -430,7 +462,13 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 4,
   },
-  trialInput: { flex: 1, backgroundColor: "transparent" },
+  trialInput: { backgroundColor: "transparent" },
+  errorText: {
+    fontSize: 11,
+    color: "#B00020",
+    marginTop: 3,
+    marginLeft: 4,
+  },
   inputOutline: { borderRadius: 10 },
   accuracyPreview: {
     flexDirection: "row",

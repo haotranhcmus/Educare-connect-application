@@ -666,7 +666,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               mode="contained"
               icon="clipboard-edit-outline"
               onPress={() =>
-                navigation.navigate("EvalStep2", {
+                navigation.navigate("EvalObjective", {
                   sessionId,
                   objectiveIndex: 0,
                 })
@@ -947,7 +947,7 @@ const styles = StyleSheet.create({
   avgCard: { padding: 12, borderRadius: 10, marginBottom: 8 },
 
   // Actions
-  actions: { marginTop: 24 },
+  actions: { marginBottom: 24 },
 
   // Modal
   modalOverlay: {

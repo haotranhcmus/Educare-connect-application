@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PROMPT_LEVEL_LABELS } from "../../utils/labels";
 import type { SessionResult } from "../../types";
 
@@ -159,6 +160,23 @@ function ResultSummaryCardImpl({ result }: ResultSummaryCardProps) {
           </Text>
         </View>
       </View>
+
+      {result.notes ? (
+        <View style={styles.notesRow}>
+          <MaterialCommunityIcons
+            name="note-text-outline"
+            size={14}
+            color={theme.colors.outline}
+            style={{ marginTop: 2 }}
+          />
+          <Text
+            variant="bodySmall"
+            style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
+          >
+            {result.notes}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -266,5 +284,11 @@ const styles = StyleSheet.create({
     width: 1,
     alignSelf: "stretch",
     marginVertical: 8,
+  },
+  notesRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+    paddingTop: 4,
   },
 });

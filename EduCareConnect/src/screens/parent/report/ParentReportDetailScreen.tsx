@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ScrollView, View, StyleSheet, Platform } from "react-native";
+import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, Divider, useTheme, Surface } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -387,15 +387,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 20,
     overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        // shadowColor: G1,
-        // shadowOffset: { width: 0, height: 4 },
-        // shadowOpacity: 0.15,
-        // shadowRadius: 10,
-      },
-      android: { elevation: 4 },
-    }),
+    elevation: 4,
   },
   heroGrad: {
     paddingHorizontal: 14,
@@ -514,7 +506,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 10,
-    // backgroundColor: "red",
   },
   iconBubble: {
     width: 28,
