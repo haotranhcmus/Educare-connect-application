@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+  Suspense,
+} from "react";
 import {
   View,
   SectionList,
@@ -20,18 +26,25 @@ import {
   Divider,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { ReportListCard } from "../../../components/report/ReportListCard";
-import { EmptyState } from "../../../components/common/EmptyState";
-import ReportPlaceholder from "../../../../assets/placeholder/report-placeholder.svg";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { DatePickerField } from "../../../components/form/DatePickerField";
-import { useMyReports } from "../../../hooks/useReports";
-import { formatDate } from "../../../utils/formatters";
-import { groupByDate } from "../../../utils/groupByDate";
+import { ReportListCard } from "@components/report/ReportListCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import ReportPlaceholder from "@assets/placeholder/svg/report-placeholder.svg";
+import ReportPlaceholderJson from "@assets/placeholder/json/report-placeholder.json";
+
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { DatePickerField } from "@components/form/DatePickerField";
+import { useMyReports } from "@hooks/useReports";
+import { formatDate } from "@utils/formatters";
+import { groupByDate } from "@utils/groupByDate";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ReportStackParamList } from "../../../navigation/types";
-import type { ReportListItem } from "../../../types";
+import type { ReportStackParamList } from "@navigation/types";
+import type { ReportListItem } from "@t";
 import dayjs from "dayjs";
+
+import { useMyReportsSuspense } from "@hooks/useReports";
+import { ReportListSkeleton } from "@screens/teacher/report/ReportListSkeleton";
+
+import LottieView from "lottie-react-native";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "ReportList">;
 
@@ -103,7 +116,7 @@ const CHIP_TEXT_ACTIVE = {
   fontSize: 12,
 };
 
-export function ReportListScreen({ navigation }: Props) {
+function ReportListContent({ navigation }: Props) {
   const theme = useTheme();
   const [search, setSearch] = useState("");
 
@@ -121,7 +134,7 @@ export function ReportListScreen({ navigation }: Props) {
   const [pendingCustomFrom, setPendingCustomFrom] = useState("");
   const [pendingCustomTo, setPendingCustomTo] = useState("");
 
-  const { data: reports = [], isLoading, refetch } = useMyReports();
+  const { data: reports = [], refetch } = useMyReportsSuspense();
 
   const activeFilterCount = useMemo(() => {
     let n = 0;
@@ -288,31 +301,27 @@ export function ReportListScreen({ navigation }: Props) {
         </View>
       )}
 
-      {isLoading ? (
-        <LoadingOverlay visible />
-      ) : (
-        <SectionList
-          sections={sections}
-          keyExtractor={keyExtractor}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl refreshing={false} onRefresh={refetch} />
-          }
-          renderSectionHeader={({ section }) => (
-            <Text
-              variant="labelMedium"
-              style={[styles.sectionHeader, { color: theme.colors.outline }]}
-            >
-              {formatDate(section.title)}
-            </Text>
-          )}
-          renderItem={renderItem}
-          ListEmptyComponent={
-            <EmptyState image={ReportPlaceholder} title="Không có báo cáo" />
-          }
-          stickySectionHeadersEnabled={false}
-        />
-      )}
+      <SectionList
+        sections={sections}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={refetch} />
+        }
+        renderSectionHeader={({ section }) => (
+          <Text
+            variant="labelMedium"
+            style={[styles.sectionHeader, { color: theme.colors.outline }]}
+          >
+            {formatDate(section.title)}
+          </Text>
+        )}
+        renderItem={renderItem}
+        ListEmptyComponent={
+          <EmptyState lottie={ReportPlaceholderJson} title="Không có báo cáo" />
+        }
+        stickySectionHeadersEnabled={false}
+      />
 
       <FAB
         icon="plus"
@@ -517,6 +526,14 @@ export function ReportListScreen({ navigation }: Props) {
         </Pressable>
       </Modal>
     </View>
+  );
+}
+
+export function ReportListScreen(props: Props) {
+  return (
+    <Suspense fallback={<ReportListSkeleton />}>
+      <ReportListContent {...props} />
+    </Suspense>
   );
 }
 

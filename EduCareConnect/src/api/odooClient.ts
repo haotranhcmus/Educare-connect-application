@@ -1,11 +1,11 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
-import { getSessionId, clearSession } from "../utils/secureStore";
-import { logger } from "../utils/logger";
+import { getSessionId, clearSession } from "@utils/secureStore";
+import { logger } from "@utils/logger";
 import type {
   OdooRpcResponse,
   OdooError,
   OdooDomain,
-} from "../types";
+} from "@t";
 
 export const ODOO_BASE_URL =
   process.env.EXPO_PUBLIC_ODOO_URL || "http://educare-connect.me";

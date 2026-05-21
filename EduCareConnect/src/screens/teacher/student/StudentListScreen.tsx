@@ -1,19 +1,20 @@
-import React, { useState, useMemo, useLayoutEffect, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useLayoutEffect,
+  useCallback,
+  Suspense,
+} from "react";
 import { View, FlatList, StyleSheet } from "react-native";
-import {
-  Searchbar,
-  Menu,
-  IconButton,
-  Text as PaperText,
-  useTheme,
-} from "react-native-paper";
-import { useMyStudents } from "../../../hooks/useStudents";
-import { StudentListCard } from "../../../components/student/StudentListCard";
-import { EmptyState } from "../../../components/common/EmptyState";
-import StudentPlaceholder from "../../../../assets/placeholder/student-placeholder.svg";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
+import { Searchbar, Menu, IconButton, useTheme } from "react-native-paper";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { StudentStackParamList } from "../../../navigation/types";
+import { useMyStudentsSuspense } from "@hooks/useStudents";
+import { StudentListCard } from "@components/student/StudentListCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import StudentPlaceholder from "@assets/placeholder/svg/student-placeholder.svg";
+import StudentPlaceholderJson from "@assets/placeholder/json/student-placeholder.json";
+import type { StudentStackParamList } from "@navigation/types";
+import { StudentListSkeleton } from "@screens/teacher/student/StudentListSkeleton";
 
 type Props = NativeStackScreenProps<StudentStackParamList, "StudentList">;
 type StatusFilter = "all" | "active" | "inactive";
@@ -28,14 +29,10 @@ const headerSearchStyle = {
 };
 const headerSearchInputStyle = { color: "#fff", fontSize: 13, paddingLeft: 0 };
 
-export function StudentListScreen({ navigation }: Props) {
+function StudentListContent({ navigation }: Props) {
   const theme = useTheme();
-  const {
-    data: students = [],
-    isLoading,
-    refetch,
-    isRefetching,
-  } = useMyStudents();
+  const { data: students, refetch, isRefetching } = useMyStudentsSuspense();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [filterMenuVisible, setFilterMenuVisible] = useState(false);
@@ -128,8 +125,6 @@ export function StudentListScreen({ navigation }: Props) {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <LoadingOverlay visible={isLoading} />
-
       <FlatList
         data={filteredStudents}
         keyExtractor={(item) => item.id.toString()}
@@ -137,24 +132,29 @@ export function StudentListScreen({ navigation }: Props) {
           <StudentListCard student={item} onPress={handlePress} />
         )}
         ListEmptyComponent={
-          !isLoading ? (
-            <EmptyState
-              image={StudentPlaceholder}
-              title="Chưa có học sinh"
-              description={
-                searchQuery
-                  ? "Không tìm thấy kết quả"
-                  : "Bạn chưa được phân công học sinh nào"
-              }
-            />
-          ) : null
+          <EmptyState
+            lottie={StudentPlaceholderJson}
+            title="Chưa có học sinh"
+            description={
+              searchQuery
+                ? "Không tìm thấy kết quả"
+                : "Bạn chưa được phân công học sinh nào"
+            }
+          />
         }
         onRefresh={refetch}
         refreshing={isRefetching}
         contentContainerStyle={styles.list}
-        // style={{ flex: 1, backgroundColor: "red" }}
       />
     </View>
+  );
+}
+
+export function StudentListScreen(props: Props) {
+  return (
+    <Suspense fallback={<StudentListSkeleton />}>
+      <StudentListContent {...props} />
+    </Suspense>
   );
 }
 

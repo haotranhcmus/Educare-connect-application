@@ -1,25 +1,29 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, Divider, useTheme, Surface } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useReportDetail } from "../../../hooks/useReports";
-import { useMarkReportRead } from "../../../hooks/useParent";
+import { useReportDetailSuspense } from "@hooks/useReports";
+import { useMarkReportRead } from "@hooks/useParent";
 import {
   useSessionDetail,
   useSessionObjectives,
-} from "../../../hooks/useSessions";
-import { ObjectiveCard } from "../../../components/iep/ObjectiveCard";
+} from "@hooks/useSessions";
+import { ObjectiveCard } from "@components/iep/ObjectiveCard";
 import {
   REPORT_STATUS_HERO_CONFIG,
   PERFORMANCE_CONFIG,
-} from "../../../theme/decorativeColors";
-import { obsLabel } from "../../../utils/labels";
-import { REPORT_FIELDS_PARENT } from "../../../constants/reportFields";
-import { formatDate, formatDateTime } from "../../../utils/formatters";
+} from "@theme/decorativeColors";
+import { obsLabel } from "@utils/labels";
+import { REPORT_FIELDS_PARENT } from "@constants/reportFields";
+import { formatDate, formatDateTime } from "@utils/formatters";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ParentReportStackParamList } from "../../../navigation/types";
+import type { ParentReportStackParamList } from "@navigation/types";
+import {
+  ParentReportDetailSkeleton,
+  ParentReportObservationsSkeleton,
+  ParentReportObjectivesSkeleton,
+} from "@screens/parent/report/ParentReportDetailSkeleton";
 
 const G1 = "#2E7D32";
 const G2 = "#43A047";
@@ -29,17 +33,17 @@ type Props = NativeStackScreenProps<
   "ParentReportDetail"
 >;
 
-export function ParentReportDetailScreen({ navigation, route }: Props) {
+function ParentReportDetailContent({ navigation, route }: Props) {
   const theme = useTheme();
   const { reportId } = route.params;
-  const { data: report, isLoading } = useReportDetail(reportId);
+  const { data: report } = useReportDetailSuspense(reportId);
   const sessionId = Array.isArray(report?.session_log_id)
     ? report.session_log_id[0]
     : 0;
-  const { data: session } = useSessionDetail(sessionId);
-  const { data: objectives = [] } = useSessionObjectives(
-    report?.objective_ids ?? [],
-  );
+  const { data: session, isLoading: sessionLoading } =
+    useSessionDetail(sessionId);
+  const { data: objectives = [], isLoading: objectivesLoading } =
+    useSessionObjectives(report?.objective_ids ?? []);
   const markRead = useMarkReportRead();
 
   useEffect(() => {
@@ -56,8 +60,6 @@ export function ParentReportDetailScreen({ navigation, route }: Props) {
     });
   };
 
-  if (isLoading || !report) return <LoadingOverlay visible />;
-
   const statusCfg =
     REPORT_STATUS_HERO_CONFIG[report.status] ?? REPORT_STATUS_HERO_CONFIG.draft;
   const studentName = Array.isArray(report.student_id)
@@ -72,12 +74,18 @@ export function ParentReportDetailScreen({ navigation, route }: Props) {
     : null;
   const isUnread = report.status === "sent";
 
+  const hasObservations =
+    session?.attendance ||
+    session?.mood ||
+    session?.energy_level ||
+    session?.engagement_level;
+
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.colors.background }}
       contentContainerStyle={styles.container}
     >
-      {/* ── Gradient Hero Card (giống IepPlanDetailScreen) ── */}
+      {/* ── Gradient Hero Card ── */}
       <View
         style={[styles.heroCard, { backgroundColor: theme.colors.surface }]}
       >
@@ -164,8 +172,10 @@ export function ParentReportDetailScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      {/* ── Quan sát buổi học ── */}
-      {(session?.attendance || session?.mood || session?.energy_level) && (
+      {/* ── Quan sát buổi học — load độc lập với report header ── */}
+      {sessionLoading && sessionId ? (
+        <ParentReportObservationsSkeleton rows={4} />
+      ) : hasObservations ? (
         <>
           <SectionLabel
             icon="eye-outline"
@@ -224,10 +234,14 @@ export function ParentReportDetailScreen({ navigation, route }: Props) {
             ) : null}
           </Surface>
         </>
-      )}
+      ) : null}
 
-      {/* ── Mục Tiêu Đã Học ── */}
-      {objectives.length > 0 ? (
+      {/* ── Mục Tiêu Đã Học — load độc lập với report header ── */}
+      {objectivesLoading && (report.objective_ids?.length ?? 0) > 0 ? (
+        <ParentReportObjectivesSkeleton
+          count={Math.min(report.objective_ids?.length ?? 2, 3)}
+        />
+      ) : objectives.length > 0 ? (
         <>
           <SectionLabel
             icon="target"
@@ -300,6 +314,14 @@ export function ParentReportDetailScreen({ navigation, route }: Props) {
         );
       })}
     </ScrollView>
+  );
+}
+
+export function ParentReportDetailScreen(props: Props) {
+  return (
+    <Suspense fallback={<ParentReportDetailSkeleton />}>
+      <ParentReportDetailContent {...props} />
+    </Suspense>
   );
 }
 

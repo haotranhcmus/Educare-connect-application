@@ -2,12 +2,12 @@ import React from "react";
 import { View, StyleSheet, Platform } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { ChildProfileTab } from "./ChildProfileTab";
-import { ChildProgressTab } from "./ChildProgressTab";
-import { useStudentById } from "../../../hooks/useParent";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { ChildProfileTab } from "@screens/parent/child/ChildProfileTab";
+import { ChildProgressTab } from "@screens/parent/child/ChildProgressTab";
+import { useStudentById } from "@hooks/useParent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 

@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
-import { theme } from "../../theme";
+import { theme } from "@theme";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const CHART_H = 160;

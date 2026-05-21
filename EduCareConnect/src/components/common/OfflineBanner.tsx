@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useOnlineStatus } from "../../hooks/useOnlineStatus";
+import { useOnlineStatus } from "@hooks/useOnlineStatus";
 
 export function OfflineBanner() {
   const theme = useTheme();

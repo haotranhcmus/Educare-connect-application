@@ -1,27 +1,45 @@
-import React, { useCallback } from "react";
-import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useCallback, useState, useRef, useEffect } from "react";
+import {
+  View,
+  ScrollView,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  type NativeSyntheticEvent,
+  type NativeScrollEvent,
+} from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "@react-navigation/native";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "../../store/authStore";
-import { useMyStudents } from "../../hooks/useStudents";
-import { useTodaySessions, useWeekMonthStats } from "../../hooks/useSessions";
-import { useSessionsForReport } from "../../hooks/useReports";
-import { useMyProfile } from "../../hooks/useProfile";
-import { queryKeys } from "../../api/queryKeys";
-import { AvatarLabel, ProgressRingAvatar } from "../../components/common";
-import CoffeeSvg from "../../../assets/placeholder/coffee-chill.svg";
-import { SessionListCard } from "../../components/session/SessionListCard";
-import { StatusBadge } from "../../components/common/StatusBadge";
-import { formatFloatTime } from "../../utils/formatters";
+import { useAuthStore } from "@store/authStore";
+import { useMyStudents } from "@hooks/useStudents";
+import { useTodaySessions, useWeekMonthStats } from "@hooks/useSessions";
+import { useSessionsForReport } from "@hooks/useReports";
+import { useMyProfile } from "@hooks/useProfile";
+import { queryKeys } from "@api/queryKeys";
+import { AvatarLabel, ProgressRingAvatar } from "@components/common";
+// import CoffeeSvg from "@assets/placeholder/svg/coffee-chill.svg";
+import StudyJson from "@assets/placeholder/json/study.json";
+import { TodaySessionCard } from "@components/session/TodaySessionCard";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { formatFloatTime } from "@utils/formatters";
 import {
   SESSION_PURPOSE_LABELS,
   SESSION_TYPE_SHORT_LABELS,
   LOCATION_LABELS,
-} from "../../utils/labels";
+} from "@utils/labels";
+import LottieView from "lottie-react-native";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const TODAY_CARD_H = 162;
+const CARD_W = SCREEN_WIDTH - 48;   // visual card width
+const CARD_SPACING = 8;              // gap between cards
+const CARD_PEEK = 24;               // = (SCREEN_WIDTH - CARD_W) / 2 — content padding for centering
+const SNAP_INTERVAL = CARD_W + CARD_SPACING; // FlatList snap interval
 
 export function HomeScreen({ navigation }: any) {
   const theme = useTheme();
@@ -30,6 +48,70 @@ export function HomeScreen({ navigation }: any) {
   const uid = useAuthStore((s) => s.uid);
   const queryClient = useQueryClient();
   const { data: todaySessions = [] } = useTodaySessions();
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const carouselIndexRef = useRef(0);
+  const flatListRef = useRef<FlatList>(null);
+  const [autoScrollPaused, setAutoScrollPaused] = useState(false);
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scrollToCard = useCallback((index: number, animated: boolean) => {
+    flatListRef.current?.scrollToOffset({
+      offset: index * SNAP_INTERVAL,
+      animated,
+    });
+  }, []);
+
+  // Auto-scroll forward every 4s; fast rewind when reaching end.
+  // Pauses when user manually scrolls, resumes 5s after last interaction.
+  useEffect(() => {
+    if (todaySessions.length <= 1 || autoScrollPaused) return;
+    const id = setInterval(() => {
+      const len = todaySessions.length;
+      const next = carouselIndexRef.current + 1;
+      if (next >= len) {
+        scrollToCard(0, true);
+        carouselIndexRef.current = 0;
+        setCarouselIndex(0);
+      } else {
+        scrollToCard(next, true);
+        carouselIndexRef.current = next;
+        setCarouselIndex(next);
+      }
+    }, 4000);
+    return () => clearInterval(id);
+  }, [todaySessions.length, autoScrollPaused, scrollToCard]);
+
+  const handleScrollBeginDrag = useCallback(() => {
+    setAutoScrollPaused(true);
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+  }, []);
+
+  // Updates dots at the midpoint of each swipe (Math.round flips at 50%).
+  // scrollEventThrottle=16 → ~60fps events, but setCarouselIndex only fires
+  // when the rounded index actually changes → no wasted re-renders.
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const offset = e.nativeEvent.contentOffset.x;
+      const idx = Math.max(
+        0,
+        Math.min(Math.round(offset / SNAP_INTERVAL), todaySessions.length - 1),
+      );
+      if (idx !== carouselIndexRef.current) {
+        carouselIndexRef.current = idx;
+        setCarouselIndex(idx);
+      }
+    },
+    [todaySessions.length],
+  );
+
+  const handleMomentumScrollEnd = useCallback(() => {
+    // Resume auto-scroll 5s after user stops interacting
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    pauseTimerRef.current = setTimeout(
+      () => setAutoScrollPaused(false),
+      5000,
+    );
+  }, []);
 
   // Invalidate today's sessions every time HomeScreen comes into focus
   // to ensure edits made in detail/edit screens are reflected immediately.
@@ -402,19 +484,70 @@ export function HomeScreen({ navigation }: any) {
           count={todaySessions.length}
           countUnit="buổi học"
         />
-        <View style={styles.section}>
-          {todaySessions.length > 0 ? (
-            todaySessions.map((s) => (
-              <SessionListCard
-                key={s.id}
-                session={s}
-                onPress={() => handleSessionPress(s.id)}
-                hasReport={!noReportIds.has(s.id)}
-              />
-            ))
-          ) : (
+        {todaySessions.length > 1 ? (
+          <View>
+            <FlatList
+              ref={flatListRef}
+              horizontal
+              data={todaySessions}
+              keyExtractor={(s) => String(s.id)}
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={SNAP_INTERVAL}
+              decelerationRate="fast"
+              contentContainerStyle={styles.carouselContent}
+              getItemLayout={(_, index) => ({
+                length: SNAP_INTERVAL,
+                offset: CARD_PEEK + index * SNAP_INTERVAL,
+                index,
+              })}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              onScrollBeginDrag={handleScrollBeginDrag}
+              onMomentumScrollEnd={handleMomentumScrollEnd}
+              renderItem={({ item, index }) => (
+                <View
+                  style={[
+                    styles.carouselItem,
+                    { marginRight: index < todaySessions.length - 1 ? CARD_SPACING : 0 },
+                  ]}
+                >
+                  <TodaySessionCard
+                    session={item}
+                    onPress={() => handleSessionPress(item.id)}
+                    hasReport={!noReportIds.has(item.id)}
+                  />
+                </View>
+              )}
+            />
+            <View style={styles.dotsRow}>
+              {todaySessions.map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    i === carouselIndex ? styles.dotActive : styles.dotInactive,
+                  ]}
+                />
+              ))}
+            </View>
+          </View>
+        ) : todaySessions.length === 1 ? (
+          <View style={styles.singleCardPad}>
+            <TodaySessionCard
+              session={todaySessions[0]}
+              onPress={() => handleSessionPress(todaySessions[0].id)}
+              hasReport={!noReportIds.has(todaySessions[0].id)}
+            />
+          </View>
+        ) : (
+          <View style={styles.section}>
             <View style={styles.emptyDay}>
-              <CoffeeSvg width={120} height={120} />
+              <LottieView
+                source={StudyJson}
+                autoPlay
+                loop
+                style={{ width: 120, height: 120 }}
+              />
               <Text
                 variant="bodyMedium"
                 style={{ color: theme.colors.outline, marginTop: 12 }}
@@ -428,8 +561,8 @@ export function HomeScreen({ navigation }: any) {
                 Hãy tận dụng thời gian chuẩn bị kế hoạch 📋
               </Text>
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* ── Học sinh của tôi ─── */}
         <HomeSectionLabel
@@ -811,6 +944,20 @@ const styles = StyleSheet.create({
   },
   // Content
   section: { paddingHorizontal: 16, marginBottom: 16 },
+  carouselContent: { paddingHorizontal: CARD_PEEK },
+  carouselItem: { width: CARD_W },
+  singleCardPad: { paddingHorizontal: 16, marginBottom: 16 },
+  dotsRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  dot: { height: 6, borderRadius: 3 },
+  dotActive: { width: 18, backgroundColor: "#2E7D32" },
+  dotInactive: { width: 6, backgroundColor: "#C8E6C9" },
   emptyDay: {
     alignItems: "center",
     paddingVertical: 28,

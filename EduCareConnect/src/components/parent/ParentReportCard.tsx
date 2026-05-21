@@ -2,8 +2,8 @@ import React from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { formatDate } from "../../utils/formatters";
-import type { ReportListItem } from "../../types";
+import { formatDate } from "@utils/formatters";
+import type { ReportListItem } from "@t";
 
 interface ParentReportCardProps {
   report: ReportListItem & { teacher_id?: [number, string] | false };

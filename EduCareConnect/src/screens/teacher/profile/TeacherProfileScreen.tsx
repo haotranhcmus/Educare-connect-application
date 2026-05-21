@@ -7,16 +7,17 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import { toast } from "@utils/toast";
 import { Avatar, Text, Divider, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { SectionHeader } from "../../../components/common/SectionHeader";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useMyProfile, useUploadAvatar } from "../../../hooks/useProfile";
-import { useAuthStore } from "../../../store/authStore";
+import { SectionHeader } from "@components/common/SectionHeader";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { useMyProfile, useUploadAvatar } from "@hooks/useProfile";
+import { useAuthStore } from "@store/authStore";
 import Constants from "expo-constants";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ProfileStackParamList } from "../../../navigation/types";
+import type { ProfileStackParamList } from "@navigation/types";
 
 type Props = NativeStackScreenProps<ProfileStackParamList, "Profile">;
 
@@ -50,10 +51,7 @@ export function TeacherProfileScreen({ navigation }: Props) {
   const handlePickAvatar = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert(
-        "Cần quyền truy cập",
-        "Vui lòng cho phép truy cập thư viện ảnh.",
-      );
+      toast.info("Cần cấp quyền thư viện ảnh trong cài đặt");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -69,7 +67,7 @@ export function TeacherProfileScreen({ navigation }: Props) {
           base64Image: result.assets[0].base64,
         });
       } catch {
-        Alert.alert("Lỗi", "Không thể cập nhật ảnh đại diện.");
+        toast.error("Không thể cập nhật ảnh đại diện");
       }
     }
   };

@@ -16,19 +16,19 @@ import {
   ProgressBar as PaperProgress,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StepIndicator } from "../../../components/common/StepIndicator";
-import { Picker } from "../../../components/form/Picker";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
+import { StepIndicator } from "@components/common/StepIndicator";
+import { Picker } from "@components/form/Picker";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import {
   useSessionDetail,
   useSessionObjectives,
-} from "../../../hooks/useSessions";
-import { formatDate, formatFloatTime } from "../../../utils/formatters";
-import { PROMPT_LEVEL_LABELS, toPickerOptions } from "../../../utils/labels";
-import { useEvalStore } from "../../../store/evalStore";
-import type { ResultInput } from "../../../api/evalApi";
+} from "@hooks/useSessions";
+import { formatDate, formatFloatTime } from "@utils/formatters";
+import { PROMPT_LEVEL_LABELS, toPickerOptions } from "@utils/labels";
+import { useEvalStore } from "@store/evalStore";
+import type { ResultInput } from "@api/evalApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { TeacherSessionStackParamList } from "../../../navigation/types";
+import type { TeacherSessionStackParamList } from "@navigation/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = NativeStackScreenProps<

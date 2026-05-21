@@ -4,8 +4,9 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Alert,
 } from "react-native";
+import * as Haptics from "expo-haptics";
+import { toast } from "@utils/toast";
 import {
   Text,
   Button,
@@ -16,37 +17,37 @@ import {
   HelperText,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StepIndicator } from "../../../components/common/StepIndicator";
-import { ObjectiveCard } from "../../../components/iep/ObjectiveCard";
-import { SectionHeader } from "../../../components/common/SectionHeader";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { ProgressBar } from "../../../components/common/ProgressBar";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
+import { StepIndicator } from "@components/common/StepIndicator";
+import { ObjectiveCard } from "@components/iep/ObjectiveCard";
+import { SectionHeader } from "@components/common/SectionHeader";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { ProgressBar } from "@components/common/ProgressBar";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import {
   useCreateSession,
   useStudentActiveObjectives,
-} from "../../../hooks/useSessions";
-import { useGoalsByIds } from "../../../hooks/useIep";
+} from "@hooks/useSessions";
+import { useGoalsByIds } from "@hooks/useIep";
 import {
   checkStudentSessionConflict,
   type ConflictSession,
-} from "../../../api/sessionApi";
-import { formatFloatTime, formatDate } from "../../../utils/formatters";
-import { useStudentsWithActivePlan } from "../../../hooks/useStudents";
-import { Picker } from "../../../components/form/Picker";
-import { DatePickerField } from "../../../components/form/DatePickerField";
+} from "@api/sessionApi";
+import { formatFloatTime, formatDate } from "@utils/formatters";
+import { useStudentsWithActivePlan } from "@hooks/useStudents";
+import { Picker } from "@components/form/Picker";
+import { DatePickerField } from "@components/form/DatePickerField";
 import {
   TimePickerField,
   type TimeValue,
-} from "../../../components/form/TimePickerField";
+} from "@components/form/TimePickerField";
 import {
   LOCATION_LABELS,
   SESSION_TYPE_LABELS,
   toPickerOptions,
-} from "../../../utils/labels";
-import type { IepGoal } from "../../../types";
+} from "@utils/labels";
+import type { IepGoal } from "@t";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { SessionStackParamList } from "../../../navigation/types";
+import type { SessionStackParamList } from "@navigation/types";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionCreate">;
 
@@ -430,16 +431,16 @@ export function SessionCreateScreen({ route, navigation }: Props) {
 
   const validateStep1 = (): boolean => {
     if (!form.student_id) {
-      Alert.alert("Lỗi", "Vui lòng chọn học sinh");
+      toast.error("Vui lòng chọn học sinh");
       return false;
     }
     if (!form.session_date) {
-      Alert.alert("Lỗi", "Vui lòng chọn ngày");
+      toast.error("Vui lòng chọn ngày");
       return false;
     }
     const toFloat = (t: TimeValue) => t.hours + t.minutes / 60;
     if (toFloat(form.end_time) <= toFloat(form.start_time)) {
-      Alert.alert("Lỗi", "Giờ kết thúc phải sau giờ bắt đầu");
+      toast.error("Giờ kết thúc phải sau giờ bắt đầu");
       return false;
     }
     return true;
@@ -507,9 +508,10 @@ export function SessionCreateScreen({ route, navigation }: Props) {
         session_purpose: form.session_purpose,
         objective_ids: [[6, 0, Array.from(selectedObjIds)]],
       });
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setSuccessModalVisible(true);
     } catch (e: any) {
-      Alert.alert("Lỗi", e.message || "Không thể tạo buổi học");
+      toast.error("Không thể tạo buổi học", e?.message);
     }
   };
 

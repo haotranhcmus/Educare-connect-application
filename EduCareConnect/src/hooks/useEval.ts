@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { submitEvaluation, ResultInput } from "../api/evalApi";
-import { queryKeys } from "../api/queryKeys";
+import { submitEvaluation, ResultInput } from "@api/evalApi";
+import { queryKeys } from "@api/queryKeys";
 
 export function useSubmitEval() {
   const queryClient = useQueryClient();

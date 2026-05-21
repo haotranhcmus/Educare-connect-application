@@ -4,29 +4,32 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackActions } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useParentStore } from "../store/parentStore";
+import { useParentStore } from "@store/parentStore";
 import type {
   ParentTabParamList,
   ParentChildStackParamList,
   ParentTimetableStackParamList,
   ParentReportStackParamList,
   ParentProfileStackParamList,
-} from "./types";
+} from "@navigation/types";
 import {
-  GRADIENT_HEADER_OPTIONS,
+  useHeaderOptions,
   popToTopOnTabPress,
-} from "./navigationHelpers";
-import { ParentHomeScreen } from "../screens/parent/home/ParentHomeScreen";
-import { ChildListScreen } from "../screens/parent/child/ChildListScreen";
-import { ChildProfileScreen } from "../screens/parent/child/ChildProfileScreen";
-import { ChildTimetableScreen } from "../screens/parent/child/ChildTimetableScreen";
-import { ChildIepHistoryScreen } from "../screens/parent/iep/ChildIepHistoryScreen";
-import { IepPlanDetailScreen } from "../screens/teacher/iep/IepPlanDetailScreen";
-import { IepObjectiveDetailScreen } from "../screens/teacher/iep/IepObjectiveDetailScreen";
-import { ParentReportListScreen } from "../screens/parent/report/ParentReportListScreen";
-import { ParentReportDetailScreen } from "../screens/parent/report/ParentReportDetailScreen";
-import { ParentProfileScreen } from "../screens/parent/profile/ParentProfileScreen";
-import { ChangePasswordScreen } from "../screens/teacher/profile/ChangePasswordScreen";
+} from "@navigation/navigationHelpers";
+import { ParentHomeScreen } from "@screens/parent/home/ParentHomeScreen";
+import { ChildListScreen } from "@screens/parent/child/ChildListScreen";
+import { ChildProfileScreen } from "@screens/parent/child/ChildProfileScreen";
+import { ChildTimetableScreen } from "@screens/parent/child/ChildTimetableScreen";
+import { ChildIepHistoryScreen } from "@screens/parent/iep/ChildIepHistoryScreen";
+import { IepPlanDetailScreen } from "@screens/teacher/iep/IepPlanDetailScreen";
+import { IepObjectiveDetailScreen } from "@screens/teacher/iep/IepObjectiveDetailScreen";
+import { ParentReportListScreen } from "@screens/parent/report/ParentReportListScreen";
+import { ParentReportDetailScreen } from "@screens/parent/report/ParentReportDetailScreen";
+import { ParentProfileScreen } from "@screens/parent/profile/ParentProfileScreen";
+import { ChangePasswordScreen } from "@screens/teacher/profile/ChangePasswordScreen";
+
+import { ErrorBoundary } from "@components/common/ErrorBoundary";
+import { ScreenErrorFallback } from "@components/common/ScreenErrorFallback";
 
 const Tab = createBottomTabNavigator<ParentTabParamList>();
 const ChildStack = createNativeStackNavigator<ParentChildStackParamList>();
@@ -38,100 +41,132 @@ const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
 // ── Stack navigators ──────────────────────────────────────────────
 
 function ChildStackNavigator() {
+  const headerOptions = useHeaderOptions();
   return (
-    <ChildStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
-      <ChildStack.Screen
-        name="ChildList"
-        component={ChildListScreen}
-        options={{ title: "Con tôi" }}
-      />
-      <ChildStack.Screen
-        name="ChildDetail"
-        component={ChildProfileScreen}
-        options={{ headerShown: false }}
-      />
-      <ChildStack.Screen
-        name="ChildIepHistory"
-        component={ChildIepHistoryScreen}
-        options={{ title: "Kế hoạch IEP" }}
-      />
-      <ChildStack.Screen
-        name="ChildIepPlanDetail"
-        component={IepPlanDetailScreen as any}
-        options={{ title: "Chi tiết kế hoạch IEP" }}
-      />
-      <ChildStack.Screen
-        name="ChildIepObjectiveDetail"
-        component={IepObjectiveDetailScreen as any}
-        options={{ title: "Chi tiết mục tiêu" }}
-      />
-      <ChildStack.Screen
-        name="ChildTimetable"
-        component={ChildTimetableScreen}
-        options={{ title: "Thời khóa biểu" }}
-      />
-    </ChildStack.Navigator>
+    <ErrorBoundary
+      name="ChildStack"
+      fallback={(error, reset) => (
+        <ScreenErrorFallback error={error} reset={reset} />
+      )}
+    >
+      <ChildStack.Navigator screenOptions={headerOptions}>
+        <ChildStack.Screen
+          name="ChildList"
+          component={ChildListScreen}
+          options={{ title: "Con tôi" }}
+        />
+        <ChildStack.Screen
+          name="ChildDetail"
+          component={ChildProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <ChildStack.Screen
+          name="ChildIepHistory"
+          component={ChildIepHistoryScreen}
+          options={{ title: "Kế hoạch IEP" }}
+        />
+        <ChildStack.Screen
+          name="ChildIepPlanDetail"
+          component={IepPlanDetailScreen as any}
+          options={{ title: "Chi tiết kế hoạch IEP" }}
+        />
+        <ChildStack.Screen
+          name="ChildIepObjectiveDetail"
+          component={IepObjectiveDetailScreen as any}
+          options={{ title: "Chi tiết mục tiêu" }}
+        />
+        <ChildStack.Screen
+          name="ChildTimetable"
+          component={ChildTimetableScreen}
+          options={{ title: "Thời khóa biểu" }}
+        />
+      </ChildStack.Navigator>
+    </ErrorBoundary>
   );
 }
 
 function TimetableStackNavigator() {
+  const headerOptions = useHeaderOptions();
   return (
-    <TimetableStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
-      <TimetableStack.Screen
-        name="Timetable"
-        component={ChildTimetableScreen}
-        options={{ title: "Thời khóa biểu" }}
-      />
-      <TimetableStack.Screen
-        name="ChildIepHistory"
-        component={ChildIepHistoryScreen}
-        options={{ title: "Kế hoạch IEP" }}
-      />
-      <TimetableStack.Screen
-        name="ChildIepPlanDetail"
-        component={IepPlanDetailScreen as any}
-        options={{ title: "Chi tiết kế hoạch IEP" }}
-      />
-      <TimetableStack.Screen
-        name="ChildIepObjectiveDetail"
-        component={IepObjectiveDetailScreen as any}
-        options={{ title: "Chi tiết mục tiêu" }}
-      />
-    </TimetableStack.Navigator>
+    <ErrorBoundary
+      name="TimetableStack"
+      fallback={(error, reset) => (
+        <ScreenErrorFallback error={error} reset={reset} />
+      )}
+    >
+      <TimetableStack.Navigator screenOptions={headerOptions}>
+        <TimetableStack.Screen
+          name="Timetable"
+          component={ChildTimetableScreen}
+          options={{ title: "Thời khóa biểu" }}
+        />
+        <TimetableStack.Screen
+          name="ChildIepHistory"
+          component={ChildIepHistoryScreen}
+          options={{ title: "Kế hoạch IEP" }}
+        />
+        <TimetableStack.Screen
+          name="ChildIepPlanDetail"
+          component={IepPlanDetailScreen as any}
+          options={{ title: "Chi tiết kế hoạch IEP" }}
+        />
+        <TimetableStack.Screen
+          name="ChildIepObjectiveDetail"
+          component={IepObjectiveDetailScreen as any}
+          options={{ title: "Chi tiết mục tiêu" }}
+        />
+      </TimetableStack.Navigator>
+    </ErrorBoundary>
   );
 }
 
 function ReportStackNavigator() {
+  const headerOptions = useHeaderOptions();
   return (
-    <ReportStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
-      <ReportStack.Screen
-        name="ParentReportList"
-        component={ParentReportListScreen}
-        options={{ title: "Báo cáo" }}
-      />
-      <ReportStack.Screen
-        name="ParentReportDetail"
-        component={ParentReportDetailScreen}
-        options={{ title: "Chi tiết báo cáo" }}
-      />
-    </ReportStack.Navigator>
+    <ErrorBoundary
+      name="ReportStack"
+      fallback={(error, reset) => (
+        <ScreenErrorFallback error={error} reset={reset} />
+      )}
+    >
+      <ReportStack.Navigator screenOptions={headerOptions}>
+        <ReportStack.Screen
+          name="ParentReportList"
+          component={ParentReportListScreen}
+          options={{ title: "Báo cáo" }}
+        />
+        <ReportStack.Screen
+          name="ParentReportDetail"
+          component={ParentReportDetailScreen}
+          options={{ title: "Chi tiết báo cáo" }}
+        />
+      </ReportStack.Navigator>
+    </ErrorBoundary>
   );
 }
 
 function ProfileStackNavigator() {
+  const headerOptions = useHeaderOptions();
   return (
-    <ProfileStack.Navigator screenOptions={GRADIENT_HEADER_OPTIONS}>
-      <ProfileStack.Screen
-        name="Profile"
-        component={ParentProfileScreen}
-        options={{ headerShown: false }}
-      />
-      <ProfileStack.Screen
-        name="ChangePassword"
-        component={ChangePasswordScreen}
-        options={{ title: "Đổi mật khẩu" }}
-      />
-    </ProfileStack.Navigator>
+    <ErrorBoundary
+      name="ProfileStack"
+      fallback={(error, reset) => (
+        <ScreenErrorFallback error={error} reset={reset} />
+      )}
+    >
+      <ProfileStack.Navigator screenOptions={headerOptions}>
+        <ProfileStack.Screen
+          name="Profile"
+          component={ParentProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <ProfileStack.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
+          options={{ title: "Đổi mật khẩu" }}
+        />
+      </ProfileStack.Navigator>
+    </ErrorBoundary>
   );
 }
 

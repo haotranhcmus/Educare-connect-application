@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import {
   fetchStudentIepPlans,
   fetchIepPlanDetail,
@@ -7,8 +7,8 @@ import {
   fetchObjectivesForGoal,
   fetchObjectiveDetail,
   fetchObjectiveResults,
-} from "../api/iepApi";
-import { queryKeys } from "../api/queryKeys";
+} from "@api/iepApi";
+import { queryKeys } from "@api/queryKeys";
 
 export function useStudentIepPlans(studentId: number) {
   return useQuery({
@@ -65,5 +65,20 @@ export function useObjectiveResults(objectiveId: number, limit = 10) {
     queryKey: queryKeys.iepResults.byObjective(objectiveId, limit),
     queryFn: () => fetchObjectiveResults(objectiveId, limit),
     enabled: !!objectiveId,
+  });
+}
+
+// ─── Suspense variants ──────────────────────────────────────────────────
+export function useObjectiveDetailSuspense(objectiveId: number) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.iepObjectives.detail(objectiveId),
+    queryFn: () => fetchObjectiveDetail(objectiveId),
+  });
+}
+
+export function useIepPlanDetailSuspense(planId: number) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.iepPlans.detail(planId),
+    queryFn: () => fetchIepPlanDetail(planId),
   });
 }

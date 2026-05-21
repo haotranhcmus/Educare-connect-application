@@ -1,4 +1,4 @@
-import { callKw, searchRead, write } from "./odooClient";
+import { callKw, searchRead, write } from "@api/odooClient";
 
 export interface UserProfile {
   id: number;

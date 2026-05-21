@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ResultInput } from "../api/evalApi";
+import type { ResultInput } from "@api/evalApi";
 
 interface EvalState {
   sessionId: number | null;

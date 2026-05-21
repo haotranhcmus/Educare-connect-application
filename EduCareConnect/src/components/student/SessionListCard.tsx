@@ -2,13 +2,13 @@ import React, { useRef } from "react";
 import { Animated, Pressable, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StatusBadge } from "../common/StatusBadge";
-import { formatFloatTime } from "../../utils/formatters";
-import { SESSION_PURPOSE_LABELS, LOCATION_LABELS } from "../../utils/labels";
-import { NO_REPORT_BADGE } from "../../theme/decorativeColors";
-import { STATUS_COLORS } from "../../theme/statusColors";
-import { useAuthStore } from "../../store/authStore";
-import type { SessionListItem } from "../../types";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { formatFloatTime } from "@utils/formatters";
+import { SESSION_PURPOSE_LABELS, LOCATION_LABELS } from "@utils/labels";
+import { NO_REPORT_BADGE } from "@theme/decorativeColors";
+import { STATUS_COLORS } from "@theme/statusColors";
+import { useAuthStore } from "@store/authStore";
+import type { SessionListItem } from "@t";
 
 interface SessionListCardProps {
   session: SessionListItem;

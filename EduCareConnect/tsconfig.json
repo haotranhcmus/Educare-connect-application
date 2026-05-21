@@ -13,10 +13,19 @@
 
     "paths": {
       "@/*": ["./*"],
+      "@api/*": ["src/api/*"],
+      "@assets/*": ["assets/*"],
       "@components/*": ["src/components/*"],
-      "@screens/*": ["src/screens/*"],
       "@constants/*": ["src/constants/*"],
       "@hooks/*": ["src/hooks/*"],
+      "@navigation/*": ["src/navigation/*"],
+      "@screens/*": ["src/screens/*"],
+      "@services/*": ["src/services/*"],
+      "@store/*": ["src/store/*"],
+      "@t": ["src/types/index.ts"],
+      "@t/*": ["src/types/*"],
+      "@theme": ["src/theme/index.ts"],
+      "@theme/*": ["src/theme/*"],
       "@utils/*": ["src/utils/*"]
     },
 

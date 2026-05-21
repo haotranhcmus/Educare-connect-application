@@ -2,9 +2,9 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme, Divider } from "react-native-paper";
 import Svg, { Circle, Path, G, Text as SvgText } from "react-native-svg";
-import { ProgressBar } from "../common/ProgressBar";
-import { TrendChip } from "../common/TrendChip";
-import type { IepObjectiveDetail } from "../../types";
+import { ProgressBar } from "@components/common/ProgressBar";
+import { TrendChip } from "@components/common/TrendChip";
+import type { IepObjectiveDetail } from "@t";
 
 interface MetricsCardProps {
   objective: IepObjectiveDetail;

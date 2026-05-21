@@ -1,13 +1,14 @@
 import React from "react";
 import { SectionList, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { useStudentSessions } from "../../../../hooks/useSessions";
-import { SessionListCard } from "../../../../components/session/SessionListCard";
-import { EmptyState } from "../../../../components/common/EmptyState";
-import SessionPlaceholder from "../../../../../assets/placeholder/session-placeholder.svg";
-import type { SessionListItem } from "../../../../types";
+import { useStudentSessions } from "@hooks/useSessions";
+import { SessionListCard } from "@components/session/SessionListCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import SessionPlaceholder from "@assets/placeholder/svg/session-placeholder.svg";
+import SessionPlaceholderJson from "@assets/placeholder/json/session-placeholder.json";
+import type { SessionListItem } from "@t";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { StudentStackParamList } from "../../../../navigation/types";
+import type { StudentStackParamList } from "@navigation/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type StudentDetailNav = NativeStackNavigationProp<
@@ -44,7 +45,9 @@ export function StudentSessionTab({ studentId, navigation }: Props) {
   const renderItem = ({ item }: { item: SessionListItem }) => (
     <SessionListCard
       session={item}
-      onPress={() => navigation.navigate("SessionDetail", { sessionId: item.id })}
+      onPress={() =>
+        navigation.navigate("SessionDetail", { sessionId: item.id })
+      }
     />
   );
 
@@ -73,7 +76,10 @@ export function StudentSessionTab({ studentId, navigation }: Props) {
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           !isLoading ? (
-            <EmptyState image={SessionPlaceholder} title="Chưa có buổi học" />
+            <EmptyState
+              lottie={SessionPlaceholderJson}
+              title="Chưa có buổi học"
+            />
           ) : null
         }
       />

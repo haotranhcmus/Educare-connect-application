@@ -10,14 +10,27 @@ import {
   updateReport,
   sendReport,
   fetchReportPhotoUrls,
-} from "../api/reportApi";
-import {
-  persistReport,
-  persistAndSendReport,
-} from "../services/reportService";
-import { queryKeys } from "../api/queryKeys";
-import type { PhotoAsset } from "../types";
-import { useAuthStore } from "../store/authStore";
+} from "@api/reportApi";
+import { persistReport, persistAndSendReport } from "@services/reportService";
+import { queryKeys } from "@api/queryKeys";
+import type { PhotoAsset } from "@t";
+import { useAuthStore } from "@store/authStore";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+export function useMyReportsSuspense() {
+  const uid = useAuthStore((s) => s.uid);
+  return useSuspenseQuery({
+    queryKey: queryKeys.reports.my(uid),
+    queryFn: () => fetchMyReports(uid!),
+  });
+}
+
+export function useReportDetailSuspense(reportId: number) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.reports.detail(reportId),
+    queryFn: () => fetchReportDetail(reportId),
+  });
+}
 
 export function useStudentReports(studentId: number) {
   return useQuery({

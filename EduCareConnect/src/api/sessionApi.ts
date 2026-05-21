@@ -1,11 +1,11 @@
-import { read, searchRead, write, create, callKw } from "./odooClient";
-import { logger } from "../utils/logger";
+import { read, searchRead, write, create, callKw } from "@api/odooClient";
+import { logger } from "@utils/logger";
 import type {
   SessionListItem,
   SessionLogDetail,
   SessionResult,
   IepObjectiveListItem,
-} from "../types";
+} from "@t";
 
 function toAvatarUrl(b64?: string | false): string | undefined {
   return b64 ? `data:image/png;base64,${b64}` : undefined;

@@ -12,9 +12,9 @@ import {
   fetchParentReports,
   markReportRead,
   fetchStudentTimetable,
-} from "../api/parentApi";
-import { queryKeys } from "../api/queryKeys";
-import { useAuthStore } from "../store/authStore";
+} from "@api/parentApi";
+import { queryKeys } from "@api/queryKeys";
+import { useAuthStore } from "@store/authStore";
 
 export function useMyStudent() {
   const uid = useAuthStore((s) => s.uid);

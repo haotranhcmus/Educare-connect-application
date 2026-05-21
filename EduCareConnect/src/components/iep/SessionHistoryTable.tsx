@@ -1,9 +1,9 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { DataTable, Text, useTheme } from "react-native-paper";
-import { formatDate } from "../../utils/formatters";
-import { PROMPT_LEVEL_SHORT_LABELS } from "../../utils/labels";
-import type { SessionResult } from "../../types";
+import { formatDate } from "@utils/formatters";
+import { PROMPT_LEVEL_SHORT_LABELS } from "@utils/labels";
+import type { SessionResult } from "@t";
 
 interface SessionHistoryTableProps {
   results: SessionResult[];

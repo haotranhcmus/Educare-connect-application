@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { callKw, searchCount, searchRead } from "./odooClient";
+import { callKw, searchCount, searchRead } from "@api/odooClient";
 import type {
   ParentStudent,
   StudentDetail,
@@ -10,7 +10,7 @@ import type {
   ParentLatestSession,
   ParentTimetableSession,
   ReportListItem,
-} from "../types";
+} from "@t";
 
 // ── Fetch parent's student (first child, backward-compat) ─────
 export async function fetchMyStudent(

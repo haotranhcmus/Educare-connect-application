@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   ScrollView,
   View,
@@ -7,10 +7,13 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  FlatList,
   Dimensions,
   Platform,
 } from "react-native";
+import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import * as Haptics from "expo-haptics";
+import { toast } from "@utils/toast";
+import { useRef } from "react";
 import {
   Text,
   Button,
@@ -18,28 +21,31 @@ import {
   useTheme,
   Surface,
   Chip,
-  ActivityIndicator,
 } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
 import {
-  useReportDetail,
   useSendReport,
   useReportPhotos,
-} from "../../../hooks/useReports";
-import { useSessionObjectives } from "../../../hooks/useSessions";
-import { ObjectiveCard } from "../../../components/iep/ObjectiveCard";
+  useReportDetailSuspense,
+} from "@hooks/useReports";
+import { useSessionObjectives } from "@hooks/useSessions";
+import { ObjectiveCard } from "@components/iep/ObjectiveCard";
 import {
   REPORT_STATUS_HERO_CONFIG,
   PERFORMANCE_CONFIG,
-} from "../../../theme/decorativeColors";
-import { OBS_LABELS } from "../../../utils/labels";
-import { REPORT_FIELDS } from "../../../constants/reportFields";
-import { formatDate, formatDateTime } from "../../../utils/formatters";
+} from "@theme/decorativeColors";
+import { OBS_LABELS } from "@utils/labels";
+import { REPORT_FIELDS } from "@constants/reportFields";
+import { formatDate, formatDateTime } from "@utils/formatters";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ReportStackParamList } from "../../../navigation/types";
+import type { ReportStackParamList } from "@navigation/types";
 import { theme as appTheme } from "@/src/theme/theme";
+import {
+  ReportDetailSkeleton,
+  ReportObjectivesSkeleton,
+  ReportPhotosSkeleton,
+} from "@screens/teacher/report/ReportDetailSkeleton";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "ReportDetail">;
 
@@ -48,27 +54,32 @@ const G1 = "#2E7D32";
 const G2 = "#43A047";
 const G_LIGHT = "#E8F5E9";
 
-export function ReportDetailScreen({ navigation, route }: Props) {
+function ReportDetailContent({ navigation, route }: Props) {
   const theme = useTheme();
   const { reportId } = route.params;
-  const { data: report, isLoading } = useReportDetail(reportId);
+  const { data: report } = useReportDetailSuspense(reportId);
   const sendReport = useSendReport();
   const { data: photoUrls, isLoading: photosLoading } = useReportPhotos(
     report?.photo_ids,
   );
-  const { data: objectives = [] } = useSessionObjectives(
-    report?.objective_ids ?? [],
-  );
+  const { data: objectives = [], isLoading: objectivesLoading } =
+    useSessionObjectives(report?.objective_ids ?? []);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightboxCurrentIndex, setLightboxCurrentIndex] = useState(0);
+  const carouselRef = useRef<ICarouselInstance>(null);
   const [sentModalVisible, setSentModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (lightboxIndex !== null) {
+      setLightboxCurrentIndex(lightboxIndex);
+    }
+  }, [lightboxIndex]);
 
   const handleObjectivePress = (objectiveId: number) => {
     navigation
       .getParent()
       ?.navigate("IepObjectiveDetail" as any, { objectiveId });
   };
-
-  if (isLoading || !report) return <LoadingOverlay visible />;
 
   const statusCfg =
     REPORT_STATUS_HERO_CONFIG[report.status] ?? REPORT_STATUS_HERO_CONFIG.draft;
@@ -101,9 +112,15 @@ export function ReportDetailScreen({ navigation, route }: Props) {
           onPress: async () => {
             try {
               await sendReport.mutateAsync(report.id);
+              await Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success,
+              );
               setSentModalVisible(true);
             } catch {
-              Alert.alert("Lỗi", "Không thể gửi báo cáo");
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Error,
+              );
+              toast.error("Không thể gửi báo cáo");
             }
           },
         },
@@ -113,248 +130,231 @@ export function ReportDetailScreen({ navigation, route }: Props) {
 
   return (
     <>
-    <ScrollView
-      style={{ flex: 1, backgroundColor: theme.colors.background }}
-      contentContainerStyle={styles.container}
-    >
-      {/* ── Hero Header Card ─────────────────────────── */}
-      <View style={styles.heroWrapper}>
-        <LinearGradient
-          colors={[G1, G2]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.heroCard}
-        >
-          {/* Top row: icon + report name + student */}
-          <View style={styles.heroTop}>
-            <View style={styles.heroIconWrap}>
-              <MaterialCommunityIcons
-                name="file-document-outline"
-                size={26}
-                color="#fff"
-              />
-            </View>
-            <View style={styles.heroInfo}>
-              <Text style={styles.heroTitle} numberOfLines={2}>
-                {report.name}
-              </Text>
-              <View style={styles.heroStudentRow}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: theme.colors.background }}
+        contentContainerStyle={styles.container}
+      >
+        {/* ── Hero Header Card ─────────────────────────── */}
+        <View style={styles.heroWrapper}>
+          <LinearGradient
+            colors={[G1, G2]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.heroCard}
+          >
+            {/* Top row: icon + report name + student */}
+            <View style={styles.heroTop}>
+              <View style={styles.heroIconWrap}>
                 <MaterialCommunityIcons
-                  name="account-outline"
-                  size={13}
-                  color="rgba(255,255,255,0.75)"
+                  name="file-document-outline"
+                  size={26}
+                  color="#fff"
                 />
-                <Text style={styles.heroStudentName}>{studentName}</Text>
+              </View>
+              <View style={styles.heroInfo}>
+                <Text style={styles.heroTitle} numberOfLines={2}>
+                  {report.name}
+                </Text>
+                <View style={styles.heroStudentRow}>
+                  <MaterialCommunityIcons
+                    name="account-outline"
+                    size={13}
+                    color="rgba(255,255,255,0.75)"
+                  />
+                  <Text style={styles.heroStudentName}>{studentName}</Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* Divider */}
-          <View style={styles.heroDivider} />
+            {/* Divider */}
+            <View style={styles.heroDivider} />
 
-          {/* Bottom row: date + status + performance */}
-          <View style={styles.heroBottom}>
-            {/* Date chip */}
-            <View style={styles.heroDateChip}>
-              <MaterialCommunityIcons
-                name="calendar-outline"
-                size={12}
-                color="rgba(255,255,255,0.85)"
-              />
-              <Text style={styles.heroDateText}>
-                {formatDate(report.report_date)}
-              </Text>
-            </View>
-
-            <View style={styles.heroBadges}>
-              {/* Status badge */}
-              <View
-                style={[styles.heroBadge, { backgroundColor: statusCfg.bg }]}
-              >
+            {/* Bottom row: date + status + performance */}
+            <View style={styles.heroBottom}>
+              {/* Date chip */}
+              <View style={styles.heroDateChip}>
                 <MaterialCommunityIcons
-                  name={statusCfg.icon as any}
+                  name="calendar-outline"
                   size={12}
-                  color={statusCfg.color}
+                  color="rgba(255,255,255,0.85)"
                 />
-                <Text
-                  style={[styles.heroBadgeText, { color: statusCfg.color }]}
-                >
-                  {statusCfg.label}
+                <Text style={styles.heroDateText}>
+                  {formatDate(report.report_date)}
                 </Text>
               </View>
+
+              <View style={styles.heroBadges}>
+                {/* Status badge */}
+                <View
+                  style={[styles.heroBadge, { backgroundColor: statusCfg.bg }]}
+                >
+                  <MaterialCommunityIcons
+                    name={statusCfg.icon as any}
+                    size={12}
+                    color={statusCfg.color}
+                  />
+                  <Text
+                    style={[styles.heroBadgeText, { color: statusCfg.color }]}
+                  >
+                    {statusCfg.label}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </LinearGradient>
-      </View>
-      {/* ── Session Info ──────────────────────────────── */}
-      <SectionLabel
-        icon="calendar-clock"
-        title="Thông Tin Buổi Học"
-        theme={theme}
-      />
-      <Surface
-        style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
-        elevation={1}
-      >
-        <InfoRow icon="account" label="Học sinh" value={studentName} />
-        <Divider style={styles.rowDivider} />
-        <InfoRow
-          icon="calendar-today"
-          label="Ngày báo cáo"
-          value={formatDate(report.report_date)}
+          </LinearGradient>
+        </View>
+        {/* ── Session Info ──────────────────────────────── */}
+        <SectionLabel
+          icon="calendar-clock"
+          title="Thông Tin Buổi Học"
+          theme={theme}
         />
-        <Divider style={styles.rowDivider} />
-        <InfoRow
-          icon="clock-outline"
-          label="Thời lượng"
-          value={durationMin > 0 ? `${durationMin} phút` : "—"}
-        />
-        {report.accuracy_summary ? (
+        <Surface
+          style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+          elevation={1}
+        >
+          <InfoRow icon="account" label="Học sinh" value={studentName} />
+          <Divider style={styles.rowDivider} />
+          <InfoRow
+            icon="calendar-today"
+            label="Ngày báo cáo"
+            value={formatDate(report.report_date)}
+          />
+          <Divider style={styles.rowDivider} />
+          <InfoRow
+            icon="clock-outline"
+            label="Thời lượng"
+            value={durationMin > 0 ? `${durationMin} phút` : "—"}
+          />
+          {report.accuracy_summary ? (
+            <>
+              <Divider style={styles.rowDivider} />
+              <InfoRow
+                icon="percent"
+                label="Độ chính xác"
+                value={report.accuracy_summary}
+              />
+            </>
+          ) : null}
+        </Surface>
+        {/* ── Mục Tiêu Đã Học — load độc lập với report header ─── */}
+        {objectivesLoading && (report.objective_ids?.length ?? 0) > 0 ? (
+          <ReportObjectivesSkeleton
+            count={Math.min(report.objective_ids?.length ?? 2, 3)}
+          />
+        ) : objectives.length > 0 ? (
           <>
-            <Divider style={styles.rowDivider} />
-            <InfoRow
-              icon="percent"
-              label="Độ chính xác"
-              value={report.accuracy_summary}
+            <SectionLabel
+              icon="target"
+              title={`Mục Tiêu Đã Học (${objectives.length})`}
+              theme={theme}
             />
+            {objectives.map((obj) => (
+              <ObjectiveCard
+                key={obj.id}
+                objective={obj}
+                onPress={handleObjectivePress}
+              />
+            ))}
           </>
         ) : null}
-      </Surface>
-      {/* ── Mục Tiêu Đã Học ───────────────────────────── */}
-      {objectives.length > 0 ? (
-        <>
-          <SectionLabel
-            icon="target"
-            title={`Mục Tiêu Đã Học (${objectives.length})`}
-            theme={theme}
-          />
-          {objectives.map((obj) => (
-            <ObjectiveCard
-              key={obj.id}
-              objective={obj}
-              onPress={handleObjectivePress}
+        {report.attendance ||
+        report.mood ||
+        report.energy_level ||
+        report.engagement_level ||
+        report.observation_notes ? (
+          <>
+            <SectionLabel
+              icon="emoticon-happy-outline"
+              title="Quan Sát Chung"
+              theme={theme}
             />
-          ))}
-        </>
-      ) : null}
-      {/* ── Sent info banner ────────────────────────────
-      {isSentOrRead && (report as any).write_date ? (
-        <Surface
-          style={[
-            styles.sentBanner,
-            { backgroundColor: statusCfg.bg, borderColor: statusCfg.color },
-          ]}
-          elevation={0}
-        >
-          <MaterialCommunityIcons
-            name={statusCfg.icon as any}
-            size={16}
-            color={statusCfg.color}
-          />
-          <Text style={[styles.sentBannerText, { color: statusCfg.color }]}>
-            {report.status === "read" ? "Phụ huynh đã đọc • " : "Đã gửi • "}
-            {formatDateTime((report as any).write_date)}
-          </Text>
-        </Surface>
-      ) : null} */}
-      {/* ── Content Sections ──────────────────────────── */}
-      {/* <SectionLabel
-        icon="file-document-edit-outline"
-        title="Nội Dung Báo Cáo"
-        theme={theme}
-      /> */}
-      {/* ── Quan Sát Chung ────────────────────────────── */}
-      {report.attendance ||
-      report.mood ||
-      report.energy_level ||
-      report.engagement_level ||
-      report.observation_notes ? (
-        <>
-          <SectionLabel
-            icon="emoticon-happy-outline"
-            title="Quan Sát Chung"
-            theme={theme}
-          />
-          <Surface
-            style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
-            elevation={1}
-          >
-            {report.attendance ? (
-              <InfoRow
-                icon="calendar-check"
-                label="Điểm danh"
-                value={
-                  OBS_LABELS.attendance[report.attendance] ?? report.attendance
-                }
-              />
-            ) : null}
-            {report.mood ? (
-              <>
-                <Divider style={styles.rowDivider} />
+            <Surface
+              style={[
+                styles.infoCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
+              elevation={1}
+            >
+              {report.attendance ? (
                 <InfoRow
-                  icon="emoticon-outline"
-                  label="Tâm trạng"
-                  value={OBS_LABELS.mood[report.mood] ?? report.mood}
-                />
-              </>
-            ) : null}
-            {report.energy_level ? (
-              <>
-                <Divider style={styles.rowDivider} />
-                <InfoRow
-                  icon="lightning-bolt"
-                  label="Năng lượng"
+                  icon="calendar-check"
+                  label="Điểm danh"
                   value={
-                    OBS_LABELS.energy_level[report.energy_level] ??
-                    report.energy_level
+                    OBS_LABELS.attendance[report.attendance] ??
+                    report.attendance
                   }
                 />
-              </>
-            ) : null}
-            {report.engagement_level ? (
-              <>
-                <Divider style={styles.rowDivider} />
-                <InfoRow
-                  icon="brain"
-                  label="Tập trung"
-                  value={
-                    OBS_LABELS.engagement_level[report.engagement_level] ??
-                    report.engagement_level
-                  }
-                />
-              </>
-            ) : null}
-            {report.observation_notes ? (
-              <>
-                <Divider style={styles.rowDivider} />
-                <InfoRow
-                  icon="note-text-outline"
-                  label="Ghi chú"
-                  value={report.observation_notes}
-                />
-              </>
-            ) : null}
-          </Surface>
-        </>
-      ) : null}
-      {/* ── Ảnh Báo Cáo ──────────────────────────────── */}
-      {report.photo_ids && report.photo_ids.length > 0 ? (
-        <>
-          <SectionLabel
-            icon="image-multiple-outline"
-            title={`Hình ảnh (${report.photo_ids.length})`}
-            theme={theme}
-          />
-          <Surface
-            style={[
-              styles.infoCard,
-              { paddingVertical: 12, backgroundColor: theme.colors.surface },
-            ]}
-            elevation={1}
-          >
-            {photosLoading ? (
-              <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
-            ) : (
+              ) : null}
+              {report.mood ? (
+                <>
+                  <Divider style={styles.rowDivider} />
+                  <InfoRow
+                    icon="emoticon-outline"
+                    label="Tâm trạng"
+                    value={OBS_LABELS.mood[report.mood] ?? report.mood}
+                  />
+                </>
+              ) : null}
+              {report.energy_level ? (
+                <>
+                  <Divider style={styles.rowDivider} />
+                  <InfoRow
+                    icon="lightning-bolt"
+                    label="Năng lượng"
+                    value={
+                      OBS_LABELS.energy_level[report.energy_level] ??
+                      report.energy_level
+                    }
+                  />
+                </>
+              ) : null}
+              {report.engagement_level ? (
+                <>
+                  <Divider style={styles.rowDivider} />
+                  <InfoRow
+                    icon="brain"
+                    label="Tập trung"
+                    value={
+                      OBS_LABELS.engagement_level[report.engagement_level] ??
+                      report.engagement_level
+                    }
+                  />
+                </>
+              ) : null}
+              {report.observation_notes ? (
+                <>
+                  <Divider style={styles.rowDivider} />
+                  <InfoRow
+                    icon="note-text-outline"
+                    label="Ghi chú"
+                    value={report.observation_notes}
+                  />
+                </>
+              ) : null}
+            </Surface>
+          </>
+        ) : null}
+        {/* ── Ảnh Báo Cáo — load độc lập với report header ─── */}
+        {report.photo_ids && report.photo_ids.length > 0 ? (
+          photosLoading ? (
+            <ReportPhotosSkeleton
+              count={Math.min(report.photo_ids.length, 6)}
+            />
+          ) : (
+          <>
+            <SectionLabel
+              icon="image-multiple-outline"
+              title={`Hình ảnh (${report.photo_ids.length})`}
+              theme={theme}
+            />
+            <Surface
+              style={[
+                styles.infoCard,
+                { paddingVertical: 12, backgroundColor: theme.colors.surface },
+              ]}
+              elevation={1}
+            >
               <View style={styles.photoGrid}>
                 {(photoUrls ?? []).map((uri, idx) => (
                   <TouchableOpacity
@@ -370,165 +370,163 @@ export function ReportDetailScreen({ navigation, route }: Props) {
                   </TouchableOpacity>
                 ))}
               </View>
-            )}
-          </Surface>
-          <Modal
-            visible={lightboxIndex !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setLightboxIndex(null)}
-          >
-            <View style={styles.lightboxOverlay}>
-              <TouchableOpacity
-                style={styles.lightboxClose}
-                onPress={() => setLightboxIndex(null)}
-              >
-                <MaterialCommunityIcons name="close" size={28} color="#fff" />
-              </TouchableOpacity>
-              <FlatList
-                data={photoUrls ?? []}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                initialScrollIndex={lightboxIndex ?? 0}
-                getItemLayout={(_, index) => ({
-                  length: SCREEN_WIDTH,
-                  offset: SCREEN_WIDTH * index,
-                  index,
-                })}
-                keyExtractor={(_, i) => String(i)}
-                renderItem={({ item }) => (
-                  <Image
-                    source={{ uri: item }}
-                    style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-                    resizeMode="contain"
+            </Surface>
+            <Modal
+              visible={lightboxIndex !== null}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setLightboxIndex(null)}
+            >
+              <View style={styles.lightboxOverlay}>
+                <TouchableOpacity
+                  style={styles.lightboxClose}
+                  onPress={() => setLightboxIndex(null)}
+                >
+                  <MaterialCommunityIcons name="close" size={28} color="#fff" />
+                </TouchableOpacity>
+                {lightboxIndex !== null && (
+                  <Carousel
+                    ref={carouselRef}
+                    key={lightboxIndex}
+                    width={SCREEN_WIDTH}
+                    height={SCREEN_WIDTH}
+                    data={photoUrls ?? []}
+                    defaultIndex={lightboxIndex}
+                    onSnapToItem={setLightboxCurrentIndex}
+                    renderItem={({ item }) => (
+                      <Image
+                        source={{ uri: item as string }}
+                        style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+                        resizeMode="contain"
+                      />
+                    )}
                   />
                 )}
-              />
-              <Text style={styles.lightboxCounter}>
-                {(lightboxIndex ?? 0) + 1} / {(photoUrls ?? []).length}
-              </Text>
-            </View>
-          </Modal>
-        </>
-      ) : null}
-      {REPORT_FIELDS.map((field) => {
-        const value = (report as any)[field.name];
-        if (!value) return null;
-        return (
-          <Surface
-            key={field.name}
-            style={[
-              styles.contentCard,
-              { backgroundColor: theme.colors.surface },
-            ]}
-            elevation={1}
-          >
-            <View style={styles.contentCardHeader}>
-              <View
-                style={[
-                  styles.iconBubble,
-                  { backgroundColor: `${field.color}18` },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={field.icon}
-                  size={16}
-                  color={field.color}
-                />
+                <Text style={styles.lightboxCounter}>
+                  {lightboxCurrentIndex + 1} / {(photoUrls ?? []).length}
+                </Text>
+              </View>
+            </Modal>
+          </>
+          )
+        ) : null}
+        {REPORT_FIELDS.map((field) => {
+          const value = (report as any)[field.name];
+          if (!value) return null;
+          return (
+            <Surface
+              key={field.name}
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
+              elevation={1}
+            >
+              <View style={styles.contentCardHeader}>
+                <View
+                  style={[
+                    styles.iconBubble,
+                    { backgroundColor: `${field.color}18` },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={field.icon}
+                    size={16}
+                    color={field.color}
+                  />
+                </View>
+                <Text
+                  variant="labelMedium"
+                  style={[styles.contentLabel, { color: field.color }]}
+                >
+                  {field.label}
+                </Text>
               </View>
               <Text
-                variant="labelMedium"
-                style={[styles.contentLabel, { color: field.color }]}
+                variant="bodyMedium"
+                style={[styles.contentBody, { color: theme.colors.onSurface }]}
               >
-                {field.label}
+                {value}
               </Text>
+            </Surface>
+          );
+        })}
+        {/* ── Actions ───────────────────────────────────── */}
+        {isDraft && (
+          <>
+            <Divider style={{ marginTop: 16, marginBottom: 16 }} />
+            <View style={styles.actions}>
+              <Button
+                mode="outlined"
+                icon="pencil"
+                onPress={handleEdit}
+                style={styles.actionBtn}
+              >
+                Chỉnh sửa
+              </Button>
+              <Button
+                mode="contained"
+                icon="send"
+                onPress={handleSend}
+                loading={sendReport.isPending}
+                style={styles.actionBtn}
+              >
+                Gửi phụ huynh
+              </Button>
             </View>
+          </>
+        )}
+      </ScrollView>
+
+      {/* ── Sent success modal ──────────────────────────── */}
+      <Modal
+        visible={sentModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSentModalVisible(false)}
+      >
+        <View style={styles.sentModalOverlay}>
+          <View
+            style={[
+              styles.sentModalCard,
+              { backgroundColor: theme.colors.surface },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="send-check"
+              size={56}
+              color={theme.colors.primary}
+            />
             <Text
-              variant="bodyMedium"
-              style={[styles.contentBody, { color: theme.colors.onSurface }]}
+              variant="titleMedium"
+              style={{
+                fontWeight: "700",
+                marginTop: 16,
+                textAlign: "center",
+              }}
             >
-              {value}
+              Đã gửi báo cáo!
             </Text>
-          </Surface>
-        );
-      })}
-      {/* ── Actions ───────────────────────────────────── */}
-      {isDraft && (
-        <>
-          <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-          <View style={styles.actions}>
-            <Button
-              mode="outlined"
-              icon="pencil"
-              onPress={handleEdit}
-              style={styles.actionBtn}
+            <Text
+              variant="bodySmall"
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                marginTop: 8,
+                textAlign: "center",
+              }}
             >
-              Chỉnh sửa
-            </Button>
+              Báo cáo đã được gửi đến phụ huynh qua email.
+            </Text>
             <Button
               mode="contained"
-              icon="send"
-              onPress={handleSend}
-              loading={sendReport.isPending}
-              style={styles.actionBtn}
+              style={{ marginTop: 24, minWidth: 120 }}
+              onPress={() => setSentModalVisible(false)}
             >
-              Gửi phụ huynh
+              Đóng
             </Button>
           </View>
-        </>
-      )}
-    </ScrollView>
-
-    {/* ── Sent success modal ──────────────────────────── */}
-    <Modal
-      visible={sentModalVisible}
-      transparent
-      animationType="fade"
-      onRequestClose={() => setSentModalVisible(false)}
-    >
-      <View style={styles.sentModalOverlay}>
-        <View
-          style={[
-            styles.sentModalCard,
-            { backgroundColor: theme.colors.surface },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="send-check"
-            size={56}
-            color={theme.colors.primary}
-          />
-          <Text
-            variant="titleMedium"
-            style={{
-              fontWeight: "700",
-              marginTop: 16,
-              textAlign: "center",
-            }}
-          >
-            Đã gửi báo cáo!
-          </Text>
-          <Text
-            variant="bodySmall"
-            style={{
-              color: theme.colors.onSurfaceVariant,
-              marginTop: 8,
-              textAlign: "center",
-            }}
-          >
-            Báo cáo đã được gửi đến phụ huynh qua email.
-          </Text>
-          <Button
-            mode="contained"
-            style={{ marginTop: 24, minWidth: 120 }}
-            onPress={() => setSentModalVisible(false)}
-          >
-            Đóng
-          </Button>
         </View>
-      </View>
-    </Modal>
+      </Modal>
     </>
   );
 }
@@ -557,6 +555,14 @@ function SectionLabel({
         {title}
       </Text>
     </View>
+  );
+}
+
+export function ReportDetailScreen(props: Props) {
+  return (
+    <Suspense fallback={<ReportDetailSkeleton />}>
+      <ReportDetailContent {...props} />
+    </Suspense>
   );
 }
 

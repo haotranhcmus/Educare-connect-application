@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, Divider, useTheme, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import type { IepObjectiveListItem } from "../../types";
+import type { IepObjectiveListItem } from "@t";
 
 interface ObjectiveDetailCardProps {
   objective: IepObjectiveListItem;

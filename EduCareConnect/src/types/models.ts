@@ -28,7 +28,7 @@ import type {
   ProfileStatus,
   ParentRelation,
   PreferredContact,
-} from "./enums";
+} from "@t/enums";
 
 // ===== Helper types =====
 

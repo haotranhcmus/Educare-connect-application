@@ -2,11 +2,11 @@ import React, { useRef } from "react";
 import { Animated, Pressable, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { AvatarLabel } from "../common/AvatarLabel";
-import { StatusBadge } from "../common/StatusBadge";
-import { formatDate } from "../../utils/formatters";
-import { useAuthStore } from "../../store/authStore";
-import type { ReportListItem } from "../../types";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { formatDate } from "@utils/formatters";
+import { useAuthStore } from "@store/authStore";
+import type { ReportListItem } from "@t";
 
 interface ReportListCardProps {
   report: ReportListItem;

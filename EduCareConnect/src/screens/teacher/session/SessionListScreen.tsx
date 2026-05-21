@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useLayoutEffect,
   useEffect,
+  Suspense,
 } from "react";
 import {
   View,
@@ -27,20 +28,20 @@ import {
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
-import { SessionListCard } from "../../../components/session/SessionListCard";
-import { EmptyState } from "../../../components/common/EmptyState";
-import SessionPlaceholder from "../../../../assets/placeholder/session-placeholder.svg";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { MiniCalendar } from "../../../components/common/MiniCalendar";
-import { useMySessions } from "../../../hooks/useSessions";
-import { useSessionsForReport } from "../../../hooks/useReports";
-import { formatDate } from "../../../utils/formatters";
-import { groupByDate } from "../../../utils/groupByDate";
-import { logger } from "../../../utils/logger";
+import { SessionListCard } from "@components/session/SessionListCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import SessionPlaceholder from "@assets/placeholder/svg/session-placeholder.svg";
+import SessionPlaceholderJson from "@assets/placeholder/json/session-placeholder.json";
+import { MiniCalendar } from "@components/common/MiniCalendar";
+import { useMySessionsSuspense } from "@hooks/useSessions";
+import { useSessionsForReport } from "@hooks/useReports";
+import { formatDate } from "@utils/formatters";
+import { groupByDate } from "@utils/groupByDate";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { SessionStackParamList } from "../../../navigation/types";
-import type { SessionListItem } from "../../../types";
+import type { SessionStackParamList } from "@navigation/types";
+import type { SessionListItem } from "@t";
 import { theme as appTheme } from "@/src/theme/theme";
+import { SessionListSkeleton } from "@screens/teacher/session/SessionListSkeleton";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionList">;
 
@@ -104,7 +105,7 @@ const ACTIVE_CHIP_TEXT_STYLE = {
 
 // ─── Main Screen ────────────────────────────────────────────────────────────
 
-export function SessionListScreen({ navigation, route }: Props) {
+function SessionListContent({ navigation, route }: Props) {
   const theme = useTheme();
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
@@ -132,11 +133,9 @@ export function SessionListScreen({ navigation, route }: Props) {
   const filters = useMemo(() => getDateRange(dateFilter), [dateFilter]);
   const {
     data: sessions = [],
-    isLoading,
-    isError,
-    error,
     refetch,
-  } = useMySessions(filters);
+    isRefetching,
+  } = useMySessionsSuspense(filters);
 
   const { data: noReportSessions = [] } = useSessionsForReport();
   const noReportIds = useMemo(
@@ -214,15 +213,6 @@ export function SessionListScreen({ navigation, route }: Props) {
     openFilterModal,
     toggleView,
   ]);
-
-  if (isError) {
-    const errorMsg =
-      (error as any)?.message || "Không thể tải danh sách buổi học.";
-    logger.error("SessionListScreen", "render error state", {
-      errorMsg,
-      odooError: (error as any)?.odooError,
-    });
-  }
 
   const sessionDates = useMemo(
     () => new Set(sessions.map((s: SessionListItem) => s.session_date)),
@@ -342,37 +332,7 @@ export function SessionListScreen({ navigation, route }: Props) {
         </ScrollView>
       )}
 
-      {isLoading ? (
-        <LoadingOverlay visible={isLoading} />
-      ) : isError ? (
-        /* ── Error State ─────────────────────────────────────── */
-        <View style={styles.errorContainer}>
-          <Text
-            variant="titleSmall"
-            style={{
-              color: theme.colors.error,
-              textAlign: "center",
-              marginBottom: 8,
-            }}
-          >
-            Không tải được danh sách buổi học
-          </Text>
-          <Text
-            variant="bodySmall"
-            style={{
-              color: theme.colors.onSurfaceVariant,
-              textAlign: "center",
-              marginBottom: 16,
-              paddingHorizontal: 24,
-            }}
-          >
-            {(error as any)?.message || "Lỗi kết nối hoặc quyền truy cập."}
-          </Text>
-          <Button mode="contained" onPress={() => refetch()} icon="refresh">
-            Thử lại
-          </Button>
-        </View>
-      ) : viewMode === "calendar" ? (
+      {viewMode === "calendar" ? (
         /* ── Calendar View ───────────────────────────────────── */
         <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
           <MiniCalendar
@@ -396,7 +356,7 @@ export function SessionListScreen({ navigation, route }: Props) {
               </Text>
               {sections.length === 0 ? (
                 <EmptyState
-                  image={SessionPlaceholder}
+                  lottie={SessionPlaceholderJson}
                   title="Không có buổi học ngày này"
                 />
               ) : (
@@ -432,7 +392,7 @@ export function SessionListScreen({ navigation, route }: Props) {
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.sectionListContent}
           refreshControl={
-            <RefreshControl refreshing={false} onRefresh={refetch} />
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
           }
           renderSectionHeader={({ section }) => (
             <Text
@@ -444,7 +404,10 @@ export function SessionListScreen({ navigation, route }: Props) {
           )}
           renderItem={renderItem}
           ListEmptyComponent={
-            <EmptyState image={SessionPlaceholder} title="Không có buổi học" />
+            <EmptyState
+              lottie={SessionPlaceholderJson}
+              title="Không có buổi học"
+            />
           }
         />
       )}
@@ -598,6 +561,14 @@ export function SessionListScreen({ navigation, route }: Props) {
         </Pressable>
       </Modal>
     </View>
+  );
+}
+
+export function SessionListScreen(props: Props) {
+  return (
+    <Suspense fallback={<SessionListSkeleton />}>
+      <SessionListContent {...props} />
+    </Suspense>
   );
 }
 

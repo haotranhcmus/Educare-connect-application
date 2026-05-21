@@ -3,10 +3,13 @@ import { View, StyleSheet } from "react-native";
 import { Text, Button, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SvgProps } from "react-native-svg";
+import LottieView from "lottie-react-native";
 
 interface EmptyStateProps {
   icon?: string;
   image?: React.FC<SvgProps>;
+  lottie?: React.ComponentProps<typeof LottieView>["source"];
+  lottieSize?: number;
   title: string;
   description?: string;
   action?: {
@@ -18,6 +21,8 @@ interface EmptyStateProps {
 export function EmptyState({
   icon,
   image: ImageComponent,
+  lottie,
+  lottieSize = 160,
   title,
   description,
   action,
@@ -26,7 +31,15 @@ export function EmptyState({
 
   return (
     <View style={styles.container}>
-      {ImageComponent ? (
+      {/* Priority: lottie > image > icon */}
+      {lottie ? (
+        <LottieView
+          source={lottie}
+          style={{ width: lottieSize, height: lottieSize, marginBottom: 16 }}
+          autoPlay
+          loop
+        />
+      ) : ImageComponent ? (
         <ImageComponent width={160} height={160} style={styles.icon} />
       ) : icon ? (
         <MaterialCommunityIcons
@@ -36,6 +49,7 @@ export function EmptyState({
           style={styles.icon}
         />
       ) : null}
+
       <Text
         variant="titleMedium"
         style={{ color: theme.colors.onSurfaceVariant }}

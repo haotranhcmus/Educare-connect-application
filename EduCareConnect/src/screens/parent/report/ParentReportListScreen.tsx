@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from "react";
 import { View, SectionList, StyleSheet, RefreshControl } from "react-native";
 import { Chip, Text, useTheme } from "react-native-paper";
-import { ParentReportCard } from "../../../components/parent/ParentReportCard";
-import { EmptyState } from "../../../components/common/EmptyState";
-import ReportPlaceholder from "../../../../assets/placeholder/report-placeholder.svg";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useParentReports } from "../../../hooks/useParent";
-import { useParentStore } from "../../../store/parentStore";
+import { ParentReportCard } from "@components/parent/ParentReportCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import ReportPlaceholder from "@assets/placeholder/svg/report-placeholder.svg";
+import ReportPlaceholderJson from "@assets/placeholder/json/report-placeholder.json";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { useParentReports } from "@hooks/useParent";
+import { useParentStore } from "@store/parentStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ParentReportStackParamList } from "../../../navigation/types";
+import type { ParentReportStackParamList } from "@navigation/types";
 
 type Props = NativeStackScreenProps<
   ParentReportStackParamList,
@@ -97,7 +98,7 @@ export function ParentReportListScreen({ navigation }: Props) {
           />
         )}
         ListEmptyComponent={
-          <EmptyState image={ReportPlaceholder} title="Chưa có báo cáo nào" />
+          <EmptyState lottie={ReportPlaceholderJson} title="Chưa có báo cáo nào" />
         }
       />
     </View>

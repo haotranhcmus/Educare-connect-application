@@ -2,11 +2,11 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { EmptyState } from "../../../components/common/EmptyState";
-import { useParentStore } from "../../../store/parentStore";
-import { StudentIepTab } from "../../teacher/student/tabs/StudentIepTab";
+import { EmptyState } from "@components/common/EmptyState";
+import { useParentStore } from "@store/parentStore";
+import { StudentIepTab } from "@screens/teacher/student/tabs/StudentIepTab";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { ParentChildStackParamList } from "../../../navigation/types";
+import type { ParentChildStackParamList } from "@navigation/types";
 
 type Props = {
   navigation: NativeStackNavigationProp<

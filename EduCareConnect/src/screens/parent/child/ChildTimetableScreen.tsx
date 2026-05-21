@@ -3,17 +3,15 @@ import { View, FlatList, StyleSheet, RefreshControl } from "react-native";
 import { Text, useTheme, type MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { EmptyState } from "../../../components/common/EmptyState";
-import SessionPlaceholder from "../../../../assets/placeholder/session-placeholder.svg";
-import { MiniCalendar } from "../../../components/common/MiniCalendar";
-import { useStudentTimetable } from "../../../hooks/useParent";
-import { useParentStore } from "../../../store/parentStore";
-import {
-  formatFloatTime,
-  formatWeekdayDayMonth,
-} from "../../../utils/formatters";
-import { getInitials, hashColor } from "../../../components/common/AvatarLabel";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { EmptyState } from "@components/common/EmptyState";
+// import SessionPlaceholder from "@assets/placeholder/svg/session-placeholder.svg";
+import SessionPlaceholderJson from "@assets/placeholder/json/session-placeholder.json";
+import { MiniCalendar } from "@components/common/MiniCalendar";
+import { useStudentTimetable } from "@hooks/useParent";
+import { useParentStore } from "@store/parentStore";
+import { formatFloatTime, formatWeekdayDayMonth } from "@utils/formatters";
+import { getInitials, hashColor } from "@components/common/AvatarLabel";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -281,7 +279,7 @@ export function ChildTimetableScreen() {
       {/* Session list */}
       {grouped.length === 0 ? (
         <EmptyState
-          image={SessionPlaceholder}
+          lottie={SessionPlaceholderJson}
           title="Không có buổi học nào"
           description={
             selectedDate

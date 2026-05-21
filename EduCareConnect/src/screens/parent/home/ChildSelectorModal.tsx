@@ -11,10 +11,10 @@ import {
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { useMyStudents } from "../../../hooks/useParent";
-import { useParentStore } from "../../../store/parentStore";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { useMyStudents } from "@hooks/useParent";
+import { useParentStore } from "@store/parentStore";
 
 interface ChildSelectorModalProps {
   visible: boolean;

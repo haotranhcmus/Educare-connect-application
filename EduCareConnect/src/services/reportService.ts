@@ -3,8 +3,8 @@ import {
   updateReport,
   sendReport,
   uploadReportPhotos,
-} from "../api/reportApi";
-import type { PhotoAsset } from "../types";
+} from "@api/reportApi";
+import type { PhotoAsset } from "@t";
 
 interface PersistArgs {
   /** When provided, performs an update; otherwise creates a new record. */

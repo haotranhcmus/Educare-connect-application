@@ -3,8 +3,8 @@ import { View, StyleSheet, Dimensions } from "react-native";
 import { Text, ActivityIndicator, useTheme } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 
-import SplashTopCurve from "../../components/svgs/SplashTopCurve";
-import SplashBottomCurve from "../../components/svgs/SplashBottomCurve";
+import SplashTopCurve from "@components/svgs/SplashTopCurve";
+import SplashBottomCurve from "@components/svgs/SplashBottomCurve";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 

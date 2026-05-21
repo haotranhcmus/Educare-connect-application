@@ -1,5 +1,5 @@
-import { callKw, create, read, searchRead, write } from "./odooClient";
-import { logger } from "../utils/logger";
+import { callKw, create, read, searchRead, write } from "@api/odooClient";
+import { logger } from "@utils/logger";
 
 const SESSION_MODEL = "educare.session.log";
 const RESULT_MODEL = "educare.session.result";

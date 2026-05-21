@@ -1,19 +1,19 @@
 import React, { useRef } from "react";
 import { Animated, Pressable, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { useAuthStore } from "../../store/authStore";
+import { useAuthStore } from "@store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { AvatarLabel } from "../common/AvatarLabel";
-import { StatusBadge } from "../common/StatusBadge";
-import { formatFloatTime } from "../../utils/formatters";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { formatFloatTime } from "@utils/formatters";
 import {
   SESSION_PURPOSE_LABELS,
   SESSION_TYPE_SHORT_LABELS,
   LOCATION_LABELS,
-} from "../../utils/labels";
-import type { SessionListItem } from "../../types";
-import { STATUS_COLORS } from "../../theme/statusColors";
-import { NO_REPORT_BADGE } from "../../theme/decorativeColors";
+} from "@utils/labels";
+import type { SessionListItem } from "@t";
+import { STATUS_COLORS } from "@theme/statusColors";
+import { NO_REPORT_BADGE } from "@theme/decorativeColors";
 
 interface SessionListCardProps {
   session: SessionListItem;

@@ -9,10 +9,11 @@ import {
   fetchObjectivesByIds,
   createSession,
   updateSession,
-} from "../api/sessionApi";
-import { queryKeys } from "../api/queryKeys";
-import { useAuthStore } from "../store/authStore";
+} from "@api/sessionApi";
+import { queryKeys } from "@api/queryKeys";
+import { useAuthStore } from "@store/authStore";
 import dayjs from "dayjs";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export function useStudentSessions(studentId: number) {
   return useQuery({
@@ -146,5 +147,25 @@ export function useUpdateSession() {
       // Invalidate all list-by-user variants of "my sessions".
       queryClient.invalidateQueries({ queryKey: queryKeys.sessions.myAll() });
     },
+  });
+}
+
+export function useMySessionsSuspense(filters?: {
+  dateFrom?: string;
+  dateTo?: string;
+}) {
+  const uid = useAuthStore((s) => s.uid);
+  return useSuspenseQuery({
+    queryKey: queryKeys.sessions.my(uid, filters ?? null),
+    queryFn: () => fetchMySessions(uid!, filters),
+  });
+}
+
+export function useSessionDetailSuspense(sessionId: number) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.sessions.detail(sessionId),
+    queryFn: () => fetchSessionDetail(sessionId),
+    retry: false,
+    staleTime: 30_000,
   });
 }

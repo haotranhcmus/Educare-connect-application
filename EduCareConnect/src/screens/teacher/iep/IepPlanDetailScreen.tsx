@@ -1,13 +1,13 @@
-import React, { useState, useLayoutEffect, useCallback } from "react";
+import React, { useState, useLayoutEffect, useCallback, Suspense } from "react";
 import {
   View,
   StyleSheet,
   Platform,
   ScrollView,
   RefreshControl,
-  Alert,
   ActivityIndicator,
 } from "react-native";
+import { toast } from "@utils/toast";
 import { Text, useTheme, IconButton } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,15 +17,18 @@ import {
   EncodingType,
 } from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { SectionHeader } from "../../../components/common/SectionHeader";
-import { GoalCard } from "../../../components/iep/GoalCard";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useIepPlanDetail, useGoalsForPlan } from "../../../hooks/useIep";
-import { ODOO_BASE_URL, client } from "../../../api/odooClient";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { SectionHeader } from "@components/common/SectionHeader";
+import { GoalCard } from "@components/iep/GoalCard";
+import { useIepPlanDetailSuspense, useGoalsForPlan } from "@hooks/useIep";
+import {
+  IepPlanDetailSkeleton,
+  IepPlanGoalsSkeleton,
+} from "@screens/teacher/iep/IepPlanDetailSkeleton";
+import { ODOO_BASE_URL, client } from "@api/odooClient";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import IepPlaceholder from "../../../../assets/placeholder/iep-placeholder.svg";
-import { formatDate } from "../../../utils/formatters";
+import IepPlaceholder from "@assets/placeholder/svg/iep-placeholder.svg";
+import { formatDate } from "@utils/formatters";
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -381,8 +384,8 @@ const styles = StyleSheet.create({
   },
 });
 
-// ── IepPlanDetailScreen ───────────────────────────────────────
-export function IepPlanDetailScreen({ route, navigation }: any) {
+// ── IepPlanDetailContent ──────────────────────────────────────
+function IepPlanDetailContent({ route, navigation }: any) {
   const { planId, objectiveRouteName = "IepObjectiveDetail" } =
     route.params as {
       planId: number;
@@ -393,14 +396,8 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
   const [expandedGoalId, setExpandedGoalId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
 
-  const {
-    data: plan,
-    isLoading: planLoading,
-    refetch,
-  } = useIepPlanDetail(planId);
+  const { data: plan, refetch } = useIepPlanDetailSuspense(planId);
   const { data: goals = [], isLoading: goalsLoading } = useGoalsForPlan(planId);
-
-  const isLoading = planLoading || goalsLoading;
 
   const handleDownload = useCallback(async () => {
     if (downloading) return;
@@ -443,10 +440,10 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
           UTI: "com.adobe.pdf",
         });
       } else {
-        Alert.alert("Thông báo", "Thiết bị không hỗ trợ chia sẻ file.");
+        toast.info("Thiết bị không hỗ trợ chia sẻ file");
       }
     } catch (e: any) {
-      Alert.alert("Lỗi tải file", e?.message || "Không thể tải kế hoạch IEP.");
+      toast.error("Lỗi tải file", e?.message || "Không thể tải kế hoạch IEP");
     } finally {
       setDownloading(false);
     }
@@ -472,9 +469,6 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
         ),
     });
   }, [navigation, downloading, handleDownload]);
-
-  if (isLoading && !plan) return <LoadingOverlay visible />;
-  if (!plan) return null;
 
   const teacherName = Array.isArray(plan.assigned_teacher_id)
     ? plan.assigned_teacher_id[1]
@@ -593,36 +587,52 @@ export function IepPlanDetailScreen({ route, navigation }: any) {
         </View>
       </View>
 
-      {/* ── Goals ── */}
-      <SectionHeader
-        icon="bullseye-arrow"
-        title={`Mục tiêu dài hạn (${goals.length})`}
-      />
-
-      {goals.length === 0 ? (
-        <View style={screenStyles.emptyWrap}>
-          <IepPlaceholder width={140} height={140} />
-          <Text
-            variant="bodyMedium"
-            style={{ color: theme.colors.onSurface, marginTop: 12 }}
-          >
-            Chưa có mục tiêu nào
-          </Text>
-        </View>
+      {/* ── Goals — load độc lập với plan header ── */}
+      {goalsLoading ? (
+        <IepPlanGoalsSkeleton count={3} />
       ) : (
-        goals.map((goal) => (
-          <GoalCard
-            key={goal.id}
-            goal={goal}
-            expanded={expandedGoalId === goal.id}
-            onToggle={() =>
-              setExpandedGoalId((prev) => (prev === goal.id ? null : goal.id))
-            }
-            onObjectivePress={handleObjectivePress}
+        <>
+          <SectionHeader
+            icon="bullseye-arrow"
+            title={`Mục tiêu dài hạn (${goals.length})`}
           />
-        ))
+
+          {goals.length === 0 ? (
+            <View style={screenStyles.emptyWrap}>
+              <IepPlaceholder width={140} height={140} />
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.onSurface, marginTop: 12 }}
+              >
+                Chưa có mục tiêu nào
+              </Text>
+            </View>
+          ) : (
+            goals.map((goal) => (
+              <GoalCard
+                key={goal.id}
+                goal={goal}
+                expanded={expandedGoalId === goal.id}
+                onToggle={() =>
+                  setExpandedGoalId((prev) =>
+                    prev === goal.id ? null : goal.id,
+                  )
+                }
+                onObjectivePress={handleObjectivePress}
+              />
+            ))
+          )}
+        </>
       )}
     </ScrollView>
+  );
+}
+
+export function IepPlanDetailScreen(props: any) {
+  return (
+    <Suspense fallback={<IepPlanDetailSkeleton />}>
+      <IepPlanDetailContent {...props} />
+    </Suspense>
   );
 }
 

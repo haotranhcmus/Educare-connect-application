@@ -2,8 +2,8 @@ import React, { useRef } from "react";
 import { Animated, Pressable, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { AvatarLabel } from "../common/AvatarLabel";
-import type { StudentListItem } from "../../types";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import type { StudentListItem } from "@t";
 
 interface StudentListCardProps {
   student: StudentListItem;

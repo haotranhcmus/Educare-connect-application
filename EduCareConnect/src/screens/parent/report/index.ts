@@ -1,2 +1,2 @@
-export { ParentReportListScreen } from "./ParentReportListScreen";
-export { ParentReportDetailScreen } from "./ParentReportDetailScreen";
+export { ParentReportListScreen } from "@screens/parent/report/ParentReportListScreen";
+export { ParentReportDetailScreen } from "@screens/parent/report/ParentReportDetailScreen";

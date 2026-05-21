@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
+import * as Haptics from "expo-haptics";
+import { toast } from "@utils/toast";
 import {
   TextInput,
   Button,
@@ -25,19 +27,18 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect } from "@react-navigation/native";
-import { StackActions } from "@react-navigation/native";
-import { SessionInfoCard } from "../../../components/report/SessionInfoCard";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
+import { SessionInfoCard } from "@components/report/SessionInfoCard";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import {
   usePersistReport,
   usePersistAndSendReport,
   useReportDetail,
-} from "../../../hooks/useReports";
+} from "@hooks/useReports";
 import {
   fetchSessionDetail,
   fetchSessionResults,
-} from "../../../api/sessionApi";
-import { Picker } from "../../../components/form/Picker";
+} from "@api/sessionApi";
+import { Picker } from "@components/form/Picker";
 import {
   PERFORMANCE_LABELS,
   ATTENDANCE_LABELS,
@@ -45,12 +46,12 @@ import {
   ENERGY_LABELS,
   ENGAGEMENT_LABELS,
   toPickerOptions,
-} from "../../../utils/labels";
-import { REPORT_FIELDS } from "../../../constants/reportFields";
-import { formatDate } from "../../../utils/formatters";
+} from "@utils/labels";
+import { REPORT_FIELDS } from "@constants/reportFields";
+import { formatDate } from "@utils/formatters";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ReportStackParamList } from "../../../navigation/types";
-import type { PhotoAsset } from "../../../types";
+import type { ReportStackParamList } from "@navigation/types";
+import type { PhotoAsset } from "@t";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "ReportCreate">;
 
@@ -277,7 +278,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         }));
       }
     } catch {
-      Alert.alert("Lỗi", "Không thể tải thông tin buổi học");
+      toast.error("Không thể tải thông tin buổi học");
     } finally {
       setLoading(false);
     }
@@ -286,15 +287,12 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   async function pickPhotos() {
     const remaining = 5 - photoAssets.length;
     if (remaining <= 0) {
-      Alert.alert("Giới hạn ảnh", "Bạn đã thêm tối đa 5 ảnh");
+      toast.info("Đã đạt giới hạn 5 ảnh");
       return;
     }
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(
-        "Cần quyền truy cập",
-        "Hãy cấp quyền thư viện ảnh trong cài đặt",
-      );
+      toast.info("Cần cấp quyền thư viện ảnh trong cài đặt");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -340,7 +338,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
       });
       setSuccessModal({ visible: true, type: "draft", reportId: rptId });
     } catch {
-      Alert.alert("Lỗi", "Không thể lưu báo cáo");
+      toast.error("Không thể lưu báo cáo");
     }
   });
 
@@ -361,13 +359,17 @@ export function ReportCreateScreen({ navigation, route }: Props) {
                 payload,
                 photoAssets,
               });
+              await Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success,
+              );
               setSuccessModal({
                 visible: true,
                 type: "sent",
                 reportId: rptId,
               });
             } catch (e: any) {
-              Alert.alert("Lỗi", e?.message || "Không thể gửi báo cáo");
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              toast.error("Không thể gửi báo cáo", e?.message);
             }
           },
         },
@@ -632,20 +634,12 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               style={{ marginTop: 24, minWidth: 120 }}
               onPress={() => {
                 setSuccessModal((s) => ({ ...s, visible: false }));
-                if (successModal.type === "sent" && successModal.reportId) {
-                  // Replace ReportCreate with ReportDetail in the current
-                  // stack so back navigation returns to whichever screen
-                  // launched the create flow (ReportList, SessionDetail,
-                  // StudentDetail, …) instead of relying on ReportList being
-                  // available globally.
-                  navigation.dispatch(
-                    StackActions.replace("ReportDetail", {
-                      reportId: successModal.reportId,
-                    }),
-                  );
-                } else {
-                  navigation.goBack();
-                }
+                // Always pop ReportCreate off the stack — user returns to
+                // whichever screen launched the create flow (SessionDetail
+                // most commonly). For sent reports, the underlying screen
+                // refetches via the mutation's query invalidation, so the
+                // report status is up-to-date when they land back.
+                navigation.goBack();
               }}
             >
               Đóng

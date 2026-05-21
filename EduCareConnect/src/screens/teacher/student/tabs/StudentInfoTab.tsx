@@ -1,10 +1,10 @@
 import React from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, useTheme, Divider, Banner } from "react-native-paper";
-import { SectionHeader } from "../../../../components/common/SectionHeader";
-import type { StudentDetail } from "../../../../types";
-import { formatDate } from "../../../../utils/formatters";
-import { DIAGNOSIS_LABELS, GENDER_LABELS } from "../../../../utils/labels";
+import { SectionHeader } from "@components/common/SectionHeader";
+import type { StudentDetail } from "@t";
+import { formatDate } from "@utils/formatters";
+import { DIAGNOSIS_LABELS, GENDER_LABELS } from "@utils/labels";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface Props {

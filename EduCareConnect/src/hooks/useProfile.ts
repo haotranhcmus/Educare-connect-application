@@ -3,9 +3,9 @@ import {
   fetchMyProfile,
   changePassword,
   uploadAvatar,
-} from "../api/profileApi";
-import { queryKeys } from "../api/queryKeys";
-import { useAuthStore } from "../store/authStore";
+} from "@api/profileApi";
+import { queryKeys } from "@api/queryKeys";
+import { useAuthStore } from "@store/authStore";
 
 export function useMyProfile() {
   const uid = useAuthStore((s) => s.uid);

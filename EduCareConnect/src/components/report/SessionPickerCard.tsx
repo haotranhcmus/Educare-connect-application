@@ -3,9 +3,9 @@ import { View, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import { Text, useTheme, MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { AvatarLabel } from "../common/AvatarLabel";
-import { PERFORMANCE_CONFIG } from "../../theme/decorativeColors";
-import { formatDate } from "../../utils/formatters";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { PERFORMANCE_CONFIG } from "@theme/decorativeColors";
+import { formatDate } from "@utils/formatters";
 
 interface SessionPickerCardProps {
   session: {

@@ -1,4 +1,4 @@
-import { searchRead } from "./odooClient";
+import { searchRead } from "@api/odooClient";
 
 export interface UserProfile {
   id: number;

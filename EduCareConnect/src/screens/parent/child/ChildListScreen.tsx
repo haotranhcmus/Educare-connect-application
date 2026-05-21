@@ -3,15 +3,16 @@ import { View, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { EmptyState } from "../../../components/common/EmptyState";
-import StudentPlaceholder from "../../../../assets/placeholder/student-placeholder.svg";
-import { useMyStudents } from "../../../hooks/useParent";
-import { useParentStore } from "../../../store/parentStore";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { EmptyState } from "@components/common/EmptyState";
+// import StudentPlaceholder from "@assets/placeholder/svg/student-placeholder.svg";
+import StudentPlaceholderJson from "@assets/placeholder/json/student-placeholder.json";
+import { useMyStudents } from "@hooks/useParent";
+import { useParentStore } from "@store/parentStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ParentChildStackParamList } from "../../../navigation/types";
+import type { ParentChildStackParamList } from "@navigation/types";
 
 type Props = NativeStackScreenProps<ParentChildStackParamList, "ChildList">;
 
@@ -46,7 +47,7 @@ export function ChildListScreen({ navigation }: Props) {
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <EmptyState
-            image={StudentPlaceholder}
+            lottie={StudentPlaceholderJson}
             title="Chưa có học sinh nào"
             description="Tài khoản này chưa được liên kết với học sinh nào."
           />

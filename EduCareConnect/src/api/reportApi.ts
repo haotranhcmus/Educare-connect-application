@@ -1,5 +1,5 @@
-import { searchRead, searchCount, create, write, callKw } from "./odooClient";
-import type { ReportListItem, ReportDetail, PhotoAsset } from "../types";
+import { searchRead, searchCount, create, write, callKw } from "@api/odooClient";
+import type { ReportListItem, ReportDetail, PhotoAsset } from "@t";
 
 function toAvatarUrl(b64?: string | false): string | undefined {
   return b64 ? `data:image/png;base64,${b64}` : undefined;

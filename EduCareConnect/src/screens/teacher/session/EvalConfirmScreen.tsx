@@ -1,19 +1,21 @@
 import React from "react";
-import { View, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
+import * as Haptics from "expo-haptics";
+import { toast } from "@utils/toast";
 import { Text, Button, Surface, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StackActions } from "@react-navigation/native";
-import { useEvalStore } from "../../../store/evalStore";
-import { useSubmitEval } from "../../../hooks/useEval";
+import { useEvalStore } from "@store/evalStore";
+import { useSubmitEval } from "@hooks/useEval";
 import {
   useSessionDetail,
   useSessionObjectives,
-} from "../../../hooks/useSessions";
-import { formatDate, formatFloatTime } from "../../../utils/formatters";
-import { PROMPT_LEVEL_LABELS } from "../../../utils/labels";
-import type { ResultInput } from "../../../api/evalApi";
+} from "@hooks/useSessions";
+import { formatDate, formatFloatTime } from "@utils/formatters";
+import { PROMPT_LEVEL_LABELS } from "@utils/labels";
+import type { ResultInput } from "@api/evalApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { TeacherSessionStackParamList } from "../../../navigation/types";
+import type { TeacherSessionStackParamList } from "@navigation/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = NativeStackScreenProps<
@@ -69,6 +71,7 @@ export function EvalConfirmScreen({ route, navigation }: Props) {
         results: resultsArray,
       });
       reset();
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       // Pop back to the existing SessionDetail, discarding the EvalObjective
       // and EvalConfirm frames. `navigate` alone may push a duplicate
       // SessionDetail in native-stack v7, so use `popTo` for an explicit pop.
@@ -82,7 +85,8 @@ export function EvalConfirmScreen({ route, navigation }: Props) {
         navigation.navigate("SessionDetail", { sessionId });
       }
     } catch (e: any) {
-      Alert.alert("Lỗi", e.message || "Không thể hoàn thành đánh giá");
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      toast.error("Không thể hoàn thành đánh giá", e?.message);
     }
   };
 

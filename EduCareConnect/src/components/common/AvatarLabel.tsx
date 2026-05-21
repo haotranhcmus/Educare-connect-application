@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { AVATAR_PALETTE } from "../../theme/decorativeColors";
+import { AVATAR_PALETTE } from "@theme/decorativeColors";
 
 interface AvatarLabelProps {
   uri?: string;

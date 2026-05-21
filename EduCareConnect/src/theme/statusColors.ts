@@ -143,3 +143,13 @@ export const STATUS_COLORS: Record<string, StatusConfig> = {
     icon: "transfer",
   },
 };
+
+export function getStatusConfig(status: string): StatusConfig {
+  return (
+    STATUS_COLORS[status] ?? {
+      label: status,
+      color: "#616161",
+      backgroundColor: "#F5F5F5",
+    }
+  );
+}

@@ -1,14 +1,15 @@
 import React, { useMemo } from "react";
 import { SectionList, View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { useStudentReports } from "../../../../hooks/useReports";
-import { ReportListCard } from "../../../../components/report/ReportListCard";
-import { EmptyState } from "../../../../components/common/EmptyState";
-import ReportPlaceholder from "../../../../../assets/placeholder/report-placeholder.svg";
-import { formatDate } from "../../../../utils/formatters";
-import { groupByDate } from "../../../../utils/groupByDate";
+import { useStudentReports } from "@hooks/useReports";
+import { ReportListCard } from "@components/report/ReportListCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import ReportPlaceholder from "@assets/placeholder/svg/report-placeholder.svg";
+import ReportPlaceholderJson from "@assets/placeholder/json/report-placeholder.json";
+import { formatDate } from "@utils/formatters";
+import { groupByDate } from "@utils/groupByDate";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { StudentStackParamList } from "../../../../navigation/types";
+import type { StudentStackParamList } from "@navigation/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type StudentDetailNav = NativeStackNavigationProp<
@@ -57,12 +58,17 @@ export function StudentReportTab({ studentId, navigation }: Props) {
         renderItem={({ item }) => (
           <ReportListCard
             report={item}
-            onPress={() => navigation.navigate("ReportDetail", { reportId: item.id })}
+            onPress={() =>
+              navigation.navigate("ReportDetail", { reportId: item.id })
+            }
           />
         )}
         ListEmptyComponent={
           !isLoading ? (
-            <EmptyState image={ReportPlaceholder} title="Chưa có báo cáo" />
+            <EmptyState
+              lottie={ReportPlaceholderJson}
+              title="Chưa có báo cáo"
+            />
           ) : null
         }
         stickySectionHeadersEnabled={false}

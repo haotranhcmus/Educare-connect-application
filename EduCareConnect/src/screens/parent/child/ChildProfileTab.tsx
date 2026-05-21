@@ -1,10 +1,10 @@
 import React from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, Divider, useTheme } from "react-native-paper";
-import { SectionHeader } from "../../../components/common/SectionHeader";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { formatDate } from "../../../utils/formatters";
-import { GENDER_LABELS } from "../../../utils/labels";
+import { SectionHeader } from "@components/common/SectionHeader";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { formatDate } from "@utils/formatters";
+import { GENDER_LABELS } from "@utils/labels";
 
 interface ChildProfileTabProps {
   student: any;

@@ -1,18 +1,14 @@
 import React from "react";
-import {
-  FlatList,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { FlatList, View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useStudentIepPlans } from "../../../hooks/useIep";
-import { EmptyState } from "../../../components/common/EmptyState";
-import IepPlaceholder from "../../../../assets/placeholder/iep-placeholder.svg";
-import { formatDate } from "../../../utils/formatters";
-import type { IepPlan } from "../../../types";
+import { useStudentIepPlans } from "@hooks/useIep";
+import { EmptyState } from "@components/common/EmptyState";
+// import IepPlaceholder from "@assets/placeholder/svg/iep-placeholder.svg";
+import IepPlaceHolderJson from "@assets/placeholder/json/iep-placeholder.json";
+import { formatDate } from "@utils/formatters";
+import type { IepPlan } from "@t";
 
 interface NavigateOnly {
   navigate: (route: string, params?: Record<string, unknown>) => void;
@@ -200,7 +196,10 @@ export function ChildProgressTab({
       contentContainerStyle={styles.list}
       ListEmptyComponent={
         !isLoading ? (
-          <EmptyState image={IepPlaceholder} title="Chưa có kế hoạch IEP" />
+          <EmptyState
+            lottie={IepPlaceHolderJson}
+            title="Chưa có kế hoạch IEP"
+          />
         ) : null
       }
       style={{ flex: 1, backgroundColor: theme.colors.background }}

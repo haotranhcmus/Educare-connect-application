@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Pressable } from "react-native";
-import { Text, useTheme, Divider } from "react-native-paper";
+import { Text, useTheme, Divider, MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StatusBadge } from "../common/StatusBadge";
-import { TrendChip } from "../common/TrendChip";
-import type { IepObjectiveListItem } from "../../types";
-import { formatDate } from "../../utils/formatters";
-import { theme } from "../../theme";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { TrendChip } from "@components/common/TrendChip";
+import type { IepObjectiveListItem } from "@t";
+import { formatDate } from "@utils/formatters";
+import { theme } from "@theme";
 
 interface ObjectiveCardProps {
   objective: IepObjectiveListItem;
@@ -290,7 +290,7 @@ function StatCell({
   value: string;
   label: string;
   highlight?: boolean;
-  theme: ReturnType<typeof useTheme>;
+  theme: MD3Theme;
 }) {
   return (
     <View style={styles.statCell}>

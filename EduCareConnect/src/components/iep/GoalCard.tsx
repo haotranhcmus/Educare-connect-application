@@ -2,11 +2,12 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StatusBadge } from "../common/StatusBadge";
-import { ProgressBar } from "../common/ProgressBar";
-import { ObjectiveCard } from "./ObjectiveCard";
-import { useObjectivesForGoal } from "../../hooks/useIep";
-import type { IepGoal } from "../../types";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { ProgressBar } from "@components/common/ProgressBar";
+import { ObjectiveCard } from "@components/iep/ObjectiveCard";
+import { useObjectivesForGoal } from "@hooks/useIep";
+import type { IepGoal } from "@t";
+import { GOAL_STATUS_LABEL } from "@constants/label";
 
 interface GoalCardProps {
   goal: IepGoal;
@@ -55,7 +56,7 @@ function GoalCardImpl({
                 [{goal.goal_code}]
               </Text>
             </View>
-            <StatusBadge status={goal.status} />
+            <StatusBadge status={GOAL_STATUS_LABEL[goal.status]} />
           </View>
 
           <Text

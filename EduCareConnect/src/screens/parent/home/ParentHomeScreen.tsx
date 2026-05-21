@@ -10,19 +10,19 @@ import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { ChildSelectorModal } from "./ChildSelectorModal";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { ChildSelectorModal } from "@screens/parent/home/ChildSelectorModal";
 import {
   useMyStudents,
   useUnreadReportCount,
   useLatestSession,
   useSessionsThisWeek,
-} from "../../../hooks/useParent";
-import { useParentStore } from "../../../store/parentStore";
-import { useAuthStore } from "../../../store/authStore";
-import { formatFloatTime, formatDateShort } from "../../../utils/formatters";
+} from "@hooks/useParent";
+import { useParentStore } from "@store/parentStore";
+import { useAuthStore } from "@store/authStore";
+import { formatFloatTime, formatDateShort } from "@utils/formatters";
 
 const LOCATION_LABELS: Record<string, string> = {
   center: "Tại trung tâm",

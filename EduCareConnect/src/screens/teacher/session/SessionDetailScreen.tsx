@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import {
   View,
   ScrollView,
@@ -22,33 +22,36 @@ import {
   cancelSession,
   scheduleSession,
   deleteSession,
-} from "../../../api/sessionApi";
-import { queryKeys } from "../../../api/queryKeys";
+} from "@api/sessionApi";
+import { queryKeys } from "@api/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { SectionHeader } from "../../../components/common/SectionHeader";
-import { ResultSummaryCard } from "../../../components/session/ResultSummaryCard";
-import { ObjectiveDetailCard } from "../../../components/session/ObjectiveDetailCard";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { SectionHeader } from "@components/common/SectionHeader";
+import { ResultSummaryCard } from "@components/session/ResultSummaryCard";
+import { ObjectiveDetailCard } from "@components/session/ObjectiveDetailCard";
 import {
-  useSessionDetail,
   useSessionResults,
   useSessionObjectives,
-} from "../../../hooks/useSessions";
-import { useReportForSession } from "../../../hooks/useReports";
-import { formatDate, formatFloatTime } from "../../../utils/formatters";
+} from "@hooks/useSessions";
+import { useReportForSession } from "@hooks/useReports";
+import { formatDate, formatFloatTime } from "@utils/formatters";
 import {
   LOCATION_LABELS,
   SESSION_TYPE_SHORT_LABELS,
   SESSION_PURPOSE_LABELS,
   CANCEL_TYPE_LABELS,
-} from "../../../utils/labels";
-import { logger } from "../../../utils/logger";
+} from "@utils/labels";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { SessionStackParamList } from "../../../navigation/types";
+import type { SessionStackParamList } from "@navigation/types";
 import { SessionResult } from "@/src/types/models";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  SessionDetailSkeleton,
+  SessionObjectivesSkeleton,
+  SessionResultsSkeleton,
+} from "@screens/teacher/session/SessionDetailSkeleton";
+import { useSessionDetailSuspense } from "@hooks/useSessions";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionDetail">;
 
@@ -57,7 +60,7 @@ const G2 = "#43A047";
 const G_LIGHT = "#E8F5E9";
 const G_TEXT = "#1B5E20";
 
-export function SessionDetailScreen({ route, navigation }: Props) {
+function SessionDetailContent({ route, navigation }: Props) {
   const { sessionId } = route.params;
   const theme = useTheme();
   const queryClient = useQueryClient();
@@ -82,69 +85,16 @@ export function SessionDetailScreen({ route, navigation }: Props) {
     setSnackVisible(true);
   };
 
-  const {
-    data: session,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useSessionDetail(sessionId);
-  const { data: results = [] } = useSessionResults(
-    session?.status === "done" ? sessionId : 0,
+  const { data: session, refetch } = useSessionDetailSuspense(sessionId);
+  const isDoneStatus = session?.status === "done";
+  const { data: results = [], isLoading: resultsLoading } = useSessionResults(
+    isDoneStatus ? sessionId : 0,
   );
   const { data: existingReport } = useReportForSession(
-    session?.status === "done" ? sessionId : 0,
+    isDoneStatus ? sessionId : 0,
   );
-  const { data: sessionObjectives = [] } = useSessionObjectives(
-    session?.objective_ids ?? [],
-  );
-
-  if (isLoading && !session) return <LoadingOverlay visible />;
-
-  if (isError || (!isLoading && !session)) {
-    const errorMsg =
-      (error as any)?.message || "Không thể tải thông tin buổi học.";
-    logger.error("SessionDetailScreen", `render error state`, {
-      sessionId,
-      errorMsg,
-      odooError: (error as any)?.odooError,
-    });
-    return (
-      <View style={styles.errorContainer}>
-        <Text
-          variant="titleSmall"
-          style={{
-            color: theme.colors.error,
-            textAlign: "center",
-            marginBottom: 8,
-          }}
-        >
-          Không tải được buổi học #{sessionId}
-        </Text>
-        <Text
-          variant="bodySmall"
-          style={{
-            color: theme.colors.onSurfaceVariant,
-            textAlign: "center",
-            marginBottom: 16,
-            paddingHorizontal: 24,
-          }}
-        >
-          {errorMsg}
-        </Text>
-        <Button mode="contained" onPress={() => refetch()} icon="refresh">
-          Thử lại
-        </Button>
-        <Button
-          mode="text"
-          onPress={() => navigation.goBack()}
-          style={{ marginTop: 8 }}
-        >
-          Quay lại
-        </Button>
-      </View>
-    );
-  }
+  const { data: sessionObjectives = [], isLoading: objectivesLoading } =
+    useSessionObjectives(session?.objective_ids ?? []);
 
   if (!session) return null;
 
@@ -390,7 +340,11 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         </View>
 
         {/* ── Objectives ─────────────────────────────────────── */}
-        {sessionObjectives.length > 0 && (
+        {objectivesLoading && (session.objective_ids?.length ?? 0) > 0 ? (
+          <SessionObjectivesSkeleton
+            count={Math.min(session.objective_ids?.length ?? 2, 3)}
+          />
+        ) : sessionObjectives.length > 0 ? (
           <>
             <SectionHeader
               icon="target"
@@ -400,10 +354,12 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               <ObjectiveDetailCard key={obj.id} objective={obj} />
             ))}
           </>
-        )}
+        ) : null}
 
         {/* ── Results ────────────────────────────────────────── */}
-        {isDone && results.length > 0 && (
+        {isDone && resultsLoading ? (
+          <SessionResultsSkeleton count={2} />
+        ) : isDone && results.length > 0 ? (
           <>
             <SectionHeader
               icon="chart-bar"
@@ -424,7 +380,7 @@ export function SessionDetailScreen({ route, navigation }: Props) {
               <ResultSummaryCard key={r.id} result={r} />
             ))}
           </>
-        )}
+        ) : null}
 
         {/* ── Cancel modal ───────────────────────────────────── */}
         <Modal
@@ -758,6 +714,14 @@ export function SessionDetailScreen({ route, navigation }: Props) {
         {snackMessage}
       </Snackbar>
     </View>
+  );
+}
+
+export function SessionDetailScreen(props: Props) {
+  return (
+    <Suspense fallback={<SessionDetailSkeleton />}>
+      <SessionDetailContent {...props} />
+    </Suspense>
   );
 }
 

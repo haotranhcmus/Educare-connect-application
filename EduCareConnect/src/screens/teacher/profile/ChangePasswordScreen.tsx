@@ -1,12 +1,14 @@
 import React from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet } from "react-native";
+import * as Haptics from "expo-haptics";
+import { toast } from "@utils/toast";
 import { TextInput, Button, useTheme } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useChangePassword } from "../../../hooks/useProfile";
+import { useChangePassword } from "@hooks/useProfile";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ProfileStackParamList } from "../../../navigation/types";
+import type { ProfileStackParamList } from "@navigation/types";
 
 type Props = NativeStackScreenProps<
   ProfileStackParamList,
@@ -44,14 +46,11 @@ export function ChangePasswordScreen({ navigation }: Props) {
         oldPassword: data.oldPassword,
         newPassword: data.newPassword,
       });
-      Alert.alert("Thành công", "Mật khẩu đã được thay đổi", [
-        { text: "OK", onPress: () => navigation.goBack() },
-      ]);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      toast.success("Đổi mật khẩu thành công");
+      navigation.goBack();
     } catch {
-      Alert.alert(
-        "Lỗi",
-        "Không thể đổi mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại.",
-      );
+      toast.error("Không thể đổi mật khẩu", "Vui lòng kiểm tra mật khẩu hiện tại");
     }
   });
 

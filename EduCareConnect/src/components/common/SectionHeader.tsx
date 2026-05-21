@@ -2,15 +2,14 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { theme } from "../../theme";
 
 interface SectionHeaderProps {
-  icon?: string;
+  icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   title: string;
   action?: {
     label: string;
     onPress: () => void;
-    icon?: string;
+    icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   };
 }
 

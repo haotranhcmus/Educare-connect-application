@@ -2,8 +2,8 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { PROMPT_LEVEL_LABELS } from "../../utils/labels";
-import type { SessionResult } from "../../types";
+import { PROMPT_LEVEL_LABELS } from "@utils/labels";
+import type { SessionResult } from "@t";
 
 /** Map accuracy → { color, bg, label } */
 function getAccuracyMeta(

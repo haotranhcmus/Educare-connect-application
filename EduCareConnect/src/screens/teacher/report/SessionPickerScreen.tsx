@@ -2,13 +2,14 @@ import React, { useState, useMemo } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SessionPickerCard } from "../../../components/report/SessionPickerCard";
-import { EmptyState } from "../../../components/common/EmptyState";
-import SessionPlaceholder from "../../../../assets/placeholder/session-placeholder.svg";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { useSessionsForReport } from "../../../hooks/useReports";
+import { SessionPickerCard } from "@components/report/SessionPickerCard";
+import { EmptyState } from "@components/common/EmptyState";
+// import SessionPlaceholder from "@assets/placeholder/svg/session-placeholder.svg";
+import SessionPlaceholderJson from "@assets/placeholder/json/session-placeholder.json";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { useSessionsForReport } from "@hooks/useReports";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { ReportStackParamList } from "../../../navigation/types";
+import type { ReportStackParamList } from "@navigation/types";
 import { theme } from "@/src/theme";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "SessionPicker">;
@@ -70,7 +71,7 @@ export function SessionPickerScreen({ navigation }: Props) {
           ListEmptyComponent={
             search ? (
               <EmptyState
-                image={SessionPlaceholder}
+                lottie={SessionPlaceholderJson}
                 title="Không tìm thấy buổi học"
                 description="Không có buổi học chưa có báo cáo cho học sinh này."
               />
