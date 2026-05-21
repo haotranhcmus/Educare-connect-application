@@ -13,12 +13,13 @@ import {
   markReportRead,
   fetchStudentTimetable,
 } from "../api/parentApi";
+import { queryKeys } from "../api/queryKeys";
 import { useAuthStore } from "../store/authStore";
 
 export function useMyStudent() {
   const uid = useAuthStore((s) => s.uid);
   return useQuery({
-    queryKey: ["parent", "student", uid],
+    queryKey: queryKeys.parent.student(uid),
     queryFn: () => fetchMyStudent(uid!),
     enabled: !!uid,
   });
@@ -27,7 +28,7 @@ export function useMyStudent() {
 export function useMyStudents() {
   const uid = useAuthStore((s) => s.uid);
   return useQuery({
-    queryKey: ["parent", "students", uid],
+    queryKey: queryKeys.parent.students(uid),
     queryFn: () => fetchMyStudents(uid!),
     enabled: !!uid,
   });
@@ -35,7 +36,7 @@ export function useMyStudents() {
 
 export function useStudentById(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "studentById", studentId],
+    queryKey: queryKeys.parent.studentById(studentId),
     queryFn: () => fetchStudentById(studentId!),
     enabled: !!studentId,
   });
@@ -43,7 +44,7 @@ export function useStudentById(studentId?: number) {
 
 export function useUnreadReportCount(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "unreadCount", studentId],
+    queryKey: queryKeys.parent.unreadCount(studentId),
     queryFn: () => fetchUnreadReportCount(studentId!),
     enabled: !!studentId,
   });
@@ -51,7 +52,7 @@ export function useUnreadReportCount(studentId?: number) {
 
 export function useActiveIepPlan(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "activePlan", studentId],
+    queryKey: queryKeys.parent.activePlan(studentId),
     queryFn: () => fetchActiveIepPlan(studentId!),
     enabled: !!studentId,
   });
@@ -59,7 +60,7 @@ export function useActiveIepPlan(studentId?: number) {
 
 export function useLatestSession(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "latestSession", studentId],
+    queryKey: queryKeys.parent.latestSession(studentId),
     queryFn: () => fetchLatestSession(studentId!),
     enabled: !!studentId,
   });
@@ -67,7 +68,7 @@ export function useLatestSession(studentId?: number) {
 
 export function useSessionsThisWeek(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "sessionsThisWeek", studentId],
+    queryKey: queryKeys.parent.sessionsThisWeek(studentId),
     queryFn: () => fetchSessionsThisWeek(studentId!),
     enabled: !!studentId,
   });
@@ -75,7 +76,7 @@ export function useSessionsThisWeek(studentId?: number) {
 
 export function useIepPlanHistory(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "planHistory", studentId],
+    queryKey: queryKeys.parent.planHistory(studentId),
     queryFn: () => fetchIepPlanHistory(studentId!),
     enabled: !!studentId,
   });
@@ -83,7 +84,7 @@ export function useIepPlanHistory(studentId?: number) {
 
 export function useGoalsWithObjectives(planId?: number) {
   return useQuery({
-    queryKey: ["parent", "goalsObjectives", planId],
+    queryKey: queryKeys.parent.goalsObjectives(planId),
     queryFn: () => fetchGoalsWithObjectives(planId!),
     enabled: !!planId,
   });
@@ -91,7 +92,7 @@ export function useGoalsWithObjectives(planId?: number) {
 
 export function useParentReports(studentId?: number) {
   return useQuery({
-    queryKey: ["parent", "reports", studentId],
+    queryKey: queryKeys.parent.reports(studentId),
     queryFn: () => fetchParentReports(studentId!),
     enabled: !!studentId,
   });
@@ -102,12 +103,9 @@ export function useMarkReportRead() {
   return useMutation({
     mutationFn: (reportId: number) => markReportRead(reportId),
     onSuccess: (_data, reportId) => {
-      // Refresh the detail page cache
-      qc.invalidateQueries({ queryKey: ["reports", "detail", reportId] });
-      // Refresh parent report list
-      qc.invalidateQueries({ queryKey: ["parent", "reports"] });
-      // Refresh unread badge count
-      qc.invalidateQueries({ queryKey: ["parent", "unreadCount"] });
+      qc.invalidateQueries({ queryKey: queryKeys.reports.detail(reportId) });
+      qc.invalidateQueries({ queryKey: queryKeys.parent.reportsAll() });
+      qc.invalidateQueries({ queryKey: queryKeys.parent.unreadCountAll() });
     },
   });
 }
@@ -118,7 +116,7 @@ export function useStudentTimetable(
   dateTo?: string,
 ) {
   return useQuery({
-    queryKey: ["parent", "timetable", studentId, dateFrom, dateTo],
+    queryKey: queryKeys.parent.timetable(studentId, dateFrom, dateTo),
     queryFn: () => fetchStudentTimetable(studentId!, dateFrom, dateTo),
     enabled: !!studentId,
   });

@@ -3,7 +3,6 @@ import type { UserRole } from "../types";
 import {
   saveSession,
   getSessionId,
-  getUid,
   getRole,
   getUserName,
   getCenterName,

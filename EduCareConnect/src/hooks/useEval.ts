@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { submitEvaluation, ResultInput } from "../api/evalApi";
+import { queryKeys } from "../api/queryKeys";
 
 export function useSubmitEval() {
   const queryClient = useQueryClient();
@@ -14,14 +15,15 @@ export function useSubmitEval() {
     }) => submitEvaluation(sessionId, results),
     onSuccess: (_, { sessionId }) => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", "detail", sessionId],
+        queryKey: queryKeys.sessions.detail(sessionId),
       });
       queryClient.invalidateQueries({
-        queryKey: ["sessions", "results", sessionId],
+        queryKey: queryKeys.sessions.results(sessionId),
       });
-      queryClient.invalidateQueries({ queryKey: ["sessions", "my"] });
-      // Also invalidate objective data since accuracy updated
-      queryClient.invalidateQueries({ queryKey: ["objectives"] });
+      // Invalidate all list-by-user variants of "my sessions".
+      queryClient.invalidateQueries({ queryKey: queryKeys.sessions.myAll() });
+      // Accuracy of objectives just changed.
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepObjectives.all });
     },
   });
 }

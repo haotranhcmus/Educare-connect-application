@@ -165,13 +165,6 @@ function ObjectiveCardImpl({
             onPress={() => setExpanded((v) => !v)}
             activeOpacity={0.6}
           >
-            {/* <Text
-              variant="labelSmall"
-              style={{ color: theme.colors.primary, flex: 1 }}
-            >
-              {expanded ? "Ẩn chi tiết" : "Xem chi tiết mục tiêu"}
-              
-            </Text> */}
             <MaterialCommunityIcons
               name={expanded ? "chevron-up" : "chevron-down"}
               size={16}
@@ -253,7 +246,7 @@ function ObjectiveCardImpl({
                 <View
                   style={[
                     styles.consecutivePill,
-                    { backgroundColor: theme.colors.surfaceVariant },
+                    { backgroundColor: theme.colors.surface },
                   ]}
                 >
                   <MaterialCommunityIcons
@@ -263,7 +256,7 @@ function ObjectiveCardImpl({
                   />
                   <Text
                     variant="labelSmall"
-                    style={{ color: theme.colors.outline, flex: 1 }}
+                    style={{ color: theme.colors.primary, flex: 1 }}
                   >
                     Buổi đạt liên tiếp
                   </Text>

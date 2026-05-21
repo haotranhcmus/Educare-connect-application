@@ -11,6 +11,7 @@ import { useMyStudents } from "../../hooks/useStudents";
 import { useTodaySessions, useWeekMonthStats } from "../../hooks/useSessions";
 import { useSessionsForReport } from "../../hooks/useReports";
 import { useMyProfile } from "../../hooks/useProfile";
+import { queryKeys } from "../../api/queryKeys";
 import { AvatarLabel, ProgressRingAvatar } from "../../components/common";
 import CoffeeSvg from "../../../assets/placeholder/coffee-chill.svg";
 import { SessionListCard } from "../../components/session/SessionListCard";
@@ -34,7 +35,9 @@ export function HomeScreen({ navigation }: any) {
   // to ensure edits made in detail/edit screens are reflected immediately.
   useFocusEffect(
     useCallback(() => {
-      queryClient.invalidateQueries({ queryKey: ["sessions", "today", uid] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.today(uid),
+      });
     }, [queryClient, uid]),
   );
   const { data: noReportSessions = [] } = useSessionsForReport();

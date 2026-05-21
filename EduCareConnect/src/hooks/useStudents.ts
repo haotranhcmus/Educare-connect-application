@@ -6,13 +6,14 @@ import {
   fetchStudentDetail,
   fetchStudentIdsWithActivePlan,
 } from "../api/studentApi";
+import { queryKeys } from "../api/queryKeys";
 import type { StudentListItem, StudentDetail } from "../types";
 
 export function useMyStudents() {
   const uid = useAuthStore((s) => s.uid);
 
   return useQuery<StudentListItem[]>({
-    queryKey: ["students", "mine", uid],
+    queryKey: queryKeys.students.mine(uid),
     queryFn: () => fetchMyStudents(uid!),
     enabled: !!uid,
   });
@@ -20,7 +21,7 @@ export function useMyStudents() {
 
 export function useStudentDetail(studentId: number) {
   return useQuery<StudentDetail>({
-    queryKey: ["students", "detail", studentId],
+    queryKey: queryKeys.students.detail(studentId),
     queryFn: () => fetchStudentDetail(studentId),
     enabled: !!studentId,
   });
@@ -34,13 +35,13 @@ export function useStudentsWithActivePlan() {
   const uid = useAuthStore((s) => s.uid);
 
   const studentsQuery = useQuery<StudentListItem[]>({
-    queryKey: ["students", "mine", uid],
+    queryKey: queryKeys.students.mine(uid),
     queryFn: () => fetchMyStudents(uid!),
     enabled: !!uid,
   });
 
   const planQuery = useQuery<Set<number>>({
-    queryKey: ["students", "with-active-plan"],
+    queryKey: queryKeys.students.withActivePlan(),
     queryFn: fetchStudentIdsWithActivePlan,
     enabled: !!uid,
   });

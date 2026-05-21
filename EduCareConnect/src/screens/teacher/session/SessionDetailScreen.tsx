@@ -23,6 +23,7 @@ import {
   scheduleSession,
   deleteSession,
 } from "../../../api/sessionApi";
+import { queryKeys } from "../../../api/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
 import { AvatarLabel } from "../../../components/common/AvatarLabel";
 import { StatusBadge } from "../../../components/common/StatusBadge";
@@ -164,8 +165,12 @@ export function SessionDetailScreen({ route, navigation }: Props) {
     setIsScheduling(true);
     try {
       await scheduleSession(sessionId);
-      await queryClient.invalidateQueries({ queryKey: ["session", sessionId] });
-      await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.detail(sessionId),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.all,
+      });
       refetch();
       showSnack("Đã lên lịch buổi học thành công");
     } catch (e: any) {
@@ -179,7 +184,9 @@ export function SessionDetailScreen({ route, navigation }: Props) {
     setIsDeleting(true);
     try {
       await deleteSession(sessionId);
-      await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.all,
+      });
       setDeleteConfirmVisible(false);
       navigation.goBack();
     } catch (e: any) {
@@ -197,8 +204,12 @@ export function SessionDetailScreen({ route, navigation }: Props) {
     setCancelError("");
     try {
       await cancelSession(sessionId, cancelType, cancelReason.trim());
-      await queryClient.invalidateQueries({ queryKey: ["session", sessionId] });
-      await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.detail(sessionId),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.all,
+      });
       setCancelModalVisible(false);
       setCancelReason("");
       refetch();

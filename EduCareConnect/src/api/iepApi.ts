@@ -1,4 +1,4 @@
-import { client } from "./odooClient";
+import { searchRead, read } from "./odooClient";
 import type {
   IepPlan,
   IepGoal,
@@ -6,8 +6,6 @@ import type {
   IepObjectiveDetail,
   SessionResult,
 } from "../types";
-
-import { searchCount, searchRead, read, write } from "./odooClient";
 
 const PLAN_DETAIL_FIELDS = [
   "id",
