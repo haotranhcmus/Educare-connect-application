@@ -1,14 +1,15 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface SectionHeaderProps {
-  icon?: string;
+  icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   title: string;
   action?: {
     label: string;
     onPress: () => void;
-    icon?: string;
+    icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   };
 }
 
@@ -19,16 +20,16 @@ export function SectionHeader({ icon, title, action }: SectionHeaderProps) {
     <View style={styles.container}>
       <View style={styles.left}>
         {icon && (
-          <IconButton
-            icon={icon}
+          <MaterialCommunityIcons
+            name={icon}
             size={20}
-            iconColor={theme.colors.primary}
+            color={theme.colors.primary}
             style={styles.icon}
           />
         )}
         <Text
           variant="titleMedium"
-          style={{ color: theme.colors.onBackground }}
+          style={{ color: theme.colors.primary, width: "100%" }}
         >
           {title}
         </Text>
@@ -51,7 +52,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
     paddingVertical: 8,
   },
   left: {
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   icon: {
-    margin: 0,
     marginRight: 4,
   },
 });

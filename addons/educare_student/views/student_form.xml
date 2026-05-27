@@ -39,6 +39,7 @@
                         <div class="oe_title">
                             <h1>
                                 <field name="name" placeholder="Student full name" />
+                                <field name="nickname" placeholder="(Nickname)" class="oe_inline" />
                             </h1>
                             <h3 invisible="student_code == '/' or not student_code">
                                 <field name="student_code" />

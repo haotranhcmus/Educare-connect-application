@@ -1,20 +1,21 @@
 import { create } from "zustand";
-import type { UserRole } from "../types";
+import type { UserRole } from "@t";
 import {
   saveSession,
   getSessionId,
-  getUid,
   getRole,
   getUserName,
   getCenterName,
   clearSession as clearSecureStore,
-} from "../utils/secureStore";
+} from "@utils/secureStore";
 import {
   authenticate,
   getSessionInfo,
   setActiveSession,
-} from "../api/odooClient";
-import { fetchUserProfile } from "../api/authApi";
+} from "@api/odooClient";
+import { fetchUserProfile } from "@api/authApi";
+import { clearPersistedCache } from "@api/queryPersister";
+import { queryClient } from "@api/queryClient";
 
 interface AuthState {
   // State
@@ -126,6 +127,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isLoading: false,
       error: null,
     });
+
+    queryClient.clear();
+    await clearPersistedCache();
   },
 
   checkSession: async () => {

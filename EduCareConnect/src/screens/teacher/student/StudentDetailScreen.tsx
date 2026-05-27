@@ -1,29 +1,44 @@
-import React from "react";
+import React, { use, Suspense } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { StudentStackParamList } from "../../../navigation/types";
-import { useStudentDetail } from "../../../hooks/useStudents";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { LoadingOverlay } from "../../../components/common/LoadingOverlay";
-import { StudentInfoTab } from "./tabs/StudentInfoTab";
-import { StudentIepTab } from "./tabs/StudentIepTab";
-import { StudentSessionTab } from "./tabs/StudentSessionTab";
-import { StudentReportTab } from "./tabs/StudentReportTab";
+import type { StudentStackParamList } from "@navigation/types";
+import { useStudentDetail } from "@hooks/useStudents";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { StatusBadge } from "@components/common/StatusBadge";
+import { LoadingOverlay } from "@components/common/LoadingOverlay";
+import { StudentInfoTab } from "@screens/teacher/student/tabs/StudentInfoTab";
+import { StudentIepTab } from "@screens/teacher/student/tabs/StudentIepTab";
+import { StudentSessionTab } from "@screens/teacher/student/tabs/StudentSessionTab";
+import { StudentReportTab } from "@screens/teacher/student/tabs/StudentReportTab";
+
+import { useLayoutEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
+
+import { useStudentDetailSuspense } from "@hooks/useStudents";
+import { StudentDetailSkeleton } from "@screens/teacher/student/StudentDetailSkeleton";
 
 type Props = NativeStackScreenProps<StudentStackParamList, "StudentDetail">;
 const TopTab = createMaterialTopTabNavigator();
 
-export function StudentDetailScreen({ route, navigation }: Props) {
+function StudentDetailContent({ route, navigation }: Props) {
   const { studentId } = route.params;
   const theme = useTheme();
-  const { data: student, isLoading } = useStudentDetail(studentId);
+  const { data: student } = useStudentDetailSuspense(studentId);
 
-  if (isLoading) {
-    return <LoadingOverlay visible />;
-  }
+  useLayoutEffect(() => {
+    // Ẩn tab bar khi vào màn hình này
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+    return () => {
+      // Hiện lại tab bar khi rời khỏi
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+    };
+  }, [navigation]);
 
   if (!student) {
     return (
@@ -50,16 +65,12 @@ export function StudentDetailScreen({ route, navigation }: Props) {
         >
           {student.name}
         </Text>
-        <View style={styles.headerRow}>
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            {student.student_code}
-          </Text>
-          <Text style={{ color: theme.colors.outline }}> · </Text>
-          <StatusBadge status={student.status} />
-        </View>
+        <Text
+          variant="labelSmall"
+          style={{ color: theme.colors.outline, marginTop: 2 }}
+        >
+          {student.student_code}
+        </Text>
       </View>
 
       {/* Top Tabs */}
@@ -96,6 +107,14 @@ export function StudentDetailScreen({ route, navigation }: Props) {
         </TopTab.Screen>
       </TopTab.Navigator>
     </View>
+  );
+}
+
+export function StudentDetailScreen(props: Props) {
+  return (
+    <Suspense fallback={<StudentDetailSkeleton />}>
+      <StudentDetailContent {...props} />
+    </Suspense>
   );
 }
 

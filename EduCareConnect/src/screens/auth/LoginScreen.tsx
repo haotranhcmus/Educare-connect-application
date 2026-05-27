@@ -17,7 +17,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAuthStore } from "../../store/authStore";
+import { useAuthStore } from "@store/authStore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const loginSchema = z.object({

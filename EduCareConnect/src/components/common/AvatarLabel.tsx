@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
+import { AVATAR_PALETTE } from "@theme/decorativeColors";
 
 interface AvatarLabelProps {
   uri?: string;
@@ -9,7 +10,8 @@ interface AvatarLabelProps {
   backgroundColor?: string;
 }
 
-function getInitials(name: string): string {
+/** Two-letter initials from a person's name. Exported for reuse. */
+export function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
   if (parts.length >= 2) {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
@@ -17,22 +19,13 @@ function getInitials(name: string): string {
   return (name[0] || "?").toUpperCase();
 }
 
-function hashColor(name: string): string {
-  const colors = [
-    "#2E7D32",
-    "#1565C0",
-    "#6A1B9A",
-    "#C62828",
-    "#00838F",
-    "#EF6C00",
-    "#4527A0",
-    "#AD1457",
-  ];
+/** Deterministic color for an avatar background based on name. Exported for reuse. */
+export function hashColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return colors[Math.abs(hash) % colors.length];
+  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
 }
 
 export function AvatarLabel({

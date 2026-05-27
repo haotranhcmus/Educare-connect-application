@@ -77,4 +77,10 @@
         parent="menu_educare_iep_config"
         action="action_iep_objective_template"
         sequence="70" />
+
+    <menuitem id="menu_iep_config_difficulty_weight"
+        name="Trọng số độ khó"
+        parent="menu_educare_iep_config"
+        action="action_iep_difficulty_weight"
+        sequence="80" />
 </odoo>

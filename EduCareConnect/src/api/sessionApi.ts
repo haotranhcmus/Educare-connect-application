@@ -1,16 +1,70 @@
-import { read, searchRead, write, create, callKw } from "./odooClient";
-import { logger } from "../utils/logger";
+import { read, searchRead, write, create, callKw } from "@api/odooClient";
+import { logger } from "@utils/logger";
 import type {
   SessionListItem,
   SessionLogDetail,
   SessionResult,
   IepObjectiveListItem,
-} from "../types";
+} from "@t";
+
+function toAvatarUrl(b64?: string | false): string | undefined {
+  return b64 ? `data:image/png;base64,${b64}` : undefined;
+}
+
+/** Batch-fetch student avatars + nickname and merge into session/record list. */
+async function mergeStudentAvatars<
+  T extends {
+    student_id: any;
+    student_avatar_url?: string;
+    student_nickname?: string;
+  },
+>(records: T[], fetchNickname = false): Promise<T[]> {
+  if (records.length === 0) return records;
+  const studentIds = [
+    ...new Set(
+      records
+        .map((r) =>
+          Array.isArray(r.student_id)
+            ? r.student_id[0]
+            : ((r.student_id as any)?.id ?? 0),
+        )
+        .filter(Boolean),
+    ),
+  ];
+  if (studentIds.length === 0) return records;
+  try {
+    const fields = fetchNickname
+      ? ["id", "avatar", "nickname"]
+      : ["id", "avatar"];
+    const students = await searchRead<{
+      id: number;
+      avatar: string | false;
+      nickname?: string | false;
+    }>("educare.student", [["id", "in", studentIds]], fields);
+    const avatarMap = new Map<number, string | undefined>(
+      students.map((s) => [s.id, toAvatarUrl(s.avatar)]),
+    );
+    const nicknameMap = new Map<number, string | undefined>(
+      students.map((s) => [s.id, s.nickname || undefined]),
+    );
+    return records.map((r) => {
+      const sid = Array.isArray(r.student_id)
+        ? r.student_id[0]
+        : ((r.student_id as any)?.id ?? 0);
+      const merged: any = { ...r, student_avatar_url: avatarMap.get(sid) };
+      if (fetchNickname) merged.student_nickname = nicknameMap.get(sid);
+      return merged as T;
+    });
+  } catch {
+    return records;
+  }
+}
 
 const SESSION_LIST_FIELDS = [
   "id",
   "name",
   "student_id",
+  "student_name",
   "session_date",
   "start_time",
   "end_time",
@@ -27,12 +81,8 @@ const SESSION_DETAIL_FIELDS = [
   ...SESSION_LIST_FIELDS,
   "teacher_id",
   "center_id",
-  "attendance",
-  "mood",
-  "energy_level",
-  "engagement_level",
-  "overall_performance",
-  "notes",
+  "cancel_type",
+  "cancel_notes",
   "result_line_ids",
   "objective_ids",
 ];
@@ -42,14 +92,14 @@ export async function fetchStudentSessions(
 ): Promise<SessionListItem[]> {
   logger.session("fetchStudentSessions", "start", { studentId });
   try {
-    const records = await searchRead<SessionListItem>(
+    const records = await searchRead<any>(
       "educare.session.log",
       [["student_id", "=", studentId]],
       SESSION_LIST_FIELDS,
       { order: "session_date desc, start_time desc", limit: 50 },
     );
     logger.session("fetchStudentSessions", `ok — ${records.length} records`);
-    return records;
+    return mergeStudentAvatars<SessionListItem>(records, true);
   } catch (e) {
     logger.error("fetchStudentSessions", "failed", e);
     throw e;
@@ -62,7 +112,7 @@ export async function fetchTodaySessions(
   const today = new Date().toISOString().split("T")[0];
   logger.session("fetchTodaySessions", "start", { teacherUid, today });
   try {
-    const records = await searchRead<SessionListItem>(
+    const records = await searchRead<any>(
       "educare.session.log",
       [
         ["session_date", "=", today],
@@ -72,7 +122,7 @@ export async function fetchTodaySessions(
       { order: "start_time asc" },
     );
     logger.session("fetchTodaySessions", `ok — ${records.length} records`);
-    return records;
+    return mergeStudentAvatars<SessionListItem>(records, true);
   } catch (e) {
     logger.error("fetchTodaySessions", "failed", e);
     throw e;
@@ -84,19 +134,19 @@ export async function fetchMySessions(
   filters?: { dateFrom?: string; dateTo?: string },
 ): Promise<SessionListItem[]> {
   logger.session("fetchMySessions", "start", { teacherId, filters });
-  const domain: any[] = [["teacher_id", "=", teacherId]];
+  const domain: unknown[] = [["teacher_id", "=", teacherId]];
   if (filters?.dateFrom) domain.push(["session_date", ">=", filters.dateFrom]);
   if (filters?.dateTo) domain.push(["session_date", "<=", filters.dateTo]);
 
   try {
-    const records = await searchRead<SessionListItem>(
+    const records = await searchRead<any>(
       "educare.session.log",
       domain,
       SESSION_LIST_FIELDS,
       { limit: 200, order: "session_date desc, start_time desc" },
     );
     logger.session("fetchMySessions", `ok — ${records.length} records`);
-    return records;
+    return mergeStudentAvatars<SessionListItem>(records, true);
   } catch (e) {
     logger.error("fetchMySessions", "failed", e);
     throw e;
@@ -108,7 +158,7 @@ export async function fetchSessionDetail(
 ): Promise<SessionLogDetail> {
   logger.session("fetchSessionDetail", "start", { sessionId });
   try {
-    const result = await read<SessionLogDetail>(
+    const result = await read<any>(
       "educare.session.log",
       [sessionId],
       SESSION_DETAIL_FIELDS,
@@ -128,7 +178,7 @@ export async function fetchSessionDetail(
       status: result[0].status,
       objectiveCount: result[0].objective_ids?.length ?? 0,
     });
-    return result[0];
+    return (await mergeStudentAvatars<SessionLogDetail>([result[0]]))[0];
   } catch (e: any) {
     logger.error("fetchSessionDetail", `failed for sessionId=${sessionId}`, {
       message: e?.message,
@@ -149,12 +199,16 @@ export async function fetchSessionResults(
       [
         "id",
         "objective_id",
-        "result_type",
+        "measurement_type",
+        "score_pct",
+        "is_recorded",
         "correct_trials",
         "total_trials",
-        "accuracy_pct",
-        "prompt_level_used",
+        "actual_duration_seconds",
+        "actual_count",
+        "trial_ids",
         "phase",
+        "mastery_achieved",
         "notes",
         "teaching_method",
       ],
@@ -177,7 +231,6 @@ export async function createSession(vals: {
   end_time: number;
   location: string;
   session_type: string;
-  session_purpose: string;
   objective_ids?: [number, number, number[]][];
 }): Promise<number> {
   logger.session("createSession", "start", {
@@ -191,7 +244,21 @@ export async function createSession(vals: {
       "createSession",
       `record created id=${newId}, scheduling...`,
     );
-    await callKw("educare.session.log", "action_schedule", [[newId]]);
+    try {
+      await callKw("educare.session.log", "action_schedule", [[newId]]);
+    } catch (scheduleErr: any) {
+      // action_schedule failed — clean up the orphaned draft so it doesn't pollute the list
+      logger.session(
+        "createSession",
+        `action_schedule failed for id=${newId}, deleting orphan draft...`,
+      );
+      try {
+        await callKw("educare.session.log", "unlink", [[newId]], {});
+      } catch {
+        // best-effort cleanup; ignore secondary error
+      }
+      throw scheduleErr;
+    }
     logger.session("createSession", `ok — session ${newId} scheduled`);
     return newId;
   } catch (e: any) {
@@ -231,6 +298,7 @@ type ActiveObjective = Pick<
   | "name"
   | "status"
   | "goal_id"
+  | "domain_ids"
   | "current_accuracy_pct"
   | "target_accuracy_pct"
   | "baseline_accuracy_pct"
@@ -239,9 +307,18 @@ type ActiveObjective = Pick<
   | "description"
   | "consecutive_sessions_required"
   | "consecutive_sessions_achieved"
-  | "measurement_method"
+  | "measurement_type"
+  | "target_duration_seconds"
+  | "baseline_count"
+  | "target_count"
   | "implementation_steps"
   | "materials_needed"
+  | "smart_specific"
+  | "smart_measurable"
+  | "smart_analysis"
+  | "smart_timebound"
+  | "difficulty_id"
+  | "suggested_prompt_level_id"
 >;
 
 export async function fetchStudentActiveObjectives(
@@ -253,7 +330,8 @@ export async function fetchStudentActiveObjectives(
       "educare.iep.objective",
       [
         ["student_id", "=", studentId],
-        ["status", "in", ["not_started", "in_progress"]],
+        ["status", "not in", ["discontinued"]],
+        ["goal_id.plan_id.status", "=", "active"],
       ],
       [
         "id",
@@ -261,6 +339,7 @@ export async function fetchStudentActiveObjectives(
         "name",
         "status",
         "goal_id",
+        "domain_ids",
         "current_accuracy_pct",
         "baseline_accuracy_pct",
         "progress_pct",
@@ -269,11 +348,41 @@ export async function fetchStudentActiveObjectives(
         "description",
         "consecutive_sessions_required",
         "consecutive_sessions_achieved",
-        "measurement_method",
+        "measurement_type",
+        "target_duration_seconds",
+        "baseline_count",
+        "target_count",
         "implementation_steps",
         "materials_needed",
       ],
     );
+
+    // Resolve domain IDs → [id, name] pairs
+    const allDomainIds = [
+      ...new Set(
+        records.flatMap((r) =>
+          Array.isArray(r.domain_ids)
+            ? (r.domain_ids as any[]).filter((d) => typeof d === "number")
+            : [],
+        ),
+      ),
+    ];
+    if (allDomainIds.length > 0) {
+      const domainRecords = await searchRead<{ id: number; name: string }>(
+        "educare.domain",
+        [["id", "in", allDomainIds]],
+        ["id", "name"],
+      );
+      const domainMap = new Map(domainRecords.map((d) => [d.id, d.name]));
+      for (const rec of records) {
+        if (Array.isArray(rec.domain_ids)) {
+          rec.domain_ids = (rec.domain_ids as any[]).map((d) =>
+            typeof d === "number" ? [d, domainMap.get(d) ?? String(d)] : d,
+          ) as any;
+        }
+      }
+    }
+
     logger.session(
       "fetchStudentActiveObjectives",
       `ok — ${records.length} objectives for student ${studentId}`,
@@ -305,6 +414,7 @@ export async function fetchObjectivesByIds(
         "name",
         "status",
         "goal_id",
+        "domain_ids",
         "current_accuracy_pct",
         "baseline_accuracy_pct",
         "progress_pct",
@@ -313,9 +423,18 @@ export async function fetchObjectivesByIds(
         "description",
         "consecutive_sessions_required",
         "consecutive_sessions_achieved",
-        "measurement_method",
+        "measurement_type",
+        "target_duration_seconds",
+        "baseline_count",
+        "target_count",
         "implementation_steps",
         "materials_needed",
+        "smart_specific",
+        "smart_measurable",
+        "smart_analysis",
+        "smart_timebound",
+        "difficulty_id",
+        "suggested_prompt_level_id",
       ],
     );
     logger.session(
@@ -328,6 +447,33 @@ export async function fetchObjectivesByIds(
         `Expected ${ids.length} objectives but got ${records.length}. Missing ids: ${ids.filter((id) => !records.find((r) => r.id === id)).join(", ")}`,
       );
     }
+
+    // Resolve domain IDs → [id, name] pairs (Many2many returns plain IDs only)
+    const allDomainIds = [
+      ...new Set(
+        records.flatMap((r) =>
+          Array.isArray(r.domain_ids)
+            ? (r.domain_ids as any[]).filter((d) => typeof d === "number")
+            : [],
+        ),
+      ),
+    ];
+    if (allDomainIds.length > 0) {
+      const domainRecords = await searchRead<{ id: number; name: string }>(
+        "educare.domain",
+        [["id", "in", allDomainIds]],
+        ["id", "name"],
+      );
+      const domainMap = new Map(domainRecords.map((d) => [d.id, d.name]));
+      for (const rec of records) {
+        if (Array.isArray(rec.domain_ids)) {
+          rec.domain_ids = (rec.domain_ids as any[]).map((d) =>
+            typeof d === "number" ? [d, domainMap.get(d) ?? String(d)] : d,
+          ) as any;
+        }
+      }
+    }
+
     return records;
   } catch (e: any) {
     logger.error("fetchObjectivesByIds", "failed", { ids, error: e?.message });
@@ -335,35 +481,66 @@ export async function fetchObjectivesByIds(
   }
 }
 
+export interface ConflictSession {
+  id: number;
+  start_time: number;
+  end_time: number;
+}
+
 export async function checkStudentSessionConflict(
   studentId: number,
   sessionDate: string,
-): Promise<number> {
-  const records = await searchRead<{ id: number }>(
+): Promise<ConflictSession[]> {
+  const records = await searchRead<ConflictSession>(
     "educare.session.log",
     [
       ["student_id", "=", studentId],
       ["session_date", "=", sessionDate],
       ["status", "in", ["draft", "scheduled"]],
     ],
-    ["id"],
-    { limit: 5 },
+    ["id", "start_time", "end_time"],
+    { limit: 10 },
   );
-  return records.length;
+  return records;
 }
 
 export async function scheduleSession(sessionId: number): Promise<boolean> {
-  return callKw("educare.session.log", "action_schedule", [[sessionId]], {});
+  return callKw<boolean>(
+    "educare.session.log",
+    "action_schedule",
+    [[sessionId]],
+    {},
+  );
+}
+
+export async function deleteSession(sessionId: number): Promise<boolean> {
+  logger.session("deleteSession", "start", { sessionId });
+  try {
+    const response = await callKw<boolean>(
+      "educare.session.log",
+      "unlink",
+      [[sessionId]],
+      {},
+    );
+    logger.session("deleteSession", `ok — session ${sessionId} deleted`);
+    return response;
+  } catch (e: any) {
+    logger.error("deleteSession", `failed for sessionId=${sessionId}`, {
+      message: e?.message,
+      odooError: e?.odooError,
+    });
+    throw e;
+  }
 }
 
 export async function cancelSession(
   sessionId: number,
-  cancelType: "cancelled_center" | "cancelled_family",
+  cancelType: string,
   reason: string = "",
 ): Promise<boolean> {
   logger.session("cancelSession", "start", { sessionId, cancelType });
   try {
-    const response = await callKw(
+    const response = await callKw<boolean>(
       "educare.session.log",
       "action_cancel_session",
       [[sessionId], cancelType, reason],

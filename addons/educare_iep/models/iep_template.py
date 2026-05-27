@@ -2,133 +2,141 @@ from odoo import fields, models
 
 
 class EducareIepObjectiveTemplate(models.Model):
-    _name = 'educare.iep.objective.template'
-    _description = 'IEP Objective Template Library'
-    _order = 'sequence, name'
+    _name = "educare.iep.objective.template"
+    _description = "IEP Objective Template Library"
+    _order = "sequence, name"
 
     # --- Core template info ---
     name = fields.Char(
-        string='Template Name',
+        string="Template Name",
         required=True,
         translate=True,
     )
-    sequence = fields.Integer(string='Sequence', default=10)
+    sequence = fields.Integer(string="Sequence", default=10)
     template_domain_ids = fields.Many2many(
-        'educare.domain',
-        'educare_iep_obj_tpl_domain_rel',
-        'template_id',
-        'domain_id',
-        string='Development Domains',
+        "educare.domain",
+        "educare_iep_obj_tpl_domain_rel",
+        "template_id",
+        "domain_id",
+        string="Development Domains",
         required=True,
     )
     description = fields.Text(
-        string='Objective Description',
+        string="Objective Description",
         required=True,
         translate=True,
     )
-    active = fields.Boolean(string='Active', default=True)
+    active = fields.Boolean(string="Active", default=True)
 
     # --- SMART components ---
-    smart_specific = fields.Text(string='S - Specific', translate=True)
-    smart_measurable = fields.Char(string='M - Measurable', size=256, translate=True)
-    smart_analysis = fields.Text(string='A/R - Achievable & Relevant', translate=True)
-    smart_timebound = fields.Char(string='T - Time-Bound', size=128, translate=True)
-    baseline_description = fields.Text(string='Baseline Description', translate=True)
+    smart_specific = fields.Text(string="Cụ thể (S)", translate=True)
+    smart_measurable = fields.Char(string="Đo lường được (M)", size=256, translate=True)
+    smart_analysis = fields.Text(string="Khả thi & Phù hợp (A/R)", translate=True)
+    smart_timebound = fields.Char(string="Thời hạn (T)", size=128, translate=True)
 
     # --- Suggested defaults (hints for student-specific values) ---
     default_baseline_accuracy_pct = fields.Float(
-        string='Suggested Baseline (%)',
+        string="Độ chính xác ban đầu (%)",
         digits=(5, 2),
         default=0.0,
-        help='Suggested baseline accuracy. Teachers adjust per student.',
+        help="Mức độ chính xác ban đầu gợi ý. Giáo viên điều chỉnh theo từng học sinh.",
     )
     default_target_accuracy_pct = fields.Float(
-        string='Suggested Target (%)',
+        string="Độ chính xác mục tiêu (%)",
         digits=(5, 2),
         default=80.0,
-        help='Suggested target accuracy. Teachers adjust per student.',
+        help="Mức độ chính xác mục tiêu gợi ý. Giáo viên điều chỉnh theo từng học sinh.",
     )
     default_consecutive_sessions = fields.Integer(
-        string='Suggested Consecutive Sessions',
+        string="Số buổi liên tiếp cần đạt",
         default=3,
-        help='Suggested number of consecutive sessions. Teachers adjust per student.',
+        help="Số buổi liên tiếp cần đạt độ chính xác mục tiêu. Giáo viên điều chỉnh theo từng học sinh.",
     )
 
     # --- Enrichment metadata ---
     age_min_months = fields.Integer(
-        string='Min Age (months)',
-        help='Minimum recommended age in months.',
+        string="Min Age (months)",
+        help="Minimum recommended age in months.",
     )
     age_max_months = fields.Integer(
-        string='Max Age (months)',
-        help='Maximum recommended age in months.',
+        string="Max Age (months)",
+        help="Maximum recommended age in months.",
     )
-    difficulty_level = fields.Integer(
-        string='Difficulty Level',
-        default=1,
-        help='Skill difficulty level from 1 (easiest) to 5 (hardest).',
-    )
-    prerequisite_objective_ids = fields.Many2many(
-        'educare.iep.objective.template',
-        'educare_iep_obj_tpl_prerequisite_rel',
-        'template_id',
-        'prerequisite_id',
-        string='Prerequisites',
-        help='Objective templates that should be mastered before this one.',
+    difficulty_id = fields.Many2one(
+        "educare.iep.difficulty.weight",
+        string="Độ khó",
+        ondelete="set null",
+        help="Mức độ khó của kỹ năng này. Trọng số sẽ được tự động gán khi import.",
     )
     relevant_diagnosis_ids = fields.Many2many(
-        'educare.diagnosis',
-        'educare_iep_obj_tpl_diagnosis_rel',
-        'template_id',
-        'diagnosis_id',
-        string='Relevant Diagnoses',
-        help='Diagnoses for which this template is particularly relevant.',
+        "educare.diagnosis",
+        "educare_iep_obj_tpl_diagnosis_rel",
+        "template_id",
+        "diagnosis_id",
+        string="Relevant Diagnoses",
+        help="Diagnoses for which this template is particularly relevant.",
     )
     suggested_prompt_level = fields.Many2one(
-        'educare.iep.prompt.level',
-        string='Suggested Prompt Level',
-        ondelete='set null',
+        "educare.iep.prompt.level",
+        string="Suggested Prompt Level",
+        ondelete="set null",
     )
     measurement_template_id = fields.Many2one(
-        'educare.iep.measurement.template',
-        string='Measurement Template',
-        ondelete='set null',
+        "educare.iep.measurement.template",
+        string="Measurement Template",
+        ondelete="set null",
     )
-    default_data_collection_method = fields.Selection(
+    default_measurement_type = fields.Selection(
         selection=[
-            ('discrete_trial', 'Discrete Trial'),
-            ('frequency', 'Frequency Count'),
-            ('duration', 'Duration'),
-            ('interval', 'Interval Recording'),
-            ('task_analysis', 'Task Analysis'),
-            ('anecdotal', 'Anecdotal'),
+            ("accuracy", "Độ chính xác (đúng / tổng số lần)"),
+            ("prompt_level", "Mức độ hỗ trợ (theo từng lần thử)"),
+            ("duration", "Thời gian (giây)"),
+            ("frequency_increase", "Tần suất - Tăng hành vi tích cực"),
+            ("frequency_decrease", "Tần suất - Giảm hành vi tiêu cực"),
         ],
-        string='Suggested Data Collection',
+        string="Cách thu thập gợi ý",
+        default="accuracy",
+        help="Cách thu thập & đánh giá gợi ý. Giáo viên có thể điều chỉnh khi tạo mục tiêu.",
+    )
+    default_target_duration_seconds = fields.Integer(
+        string="Thời gian mục tiêu gợi ý (giây)",
+        default=0,
+    )
+    default_baseline_count = fields.Integer(
+        string="Số lần cơ sở gợi ý",
+        default=0,
+    )
+    default_target_count = fields.Integer(
+        string="Số lần mục tiêu gợi ý",
+        default=0,
     )
 
     # --- Implementation guidance ---
     materials_needed = fields.Text(
-        string='Materials Needed',
+        string="Materials Needed",
         translate=True,
-        help='List of materials/supplies required for this objective.',
+        help="List of materials/supplies required for this objective.",
     )
     implementation_steps = fields.Text(
-        string='Implementation Steps',
+        string="Implementation Steps",
         translate=True,
-        help='Step-by-step teaching instructions or guidelines.',
+        help="Step-by-step teaching instructions or guidelines.",
     )
 
     _sql_constraints = [
-        ('age_range_check',
-         'CHECK(age_min_months IS NULL OR age_max_months IS NULL OR age_min_months <= age_max_months)',
-         'Minimum age must be less than or equal to maximum age.'),
-        ('difficulty_range',
-         'CHECK(difficulty_level >= 1 AND difficulty_level <= 5)',
-         'Difficulty level must be between 1 and 5.'),
-        ('default_baseline_pct_range',
-         'CHECK(default_baseline_accuracy_pct >= 0 AND default_baseline_accuracy_pct <= 100)',
-         'Suggested baseline accuracy must be between 0 and 100.'),
-        ('default_target_pct_range',
-         'CHECK(default_target_accuracy_pct >= 0 AND default_target_accuracy_pct <= 100)',
-         'Suggested target accuracy must be between 0 and 100.'),
+        (
+            "age_range_check",
+            "CHECK(age_min_months IS NULL OR age_max_months IS NULL OR age_min_months <= age_max_months)",
+            "Minimum age must be less than or equal to maximum age.",
+        ),
+        (
+            "default_baseline_pct_range",
+            "CHECK(default_baseline_accuracy_pct >= 0 AND default_baseline_accuracy_pct <= 100)",
+            "Suggested baseline accuracy must be between 0 and 100.",
+        ),
+        (
+            "default_target_pct_range",
+            "CHECK(default_target_accuracy_pct >= 0 AND default_target_accuracy_pct <= 100)",
+            "Suggested target accuracy must be between 0 and 100.",
+        ),
     ]

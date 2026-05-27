@@ -1,14 +1,4 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { CompositeScreenProps } from "@react-navigation/native";
 import type { NavigatorScreenParams } from "@react-navigation/native";
-import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-
-// -- Root --
-export type RootStackParamList = {
-  Auth: undefined;
-  TeacherTabs: undefined;
-  ParentTabs: undefined;
-};
 
 // -- Auth --
 export type AuthStackParamList = {
@@ -17,11 +7,30 @@ export type AuthStackParamList = {
 
 // -- Teacher Bottom Tabs --
 export type TeacherTabParamList = {
-  HomeTab: undefined;
+  HomeTab: NavigatorScreenParams<HomeStackParamList> | undefined;
   StudentTab: undefined;
-  SessionTab: undefined;
+  SessionTab: NavigatorScreenParams<SessionStackParamList> | undefined;
   ReportTab: undefined;
   ProfileTab: undefined;
+};
+
+// Shared chat route params — reused inside HomeStack (teacher + parent).
+export type ChatRoomParams = {
+  conversationId: number;
+  counterpartName: string;
+  counterpartAvatar?: string | null;
+};
+
+// -- Teacher: Home Stack --
+// Contains: HomeScreen + NotificationList + Chat screens. Chat is reached
+// from the header icon on HomeScreen so the tab bar auto-hides while
+// chatting and Back returns to Home.
+export type HomeStackParamList = {
+  Home: undefined;
+  NotificationList: undefined;
+  ConversationList: undefined;
+  ChatRoom: ChatRoomParams;
+  AiChat: undefined;
 };
 
 export type TeacherRootStackParamList = {
@@ -29,6 +38,13 @@ export type TeacherRootStackParamList = {
   StudentDetail: { studentId: number };
   IepPlanDetail: { planId: number; studentName?: string };
   IepObjectiveDetail: { objectiveId: number; objectiveName?: string };
+  // Session/report screens accessible above tabs (e.g. from HomeScreen)
+  SessionDetail: { sessionId: number };
+  SessionEdit: { sessionId: number };
+  EvalObjective: { sessionId: number; objectiveIndex?: number };
+  EvalConfirm: { sessionId: number };
+  ReportDetail: { reportId: number };
+  ReportCreate: { sessionId?: number; reportId?: number };
 };
 
 // -- Teacher: Student Stack --
@@ -37,21 +53,29 @@ export type StudentStackParamList = {
   StudentDetail: { studentId: number };
   IepPlanDetail: { planId: number; studentName?: string };
   IepObjectiveDetail: { objectiveId: number; objectiveName?: string };
+  // Session/report screens within student context (no tab switch)
+  SessionDetail: { sessionId: number };
+  SessionEdit: { sessionId: number };
+  EvalObjective: { sessionId: number; objectiveIndex?: number };
+  EvalConfirm: { sessionId: number };
+  ReportDetail: { reportId: number };
+  ReportCreate: { sessionId?: number; reportId?: number };
 };
 
 // -- Teacher: Session Stack --
 export type SessionStackParamList = {
-  SessionList: undefined;
+  SessionList: { filterNoReport?: boolean } | undefined;
   SessionCreate: { studentId?: number };
   SessionDetail: { sessionId: number };
   SessionEdit: { sessionId: number };
-  EvalStep1: { sessionId: number };
-  EvalStep2: { sessionId: number; objectiveIndex?: number };
-  EvalStep3: { sessionId: number };
-  EvalDetailView: { sessionId: number };
+  EvalObjective: { sessionId: number; objectiveIndex?: number };
+  EvalConfirm: { sessionId: number };
+  // Report screens reachable from session detail (no tab switch)
+  ReportDetail: { reportId: number };
+  ReportCreate: { sessionId?: number; reportId?: number };
 };
 
-// Backward-compatible alias for old imports.
+// Backward-compatible alias used by EvalObjective/EvalConfirm screens.
 export type TeacherSessionStackParamList = SessionStackParamList;
 
 // -- Teacher: Report Stack --
@@ -62,7 +86,7 @@ export type ReportStackParamList = {
   ReportDetail: { reportId: number };
 };
 
-// -- Teacher: Profile Stack --
+// -- Profile Stack (shared shape between teacher and parent) --
 export type ProfileStackParamList = {
   Profile: undefined;
   ChangePassword: undefined;
@@ -70,13 +94,35 @@ export type ProfileStackParamList = {
 
 export type ParentProfileStackParamList = ProfileStackParamList;
 
+// IEP stack type still imported by IepObjectiveDetailScreen for its route props.
+export type TeacherIepStackParamList = {
+  IepPlanList: undefined;
+  IepPlanDetail: { planId: number };
+  IepObjectiveDetail: { objectiveId: number };
+};
+
 // -- Parent Bottom Tabs --
 export type ParentTabParamList = {
-  ParentHomeTab: undefined;
+  ParentHomeTab: NavigatorScreenParams<ParentHomeStackParamList> | undefined;
   ChildTab: undefined;
   TimetableTab: undefined;
   ReportTab: undefined;
   ParentProfileTab: undefined;
+};
+
+// -- Parent: Home Stack --
+// Contains: ParentHomeScreen + NotificationList + Chat screens +
+// detail screens for notification deep-link. Chat opens from the header
+// icon on ParentHomeScreen so the bottom tab bar hides while chatting.
+export type ParentHomeStackParamList = {
+  ParentHome: undefined;
+  NotificationList: undefined;
+  ConversationList: undefined;
+  ChatRoom: ChatRoomParams;
+  AiChat: undefined;
+  ParentReportDetail: { reportId: number };
+  IepPlanDetail: { planId: number; studentName?: string };
+  IepObjectiveDetail: { objectiveId: number; objectiveName?: string };
 };
 
 // -- Parent: Child Stack --
@@ -84,46 +130,19 @@ export type ParentChildStackParamList = {
   ChildList: undefined;
   ChildDetail: { studentId: number; studentName?: string };
   ChildIepHistory: undefined;
-  ChildIepPlanDetail: { planId: number; plan?: any };
+  ChildIepPlanDetail: { planId: number };
+  ChildIepObjectiveDetail: { objectiveId: number };
   ChildTimetable: undefined;
+  SessionDetail: { sessionId: number };
 };
 
 // -- Parent: Timetable Stack --
 export type ParentTimetableStackParamList = {
   Timetable: undefined;
   ChildIepHistory: undefined;
-  ChildIepPlanDetail: { planId: number; plan?: any };
-};
-
-// -- Parent: IEP Stack (legacy – kept for backward-compat) --
-export type ParentIepStackParamList = {
-  ParentIepPlan: undefined;
-  ParentIepPlanDetail: { planId: number; plan?: any };
-};
-
-// -- Composite types for screens that need both tab + stack navigation --
-export type StudentListScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<StudentStackParamList, "StudentList">,
-  BottomTabScreenProps<TeacherTabParamList>
->;
-
-export type TeacherIepStackParamList = {
-  IepPlanList: undefined;
-  IepPlanDetail: { planId: number };
-  IepObjectiveDetail: { objectiveId: number };
-};
-
-export type TeacherProfileStackParamList = {
-  Profile: undefined;
-  ChangePassword: undefined;
-};
-
-// Update TeacherReportStackParamList
-export type TeacherReportStackParamList = {
-  ReportList: undefined;
-  ReportCreate: { sessionId?: number; reportId?: number } | undefined;
-  ReportDetail: { reportId: number };
-  SessionPicker: undefined;
+  ChildIepPlanDetail: { planId: number };
+  ChildIepObjectiveDetail: { objectiveId: number };
+  SessionDetail: { sessionId: number };
 };
 
 export type ParentReportStackParamList = {

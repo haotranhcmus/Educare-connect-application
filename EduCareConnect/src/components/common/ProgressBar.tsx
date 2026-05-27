@@ -1,14 +1,14 @@
-import React from "react"
-import {View, StyleSheet} from "react-native"
-import {Text, useTheme} from "react-native-paper"
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 
 interface ProgressBarProps {
-    progress: number;
-    showPercent?: boolean;
-    baseline?: number;
-    target?: number;
-    label?:string;
-    size?: "small" | "medium";
+  progress: number;
+  showPercent?: boolean;
+  baseline?: number;
+  target?: number;
+  label?: string;
+  size?: "small" | "medium";
 }
 
 export function ProgressBar({
@@ -24,13 +24,13 @@ export function ProgressBar({
   const barHeight = size === "small" ? 6 : 10;
 
   // Color based on progress
-const getBarColor = () => {
-  if (clampedProgress >= 90) return "#41b84a";
-  if (clampedProgress >= 75) return "#1565C0";
-  if (clampedProgress >= 50) return "#F9A825";
-  if (clampedProgress >= 25) return "#EF6C00";
-  return "#C62828"; // đỏ
-};
+  const getBarColor = () => {
+    if (clampedProgress >= 90) return "#41b84a";
+    if (clampedProgress >= 75) return "#1565C0";
+    if (clampedProgress >= 50) return "#F9A825";
+    if (clampedProgress >= 25) return "#EF6C00";
+    return "#C62828"; // đỏ
+  };
 
   return (
     <View style={styles.container}>
@@ -49,7 +49,7 @@ const getBarColor = () => {
               variant="labelMedium"
               style={{ color: theme.colors.onSurface, fontWeight: "600" }}
             >
-              {Math.round(clampedProgress)}%
+              Tiến độ hoàn thành: {Math.round(clampedProgress)}%
             </Text>
           )}
         </View>
@@ -95,38 +95,6 @@ const getBarColor = () => {
           />
         )}
       </View>
-
-      {/* Legend for baseline/target */}
-      {(baseline !== undefined || target !== undefined) && (
-        <View style={styles.legend}>
-          {baseline !== undefined && (
-            <View style={styles.legendItem}>
-              <View
-                style={[styles.legendDot, { backgroundColor: "#757575" }]}
-              />
-              <Text
-                variant="labelSmall"
-                style={{ color: theme.colors.onSurfaceVariant }}
-              >
-                Baseline {baseline}%
-              </Text>
-            </View>
-          )}
-          {target !== undefined && (
-            <View style={styles.legendItem}>
-              <View
-                style={[styles.legendDot, { backgroundColor: "#1565C0" }]}
-              />
-              <Text
-                variant="labelSmall"
-                style={{ color: theme.colors.onSurfaceVariant }}
-              >
-                Target {target}%
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
     </View>
   );
 }

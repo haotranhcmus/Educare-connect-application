@@ -489,27 +489,27 @@ msgstr "Số tệp đính kèm"
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Baseline %"
-msgstr "% Đường cơ sở"
+msgstr "% Độ chính xác ban đầu"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__baseline_accuracy_pct
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_configure_wizard_form
 msgid "Baseline (%)"
-msgstr "Đường cơ sở (%)"
+msgstr "Độ chính xác ban đầu (%)"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__baseline_accuracy_pct
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__baseline_accuracy_pct
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__baseline_accuracy_pct
 msgid "Baseline Accuracy (%)"
-msgstr "Độ chính xác đường cơ sở (%)"
+msgstr "Độ chính xác mức ban đầu (%)"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__baseline_description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_configure_wizard_line__baseline_description
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__baseline_description
 msgid "Baseline Description"
-msgstr "Mô tả đường cơ sở"
+msgstr "Mô tả mức ban đầu"
 
 #. module: educare_iep
 #. odoo-python
@@ -522,17 +522,17 @@ msgstr ""
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_goal_baseline_pct_range
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_baseline_accuracy_check
 msgid "Baseline accuracy must be between 0 and 100."
-msgstr "Độ chính xác đường cơ sở phải nằm trong khoảng 0 và 100."
+msgstr "Độ chính xác mức ban đầu phải nằm trong khoảng 0 và 100."
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_baseline_lt_target_check
 msgid "Baseline accuracy must be less than target accuracy."
-msgstr "Độ chính xác đường cơ sở phải nhỏ hơn độ chính xác mục tiêu."
+msgstr "Độ chính xác mức ban đầu phải nhỏ hơn độ chính xác mục tiêu."
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Baseline:"
-msgstr "Đường cơ sở:"
+msgstr "Độ chính xác ban đầu:"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_quick_wizard_form
@@ -2078,7 +2078,7 @@ msgstr ""
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__literature_ref
 msgid "Literature References"
-msgstr "Tài liệu tham khảo"
+msgstr "Thiết lập & đo lường"
 
 #. module: educare_iep
 #. odoo-python
@@ -2882,6 +2882,12 @@ msgid "Plan Information"
 msgstr "Thông tin kế hoạch"
 
 #. module: educare_iep
+#: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_plan_form
+msgid "Version Information"
+msgstr "Thông tin phiên bản"
+
+
+#. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_goal__plan_status
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective__plan_status
 msgid "Plan Status"
@@ -3615,17 +3621,17 @@ msgstr "Gửi để xem xét"
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_baseline_accuracy_pct
 msgid "Suggested Baseline (%)"
-msgstr "Đường cơ sở đề xuất (%)"
+msgstr "Độ chính xác ban đầu (%)"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_consecutive_sessions
 msgid "Suggested Consecutive Sessions"
-msgstr "Số buổi liên tiếp đề xuất"
+msgstr "Số buổi liên tiếp cần đạt"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template__default_data_collection_method
-msgid "Suggested Data Collection"
-msgstr "Phương pháp thu thập dữ liệu đề xuất"
+msgid "Suggested Data Collection"   
+msgstr "Phương pháp thu thập dữ liệu"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_form
@@ -3644,7 +3650,7 @@ msgstr "Mức độ gợi ý đề xuất"
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_import_wizard_form
 #: model_terms:ir.ui.view,arch_db:educare_iep.view_educare_iep_objective_template_tree
 msgid "Suggested Target (%)"
-msgstr "Mục tiêu đề xuất (%)"
+msgstr "Độ chính xác mục tiêu (%)"
 
 #. module: educare_iep
 #: model:ir.model.constraint,message:educare_iep.constraint_educare_iep_objective_template_default_baseline_pct_range
@@ -3770,12 +3776,12 @@ msgstr "Độ chính xác mục tiêu (%)"
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_quick_wizard__target_date
 #: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Target Date"
-msgstr "Ngày mục tiêu"
+msgstr "Ngày dự kiến đạt được mục tiêu"
 
 #. module: educare_iep
 #: model_terms:ir.ui.view,arch_db:educare_iep.report_educare_iep_plan_document
 msgid "Target Date:"
-msgstr "Ngày mục tiêu:"
+msgstr "Ngày dự kiến đạt được mục tiêu:"
 
 #. module: educare_iep
 #: model:ir.model.fields,field_description:educare_iep.field_educare_iep_objective_template_import_wizard__goal_id

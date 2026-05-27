@@ -1,13 +1,12 @@
-import { client } from "./odooClient";
+import { searchRead, read } from "@api/odooClient";
 import type {
   IepPlan,
   IepGoal,
   IepObjectiveListItem,
   IepObjectiveDetail,
   SessionResult,
-} from "../types";
-
-import { searchCount, searchRead, read, write } from "./odooClient";
+  SessionResultTrial,
+} from "@t";
 
 const PLAN_DETAIL_FIELDS = [
   "id",
@@ -21,6 +20,8 @@ const PLAN_DETAIL_FIELDS = [
   "assigned_teacher_id",
   "review_frequency",
   "parent_consent",
+  "maintenance_mode",
+  "closing_reason",
   "goal_ids",
   "goal_count",
 ];
@@ -47,9 +48,14 @@ const OBJECTIVE_FIELDS = [
   "goal_id",
   "description",
   "status",
+  "measurement_type",
   "baseline_accuracy_pct",
   "current_accuracy_pct",
+  "locked_accuracy_pct",
   "target_accuracy_pct",
+  "target_duration_seconds",
+  "baseline_count",
+  "target_count",
   "progress_pct",
   "trend",
   "weight",
@@ -59,18 +65,24 @@ const OBJECTIVE_FIELDS = [
   "last_session_accuracy",
   "total_sessions_worked",
   "mastery_date",
-  "is_overdue",
 ];
 
 // Extra fields only needed for detail view
 const OBJECTIVE_DETAIL_FIELDS = [
   ...OBJECTIVE_FIELDS,
   "student_id",
-  "measurement_method",
+  "measurement_type",
+  "target_duration_seconds",
+  "baseline_count",
+  "target_count",
   "materials_needed",
   "implementation_steps",
-  "start_date",
-  "target_date",
+  "baseline_description",
+  "difficulty_id",
+  "smart_specific",
+  "smart_measurable",
+  "smart_analysis",
+  "smart_timebound",
 ];
 
 export async function fetchIepPlanDetail(planId: number): Promise<IepPlan> {
@@ -91,6 +103,16 @@ export async function fetchGoalsForPlan(planId: number): Promise<IepGoal[]> {
     { order: "goal_code asc" },
   );
   return records;
+}
+
+export async function fetchGoalsByIds(ids: number[]): Promise<IepGoal[]> {
+  if (!ids.length) return [];
+  return searchRead<IepGoal>(
+    "educare.iep.goal",
+    [["id", "in", ids]],
+    GOAL_FIELDS,
+    { order: "goal_code asc" },
+  );
 }
 
 export async function fetchObjectivesForGoal(
@@ -123,21 +145,57 @@ export async function fetchObjectiveResults(
 ): Promise<SessionResult[]> {
   const records = await searchRead<SessionResult>(
     "educare.session.result",
-    [["objective_id", "=", objectiveId]],
+    [
+      ["objective_id", "=", objectiveId],
+      ["session_id.status", "=", "done"],
+      ["is_recorded", "=", true],
+    ],
     [
       "id",
       "session_id",
       "session_date",
+      "measurement_type",
+      "score_pct",
+      "is_recorded",
       "correct_trials",
       "total_trials",
-      "accuracy_pct",
-      "prompt_level_used",
-      "result_type",
+      "actual_duration_seconds",
+      "actual_count",
+      "trial_ids",
       "phase",
+      "result_phase",
       "teaching_method",
+      "mastery_achieved",
     ],
-    { order: "session_date desc", limit },
+    { order: "session_date asc", limit },
   );
+
+  // For prompt_level objectives, resolve per-trial details so the history can
+  // show each trial's support level + score. trial_ids only returns IDs.
+  const allTrialIds = records.flatMap((r) => r.trial_ids ?? []);
+  if (allTrialIds.length > 0) {
+    const trials = await searchRead<SessionResultTrial & { result_id: [number, string] | number }>(
+      "educare.session.result.trial",
+      [["id", "in", allTrialIds]],
+      ["id", "result_id", "sequence", "prompt_level", "weight"],
+      { order: "sequence asc, id asc" },
+    );
+    const byResult = new Map<number, SessionResultTrial[]>();
+    for (const t of trials) {
+      const rid = Array.isArray(t.result_id) ? t.result_id[0] : t.result_id;
+      if (!byResult.has(rid)) byResult.set(rid, []);
+      byResult.get(rid)!.push({
+        id: t.id,
+        sequence: t.sequence,
+        prompt_level: t.prompt_level,
+        weight: t.weight,
+      });
+    }
+    for (const r of records) {
+      r.trials = byResult.get(r.id) ?? [];
+    }
+  }
+
   return records;
 }
 

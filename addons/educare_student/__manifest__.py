@@ -10,6 +10,7 @@
         'security/record_rules.xml',
         'data/sequence_data.xml',
         'data/assessment_item_data.xml',
+        'data/demo_seed.xml',
         'views/assessment_views.xml',
         'views/assessment_item_views.xml',
         'views/student_form.xml',
@@ -27,6 +28,7 @@
             'educare_student/static/src/js/domain_color_badge.js',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'license': 'LGPL-3',
 }

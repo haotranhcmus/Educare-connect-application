@@ -4,12 +4,18 @@
         <field name="name">educare.session.log.calendar</field>
         <field name="model">educare.session.log</field>
         <field name="arch" type="xml">
-            <calendar string="Sessions" date_start="session_date"
+            <calendar string="Sessions" date_start="datetime_start"
+                date_stop="datetime_stop"
                 color="student_id" quick_create="0">
+                <field name="calendar_label" />
                 <field name="name" />
                 <field name="student_id" />
+                <field name="start_time" widget="float_time" />
+                <field name="end_time" widget="float_time" />
+                <field name="location" />
                 <field name="teacher_id" />
                 <field name="status" />
+                <field name="objectives_summary" />
             </calendar>
         </field>
     </record>

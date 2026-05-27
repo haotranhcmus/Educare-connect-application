@@ -9,12 +9,15 @@ import {
   fetchObjectivesByIds,
   createSession,
   updateSession,
-} from "../api/sessionApi";
-import { useAuthStore } from "../store/authStore";
+} from "@api/sessionApi";
+import { queryKeys } from "@api/queryKeys";
+import { useAuthStore } from "@store/authStore";
+import dayjs from "dayjs";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export function useStudentSessions(studentId: number) {
   return useQuery({
-    queryKey: ["sessions", "student", studentId],
+    queryKey: queryKeys.sessions.student(studentId),
     queryFn: () => fetchStudentSessions(studentId),
     enabled: !!studentId,
   });
@@ -23,7 +26,7 @@ export function useStudentSessions(studentId: number) {
 export function useTodaySessions() {
   const uid = useAuthStore((s) => s.uid);
   return useQuery({
-    queryKey: ["sessions", "today", uid],
+    queryKey: queryKeys.sessions.today(uid),
     queryFn: () => fetchTodaySessions(uid!),
     enabled: !!uid,
   });
@@ -35,23 +38,66 @@ export function useMySessions(filters?: {
 }) {
   const uid = useAuthStore((s) => s.uid);
   return useQuery({
-    queryKey: ["sessions", "my", uid, filters],
+    queryKey: queryKeys.sessions.my(uid, filters ?? null),
     queryFn: () => fetchMySessions(uid!, filters),
     enabled: !!uid,
   });
 }
 
+/** Returns { week, month } completed session counts for the teacher. */
+export function useWeekMonthStats() {
+  const uid = useAuthStore((s) => s.uid);
+  // dayjs().startOf("week") defaults to Sunday (US convention).
+  // Vietnam uses Monday as first day of week — calculate manually.
+  const today = dayjs();
+  const dayOfWeek = today.day(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const weekFrom = today.subtract(daysFromMonday, "day").format("YYYY-MM-DD");
+  const monthFrom = today.startOf("month").format("YYYY-MM-DD");
+  const todayStr = today.format("YYYY-MM-DD");
+
+  const weekQ = useQuery({
+    queryKey: queryKeys.sessions.my(uid, {
+      dateFrom: weekFrom,
+      dateTo: todayStr,
+    }),
+    queryFn: () =>
+      fetchMySessions(uid!, { dateFrom: weekFrom, dateTo: todayStr }),
+    enabled: !!uid,
+    select: (data) =>
+      data.filter((s) => s.status === "done" || s.status === "completed")
+        .length,
+  });
+
+  const monthQ = useQuery({
+    queryKey: queryKeys.sessions.my(uid, {
+      dateFrom: monthFrom,
+      dateTo: todayStr,
+    }),
+    queryFn: () =>
+      fetchMySessions(uid!, { dateFrom: monthFrom, dateTo: todayStr }),
+    enabled: !!uid,
+    select: (data) =>
+      data.filter((s) => s.status === "done" || s.status === "completed")
+        .length,
+  });
+
+  return { week: weekQ.data ?? 0, month: monthQ.data ?? 0 };
+}
+
 export function useSessionDetail(sessionId: number) {
   return useQuery({
-    queryKey: ["sessions", "detail", sessionId],
+    queryKey: queryKeys.sessions.detail(sessionId),
     queryFn: () => fetchSessionDetail(sessionId),
     enabled: sessionId > 0,
+    retry: false, // "not found" errors won't resolve by retrying
+    staleTime: 30_000,
   });
 }
 
 export function useSessionResults(sessionId: number) {
   return useQuery({
-    queryKey: ["sessions", "results", sessionId],
+    queryKey: queryKeys.sessions.results(sessionId),
     queryFn: () => fetchSessionResults(sessionId),
     enabled: sessionId > 0,
   });
@@ -59,7 +105,7 @@ export function useSessionResults(sessionId: number) {
 
 export function useStudentActiveObjectives(studentId: number) {
   return useQuery({
-    queryKey: ["objectives", "active", studentId],
+    queryKey: queryKeys.iepObjectives.active(studentId),
     queryFn: () => fetchStudentActiveObjectives(studentId),
     enabled: studentId > 0,
   });
@@ -68,7 +114,7 @@ export function useStudentActiveObjectives(studentId: number) {
 /** Fetch objectives that belong to a specific session (by ID list). */
 export function useSessionObjectives(objectiveIds: number[]) {
   return useQuery({
-    queryKey: ["objectives", "byIds", objectiveIds],
+    queryKey: queryKeys.iepObjectives.byIds(objectiveIds),
     queryFn: () => fetchObjectivesByIds(objectiveIds),
     enabled: objectiveIds.length > 0,
   });
@@ -79,7 +125,7 @@ export function useCreateSession() {
   return useMutation({
     mutationFn: createSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.sessions.all });
     },
   });
 }
@@ -96,9 +142,30 @@ export function useUpdateSession() {
     }) => updateSession(sessionId, vals),
     onSuccess: (_, { sessionId }) => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", "detail", sessionId],
+        queryKey: queryKeys.sessions.detail(sessionId),
       });
-      queryClient.invalidateQueries({ queryKey: ["sessions", "my"] });
+      // Invalidate all list-by-user variants of "my sessions".
+      queryClient.invalidateQueries({ queryKey: queryKeys.sessions.myAll() });
     },
+  });
+}
+
+export function useMySessionsSuspense(filters?: {
+  dateFrom?: string;
+  dateTo?: string;
+}) {
+  const uid = useAuthStore((s) => s.uid);
+  return useSuspenseQuery({
+    queryKey: queryKeys.sessions.my(uid, filters ?? null),
+    queryFn: () => fetchMySessions(uid!, filters),
+  });
+}
+
+export function useSessionDetailSuspense(sessionId: number) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.sessions.detail(sessionId),
+    queryFn: () => fetchSessionDetail(sessionId),
+    retry: false,
+    staleTime: 30_000,
   });
 }

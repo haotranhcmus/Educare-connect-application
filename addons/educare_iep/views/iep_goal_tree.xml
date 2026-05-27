@@ -5,7 +5,7 @@
         <field name="model">educare.iep.goal</field>
         <field name="arch" type="xml">
             <tree string="IEP Goals"
-                default_order="student_id, start_date desc"
+                default_order="student_id, id desc"
                 decoration-success="status == 'achieved'"
                 decoration-danger="status == 'active' and progress_pct &lt; 30"
                 decoration-muted="status == 'discontinued'">
@@ -15,8 +15,6 @@
                 <field name="goal_domain_id" widget="badge" />
                 <field name="name" string="Description" />
                 <field name="assigned_teacher_id" />
-                <field name="start_date" optional="hide" />
-                <field name="target_date" />
                 <field name="priority" optional="show" />
                 <field name="progress_pct" widget="progressbar" />
                 <field name="status" widget="badge"

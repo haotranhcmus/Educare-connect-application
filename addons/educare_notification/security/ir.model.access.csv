@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_device_token_user,access.device.token.user,model_educare_device_token,base.group_user,1,1,1,1
+access_device_token_admin,access.device.token.admin,model_educare_device_token,base.group_system,1,1,1,1
+access_notification_user,access.notification.user,model_educare_notification,base.group_user,1,1,1,1
+access_notification_admin,access.notification.admin,model_educare_notification,base.group_system,1,1,1,1

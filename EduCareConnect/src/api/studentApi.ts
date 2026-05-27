@@ -1,5 +1,5 @@
-import { searchRead, read } from "./odooClient";
-import type { StudentListItem, StudentDetail } from "../types";
+import { searchRead, read } from "@api/odooClient";
+import type { StudentListItem, StudentDetail } from "@t";
 
 type StudentListRaw = StudentListItem & { avatar?: string | false };
 type StudentDetailRaw = StudentDetail & { avatar?: string | false };
@@ -12,12 +12,14 @@ function toAvatarUrl(avatar?: string | false): string | undefined {
 const STUDENT_LIST_FIELDS = [
   "id",
   "name",
+  "nickname",
   "student_code",
   "status",
   "avatar",
   "center_id",
   "primary_diagnosis",
   "date_of_birth",
+  "enrollment_date",
   "gender",
 ];
 
@@ -84,16 +86,16 @@ export async function fetchMyStudents(uid: number): Promise<StudentListItem[]> {
 /**
  * Fetch set of student IDs that have at least one active IEP plan.
  */
-export async function fetchStudentIdsWithActivePlan(): Promise<Set<number>> {
+export async function fetchStudentIdsWithActivePlan(): Promise<number[]> {
   const plans = await searchRead<{ student_id: [number, string] | false }>(
     "educare.iep.plan",
     [["status", "=", "active"]],
     ["student_id"],
     { limit: 500 },
   );
-  const ids = new Set<number>();
+  const ids: number[] = [];
   for (const p of plans) {
-    if (Array.isArray(p.student_id)) ids.add(p.student_id[0]);
+    if (Array.isArray(p.student_id)) ids.push(p.student_id[0]);
   }
   return ids;
 }

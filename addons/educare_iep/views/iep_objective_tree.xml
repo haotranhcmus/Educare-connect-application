@@ -7,7 +7,6 @@
             <tree string="Short-term Objectives"
                 default_order="student_id, goal_id, sequence"
                 decoration-success="status == 'mastered'"
-                decoration-warning="is_overdue == True"
                 decoration-danger="alert_triggered == True"
                 decoration-muted="status == 'discontinued'">
                 <field name="objective_code" />
@@ -26,7 +25,6 @@
                     decoration-warning="status == 'not_started'"
                     decoration-primary="status == 'on_hold'"
                     decoration-danger="status == 'discontinued'" />
-                <field name="is_overdue" widget="boolean" />
                 <field name="alert_triggered" widget="boolean" />
             </tree>
         </field>

@@ -10,24 +10,51 @@
                         <group string="Reference">
                             <field name="session_id" readonly="1" />
                             <field name="objective_id" readonly="1" />
+                            <field name="measurement_type" readonly="1" />
                             <field name="sequence" />
                         </group>
-                        <group string="Result">
-                            <field name="result_type" />
-                            <field name="phase" />
-                            <field name="correct_trials" />
-                            <field name="total_trials" />
-                            <field name="accuracy_pct" readonly="1" />
-                            <field name="mastery_achieved" readonly="1" />
+                        <group string="Kết quả">
+                            <field name="score_pct" readonly="1" widget="progressbar" />
+                            <field name="is_recorded" />
+                            <field name="mastery_achieved" readonly="1"
+                                widget="boolean_toggle" />
                         </group>
                     </group>
+
+                    <!-- Type 0: accuracy -->
+                    <group string="Độ chính xác (Đúng/Sai)"
+                        invisible="measurement_type != 'accuracy'">
+                        <field name="correct_trials" />
+                        <field name="total_trials" />
+                    </group>
+
+                    <!-- Type 1: prompt level (per-trial) -->
+                    <group string="Mức hỗ trợ theo từng lần thử"
+                        invisible="measurement_type != 'prompt_level'">
+                        <field name="trial_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="sequence" />
+                                <field name="prompt_level" />
+                                <field name="weight" readonly="1" />
+                            </tree>
+                        </field>
+                    </group>
+
+                    <!-- Type 2: duration -->
+                    <group string="Thời gian"
+                        invisible="measurement_type != 'duration'">
+                        <field name="actual_duration_seconds" />
+                    </group>
+
+                    <!-- Type 3: frequency -->
+                    <group string="Tần suất"
+                        invisible="measurement_type not in ('frequency_increase','frequency_decrease')">
+                        <field name="actual_count" />
+                    </group>
+
                     <group>
-                        <group string="Support">
-                            <field name="prompt_level_used" />
-                            <field name="prompt_fading_noted" />
+                        <group string="Buổi học">
                             <field name="teaching_method" />
-                        </group>
-                        <group string="Reinforcement">
                             <field name="reinforcer_used" />
                             <field name="reinforcement_effectiveness" />
                         </group>

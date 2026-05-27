@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_chat_conversation_user,access.chat.conversation.user,model_educare_chat_conversation,base.group_user,1,1,1,1
+access_chat_conversation_admin,access.chat.conversation.admin,model_educare_chat_conversation,base.group_system,1,1,1,1
+access_chat_message_user,access.chat.message.user,model_educare_chat_message,base.group_user,1,1,1,1
+access_chat_message_admin,access.chat.message.admin,model_educare_chat_message,base.group_system,1,1,1,1

@@ -45,8 +45,6 @@
                         context="{'group_by': 'priority'}" />
                     <filter name="group_teacher" string="Teacher"
                         context="{'group_by': 'assigned_teacher_id'}" />
-                    <filter name="group_start_month" string="Start Month"
-                        context="{'group_by': 'start_date:month'}" />
                 </group>
             </search>
         </field>

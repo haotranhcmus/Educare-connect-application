@@ -3,33 +3,33 @@ from odoo.exceptions import ValidationError
 
 
 class EducareIepPlanRevisionWizard(models.TransientModel):
-    _name = 'educare.iep.plan.revision.wizard'
-    _description = 'Create IEP Plan Revision Wizard'
+    _name = "educare.iep.plan.revision.wizard"
+    _description = "Create IEP Plan Revision Wizard"
 
     plan_id = fields.Many2one(
-        'educare.iep.plan',
-        string='Current IEP Plan',
+        "educare.iep.plan",
+        string="Current IEP Plan",
         required=True,
-        ondelete='cascade',
+        ondelete="cascade",
     )
     revision_reason = fields.Selection(
         selection=[
-            ('periodic_review', 'Periodic review update'),
-            ('goal_adjustment', 'Goal adjustment'),
-            ('strategy_change', 'Intervention strategy change'),
-            ('student_change', 'Student profile/need change'),
-            ('other', 'Other'),
+            ("periodic_review", "Cập nhật định kỳ"),
+            ("goal_adjustment", "Điều chỉnh mục tiêu"),
+            ("strategy_change", "Thay đổi chiến lược can thiệp"),
+            ("student_change", "Thay đổi hồ sơ/nhu cầu học sinh"),
+            ("other", "Khác"),
         ],
-        string='Revision Reason',
+        string="Lý do sửa đổi",
         required=True,
     )
-    revision_notes = fields.Text(string='Revision Notes')
+    revision_notes = fields.Text(string="Revision Notes")
     revision_info = fields.Html(
-        string='Revision Info',
-        compute='_compute_revision_info',
+        string="Revision Info",
+        compute="_compute_revision_info",
     )
 
-    @api.depends('plan_id')
+    @api.depends("plan_id")
     def _compute_revision_info(self):
         for wizard in self:
             if not wizard.plan_id:
@@ -39,14 +39,12 @@ class EducareIepPlanRevisionWizard(models.TransientModel):
             n_goals = len(wizard.plan_id.goal_ids)
             n_objectives = len(objectives)
             n_with_data = sum(1 for o in objectives if o.total_sessions_worked > 0)
-            wizard.revision_info = (
-                '<div>  </div>'
-            )
+            wizard.revision_info = "<div>  </div>"
 
     def action_confirm_create_revision(self):
         self.ensure_one()
         if not self.plan_id:
-            raise ValidationError(_('No IEP plan selected for revision.'))
+            raise ValidationError(_("No IEP plan selected for revision."))
 
         return self.plan_id.action_create_revision(
             revision_reason=self.revision_reason,

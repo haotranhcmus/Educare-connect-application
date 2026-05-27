@@ -1,3 +1,3 @@
-export * from "./enums";
-export * from "./models";
-export * from "./api";
+export * from "@t/enums";
+export * from "@t/models";
+export * from "@t/api";

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_session_cancel_wizard_form" model="ir.ui.view">
+        <field name="name">educare.session.cancel.wizard.form</field>
+        <field name="model">educare.session.cancel.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Hủy buổi học">
+                <group>
+                    <field name="session_id" readonly="1" />
+                    <field name="cancel_type" widget="radio" />
+                    <field name="cancel_reason" placeholder="Nhập lý do hủy buổi học..." />
+                </group>
+                <footer>
+                    <button name="action_confirm"
+                        string="Xác nhận hủy"
+                        type="object"
+                        class="btn-danger" />
+                    <button string="Đóng" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_session_cancel_wizard" model="ir.actions.act_window">
+        <field name="name">Hủy buổi học</field>
+        <field name="res_model">educare.session.cancel.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -182,7 +182,7 @@ msgstr "Độ chính xác trung bình (%)"
 #. module: educare_session
 #: model:ir.model.fields.selection,name:educare_session.selection__educare_session_result__phase__baseline
 msgid "Baseline"
-msgstr "Đường cơ sở"
+msgstr "Độ chính xác ban đầu"
 
 #. module: educare_session
 #: model_terms:ir.ui.view,arch_db:educare_session.view_session_review_wizard_form
@@ -898,7 +898,7 @@ msgstr "Lưu đánh giá"
 #. module: educare_session
 #: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_form
 msgid "Schedule"
-msgstr "Lịch trình"
+msgstr "Lên lịch"
 
 #. module: educare_session
 #: model:ir.model.fields.selection,name:educare_session.selection__educare_session_log__status__scheduled
@@ -963,7 +963,7 @@ msgstr "Nhật ký buổi học"
 #: model:ir.ui.menu,name:educare_session.menu_session_logs
 #: model_terms:ir.ui.view,arch_db:educare_session.view_session_log_tree
 msgid "Session Logs"
-msgstr "Nhật ký các buổi học"
+msgstr "Danh sách các buổi học"
 
 #. module: educare_session
 #: model:ir.model.fields,field_description:educare_session.field_educare_session_log__notes

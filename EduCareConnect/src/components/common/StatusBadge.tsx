@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { STATUS_COLORS } from "../../theme/statusColors";
+import { STATUS_COLORS } from "@theme/statusColors";
 
 interface StatusBadgeProps {
   status: string;

@@ -1,230 +1,292 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from ..constants import (
-    PROMPT_LEVELS,
-    RESULT_TYPES,
     RESULT_PHASES,
     TEACHING_METHODS,
     REINFORCEMENT_EFFECTIVENESS,
 )
 
+# Data fields whose entry marks a result line as "recorded" and triggers
+# objective progress re-sync on already-reviewed sessions.
+_DATA_FIELDS = {
+    "correct_trials",
+    "total_trials",
+    "trial_ids",
+    "actual_duration_seconds",
+    "actual_count",
+}
+
 
 class EducareSessionResult(models.Model):
-    _name = 'educare.session.result'
-    _description = 'Per-Objective Session Result'
-    _rec_name = 'objective_id'
-    _order = 'session_id, sequence, id'
+    _name = "educare.session.result"
+    _description = "Per-Objective Session Result"
+    _rec_name = "objective_id"
+    _order = "session_id, sequence, id"
 
     session_id = fields.Many2one(
-        'educare.session.log',
-        string='Session',
+        "educare.session.log",
+        string="Session",
         required=True,
-        ondelete='cascade',
+        ondelete="cascade",
         index=True,
     )
     session_date = fields.Date(
-        related='session_id.session_date',
+        related="session_id.session_date",
         store=True,
         index=True,
     )
     objective_id = fields.Many2one(
-        'educare.iep.objective',
-        string='IEP Objective',
+        "educare.iep.objective",
+        string="IEP Objective",
         required=True,
-        ondelete='restrict',
+        ondelete="restrict",
         index=True,
     )
     sequence = fields.Integer(
-        string='Sequence',
+        string="Sequence",
         default=10,
     )
+    measurement_type = fields.Selection(
+        related="objective_id.measurement_type",
+        string="Cách thu thập",
+        store=True,
+        index=True,
+    )
+    result_phase = fields.Selection(
+        selection=[
+            ("intervention", "Can thiệp"),
+            ("maintenance", "Duy trì"),
+        ],
+        string="Giai đoạn",
+        default="intervention",
+        index=True,
+        help="Giai đoạn tại thời điểm đánh giá: intervention nếu objective chưa mastered, maintenance nếu đã mastered.",
+    )
+
+    # ── Type 0: accuracy ──────────────────────────────────────────
     correct_trials = fields.Integer(
-        string='Correct Trials',
+        string="Correct Trials",
         default=0,
     )
     total_trials = fields.Integer(
-        string='Total Trials',
+        string="Total Trials",
         default=0,
     )
-    accuracy_pct = fields.Float(
-        string='Accuracy (%)',
-        compute='_compute_accuracy',
+
+    # ── Type 1: prompt level (per-trial children) ─────────────────
+    trial_ids = fields.One2many(
+        "educare.session.result.trial",
+        "result_id",
+        string="Các lần thử",
+    )
+    trial_count = fields.Integer(
+        string="Số lần thử",
+        compute="_compute_trial_count",
         store=True,
     )
-    correct_trials_label = fields.Char(
-        string='Correct Trials Label',
-        compute='_compute_trial_labels',
-        store=False,
+
+    # ── Type 2: duration ──────────────────────────────────────────
+    actual_duration_seconds = fields.Integer(
+        string="Thời gian thực tế (giây)",
+        default=0,
     )
-    total_trials_label = fields.Char(
-        string='Total Trials Label',
-        compute='_compute_trial_labels',
-        store=False,
+
+    # ── Type 3: frequency ─────────────────────────────────────────
+    actual_count = fields.Integer(
+        string="Số lần thực tế",
+        default=0,
     )
-    accuracy_label = fields.Char(
-        string='Accuracy Description',
-        compute='_compute_accuracy_label',
-        store=False,
+
+    # ── Normalized score & state ──────────────────────────────────
+    score_pct = fields.Float(
+        string="Score (%)",
+        compute="_compute_score",
+        store=True,
+        digits=(5, 2),
+        help="Điểm chuẩn hóa 0–100 theo công thức của cách thu thập.",
     )
-    prompt_level_used = fields.Selection(
-        PROMPT_LEVELS,
-        string='Prompt Level Used',
-        required=True,
-        default='verbal_prompt',
-    )
-    prompt_fading_noted = fields.Boolean(
-        string='Prompt Fading Noted',
+    is_recorded = fields.Boolean(
+        string="Đã ghi nhận",
         default=False,
+        help="Đánh dấu dòng đã được giáo viên nhập liệu. Dùng làm cờ 'đã đánh giá' "
+        "thay cho số lần thử (vì tần suất giảm có thể hợp lệ với giá trị 0).",
     )
     mastery_achieved = fields.Boolean(
-        string='Mastery Achieved in This Session?',
-        compute='_compute_mastery',
+        string="Mastery Achieved in This Session?",
+        compute="_compute_mastery",
         store=True,
-    )
-    result_type = fields.Selection(
-        RESULT_TYPES,
-        string='Result Type',
-        required=True,
-        default='trial_by_trial',
-        help='ABA collection mode: trial_by_trial (common), probe, whole_task, '
-             'partial_interval, or momentary_time_sample. '
-             'This affects how accuracy is interpreted.',
     )
     phase = fields.Selection(
         RESULT_PHASES,
-        string='Phase',
-        required=True,
-        default='intervention',
-        help='Objective phase at the time of this session.',
+        string="Phase",
+        compute="_compute_phase_from_purpose",
+        store=True,
+        help="Automatically derived from session purpose: "
+        "intervention→intervention, maintenance_probe→maintenance, "
+        "generalization_probe→generalization.",
     )
     teaching_method = fields.Selection(
         TEACHING_METHODS,
-        string='Teaching Method',
-        help='Actual teaching method used for this objective in this session.',
+        string="Teaching Method",
+        help="Actual teaching method used for this objective in this session.",
     )
     reinforcer_used = fields.Char(
-        string='Reinforcer Used',
-        help='Actual reinforcer used in this session. Example: sticker, iPad time, praise.',
+        string="Reinforcer Used",
+        help="Actual reinforcer used in this session. Example: sticker, iPad time, praise.",
     )
     reinforcement_effectiveness = fields.Selection(
         REINFORCEMENT_EFFECTIVENESS,
-        string='Reinforcement Effectiveness',
-        help='Teacher-rated effectiveness of reinforcement in this session.',
+        string="Reinforcement Effectiveness",
+        help="Teacher-rated effectiveness of reinforcement in this session.",
     )
     raw_data_notes = fields.Text(
-        string='Raw Data Notes',
+        string="Raw Data Notes",
     )
     notes = fields.Text(
-        string='Objective-Specific Notes',
+        string="Objective-Specific Notes",
     )
 
-    _sql_constraints = [
-        ('session_objective_unique',
-        'UNIQUE(session_id, objective_id)',
-        'Each objective can only have one result row per session.'),
-        ('trials_check',
-        'CHECK(correct_trials >= 0 AND correct_trials <= total_trials)',
-        'Correct trials must be >= 0 and <= total trials.'),
-    ]
+    # Mapping from session_purpose to ABA phase
+    _PURPOSE_TO_PHASE = {
+        "intervention": "intervention",
+        "maintenance": "maintenance",
+        "mixed": "intervention",  # mixed sessions default to intervention ABA phase
+    }
 
-    @api.constrains('result_type', 'total_trials')
-    def _check_result_type_trials(self):
-        """Guard for time-based methods: usually need enough intervals/checks."""
-        for r in self:
-            if r.result_type in ('partial_interval', 'momentary_time_sample'):
-                if (r.total_trials or 0) < 5:
-                    raise ValidationError(
-                                                _('Method %s usually requires at least 5 intervals/checks. '
-                                                    'Please verify total_trials.') % r.result_type
-                    )
-
-    @api.depends('correct_trials', 'total_trials')
-    def _compute_accuracy(self):
-        """Compute accuracy percent = (correct / total) * 100."""
+    @api.depends("session_id.session_purpose")
+    def _compute_phase_from_purpose(self):
         for result in self:
-            if result.total_trials > 0:
-                result.accuracy_pct = (
-                    result.correct_trials / result.total_trials
-                ) * 100
-            else:
-                result.accuracy_pct = 0.0
+            purpose = result.session_id.session_purpose or "intervention"
+            result.phase = self._PURPOSE_TO_PHASE.get(purpose, "intervention")
 
-    @api.depends('result_type')
-    def _compute_trial_labels(self):
-        labels = {
-            'trial_by_trial': ('Correct Trials', 'Total Trials'),
-            'probe': ('Correct Probes', 'Total Probes'),
-            'whole_task': ('Correct Steps', 'Total Steps'),
-            'partial_interval': ('Intervals with Behavior', 'Total Intervals'),
-            'momentary_time_sample': ('Checks with Behavior', 'Total Checks'),
-        }
-        for r in self:
-            c_label, t_label = labels.get(r.result_type, ('Correct Trials', 'Total Trials'))
-            r.correct_trials_label = c_label
-            r.total_trials_label = t_label
+    @api.depends("trial_ids")
+    def _compute_trial_count(self):
+        for result in self:
+            result.trial_count = len(result.trial_ids)
 
-    @api.depends('result_type', 'accuracy_pct')
-    def _compute_accuracy_label(self):
-        for r in self:
-            if r.result_type in ('partial_interval', 'momentary_time_sample'):
-                r.accuracy_label = f'{r.accuracy_pct:.1f}% behavior occurrence rate'
-            elif r.result_type == 'whole_task':
-                r.accuracy_label = f'{r.accuracy_pct:.1f}% correct steps in sequence'
-            else:
-                r.accuracy_label = f'{r.accuracy_pct:.1f}% accuracy'
+    def _calc_score(self):
+        """Normalized 0–100 achievement score per measurement_type."""
+        self.ensure_one()
+        mtype = self.measurement_type
+        obj = self.objective_id
+        if mtype == "accuracy":
+            if self.total_trials > 0:
+                return self.correct_trials / self.total_trials * 100.0
+            return 0.0
+        if mtype == "prompt_level":
+            trials = self.trial_ids
+            n = len(trials)
+            if n > 0:
+                return sum(trials.mapped("weight")) / (n * 100.0) * 100.0
+            return 0.0
+        if mtype == "duration":
+            target = obj.target_duration_seconds or 0
+            if target > 0:
+                return min(self.actual_duration_seconds / target, 1.0) * 100.0
+            return 0.0
+        if mtype == "frequency_increase":
+            target = obj.target_count or 0
+            if target > 0:
+                return min(self.actual_count / target, 1.0) * 100.0
+            return 0.0
+        if mtype == "frequency_decrease":
+            baseline = obj.baseline_count or 0
+            target = obj.target_count or 0
+            denom = baseline - target
+            if denom > 0:
+                ratio = (baseline - self.actual_count) / denom
+                return max(0.0, min(ratio, 1.0)) * 100.0
+            return 0.0
+        return 0.0
 
     @api.depends(
-        'accuracy_pct',
-        'total_trials',
-        'phase',
-        'objective_id.target_accuracy_pct',
+        "measurement_type",
+        "correct_trials",
+        "total_trials",
+        "trial_ids",
+        "trial_ids.weight",
+        "actual_duration_seconds",
+        "actual_count",
+        "objective_id.target_duration_seconds",
+        "objective_id.baseline_count",
+        "objective_id.target_count",
+    )
+    def _compute_score(self):
+        for result in self:
+            result.score_pct = result._calc_score()
+
+    @api.depends(
+        "score_pct",
+        "is_recorded",
+        "phase",
+        "objective_id.target_accuracy_pct",
     )
     def _compute_mastery(self):
-        """
-        Mastery is achieved when accuracy_pct >= objective.target_accuracy_pct.
-        Prompt level remains tracked at session-result level,
-        but it is no longer a mandatory condition for mastery.
-        """
+        """Mastery in this session = recorded, not baseline, and score reaches
+        the objective target. target_accuracy_pct is forced to 100 for duration
+        and frequency types, so this rule works uniformly across all types."""
         for result in self:
-            result.mastery_achieved = False
-            if not result.objective_id:
-                continue
+            result.mastery_achieved = bool(
+                result.is_recorded
+                and result.objective_id
+                and result.phase != "baseline"
+                and result.score_pct >= result.objective_id.target_accuracy_pct
+            )
 
-            # Guard: require at least 1 real trial/interval/check
-            if (result.total_trials or 0) == 0:
-                continue
-
-            # ABA methodology: baseline phase is not used for mastery decision
-            if result.phase == 'baseline':
-                continue
-
-            target_pct = result.objective_id.target_accuracy_pct
-
-            # Condition 1: accuracy must reach target threshold
-            if result.accuracy_pct < target_pct:
-                continue
-
-            result.mastery_achieved = True
-
-    def write(self, vals):
-        # During module install/demo load (or system-level sudo operations),
-        # keep data loading resilient and skip interactive role restrictions.
-        bypass_done_edit_guard = self.env.su or self.env.context.get('install_mode')
-
-        if not bypass_done_edit_guard and self.filtered(lambda rec: rec.session_id.status == 'done'):
-            is_supervisor = self.env.user.has_group('educare_security.group_supervisor')
-            is_admin = self.env.user.has_group('educare_security.group_admin')
-            if not (is_supervisor or is_admin):
+    @api.constrains("correct_trials", "total_trials")
+    def _check_trials(self):
+        for r in self:
+            if r.correct_trials < 0 or r.total_trials < 0:
+                raise ValidationError(_("Số lần thử không được âm."))
+            if r.correct_trials > r.total_trials:
                 raise ValidationError(
-                    _('Only Supervisor or Admin can edit reviews when session status is Reviewed.')
+                    _("Số lần đúng không được vượt quá tổng số lần thử.")
                 )
 
+    @api.constrains("actual_count", "actual_duration_seconds")
+    def _check_non_negative(self):
+        for r in self:
+            if r.actual_count < 0:
+                raise ValidationError(_("Số lần thực tế không được âm."))
+            if r.actual_duration_seconds < 0:
+                raise ValidationError(_("Thời gian thực tế không được âm."))
+
+    @staticmethod
+    def _vals_mark_recorded(vals):
+        """Auto-mark a row recorded when any measurement data is written."""
+        if _DATA_FIELDS.intersection(vals) and "is_recorded" not in vals:
+            vals["is_recorded"] = True
+        return vals
+
+    def write(self, vals):
+        # During module install/demo load, sudo operations, or internal system
+        # operations (e.g. stamping result_phase after session review), skip
+        # the interactive role restriction.
+        bypass_done_edit_guard = (
+            self.env.su
+            or self.env.context.get("install_mode")
+            or self.env.context.get("skip_done_edit_guard")
+        )
+
+        if not bypass_done_edit_guard and self.filtered(
+            lambda rec: rec.session_id.status == "done"
+        ):
+            is_supervisor = self.env.user.has_group("educare_security.group_supervisor")
+            is_admin = self.env.user.has_group("educare_security.group_admin")
+            if not (is_supervisor or is_admin):
+                raise ValidationError(
+                    _(
+                        "Only Supervisor or Admin can edit reviews when session status is Reviewed."
+                    )
+                )
+
+        self._vals_mark_recorded(vals)
         res = super().write(vals)
-        trigger_fields = {'correct_trials', 'total_trials', 'prompt_level_used', 'phase', 'result_type'}
+        trigger_fields = _DATA_FIELDS | {"is_recorded"}
         if trigger_fields.intersection(vals):
             # Sync objective progress only for already-reviewed sessions (done)
             # For 'completed' sessions, syncing waits until teacher explicitly submits review
-            sessions = self.mapped('session_id').filtered(lambda s: s.status == 'done')
+            sessions = self.mapped("session_id").filtered(lambda s: s.status == "done")
             if sessions:
                 sessions._update_objective_progress()
         return res
@@ -234,28 +296,36 @@ class EducareSessionResult(models.Model):
         # Result lines must be system-generated from selected session objectives.
         # Allow bypass during module install/demo load and explicit auto-population.
         if not (
-            self.env.context.get('auto_populate_session_results')
-            or self.env.context.get('install_mode')
+            self.env.context.get("auto_populate_session_results")
+            or self.env.context.get("install_mode")
         ):
             for vals in vals_list:
-                session_id = vals.get('session_id')
-                objective_id = vals.get('objective_id')
+                session_id = vals.get("session_id")
+                objective_id = vals.get("objective_id")
                 if not session_id or not objective_id:
                     continue
 
-                session = self.env['educare.session.log'].browse(session_id)
+                session = self.env["educare.session.log"].browse(session_id)
                 if not session.objective_ids:
                     raise ValidationError(
-                        _('Manual result row creation is not allowed. Select objectives on the Session first.')
+                        _(
+                            "Manual result row creation is not allowed. Select objectives on the Session first."
+                        )
                     )
 
                 if objective_id not in session.objective_ids.ids:
                     raise ValidationError(
-                        _('Objective must be included in the selected session objectives.')
+                        _(
+                            "Objective must be included in the selected session objectives."
+                        )
                     )
 
-                if self.env.user.has_group('educare_security.group_teacher'):
+                if self.env.user.has_group("educare_security.group_teacher"):
                     raise ValidationError(
-                        _('Teachers cannot create manual objective rows. Enter values only on auto-generated rows.')
+                        _(
+                            "Teachers cannot create manual objective rows. Enter values only on auto-generated rows."
+                        )
                     )
+        for vals in vals_list:
+            self._vals_mark_recorded(vals)
         return super().create(vals_list)

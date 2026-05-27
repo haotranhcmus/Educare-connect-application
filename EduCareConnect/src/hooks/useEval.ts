@@ -1,9 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  submitEvaluation,
-  ResultInput,
-  ObservationInput,
-} from "../api/evalApi";
+import { submitEvaluation, ResultInput } from "@api/evalApi";
+import { queryKeys } from "@api/queryKeys";
 
 export function useSubmitEval() {
   const queryClient = useQueryClient();
@@ -12,22 +9,26 @@ export function useSubmitEval() {
     mutationFn: ({
       sessionId,
       results,
-      observation,
     }: {
       sessionId: number;
       results: ResultInput[];
-      observation: ObservationInput;
-    }) => submitEvaluation(sessionId, results, observation),
+    }) => submitEvaluation(sessionId, results),
     onSuccess: (_, { sessionId }) => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", "detail", sessionId],
+        queryKey: queryKeys.sessions.detail(sessionId),
       });
       queryClient.invalidateQueries({
-        queryKey: ["sessions", "results", sessionId],
+        queryKey: queryKeys.sessions.results(sessionId),
       });
-      queryClient.invalidateQueries({ queryKey: ["sessions", "my"] });
-      // Also invalidate objective data since accuracy updated
-      queryClient.invalidateQueries({ queryKey: ["objectives"] });
+      // Invalidate all list-by-user variants of "my sessions".
+      queryClient.invalidateQueries({ queryKey: queryKeys.sessions.myAll() });
+      // Accuracy of objectives just changed.
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepObjectives.all });
+      // Objective result history (charts/tables) needs a refresh.
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepResults.all });
+      // IEP plan status may have changed (maintenance_mode, completed, etc.).
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepPlans.all });
+      queryClient.invalidateQueries({ queryKey: ["students", "iep-plans"] });
     },
   });
 }

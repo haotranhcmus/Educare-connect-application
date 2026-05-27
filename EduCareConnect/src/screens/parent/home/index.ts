@@ -1,1 +1,1 @@
-export { ParentHomeScreen } from "./ParentHomeScreen";
+export { ParentHomeScreen } from "@screens/parent/home/ParentHomeScreen";
