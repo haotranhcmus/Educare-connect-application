@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ai_topic_user,ai.topic.user,ai.model_ai_topic,base.group_user,1,0,0,0
-access_ai_topic_system,ai.topic.system,ai.model_ai_topic,base.group_system,1,1,1,1
-access_mail_message_mobile_tools,mail.message.mobile.tools,mail.model_mail_message,base.group_user,1,1,0,0
