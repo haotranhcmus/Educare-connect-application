@@ -24,14 +24,19 @@ const STATUS_CFG: Record<
   { label: string; gradient: GradientPair; isLive?: boolean }
 > = {
   // Matching labels from statusColors.ts exactly
-  not_started: { label: "Chưa bắt đầu", gradient: ["#1A3C2E", "#2E7D32"] },
-  in_progress:  { label: "Đang diễn ra", gradient: ["#004D40", "#1B5E20"], isLive: true },
-  scheduled:    { label: "Đã lên lịch",  gradient: ["#1A3C2E", "#2E7D32"] },
-  completed:    { label: "Chờ kết quả",  gradient: ["#33691E", "#558B2F"] },
-  done:         { label: "Đã dạy",       gradient: ["#1B5E20", "#43A047"] },
-  cancelled:    { label: "Đã hủy",       gradient: ["#37474F", "#546E7A"] },
-  draft:        { label: "Nháp",         gradient: ["#37474F", "#546E7A"] },
+  not_started: { label: "Chưa bắt đầu", gradient: ["#1A237E", "#283593"] },
+  in_progress: {
+    label: "Đang diễn ra",
+    gradient: ["#004D40", "#00695C"],
+    isLive: true,
+  },
+  scheduled: { label: "Đã lên lịch", gradient: ["#0D47A1", "#1565C0"] },
+  completed: { label: "Chờ kết quả", gradient: ["#E65100", "#EF6C00"] },
+  done: { label: "Đã dạy", gradient: ["#1B5E20", "#2E7D32"] },
+  cancelled: { label: "Đã hủy", gradient: ["#37474F", "#455A64"] },
+  draft: { label: "Nháp", gradient: ["#4A148C", "#6A1B9A"] },
 };
+
 const DEFAULT_CFG = STATUS_CFG.scheduled;
 
 // Only sessions that actually took place can have a report.
@@ -43,7 +48,8 @@ export function TodaySessionCard({ session, onPress, hasReport }: Props) {
     session.student_name ??
     (Array.isArray(session.student_id) ? session.student_id[1] : "");
   const cfg = STATUS_CFG[session.status] ?? DEFAULT_CFG;
-  const showReport = REPORT_ELIGIBLE.has(session.status) && hasReport !== undefined;
+  const showReport =
+    REPORT_ELIGIBLE.has(session.status) && hasReport !== undefined;
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.87}>
@@ -107,10 +113,7 @@ export function TodaySessionCard({ session, onPress, hasReport }: Props) {
                 }
               />
               <Text
-                style={[
-                  styles.reportText,
-                  { opacity: hasReport ? 0.9 : 0.45 },
-                ]}
+                style={[styles.reportText, { opacity: hasReport ? 0.9 : 0.45 }]}
               >
                 {hasReport ? "Đã báo cáo" : "Chưa báo cáo"}
               </Text>

@@ -25,9 +25,9 @@ const headerSearchStyle = {
   elevation: 0,
   height: 50,
   borderRadius: 10,
-  marginBottom: 10,
 };
 const headerSearchInputStyle = { color: "#fff", fontSize: 13, paddingLeft: 0 };
+const filterBtnStyle = { margin: 0 };
 
 function StudentListContent({ navigation }: Props) {
   const theme = useTheme();
@@ -60,33 +60,34 @@ function StudentListContent({ navigation }: Props) {
           inputStyle={headerSearchInputStyle}
           iconColor="rgba(255,255,255,0.75)"
           placeholderTextColor="rgba(255,255,255,0.55)"
+          // right={() => (
+          //   <Menu
+          //     visible={filterMenuVisible}
+          //     onDismiss={closeMenu}
+          //     anchor={
+          //       <IconButton
+          //         icon="filter-variant"
+          //         size={22}
+          //         iconColor={statusFilter !== "all" ? "#A5D6A7" : "rgba(255,255,255,0.75)"}
+          //         onPress={openMenu}
+          //         style={filterBtnStyle}
+          //       />
+          //     }
+          //   >
+          //     {(["all", "active", "inactive"] as StatusFilter[]).map((f) => (
+          //       <Menu.Item
+          //         key={f}
+          //         leadingIcon={statusFilter === f ? "check" : undefined}
+          //         title={FILTER_LABELS[f]}
+          //         onPress={() => {
+          //           setStatusFilter(f);
+          //           closeMenu();
+          //         }}
+          //       />
+          //     ))}
+          //   </Menu>
+          // )}
         />
-      ),
-      headerRight: () => (
-        <Menu
-          visible={filterMenuVisible}
-          onDismiss={closeMenu}
-          anchor={
-            <IconButton
-              icon="filter-variant"
-              size={22}
-              iconColor={statusFilter !== "all" ? "#A5D6A7" : "#fff"}
-              onPress={openMenu}
-            />
-          }
-        >
-          {(["all", "active", "inactive"] as StatusFilter[]).map((f) => (
-            <Menu.Item
-              key={f}
-              leadingIcon={statusFilter === f ? "check" : undefined}
-              title={FILTER_LABELS[f]}
-              onPress={() => {
-                setStatusFilter(f);
-                closeMenu();
-              }}
-            />
-          ))}
-        </Menu>
       ),
     });
   }, [

@@ -1,12 +1,17 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StackActions } from "@react-navigation/native";
+import {
+  StackActions,
+  getFocusedRouteNameFromRoute,
+  type RouteProp,
+} from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useParentStore } from "@store/parentStore";
 import type {
   ParentTabParamList,
+  ParentHomeStackParamList,
   ParentChildStackParamList,
   ParentTimetableStackParamList,
   ParentReportStackParamList,
@@ -27,16 +32,47 @@ import { ParentReportListScreen } from "@screens/parent/report/ParentReportListS
 import { ParentReportDetailScreen } from "@screens/parent/report/ParentReportDetailScreen";
 import { ParentProfileScreen } from "@screens/parent/profile/ParentProfileScreen";
 import { ChangePasswordScreen } from "@screens/teacher/profile/ChangePasswordScreen";
+import { NotificationListScreen } from "@screens/common/NotificationListScreen";
+import { ConversationListScreen } from "@screens/common/ConversationListScreen";
+import { ChatRoomScreen } from "@screens/common/ChatRoomScreen";
+import { AiChatScreen } from "@screens/common/AiChatScreen";
+import { ParentSessionDetailScreen } from "@screens/parent/session/ParentSessionDetailScreen";
 
 import { ErrorBoundary } from "@components/common/ErrorBoundary";
 import { ScreenErrorFallback } from "@components/common/ScreenErrorFallback";
 
 const Tab = createBottomTabNavigator<ParentTabParamList>();
+const HomeStack = createNativeStackNavigator<ParentHomeStackParamList>();
 const ChildStack = createNativeStackNavigator<ParentChildStackParamList>();
 const TimetableStack =
   createNativeStackNavigator<ParentTimetableStackParamList>();
 const ReportStack = createNativeStackNavigator<ParentReportStackParamList>();
 const ProfileStack = createNativeStackNavigator<ParentProfileStackParamList>();
+
+// Routes that should hide the bottom tab bar when focused (deep detail screens).
+const HIDE_TAB_BAR_ROUTES = new Set<string>([
+  "ChildIepHistory",
+  "ChildIepPlanDetail",
+  "ChildIepObjectiveDetail",
+  "ChildTimetable", // when pushed from ChildDetail (not the Timetable tab root)
+  "ParentReportDetail",
+  "ChangePassword",
+  "NotificationList",
+  "IepPlanDetail",
+  "IepObjectiveDetail",
+  "ConversationList",
+  "ChatRoom",
+  "AiChat",
+  "SessionDetail",
+]);
+
+function tabBarStyleForRoute(route: RouteProp<ParentTabParamList>) {
+  const routeName = getFocusedRouteNameFromRoute(route);
+  if (routeName && HIDE_TAB_BAR_ROUTES.has(routeName)) {
+    return { display: "none" as const };
+  }
+  return undefined;
+}
 
 // ── Stack navigators ──────────────────────────────────────────────
 
@@ -53,7 +89,7 @@ function ChildStackNavigator() {
         <ChildStack.Screen
           name="ChildList"
           component={ChildListScreen}
-          options={{ title: "Con tôi" }}
+          options={{ title: "Hồ sơ" }}
         />
         <ChildStack.Screen
           name="ChildDetail"
@@ -78,7 +114,12 @@ function ChildStackNavigator() {
         <ChildStack.Screen
           name="ChildTimetable"
           component={ChildTimetableScreen}
-          options={{ title: "Thời khóa biểu" }}
+          options={{ headerShown: false }}
+        />
+        <ChildStack.Screen
+          name="SessionDetail"
+          component={ParentSessionDetailScreen as any}
+          options={{ title: "Chi tiết buổi học" }}
         />
       </ChildStack.Navigator>
     </ErrorBoundary>
@@ -98,7 +139,7 @@ function TimetableStackNavigator() {
         <TimetableStack.Screen
           name="Timetable"
           component={ChildTimetableScreen}
-          options={{ title: "Thời khóa biểu" }}
+          options={{ headerShown: false }}
         />
         <TimetableStack.Screen
           name="ChildIepHistory"
@@ -114,6 +155,11 @@ function TimetableStackNavigator() {
           name="ChildIepObjectiveDetail"
           component={IepObjectiveDetailScreen as any}
           options={{ title: "Chi tiết mục tiêu" }}
+        />
+        <TimetableStack.Screen
+          name="SessionDetail"
+          component={ParentSessionDetailScreen as any}
+          options={{ title: "Chi tiết buổi học" }}
         />
       </TimetableStack.Navigator>
     </ErrorBoundary>
@@ -133,7 +179,7 @@ function ReportStackNavigator() {
         <ReportStack.Screen
           name="ParentReportList"
           component={ParentReportListScreen}
-          options={{ title: "Báo cáo" }}
+          options={{ headerShown: false }}
         />
         <ReportStack.Screen
           name="ParentReportDetail"
@@ -170,6 +216,65 @@ function ProfileStackNavigator() {
   );
 }
 
+function HomeStackNavigator() {
+  const headerOptions = useHeaderOptions();
+  return (
+    <ErrorBoundary
+      name="ParentHomeStack"
+      fallback={(error, reset) => (
+        <ScreenErrorFallback error={error} reset={reset} />
+      )}
+    >
+      <HomeStack.Navigator screenOptions={headerOptions}>
+        <HomeStack.Screen
+          name="ParentHome"
+          component={ParentHomeScreen}
+          options={{ headerShown: false }}
+        />
+        <HomeStack.Screen
+          name="NotificationList"
+          component={NotificationListScreen}
+          options={{ title: "Thông báo" }}
+        />
+        <HomeStack.Screen
+          name="ConversationList"
+          component={ConversationListScreen}
+          options={{ title: "Tin nhắn" }}
+        />
+        <HomeStack.Screen
+          name="ChatRoom"
+          component={ChatRoomScreen}
+          options={{ title: "" }}
+        />
+        <HomeStack.Screen
+          name="AiChat"
+          component={AiChatScreen}
+          options={{ title: "Trợ lý AI" }}
+        />
+        {/* Detail screens registered here so tapping a notification can `push`
+            within the same stack and back returns to the notification list. */}
+        <HomeStack.Screen
+          name="ParentReportDetail"
+          component={ParentReportDetailScreen}
+          options={{ title: "Chi tiết báo cáo" }}
+        />
+        <HomeStack.Screen
+          name="IepPlanDetail"
+          component={IepPlanDetailScreen}
+          options={{ title: "Kế hoạch IEP" }}
+        />
+        <HomeStack.Screen
+          name="IepObjectiveDetail"
+          component={IepObjectiveDetailScreen as any}
+          options={({ route }) => ({
+            title: (route.params as any)?.objectiveName || "Chi tiết mục tiêu",
+          })}
+        />
+      </HomeStack.Navigator>
+    </ErrorBoundary>
+  );
+}
+
 // ── Tab navigator ─────────────────────────────────────────────────
 
 export function ParentNavigator() {
@@ -189,20 +294,21 @@ export function ParentNavigator() {
     >
       <Tab.Screen
         name="ParentHomeTab"
-        component={ParentHomeScreen}
-        options={{
+        component={HomeStackNavigator}
+        options={({ route }) => ({
           title: "Trang chủ",
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
-        }}
+          tabBarStyle: tabBarStyleForRoute(route),
+        })}
+        listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="ChildTab"
         component={ChildStackNavigator}
-        options={{
-          title: "Con tôi",
+        options={({ route }) => ({
+          title: "Hồ sơ",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="account-child"
@@ -210,7 +316,8 @@ export function ParentNavigator() {
               color={color}
             />
           ),
-        }}
+          tabBarStyle: tabBarStyleForRoute(route),
+        })}
         listeners={({ navigation, route }) => ({
           // ChildTab: jump straight into the previously-selected child's detail
           // screen (if any). Otherwise reset the inner stack and focus the tab.
@@ -242,7 +349,7 @@ export function ParentNavigator() {
       <Tab.Screen
         name="TimetableTab"
         component={TimetableStackNavigator}
-        options={{
+        options={({ route }) => ({
           title: "Thời khóa biểu",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -251,13 +358,14 @@ export function ParentNavigator() {
               color={color}
             />
           ),
-        }}
+          tabBarStyle: tabBarStyleForRoute(route),
+        })}
         listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="ReportTab"
         component={ReportStackNavigator}
-        options={{
+        options={({ route }) => ({
           title: "Báo cáo",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -266,13 +374,14 @@ export function ParentNavigator() {
               color={color}
             />
           ),
-        }}
+          tabBarStyle: tabBarStyleForRoute(route),
+        })}
         listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="ParentProfileTab"
         component={ProfileStackNavigator}
-        options={{
+        options={({ route }) => ({
           title: "Cá nhân",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -281,7 +390,8 @@ export function ParentNavigator() {
               color={color}
             />
           ),
-        }}
+          tabBarStyle: tabBarStyleForRoute(route),
+        })}
         listeners={popToTopOnTabPress}
       />
     </Tab.Navigator>

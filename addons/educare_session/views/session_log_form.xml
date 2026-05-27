@@ -65,7 +65,7 @@
                         <page string="Objectives" name="objectives">
                             <!-- Draft/Scheduled phase: select objectives from list -->
                             <field name="objective_ids"
-                                invisible="status not in ('draft', 'scheduled') or session_purpose == 'parent_training'"
+                                invisible="status not in ('draft', 'scheduled')"
                                 readonly="status != 'draft'"
                                 domain="[('id', 'in', available_objective_ids)]"
                                 options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}">
@@ -86,14 +86,14 @@
                             <field name="result_line_ids"
                                 invisible="status in ('draft', 'scheduled')"
                                 readonly="status != 'completed'">
-                                <tree editable="bottom" create="false" delete="false">
+                                <tree create="false" delete="false"
+                                    decoration-success="mastery_achieved == True">
                                     <field name="sequence" column_invisible="1" />
                                     <field name="objective_id" readonly="1" />
-                                    <field name="result_type" />
-                                    <field name="correct_trials" />
-                                    <field name="total_trials" />
-                                    <field name="accuracy_pct" readonly="1" widget="progressbar" />
-                                    <field name="prompt_level_used" />
+                                    <field name="measurement_type" readonly="1" />
+                                    <field name="score_pct" readonly="1" widget="progressbar" />
+                                    <field name="is_recorded" readonly="1"
+                                        widget="boolean_toggle" />
                                     <field name="mastery_achieved" readonly="1"
                                         widget="boolean_toggle" />
                                 </tree>

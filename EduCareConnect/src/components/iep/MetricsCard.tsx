@@ -102,28 +102,74 @@ function SemiGauge({
 export function MetricsCard({ objective }: MetricsCardProps) {
   const theme = useTheme();
 
+  const mt = objective.measurement_type;
   const currentPct = Math.round(objective.current_accuracy_pct || 0);
-  const targetPct = objective.target_accuracy_pct;
-  const baselinePct = objective.baseline_accuracy_pct;
+
+  const fmtSeconds = (s: number) =>
+    s >= 60 ? `${Math.floor(s / 60)}'${String(s % 60).padStart(2, "0")}"` : `${s}s`;
+
+  // Per measurement type: which two flanking tiles + title + gauge caption to show.
+  let cardTitle = "Tiến độ";
+  let gaugeCaption = "Đã đạt";
+  let leftTile: { label: string; value: string; color?: string } | null = null;
+  let rightTile: { label: string; value: string; color?: string } | null = null;
+
+  if (mt === "accuracy" || mt === "prompt_level") {
+    cardTitle = mt === "prompt_level" ? "Mức độ hỗ trợ" : "Độ chính xác";
+    gaugeCaption = "Hiện tại";
+    leftTile = { label: "Mức ban đầu", value: `${objective.baseline_accuracy_pct}%` };
+    rightTile = {
+      label: "Mục tiêu",
+      value: `${objective.target_accuracy_pct}%`,
+      color: "#4CAF50",
+    };
+  } else if (mt === "duration") {
+    cardTitle = "Thời gian";
+    leftTile = {
+      label: "Thời gian mục tiêu",
+      value: fmtSeconds(objective.target_duration_seconds || 0),
+      color: "#4CAF50",
+    };
+  } else if (mt === "frequency_increase") {
+    cardTitle = "Tần suất (tăng hành vi)";
+    leftTile = { label: "Cơ sở", value: `${objective.baseline_count || 0} lần` };
+    rightTile = {
+      label: "Mục tiêu",
+      value: `${objective.target_count || 0} lần`,
+      color: "#4CAF50",
+    };
+  } else if (mt === "frequency_decrease") {
+    cardTitle = "Tần suất (giảm hành vi)";
+    leftTile = { label: "Cơ sở", value: `${objective.baseline_count || 0} lần` };
+    rightTile = {
+      label: "Tối đa cho phép",
+      value: `${objective.target_count || 0} lần`,
+      color: "#4CAF50",
+    };
+  }
 
   return (
     <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-      {/* Top row: baseline | GAUGE | target */}
-      <View>
-        <Text>Độ chính xác</Text>
-      </View>
+      <Text variant="labelMedium" style={{ color: theme.colors.outline, fontWeight: "700" }}>
+        {cardTitle}
+      </Text>
+      {/* Top row: leftTile | GAUGE | rightTile */}
       <View style={styles.accuracyRow}>
-        {/* Baseline */}
-        <View style={styles.metricItem}>
-          <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-            Mức ban đầu
-          </Text>
-          <Text variant="titleMedium" style={{ fontWeight: "700" }}>
-            {baselinePct}%
-          </Text>
-        </View>
+        {leftTile && (
+          <View style={styles.metricItem}>
+            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+              {leftTile.label}
+            </Text>
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "700", color: leftTile.color }}
+            >
+              {leftTile.value}
+            </Text>
+          </View>
+        )}
 
-        {/* Center: Semi-circle gauge for current accuracy */}
+        {/* Center: gauge = % achievement of the goal */}
         <View style={{ alignItems: "center" }}>
           <SemiGauge
             value={currentPct}
@@ -136,30 +182,26 @@ export function MetricsCard({ objective }: MetricsCardProps) {
             variant="labelSmall"
             style={{ color: theme.colors.outline, marginTop: -4 }}
           >
-            Hiện tại
+            {gaugeCaption}
           </Text>
         </View>
 
-        {/* Target */}
-        <View style={styles.metricItem}>
-          <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
-            Mục tiêu
-          </Text>
-          <Text
-            variant="titleMedium"
-            style={{ fontWeight: "700", color: "#4CAF50" }}
-          >
-            {targetPct}%
-          </Text>
-        </View>
+        {rightTile && (
+          <View style={styles.metricItem}>
+            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+              {rightTile.label}
+            </Text>
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "700", color: rightTile.color }}
+            >
+              {rightTile.value}
+            </Text>
+          </View>
+        )}
       </View>
 
-      <ProgressBar
-        progress={objective.progress_pct || 0}
-        baseline={baselinePct}
-        target={targetPct}
-        size="medium"
-      />
+      <ProgressBar progress={objective.progress_pct || 0} size="medium" />
 
       <Divider style={{ marginVertical: 8 }} />
 

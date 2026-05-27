@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Notification ──────────────────────────────────────── -->
+    <record id="view_notification_tree" model="ir.ui.view">
+        <field name="name">educare.notification.tree</field>
+        <field name="model">educare.notification</field>
+        <field name="arch" type="xml">
+            <tree string="Notifications" default_order="create_date desc">
+                <field name="create_date" string="Thời gian" />
+                <field name="user_id" />
+                <field name="type" />
+                <field name="title" />
+                <field name="body" />
+                <field name="ref_model" />
+                <field name="ref_id" />
+                <field name="is_read" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_notification_form" model="ir.ui.view">
+        <field name="name">educare.notification.form</field>
+        <field name="model">educare.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification">
+                <sheet>
+                    <group>
+                        <field name="user_id" />
+                        <field name="type" />
+                        <field name="title" />
+                        <field name="body" />
+                    </group>
+                    <group string="Tham chiếu (deep-link)">
+                        <field name="ref_model" />
+                        <field name="ref_id" />
+                    </group>
+                    <group string="Trạng thái đọc">
+                        <field name="is_read" />
+                        <field name="read_at" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_notification" model="ir.actions.act_window">
+        <field name="name">Notifications</field>
+        <field name="res_model">educare.notification</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ── Device Token ──────────────────────────────────────── -->
+    <record id="view_device_token_tree" model="ir.ui.view">
+        <field name="name">educare.device.token.tree</field>
+        <field name="model">educare.device.token</field>
+        <field name="arch" type="xml">
+            <tree string="Device Tokens" default_order="last_seen desc">
+                <field name="user_id" />
+                <field name="platform" />
+                <field name="device_name" />
+                <field name="app_version" />
+                <field name="last_seen" />
+                <field name="active" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_device_token_form" model="ir.ui.view">
+        <field name="name">educare.device.token.form</field>
+        <field name="model">educare.device.token</field>
+        <field name="arch" type="xml">
+            <form string="Device Token">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id" />
+                            <field name="platform" />
+                            <field name="active" />
+                        </group>
+                        <group>
+                            <field name="device_name" />
+                            <field name="app_version" />
+                            <field name="last_seen" />
+                        </group>
+                    </group>
+                    <group string="Token">
+                        <field name="expo_token" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_device_token" model="ir.actions.act_window">
+        <field name="name">Device Tokens</field>
+        <field name="res_model">educare.device.token</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ── Menu (nested under Educare root) ─────────────────────── -->
+    <menuitem id="menu_notification_root"
+        name="Thông Báo"
+        parent="educare_base.menu_educare_root"
+        sequence="80" />
+
+    <menuitem id="menu_notification_list"
+        name="Tất cả thông báo"
+        parent="menu_notification_root"
+        action="action_notification"
+        sequence="10" />
+
+    <menuitem id="menu_device_token_list"
+        name="Device Tokens"
+        parent="menu_notification_root"
+        action="action_device_token"
+        sequence="20" />
+</odoo>

@@ -8,6 +8,7 @@ PLAN_STATUS = [
     ("ready_review", "Chờ duyệt"),
     ("supervisor_approved", "Giám sát đã duyệt"),
     ("active", "Đang hoạt động"),
+    ("completed", "Hoàn thành"),
     ("closed", "Đã đóng"),
 ]
 
@@ -22,7 +23,8 @@ ALLOWED_STATUS_TRANSITIONS = {
     "draft": {"draft", "ready_review"},
     "ready_review": {"ready_review", "draft", "supervisor_approved", "active"},
     "supervisor_approved": {"supervisor_approved", "active"},
-    "active": {"active", "closed"},
+    "active": {"active", "closed", "completed"},
+    "completed": {"completed"},
     "closed": {"closed"},
 }
 
@@ -171,6 +173,12 @@ class EducareIepPlan(models.Model):
         string="Closing Notes",
         tracking=True,
         help="Additional notes or audit trail for why the plan was closed.",
+    )
+    maintenance_mode = fields.Boolean(
+        string="Chế độ duy trì",
+        default=False,
+        tracking=True,
+        help="True khi giáo viên chọn tiếp tục học duy trì sau khi tất cả mục tiêu đã thành thạo.",
     )
     revision_reason = fields.Selection(
         selection=[
@@ -329,33 +337,106 @@ class EducareIepPlan(models.Model):
             plan.goal_ids._auto_update_status_from_workflow()
         self._auto_close_if_all_goals_achieved()
 
+    def _all_goals_achieved(self):
+        """Return True if every non-discontinued goal in this plan is achieved."""
+        self.ensure_one()
+        active_goals = self.goal_ids.filtered(lambda g: g.status != "discontinued")
+        return bool(active_goals) and all(g.status == "achieved" for g in active_goals)
+
     def _auto_close_if_all_goals_achieved(self):
-        """Auto-close active plan when every non-discontinued goal is achieved."""
-        for plan in self:
-            if plan.status != "active":
-                continue
-            active_goals = plan.goal_ids.filtered(lambda g: g.status != "discontinued")
-            if not active_goals:
-                continue
-            if all(g.status == "achieved" for g in active_goals):
+        """No-op: detection is now handled by action_submit_review response.
+        Auto-close only happens via cron (end_date) or explicit teacher action."""
+        pass
+
+    def action_continue_maintenance(self):
+        """Teacher chooses to continue maintenance sessions after all goals achieved."""
+        self.ensure_one()
+        if self.status != "active":
+            raise ValidationError(_("Chỉ có thể bật chế độ duy trì khi kế hoạch đang hoạt động."))
+        self.write({"maintenance_mode": True})
+        self.message_post(
+            body=_("Giáo viên chọn tiếp tục học duy trì sau khi hoàn thành tất cả mục tiêu."),
+            message_type="comment",
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def action_end_iep_period(self):
+        """Teacher ends the IEP period: cancel scheduled sessions, set completed."""
+        self.ensure_one()
+        if self.status != "active":
+            raise ValidationError(_("Chỉ có thể kết thúc kỳ IEP đang hoạt động."))
+
+        Session = self.env["educare.session.log"]
+        scheduled = Session.search([
+            ("student_id", "=", self.student_id.id),
+            ("status", "=", "scheduled"),
+        ])
+        if scheduled:
+            scheduled.with_context(skip_status_transition_check=True).write({
+                "status": "cancelled",
+                "cancel_type": "cancelled_center",
+                "cancel_notes": _("Kỳ IEP đã kết thúc."),
+            })
+
+        self.with_context(skip_status_transition_check=True).write({
+            "status": "completed",
+            "closing_reason": "completed_period",
+            "closing_notes": _("Giáo viên kết thúc kỳ IEP sau khi tất cả mục tiêu đã thành thạo."),
+            "maintenance_mode": False,
+        })
+        self.message_post(
+            body=_("Kỳ IEP đã kết thúc. %d buổi học đã hủy.", len(scheduled)),
+            message_type="comment",
+            subtype_xmlid="mail.mt_note",
+        )
+
+    @api.model
+    def _cron_handle_expired_plans(self):
+        """Daily: warn expiring (7d) and auto-close/complete expired active plans."""
+        today = fields.Date.today()
+        warning_date = today + timedelta(days=7)
+
+        # 7-day warning
+        expiring = self.search([
+            ("status", "=", "active"),
+            ("end_date", "=", warning_date),
+        ])
+        for plan in expiring:
+            plan.message_post(
+                body=_(
+                    "⚠️ IEP sắp hết hạn vào ngày %s. Vui lòng chuẩn bị kế hoạch mới.",
+                    plan.end_date,
+                ),
+                message_type="comment",
+                subtype_xmlid="mail.mt_note",
+            )
+
+        # Auto-close/complete expired plans
+        expired = self.search([
+            ("status", "=", "active"),
+            ("end_date", "<", today),
+        ])
+        for plan in expired:
+            if plan.maintenance_mode or plan._all_goals_achieved():
+                # All objectives mastered → completed
                 plan.with_context(
-                    skip_status_transition_check=True,
-                    skip_auto_status_flow=True,
-                ).write(
-                    {
-                        "status": "closed",
-                        "closing_reason": "completed_period",
-                        "closing_notes": _(
-                            "Kế hoạch tự động đóng: tất cả mục tiêu dài hạn đã đạt thành thạo."
-                        ),
-                    }
-                )
+                    skip_status_transition_check=True, skip_auto_status_flow=True
+                ).write({
+                    "status": "completed",
+                    "closing_reason": "completed_period",
+                    "closing_notes": _("Kỳ IEP tự động kết thúc sau khi hết hạn."),
+                    "maintenance_mode": False,
+                })
                 plan.message_post(
-                    body=_(
-                        "Kế hoạch đã tự động chuyển sang Đã đóng vì toàn bộ mục tiêu dài hạn đều đã thành thạo."
-                    ),
+                    body=_("✅ Kỳ IEP tự động chuyển sang Hoàn thành sau khi hết hạn."),
                     message_type="comment",
                     subtype_xmlid="mail.mt_note",
+                )
+            else:
+                # Not all mastered → closed, cascade discontinue
+                plan.action_close(
+                    closing_reason="completed_period",
+                    closing_notes=_("Kỳ IEP tự động đóng sau khi hết hạn mà chưa hoàn thành toàn bộ mục tiêu."),
                 )
 
     def _ensure_root_link(self):
@@ -660,11 +741,14 @@ class EducareIepPlan(models.Model):
                         "description": obj.description,
                         "sequence": obj.sequence,
                         "status": obj.status,
+                        "measurement_type": obj.measurement_type,
                         "baseline_accuracy_pct": obj.baseline_accuracy_pct,
                         "target_accuracy_pct": obj.target_accuracy_pct,
+                        "target_duration_seconds": obj.target_duration_seconds,
+                        "baseline_count": obj.baseline_count,
+                        "target_count": obj.target_count,
                         "consecutive_sessions_required": obj.consecutive_sessions_required,
                         "weight": obj.weight,
-                        "measurement_method": obj.measurement_method,
                         "discontinued_reason": obj.discontinued_reason,
                     }
                 )
@@ -899,13 +983,16 @@ class EducareIepPlan(models.Model):
                         "description": odata["description"],
                         "sequence": odata["sequence"],
                         "status": odata["status"],
+                        "measurement_type": odata.get("measurement_type", "accuracy"),
                         "baseline_accuracy_pct": odata["baseline_accuracy_pct"],
                         "target_accuracy_pct": odata["target_accuracy_pct"],
+                        "target_duration_seconds": odata.get("target_duration_seconds", 0),
+                        "baseline_count": odata.get("baseline_count", 0),
+                        "target_count": odata.get("target_count", 0),
                         "consecutive_sessions_required": odata[
                             "consecutive_sessions_required"
                         ],
                         "weight": odata["weight"],
-                        "measurement_method": odata["measurement_method"],
                         "discontinued_reason": odata["discontinued_reason"],
                     }
                 )

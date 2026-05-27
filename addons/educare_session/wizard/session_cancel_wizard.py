@@ -1,10 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-CANCEL_TYPE_SELECTION = [
-    ("cancelled_center", "Trung tâm hủy"),
-    ("cancelled_family", "Gia đình hủy"),
-]
+from ..constants import TEACHER_CANCEL_TYPES
 
 
 class EduCareSessionCancelWizard(models.TransientModel):
@@ -19,7 +16,7 @@ class EduCareSessionCancelWizard(models.TransientModel):
         ondelete="cascade",
     )
     cancel_type = fields.Selection(
-        CANCEL_TYPE_SELECTION,
+        TEACHER_CANCEL_TYPES,
         string="Lý do hủy",
         required=True,
         default="cancelled_center",

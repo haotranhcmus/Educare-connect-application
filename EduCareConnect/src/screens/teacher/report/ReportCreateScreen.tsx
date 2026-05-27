@@ -17,7 +17,6 @@ import {
   Divider,
   useTheme,
   Surface,
-  IconButton,
   Modal,
   Portal,
 } from "react-native-paper";
@@ -34,19 +33,8 @@ import {
   usePersistAndSendReport,
   useReportDetail,
 } from "@hooks/useReports";
-import {
-  fetchSessionDetail,
-  fetchSessionResults,
-} from "@api/sessionApi";
-import { Picker } from "@components/form/Picker";
-import {
-  PERFORMANCE_LABELS,
-  ATTENDANCE_LABELS,
-  MOOD_LABELS,
-  ENERGY_LABELS,
-  ENGAGEMENT_LABELS,
-  toPickerOptions,
-} from "@utils/labels";
+import { fetchSessionDetail, fetchSessionResults } from "@api/sessionApi";
+import { PERFORMANCE_LABELS } from "@utils/labels";
 import { REPORT_FIELDS } from "@constants/reportFields";
 import { formatDate } from "@utils/formatters";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -55,13 +43,57 @@ import type { PhotoAsset } from "@t";
 
 type Props = NativeStackScreenProps<ReportStackParamList, "ReportCreate">;
 
-const ATTENDANCE_OPTIONS = toPickerOptions(ATTENDANCE_LABELS);
-const MOOD_OPTIONS = toPickerOptions(MOOD_LABELS);
-const ENERGY_OPTIONS = toPickerOptions(ENERGY_LABELS);
-const ENGAGEMENT_OPTIONS = toPickerOptions(ENGAGEMENT_LABELS);
-const PERFORMANCE_OPTIONS = toPickerOptions(PERFORMANCE_LABELS);
+// ── Static image assets ──────────────────────────────────────
+const EMOJI_MAP: Record<string, ReturnType<typeof require>> = {
+  very_good: require("../../../../assets/amoji/happiness.png"),
+  good: require("../../../../assets/amoji/cool.png"),
+  neutral: require("../../../../assets/amoji/neutral.png"),
+  difficult: require("../../../../assets/amoji/sad.png"),
+  very_difficult: require("../../../../assets/amoji/angry.png"),
+};
+const STAR_BLACK = require("../../../../assets/star/star-black.png");
+const STAR_YELLOW = require("../../../../assets/star/star-yellow.png");
 
-// ── Validation Schema ─────────────────────────────────────────
+// ── Performance star values (1 = worst, 5 = best) ───────────
+const PERF_VALUES = ["very_poor", "poor", "fair", "good", "excellent"] as const;
+type PerfValue = (typeof PERF_VALUES)[number];
+
+// ── Chip option sets ─────────────────────────────────────────
+const ATTENDANCE_CHIPS = [
+  { value: "absent", label: "Vắng", icon: "close-circle-outline" },
+  { value: "present", label: "Có mặt", icon: "check-circle-outline" },
+] as const;
+
+const MOOD_OPTIONS = [
+  { value: "very_difficult", label: "Khó chịu" },
+  { value: "difficult", label: "Buồn" },
+  { value: "neutral", label: "Bình thường" },
+  { value: "very_good", label: "Tốt" },
+  { value: "good", label: "Rất tốt" },
+] as const;
+
+const ENERGY_CHIPS = [
+  { value: "low", label: "Thấp", icon: "battery-outline" },
+  { value: "normal", label: "Bình thường", icon: "battery-medium" },
+  { value: "high", label: "Cao", icon: "lightning-bolt" },
+] as const;
+
+const ENGAGEMENT_CHIPS = [
+  { value: "disengaged", label: "Phân tâm", icon: "minus-circle-outline" },
+  {
+    value: "somewhat_engaged",
+    label: "Khá tập trung",
+    icon: "circle-outline",
+  },
+  { value: "engaged", label: "Tham gia", icon: "check-circle-outline" },
+  {
+    value: "highly_engaged",
+    label: "Rất tập trung",
+    icon: "star-circle-outline",
+  },
+] as const;
+
+// ── Form schema ──────────────────────────────────────────────
 const reportSchema = z.object({
   activity_summary: z.string().min(1, "Vui lòng nhập tóm tắt hoạt động"),
   achievements: z.string().optional(),
@@ -84,13 +116,16 @@ interface SessionInfo {
   avgAccuracy: number;
 }
 
+// ── Field config ─────────────────────────────────────────────
+const REQUIRED_FIELD = REPORT_FIELDS.find((f) => f.required)!;
+const OPTIONAL_FIELDS = REPORT_FIELDS.filter((f) => !f.required && !f.internal);
+
+// ── Main screen ──────────────────────────────────────────────
 export function ReportCreateScreen({ navigation, route }: Props) {
   const theme = useTheme();
   const { sessionId: routeSessionId, reportId } = route.params ?? {};
   const isEdit = !!reportId;
 
-  // Only the ReportStack has SessionPicker; in SessionStack/StudentStack the
-  // sessionId is always passed in via route params, so the picker is hidden.
   const canPickSession = navigation
     .getState()
     .routeNames.includes("SessionPicker");
@@ -102,6 +137,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [photoAssets, setPhotoAssets] = useState<PhotoAsset[]>([]);
+  const [showOptional, setShowOptional] = useState(false);
   const [obs, setObs] = useState({
     attendance: "present",
     mood: "good",
@@ -115,7 +151,6 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     type: "draft" | "sent";
     reportId: number | null;
   }>({ visible: false, type: "draft", reportId: null });
-  // Track which sessionId was last loaded to avoid duplicate fetches
   const loadedSessionIdRef = useRef<number | null>(null);
 
   const {
@@ -145,7 +180,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         highlight_moment: existingReport.highlight_moment || "",
         parent_action_guide: existingReport.parent_action_guide || "",
         next_session_preview: existingReport.next_session_preview || "",
-        teacher_note: existingReport.teacher_note || "",
+        teacher_note: (existingReport as any).teacher_note || "",
       });
       setObs({
         attendance: (existingReport as any).attendance || "present",
@@ -166,7 +201,6 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     }
   }, [existingReport]);
 
-  // Primary effect: load when routeSessionId is set (new report flow)
   useEffect(() => {
     if (routeSessionId && !isEdit) {
       if (loadedSessionIdRef.current !== routeSessionId) {
@@ -176,7 +210,6 @@ export function ReportCreateScreen({ navigation, route }: Props) {
     }
   }, [routeSessionId]);
 
-  // Fallback: re-check on focus in case navigate() params update didn't trigger above
   useFocusEffect(
     React.useCallback(() => {
       if (
@@ -205,12 +238,12 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         ? PERFORMANCE_LABELS[session.overall_performance] || null
         : null;
       const objectives = results
-        .filter((r: any) => r.total_trials > 0)
+        .filter((r: any) => r.is_recorded)
         .map((r: any) => ({
           name: Array.isArray(r.objective_id)
             ? r.objective_id[1]
             : `OBJ-${r.objective_id}`,
-          accuracy: r.accuracy_pct || 0,
+          accuracy: r.score_pct || 0,
           baseline: r.baseline_accuracy_pct ?? null,
           target: r.target_accuracy_pct ?? null,
         }));
@@ -236,13 +269,11 @@ export function ReportCreateScreen({ navigation, route }: Props) {
       });
 
       if (applyPrefill) {
-        // ── Auto-generate pre-fill text ─────────────────────────
-        const perfNote = perf ? ` Kết quả tổng thể: ${perf}.` : "";
         const objSummary =
           objectives.length > 0
-            ? ` Thực hành ${objectives.length} mục tiêu với độ chính xác trung bình ${avg}%.`
+            ? ` Thực hành ${objectives.length} mục tiêu với độ chính xác ${avg}%.`
             : "";
-        const summary = `Buổi học kéo dài ${durationMinutes} phút tại trung tâm.${objSummary}${perfNote}`;
+        const summary = `Buổi học ${durationMinutes} phút.${objSummary}`;
 
         const achieved = objectives.filter(
           (o: any) => o.target !== null && o.accuracy >= o.target,
@@ -362,11 +393,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               await Haptics.notificationAsync(
                 Haptics.NotificationFeedbackType.Success,
               );
-              setSuccessModal({
-                visible: true,
-                type: "sent",
-                reportId: rptId,
-              });
+              setSuccessModal({ visible: true, type: "sent", reportId: rptId });
             } catch (e: any) {
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               toast.error("Không thể gửi báo cáo", e?.message);
@@ -379,6 +406,10 @@ export function ReportCreateScreen({ navigation, route }: Props) {
 
   if (loading) return <LoadingOverlay visible />;
 
+  const selectedPerfIdx = PERF_VALUES.indexOf(
+    obs.overall_performance as PerfValue,
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView
@@ -386,9 +417,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        {/* ── Chọn buổi học ────────────────────────────── */}
-        <SectionHeader icon="calendar-clock" title="Buổi Học" theme={theme} />
-
+        {/* ── Buổi học ─────────────────────────────────────── */}
         {!sessionInfo ? (
           <Surface
             style={[styles.pickCard, { borderColor: theme.colors.primary }]}
@@ -408,9 +437,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
             {canPickSession && (
               <Button
                 mode="contained"
-                onPress={() =>
-                  (navigation as any).navigate("SessionPicker")
-                }
+                onPress={() => (navigation as any).navigate("SessionPicker")}
                 style={{ marginTop: 12 }}
                 icon="magnify"
               >
@@ -442,41 +469,290 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           </View>
         )}
 
-        {/* ── Ảnh/Video ─────────────────────────────────── */}
+        {/* ── Quan sát chung ────────────────────────────────── */}
         <SectionHeader
-          icon="image-multiple-outline"
-          title="Ảnh buổi học"
+          icon="eye-outline"
+          title="Quan sát chung"
           theme={theme}
         />
-        <View style={styles.photoSection}>
-          {/* Existing photo thumbnails */}
-          {photoAssets.length > 0 && (
-            <FlatList
-              horizontal
-              data={photoAssets}
-              keyExtractor={(a, i) => `${a.uri}-${i}`}
-              renderItem={({ item: asset, index }) => (
-                <View style={styles.photoThumb}>
-                  <Image source={{ uri: asset.uri }} style={styles.photoImg} />
+        <Surface
+          style={[styles.obsCard, { backgroundColor: theme.colors.surface }]}
+          elevation={1}
+        >
+          {/* Điểm danh */}
+          <ObsRow icon="account-check-outline" label="Điểm danh" theme={theme}>
+            <View style={styles.chipRow}>
+              {ATTENDANCE_CHIPS.map((opt) => {
+                const sel = obs.attendance === opt.value;
+                return (
                   <TouchableOpacity
-                    style={styles.photoRemove}
+                    key={opt.value}
                     onPress={() =>
-                      setPhotoAssets((p) => p.filter((_, i) => i !== index))
+                      setObs((p) => ({ ...p, attendance: opt.value }))
                     }
+                    style={[
+                      styles.chip,
+                      sel
+                        ? { backgroundColor: theme.colors.primary }
+                        : {
+                            backgroundColor: "transparent",
+                            borderColor: theme.colors.outline,
+                          },
+                    ]}
                   >
                     <MaterialCommunityIcons
-                      name="close-circle"
-                      size={18}
-                      color="#fff"
+                      name={opt.icon as any}
+                      size={13}
+                      color={sel ? "#fff" : theme.colors.onSurface}
                     />
+                    <Text
+                      variant="labelSmall"
+                      style={{
+                        color: sel ? "#fff" : theme.colors.onSurface,
+                        marginLeft: 4,
+                      }}
+                    >
+                      {opt.label}
+                    </Text>
                   </TouchableOpacity>
-                </View>
-              )}
-              style={{ marginBottom: 10 }}
-              showsHorizontalScrollIndicator={false}
+                );
+              })}
+            </View>
+          </ObsRow>
+
+          <Divider style={styles.obsDivider} />
+
+          {/* Tâm trạng */}
+          <ObsRow icon="emoticon-outline" label="Tâm trạng" theme={theme}>
+            <View style={styles.moodRow}>
+              {MOOD_OPTIONS.map((opt) => {
+                const sel = obs.mood === opt.value;
+                return (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setObs((p) => ({ ...p, mood: opt.value }))}
+                    style={[
+                      styles.moodChip,
+                      sel
+                        ? {
+                            borderColor: theme.colors.primary,
+                            borderWidth: 2,
+                            backgroundColor: theme.colors.primaryContainer,
+                          }
+                        : {
+                            borderColor: theme.colors.outlineVariant,
+                            borderWidth: 1,
+                          },
+                    ]}
+                  >
+                    <Image
+                      source={EMOJI_MAP[opt.value]}
+                      style={styles.moodEmoji}
+                      resizeMode="contain"
+                    />
+                    <Text
+                      variant="labelSmall"
+                      style={{
+                        color: sel
+                          ? theme.colors.primary
+                          : theme.colors.onSurface,
+                        marginTop: 3,
+                        textAlign: "center",
+                        fontSize: 10,
+                      }}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </ObsRow>
+
+          <Divider style={styles.obsDivider} />
+
+          {/* Mức năng lượng */}
+          <ObsRow
+            icon="lightning-bolt-outline"
+            label="Mức năng lượng"
+            theme={theme}
+          >
+            <View style={styles.chipRow}>
+              {ENERGY_CHIPS.map((opt) => {
+                const sel = obs.energy_level === opt.value;
+                return (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() =>
+                      setObs((p) => ({ ...p, energy_level: opt.value }))
+                    }
+                    style={[
+                      styles.chip,
+                      sel
+                        ? { backgroundColor: theme.colors.primary }
+                        : {
+                            backgroundColor: "transparent",
+                            borderColor: theme.colors.outline,
+                          },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={opt.icon as any}
+                      size={13}
+                      color={sel ? "#fff" : theme.colors.onSurface}
+                    />
+                    <Text
+                      variant="labelSmall"
+                      style={{
+                        color: sel ? "#fff" : theme.colors.onSurface,
+                        marginLeft: 4,
+                      }}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </ObsRow>
+
+          <Divider style={styles.obsDivider} />
+
+          {/* Mức tập trung */}
+          <ObsRow icon="target" label="Mức tập trung" theme={theme}>
+            <View style={[styles.chipRow, { flexWrap: "wrap" }]}>
+              {ENGAGEMENT_CHIPS.map((opt) => {
+                const sel = obs.engagement_level === opt.value;
+                return (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() =>
+                      setObs((p) => ({ ...p, engagement_level: opt.value }))
+                    }
+                    style={[
+                      styles.chip,
+                      { marginBottom: 6 },
+                      sel
+                        ? { backgroundColor: theme.colors.primary }
+                        : {
+                            backgroundColor: "transparent",
+                            borderColor: theme.colors.outline,
+                          },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={opt.icon as any}
+                      size={13}
+                      color={sel ? "#fff" : theme.colors.onSurface}
+                    />
+                    <Text
+                      variant="labelSmall"
+                      style={{
+                        color: sel ? "#fff" : theme.colors.onSurface,
+                        marginLeft: 4,
+                      }}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </ObsRow>
+
+          <Divider style={styles.obsDivider} />
+
+          {/* Kết quả tổng thể — 5 sao */}
+          <ObsRow icon="star-outline" label="Kết quả tổng thể" theme={theme}>
+            <View style={styles.starRow}>
+              {PERF_VALUES.map((pv, i) => (
+                <TouchableOpacity
+                  key={pv}
+                  onPress={() =>
+                    setObs((p) => ({ ...p, overall_performance: pv }))
+                  }
+                  activeOpacity={0.7}
+                >
+                  <Image
+                    source={i <= selectedPerfIdx ? STAR_YELLOW : STAR_BLACK}
+                    style={styles.starImg}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ObsRow>
+
+          <Divider style={styles.obsDivider} />
+
+          {/* Ghi chú quan sát */}
+          <View style={styles.obsNotesWrapper}>
+            <View style={styles.obsLabelRow}>
+              <MaterialCommunityIcons
+                name="pencil-outline"
+                size={14}
+                color={theme.colors.onSurfaceVariant}
+              />
+              <Text
+                variant="labelSmall"
+                style={[
+                  styles.obsLabel,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
+                Ghi chú quan sát
+              </Text>
+            </View>
+            <TextInput
+              value={obs.observation_notes}
+              onChangeText={(v) =>
+                setObs((p) => ({ ...p, observation_notes: v }))
+              }
+              placeholder="Thêm ghi chú ngắn nếu cần..."
+              mode="outlined"
+              multiline
+              numberOfLines={3}
+              style={styles.obsNotesInput}
+              outlineStyle={{ borderRadius: 10 }}
             />
-          )}
-          {/* Add photo button */}
+          </View>
+        </Surface>
+
+        {/* ── Ảnh buổi học ─────────────────────────────────── */}
+        <View style={styles.photoSectionHeader}>
+          <SectionHeader
+            icon="image-multiple-outline"
+            title="Ảnh buổi học"
+            theme={theme}
+          />
+          <Text
+            variant="labelSmall"
+            style={[
+              styles.photoCount,
+              { color: theme.colors.onSurfaceVariant },
+            ]}
+          >
+            {photoAssets.length}/5
+          </Text>
+        </View>
+        <View style={styles.photoRow}>
+          {photoAssets.map((asset, index) => (
+            <View key={`${asset.uri}-${index}`} style={styles.photoThumb}>
+              <Image source={{ uri: asset.uri }} style={styles.photoImg} />
+              <TouchableOpacity
+                style={styles.photoRemove}
+                onPress={() =>
+                  setPhotoAssets((p) => p.filter((_, i) => i !== index))
+                }
+              >
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={18}
+                  color="#fff"
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
           {photoAssets.length < 5 && (
             <TouchableOpacity
               onPress={pickPhotos}
@@ -486,89 +762,76 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               ]}
             >
               <MaterialCommunityIcons
-                name="image-plus"
+                name="plus"
                 size={24}
-                color={theme.colors.primary}
+                color={theme.colors.onSurfaceVariant}
               />
               <Text
-                variant="labelMedium"
-                style={{ color: theme.colors.primary, marginTop: 4 }}
+                variant="labelSmall"
+                style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}
               >
-                Thêm ảnh ({photoAssets.length}/5)
+                Thêm
               </Text>
             </TouchableOpacity>
           )}
         </View>
 
-        {/* ── Quan Sát Chung ────────────────────────────── */}
-        <SectionHeader
-          icon="eye-outline"
-          title="Quan Sát Chung"
-          theme={theme}
-        />
-        <View style={styles.obsSection}>
-          <Picker
-            label="Điểm danh"
-            value={obs.attendance}
-            options={ATTENDANCE_OPTIONS}
-            onChange={(v) => setObs((p) => ({ ...p, attendance: v }))}
-          />
-          <Picker
-            label="Tâm trạng"
-            value={obs.mood}
-            options={MOOD_OPTIONS}
-            onChange={(v) => setObs((p) => ({ ...p, mood: v }))}
-          />
-          <Picker
-            label="Mức năng lượng"
-            value={obs.energy_level}
-            options={ENERGY_OPTIONS}
-            onChange={(v) => setObs((p) => ({ ...p, energy_level: v }))}
-          />
-          <Picker
-            label="Mức tập trung"
-            value={obs.engagement_level}
-            options={ENGAGEMENT_OPTIONS}
-            onChange={(v) => setObs((p) => ({ ...p, engagement_level: v }))}
-          />
-          <Picker
-            label="Kết quả tổng thể"
-            value={obs.overall_performance}
-            options={PERFORMANCE_OPTIONS}
-            onChange={(v) => setObs((p) => ({ ...p, overall_performance: v }))}
-          />
-          <TextInput
-            label="Ghi chú quan sát"
-            value={obs.observation_notes}
-            onChangeText={(v) =>
-              setObs((p) => ({ ...p, observation_notes: v }))
+        {/* Toggle hiện trường tuỳ chọn */}
+        <TouchableOpacity
+          style={[
+            styles.optionalToggle,
+            {
+              borderColor: showOptional
+                ? theme.colors.primary
+                : theme.colors.outlineVariant,
+              backgroundColor: showOptional
+                ? theme.colors.primaryContainer
+                : "transparent",
+            },
+          ]}
+          onPress={() => setShowOptional((v) => !v)}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name={
+              showOptional
+                ? "checkbox-marked-outline"
+                : "checkbox-blank-outline"
             }
-            mode="outlined"
-            multiline
-            numberOfLines={3}
-            style={styles.obsNotes}
+            size={20}
+            color={
+              showOptional
+                ? theme.colors.primary
+                : theme.colors.onSurfaceVariant
+            }
           />
-        </View>
+          <Text
+            variant="bodyMedium"
+            style={{
+              marginLeft: 8,
+              color: showOptional
+                ? theme.colors.primary
+                : theme.colors.onSurfaceVariant,
+            }}
+          >
+            Thêm thông tin tuỳ chọn
+          </Text>
+        </TouchableOpacity>
 
-        {/* ── Nội dung báo cáo ─────────────────────────── */}
-        <SectionHeader
-          icon="file-document-edit-outline"
-          title="Nội Dung Báo Cáo"
-          theme={theme}
-        />
+        {/* Các trường tuỳ chọn */}
+        {showOptional &&
+          OPTIONAL_FIELDS.map((field) => (
+            <ExpandableField
+              key={field.name}
+              field={field}
+              control={control}
+              error={errors[field.name as keyof typeof errors]?.message}
+              theme={theme}
+            />
+          ))}
 
-        {REPORT_FIELDS.map((field) => (
-          <ReportField
-            key={field.name}
-            control={control}
-            field={field}
-            error={errors[field.name]?.message}
-            theme={theme}
-          />
-        ))}
-
-        {/* ── Nút hành động ───────────────────────────── */}
-        <Divider style={{ marginTop: 8, marginBottom: 16 }} />
+        {/* ── Buttons ──────────────────────────────────────── */}
+        <Divider style={{ marginTop: 20, marginBottom: 16 }} />
         <View style={styles.actions}>
           <Button
             mode="outlined"
@@ -592,6 +855,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
           </Button>
         </View>
       </ScrollView>
+
       <Portal>
         <Modal
           visible={successModal.visible}
@@ -634,11 +898,6 @@ export function ReportCreateScreen({ navigation, route }: Props) {
               style={{ marginTop: 24, minWidth: 120 }}
               onPress={() => {
                 setSuccessModal((s) => ({ ...s, visible: false }));
-                // Always pop ReportCreate off the stack — user returns to
-                // whichever screen launched the create flow (SessionDetail
-                // most commonly). For sent reports, the underlying screen
-                // refetches via the mutation's query invalidation, so the
-                // report status is up-to-date when they land back.
                 navigation.goBack();
               }}
             >
@@ -651,7 +910,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
   );
 }
 
-// ── Section header component ──────────────────────────────────
+// ── SectionHeader ─────────────────────────────────────────────
 function SectionHeader({
   icon,
   title,
@@ -665,7 +924,7 @@ function SectionHeader({
     <View style={styles.sectionHeader}>
       <MaterialCommunityIcons
         name={icon as any}
-        size={18}
+        size={17}
         color={theme.colors.primary}
       />
       <Text
@@ -678,74 +937,144 @@ function SectionHeader({
   );
 }
 
-// ── Reusable report field ─────────────────────────────────────
-function ReportField({
-  control,
-  field,
-  error,
+// ── ObsRow — label + content slot ────────────────────────────
+function ObsRow({
+  icon,
+  label,
   theme,
+  children,
 }: {
-  control: any;
-  field: (typeof REPORT_FIELDS)[0];
-  error?: string;
+  icon: string;
+  label: string;
   theme: any;
+  children: React.ReactNode;
 }) {
   return (
-    <View style={styles.fieldWrapper}>
-      <View style={styles.fieldLabelRow}>
+    <View style={styles.obsRowContainer}>
+      <View style={styles.obsLabelRow}>
         <MaterialCommunityIcons
-          name={field.icon as any}
-          size={16}
-          color={field.required ? theme.colors.primary : theme.colors.outline}
+          name={icon as any}
+          size={14}
+          color={theme.colors.onSurfaceVariant}
         />
         <Text
-          variant="labelMedium"
-          style={[
-            styles.fieldLabel,
-            {
-              color: field.required
-                ? theme.colors.onSurface
-                : theme.colors.onSurfaceVariant,
-            },
-          ]}
+          variant="labelSmall"
+          style={[styles.obsLabel, { color: theme.colors.onSurfaceVariant }]}
         >
-          {field.label}
-          {field.required && (
-            <Text style={{ color: theme.colors.error }}> *</Text>
-          )}
+          {label}
         </Text>
       </View>
-      <Controller
-        control={control}
-        name={field.name}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            value={value}
-            onChangeText={onChange}
-            placeholder={field.placeholder}
-            mode="outlined"
-            multiline
-            numberOfLines={field.lines}
-            style={styles.textInput}
-            error={!!error}
-            outlineStyle={{ borderRadius: 10 }}
-          />
-        )}
-      />
-      {error ? (
-        <Text
-          variant="labelSmall"
-          style={{ color: theme.colors.error, marginTop: 2 }}
-        >
-          {error}
-        </Text>
-      ) : null}
+      {children}
     </View>
   );
 }
 
+// ── ExpandableField — collapsible optional text input ─────────
+function ExpandableField({
+  field,
+  control,
+  error,
+  theme,
+}: {
+  field: (typeof REPORT_FIELDS)[0];
+  control: any;
+  error?: string;
+  theme: any;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <View
+      style={[
+        styles.expandableWrapper,
+        { borderColor: theme.colors.outlineVariant },
+      ]}
+    >
+      <TouchableOpacity
+        style={styles.expandableHeader}
+        onPress={() => setExpanded((v) => !v)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.expandableLeft}>
+          <View
+            style={[
+              styles.expandableIconBg,
+              { backgroundColor: field.color + "22" },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name={field.icon as any}
+              size={15}
+              color={field.color}
+            />
+          </View>
+          <Text
+            variant="bodyMedium"
+            style={{ color: theme.colors.onSurface, flex: 1 }}
+            numberOfLines={1}
+          >
+            {field.label}
+          </Text>
+        </View>
+        <View style={styles.expandableRight}>
+          <View
+            style={[
+              styles.optBadge,
+              { backgroundColor: theme.colors.surfaceVariant },
+            ]}
+          >
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.onSurfaceVariant, fontSize: 10 }}
+            >
+              Tuỳ chọn
+            </Text>
+          </View>
+          <MaterialCommunityIcons
+            name={expanded ? "chevron-up" : "chevron-down"}
+            size={20}
+            color={theme.colors.onSurfaceVariant}
+          />
+        </View>
+      </TouchableOpacity>
+      {expanded && (
+        <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
+          <Controller
+            control={control}
+            name={field.name}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                value={value}
+                onChangeText={onChange}
+                placeholder={field.placeholder}
+                mode="outlined"
+                multiline
+                numberOfLines={field.lines}
+                style={styles.textInput}
+                error={!!error}
+                outlineStyle={{ borderRadius: 10 }}
+              />
+            )}
+          />
+          {error && (
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.error, marginTop: 2 }}
+            >
+              {error}
+            </Text>
+          )}
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ── Styles ────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 48 },
+
+  // Section header
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -754,9 +1083,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingBottom: 8,
     borderBottomWidth: 1.5,
-    borderBottomColor: "rgba(0,0,0,0.08)",
+    borderBottomColor: "rgba(0,0,0,0.07)",
   },
   sectionTitle: { fontWeight: "700" },
+
+  // Session picker card
   pickCard: {
     padding: 24,
     borderRadius: 12,
@@ -765,29 +1096,97 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     marginBottom: 8,
   },
-  fieldWrapper: { marginBottom: 16 },
-  fieldLabelRow: {
+
+  // Observation card
+  obsCard: {
+    borderRadius: 14,
+    overflow: "hidden",
+    marginBottom: 4,
+  },
+  obsRowContainer: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  obsLabelRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    marginBottom: 6,
+    gap: 5,
+    marginBottom: 8,
   },
-  fieldLabel: { fontWeight: "600" },
-  textInput: { backgroundColor: "transparent" },
-  actions: {
+  obsLabel: { fontWeight: "600" },
+  obsDivider: { marginHorizontal: 0 },
+  obsNotesWrapper: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  obsNotesInput: {
+    backgroundColor: "transparent",
+    marginTop: 2,
+  },
+
+  // Chips
+  chipRow: {
     flexDirection: "row",
-    gap: 10,
+    flexWrap: "wrap",
+    gap: 6,
   },
-  actionBtn: { flex: 1 },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+
+  // Mood emoji chips
+  moodRow: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  moodChip: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 54,
+    paddingVertical: 7,
+    paddingHorizontal: 4,
+    borderRadius: 10,
+  },
+  moodEmoji: {
+    width: 30,
+    height: 30,
+  },
+
+  // Star rating
+  starRow: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 2,
+  },
+  starImg: {
+    width: 30,
+    height: 30,
+  },
+
   // Photo section
-  photoSection: {
+  photoSectionHeader: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+  photoCount: {
+    marginBottom: 14,
+  },
+  photoRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
     marginBottom: 8,
   },
   photoThumb: {
-    width: 80,
-    height: 80,
+    width: 76,
+    height: 76,
     borderRadius: 10,
-    marginRight: 8,
     overflow: "hidden",
     position: "relative",
   },
@@ -808,21 +1207,100 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   addPhotoBtn: {
+    width: 76,
+    height: 76,
     borderWidth: 1.5,
     borderStyle: "dashed",
-    borderRadius: 12,
+    borderRadius: 10,
     alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    justifyContent: "center",
   },
-  // Observation section
-  obsSection: {
-    gap: 8,
+
+  // Activity summary (required)
+  summaryWrapper: {
+    marginBottom: 12,
+  },
+  summaryHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  summaryLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  fieldLabel: { fontWeight: "600" },
+  autoBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  autoBadgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  textInput: { backgroundColor: "transparent" },
+
+  // Optional toggle checkbox row
+  optionalToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+
+  // Expandable optional field
+  expandableWrapper: {
+    borderWidth: 1,
+    borderRadius: 12,
     marginBottom: 8,
+    overflow: "hidden",
   },
-  obsNotes: {
-    marginTop: 4,
+  expandableHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
   },
+  expandableLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 10,
+  },
+  expandableIconBg: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expandableRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  optBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+
+  // Actions
+  actions: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  actionBtn: { flex: 1 },
+
+  // Success modal
   modal: {
     marginHorizontal: 32,
     borderRadius: 20,

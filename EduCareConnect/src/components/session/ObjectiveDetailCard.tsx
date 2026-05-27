@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, Divider, useTheme, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
 import type { IepObjectiveListItem } from "@t";
 
 interface ObjectiveDetailCardProps {
@@ -123,11 +124,14 @@ function ObjectiveDetailCardImpl({ objective }: ObjectiveDetailCardProps) {
         {expanded && (
           <>
             <Divider style={{ marginVertical: 8 }} />
-            {objective.measurement_method ? (
+            {objective.measurement_type ? (
               <DetailRow
                 icon="ruler"
-                label="Phương pháp đo lường"
-                value={objective.measurement_method}
+                label="Cách thu thập & đánh giá"
+                value={
+                  MEASUREMENT_TYPE_LABELS[objective.measurement_type] ||
+                  objective.measurement_type
+                }
               />
             ) : null}
             {objective.implementation_steps ? (

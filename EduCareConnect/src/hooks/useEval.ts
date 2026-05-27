@@ -24,6 +24,11 @@ export function useSubmitEval() {
       queryClient.invalidateQueries({ queryKey: queryKeys.sessions.myAll() });
       // Accuracy of objectives just changed.
       queryClient.invalidateQueries({ queryKey: queryKeys.iepObjectives.all });
+      // Objective result history (charts/tables) needs a refresh.
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepResults.all });
+      // IEP plan status may have changed (maintenance_mode, completed, etc.).
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepPlans.all });
+      queryClient.invalidateQueries({ queryKey: ["students", "iep-plans"] });
     },
   });
 }

@@ -7,11 +7,30 @@ export type AuthStackParamList = {
 
 // -- Teacher Bottom Tabs --
 export type TeacherTabParamList = {
-  HomeTab: undefined;
+  HomeTab: NavigatorScreenParams<HomeStackParamList> | undefined;
   StudentTab: undefined;
   SessionTab: NavigatorScreenParams<SessionStackParamList> | undefined;
   ReportTab: undefined;
   ProfileTab: undefined;
+};
+
+// Shared chat route params — reused inside HomeStack (teacher + parent).
+export type ChatRoomParams = {
+  conversationId: number;
+  counterpartName: string;
+  counterpartAvatar?: string | null;
+};
+
+// -- Teacher: Home Stack --
+// Contains: HomeScreen + NotificationList + Chat screens. Chat is reached
+// from the header icon on HomeScreen so the tab bar auto-hides while
+// chatting and Back returns to Home.
+export type HomeStackParamList = {
+  Home: undefined;
+  NotificationList: undefined;
+  ConversationList: undefined;
+  ChatRoom: ChatRoomParams;
+  AiChat: undefined;
 };
 
 export type TeacherRootStackParamList = {
@@ -84,11 +103,26 @@ export type TeacherIepStackParamList = {
 
 // -- Parent Bottom Tabs --
 export type ParentTabParamList = {
-  ParentHomeTab: undefined;
+  ParentHomeTab: NavigatorScreenParams<ParentHomeStackParamList> | undefined;
   ChildTab: undefined;
   TimetableTab: undefined;
   ReportTab: undefined;
   ParentProfileTab: undefined;
+};
+
+// -- Parent: Home Stack --
+// Contains: ParentHomeScreen + NotificationList + Chat screens +
+// detail screens for notification deep-link. Chat opens from the header
+// icon on ParentHomeScreen so the bottom tab bar hides while chatting.
+export type ParentHomeStackParamList = {
+  ParentHome: undefined;
+  NotificationList: undefined;
+  ConversationList: undefined;
+  ChatRoom: ChatRoomParams;
+  AiChat: undefined;
+  ParentReportDetail: { reportId: number };
+  IepPlanDetail: { planId: number; studentName?: string };
+  IepObjectiveDetail: { objectiveId: number; objectiveName?: string };
 };
 
 // -- Parent: Child Stack --
@@ -99,6 +133,7 @@ export type ParentChildStackParamList = {
   ChildIepPlanDetail: { planId: number };
   ChildIepObjectiveDetail: { objectiveId: number };
   ChildTimetable: undefined;
+  SessionDetail: { sessionId: number };
 };
 
 // -- Parent: Timetable Stack --
@@ -107,6 +142,7 @@ export type ParentTimetableStackParamList = {
   ChildIepHistory: undefined;
   ChildIepPlanDetail: { planId: number };
   ChildIepObjectiveDetail: { objectiveId: number };
+  SessionDetail: { sessionId: number };
 };
 
 export type ParentReportStackParamList = {

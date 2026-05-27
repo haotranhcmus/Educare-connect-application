@@ -7,6 +7,8 @@ from odoo.exceptions import ValidationError, UserError
 from ..constants import (
     SESSION_STATUS,
     CANCEL_TYPES,
+    TEACHER_CANCEL_TYPES,
+    PARENT_CANCEL_TYPES,
     LOCATIONS,
     SESSION_TYPES,
     SESSION_PURPOSES,
@@ -119,9 +121,9 @@ class EducareSessionLog(models.Model):
     session_purpose = fields.Selection(
         SESSION_PURPOSES,
         string="Session Purpose",
-        default="intervention",
-        required=True,
+        store=True,
         tracking=True,
+        default="intervention",
     )
 
     # ── Status ────────────────────────────────────────────────────
@@ -195,15 +197,15 @@ class EducareSessionLog(models.Model):
     )
     def _check_schedule_overlap(self):
         for rec in self:
-            if rec.status == "draft":
+            if rec.status in ("draft", "cancelled"):
                 continue
-            # Teacher overlap
+            # Teacher overlap — only check against active (non-cancelled, non-draft) sessions
             teacher_overlap = self.search(
                 [
                     ("id", "!=", rec.id),
                     ("teacher_id", "=", rec.teacher_id.id),
                     ("session_date", "=", rec.session_date),
-                    ("status", "!=", "draft"),
+                    ("status", "in", ["scheduled", "completed", "done"]),
                     ("start_time", "<", rec.end_time),
                     ("end_time", ">", rec.start_time),
                 ],
@@ -228,7 +230,7 @@ class EducareSessionLog(models.Model):
                     ("id", "!=", rec.id),
                     ("student_id", "=", rec.student_id.id),
                     ("session_date", "=", rec.session_date),
-                    ("status", "!=", "draft"),
+                    ("status", "in", ["scheduled", "completed", "done"]),
                     ("start_time", "<", rec.end_time),
                     ("end_time", ">", rec.start_time),
                 ],
@@ -248,11 +250,44 @@ class EducareSessionLog(models.Model):
                     )
                 )
 
-    @api.constrains("session_purpose", "objective_ids")
-    def _check_objective_selection_policy(self):
-        self._validate_objective_selection_policy()
+    @api.constrains("session_date", "student_id")
+    def _check_session_date_within_iep(self):
+        for rec in self:
+            if not rec.student_id or not rec.session_date:
+                continue
+            active_plan = rec.student_id.active_iep_plan_id
+            if not active_plan or not active_plan.end_date:
+                continue
+            if rec.session_date > active_plan.end_date:
+                raise ValidationError(
+                    _(
+                        "Không thể tạo buổi học vào ngày %s vì sau ngày kết thúc IEP (%s).",
+                        rec.session_date,
+                        active_plan.end_date,
+                    )
+                )
 
     # ── Computed ──────────────────────────────────────────────────
+
+    def _stamp_session_purpose(self):
+        """Snapshot session_purpose from current objective statuses.
+        Called at schedule time and again just before marking done.
+        After done, the field is never rewritten — it stays as the review-time snapshot.
+        """
+        for rec in self:
+            objectives = rec.objective_ids.filtered(lambda o: o.status != "discontinued")
+            if not objectives:
+                rec.session_purpose = "intervention"
+                continue
+            statuses = set(objectives.mapped("status"))
+            mastered = {s for s in statuses if s == "mastered"}
+            non_mastered = statuses - mastered
+            if mastered and non_mastered:
+                rec.session_purpose = "mixed"
+            elif mastered:
+                rec.session_purpose = "maintenance"
+            else:
+                rec.session_purpose = "intervention"
 
     @api.depends("start_time", "end_time")
     def _compute_duration(self):
@@ -352,40 +387,32 @@ class EducareSessionLog(models.Model):
 
     @api.depends(
         "result_line_ids",
-        "result_line_ids.total_trials",
-        "result_line_ids.accuracy_pct",
+        "result_line_ids.is_recorded",
+        "result_line_ids.score_pct",
     )
     def _compute_result_summary(self):
         for rec in self:
             results = rec.result_line_ids
             rec.result_count = len(results)
-            reviewed = results.filtered(lambda r: r.total_trials > 0)
+            reviewed = results.filtered(lambda r: r.is_recorded)
             if reviewed:
-                rec.avg_accuracy = sum(reviewed.mapped("accuracy_pct")) / len(reviewed)
+                rec.avg_accuracy = sum(reviewed.mapped("score_pct")) / len(reviewed)
             else:
                 rec.avg_accuracy = 0.0
             rec.all_reviewed = bool(results) and len(reviewed) == len(results)
 
-    @api.depends("student_id", "session_purpose")
+    @api.depends("student_id")
     def _compute_available_objective_ids(self):
         Objective = self.env["educare.iep.objective"]
         for rec in self:
             if not rec.student_id:
                 rec.available_objective_ids = [(6, 0, [])]
                 continue
-
-            purpose = rec.session_purpose or "intervention"
-            domain = [("student_id", "=", rec.student_id.id)]
-
-            if purpose == "intervention":
-                domain.append(("status", "in", ["not_started", "in_progress"]))
-            elif purpose in ("maintenance_probe", "generalization_probe"):
-                domain.append(("status", "=", "mastered"))
-            else:
-                # parent_training: no objective tracking in this session type
-                domain.append(("id", "=", 0))
-
-            rec.available_objective_ids = [(6, 0, Objective.search(domain).ids)]
+            rec.available_objective_ids = [(6, 0, Objective.search([
+                ("student_id", "=", rec.student_id.id),
+                ("status", "not in", ["discontinued"]),
+                ("goal_id.plan_id.status", "=", "active"),
+            ]).ids)]
 
     # ── ORM Overrides ─────────────────────────────────────────────
 
@@ -396,7 +423,6 @@ class EducareSessionLog(models.Model):
                 code = self._next_session_code()
                 vals["name"] = code or "/"
         records = super().create(vals_list)
-        records._validate_objective_selection_policy()
         return records
 
     def _next_session_code(self):
@@ -409,73 +435,13 @@ class EducareSessionLog(models.Model):
                 return code
         return None
 
-    def _validate_objective_selection_policy(self):
-        for rec in self:
-            purpose = rec.session_purpose or "intervention"
-            objectives = rec.objective_ids
-
-            if purpose == "parent_training":
-                if objectives:
-                    raise ValidationError(
-                        _(
-                            "Parent Training sessions do not track IEP objectives. Please remove selected objectives."
-                        )
-                    )
-                continue
-
-            if not objectives:
-                continue
-
-            if purpose == "intervention":
-                invalid = objectives.filtered(
-                    lambda o: o.status not in ("not_started", "in_progress")
-                )
-                if invalid:
-                    raise ValidationError(
-                        _(
-                            "Intervention sessions only allow objectives in Not Started/In Progress. Invalid objectives: %s",
-                            ", ".join(invalid.mapped("name")),
-                        )
-                    )
-            elif purpose in ("maintenance_probe", "generalization_probe"):
-                invalid = objectives.filtered(lambda o: o.status != "mastered")
-                if invalid:
-                    raise ValidationError(
-                        _(
-                            "Maintenance/Generalization sessions only allow Mastered objectives. Invalid objectives: %s",
-                            ", ".join(invalid.mapped("name")),
-                        )
-                    )
-
-    @api.onchange("session_purpose", "student_id")
-    def _onchange_session_purpose(self):
-        self.ensure_one()
-        if not self.objective_ids:
-            return
-
-        purpose = self.session_purpose or "intervention"
-        if purpose == "intervention":
-            allowed = self.objective_ids.filtered(
-                lambda o: o.status in ("not_started", "in_progress")
-            )
-        elif purpose in ("maintenance_probe", "generalization_probe"):
-            allowed = self.objective_ids.filtered(lambda o: o.status == "mastered")
-        else:
-            allowed = self.env["educare.iep.objective"]
-
-        removed = self.objective_ids - allowed
-        if removed:
-            self.objective_ids = [(6, 0, allowed.ids)]
-            return {
-                "warning": {
-                    "title": _("Objective selection adjusted"),
-                    "message": _(
-                        "Some objectives were removed because they do not match the selected session purpose."
-                    ),
-                }
-            }
-
     # ── Helpers ───────────────────────────────────────────────────
+
+    def api_ensure_result_lines(self):
+        """Ensure result lines exist for evaluation. Idempotent — safe to call multiple times.
+        Called by mobile before writing eval data, handles sessions that bypassed action_schedule."""
+        self.ensure_one()
+        self._populate_result_lines()
 
     def _populate_result_lines(self):
         """Create result lines for each selected objective."""
@@ -524,18 +490,20 @@ class EducareSessionLog(models.Model):
         for rec in self:
             if rec.status != "draft":
                 raise ValidationError(_("Only draft sessions can be scheduled."))
-            if rec.session_purpose != "parent_training" and not rec.objective_ids:
+            if not rec.objective_ids:
                 raise ValidationError(
                     _("Please select at least one objective before scheduling.")
                 )
-            rec._validate_objective_selection_policy()
+            rec._stamp_session_purpose()
             rec._populate_result_lines()
             rec.status = "scheduled"
 
     def write(self, vals):
         res = super().write(vals)
-        if {"session_purpose", "objective_ids"}.intersection(vals):
-            self._validate_objective_selection_policy()
+        if "objective_ids" in vals:
+            non_done = self.filtered(lambda r: r.status != "done")
+            if non_done:
+                non_done._stamp_session_purpose()
         return res
 
     def action_complete(self):
@@ -556,7 +524,7 @@ class EducareSessionLog(models.Model):
             )
 
         unevaluated = self.result_line_ids.filtered(
-            lambda r: r.total_trials == 0 and r.objective_id.status != "discontinued"
+            lambda r: not r.is_recorded and r.objective_id.status != "discontinued"
         )
         if unevaluated:
             obj_details = "\n".join(
@@ -571,11 +539,55 @@ class EducareSessionLog(models.Model):
                 % obj_details
             )
 
+        # Snapshot session_purpose at review time before any status changes.
+        self._stamp_session_purpose()
         # Set session done FIRST so that objective computed fields
         # (_compute_accuracy, _compute_consecutive) read the fresh 'done' session data
         self.status = "done"
         # Now sync objective progress and trigger mastery check with correct data
         self._update_objective_progress()
+
+        # Signal mobile if all IEP goals just became achieved
+        return self._build_iep_completion_signal()
+
+    def _build_iep_completion_signal(self):
+        """Check if the student's active IEP just had all goals achieved.
+        Returns a dict the mobile app reads to show the congratulation modal."""
+        student = self.student_id
+        signal = {"iep_just_completed": False, "plan_id": False, "remaining_sessions": []}
+        if not student:
+            return signal
+
+        active_plan = self.env["educare.iep.plan"].search([
+            ("student_id", "=", student.id),
+            ("status", "=", "active"),
+            ("maintenance_mode", "=", False),
+        ], limit=1)
+        if not active_plan:
+            return signal
+
+        active_goals = active_plan.goal_ids.filtered(lambda g: g.status != "discontinued")
+        if not active_goals or not all(g.status == "achieved" for g in active_goals):
+            return signal
+
+        remaining = self.env["educare.session.log"].search([
+            ("student_id", "=", student.id),
+            ("status", "in", ["scheduled", "completed"]),
+            ("session_date", ">=", fields.Date.today()),
+        ])
+        signal["iep_just_completed"] = True
+        signal["plan_id"] = active_plan.id
+        signal["remaining_sessions"] = [
+            {
+                "id": s.id,
+                "session_date": s.session_date.isoformat() if s.session_date else "",
+                "start_time": s.start_time,
+                "end_time": s.end_time,
+                "status": s.status,
+            }
+            for s in remaining
+        ]
+        return signal
 
     def action_reopen_review(self):
         """Reviewed → Completed: allow supervisor/admin to correct evaluation data."""
@@ -601,18 +613,45 @@ class EducareSessionLog(models.Model):
                 )
             rec.status = "draft"
 
-    def action_cancel_session(self, cancel_type="cancelled_center", reason=""):
+    def action_cancel_session(self, cancel_type=None, reason=""):
         """Draft/Scheduled → Cancelled: mark session as cancelled without evaluation.
 
+        Parents (group_parent) may only use PARENT_CANCEL_TYPES and write via sudo
+        because their record rule has perm_write=False.
+        Teachers/admins may use TEACHER_CANCEL_TYPES.
+
         Args:
-            cancel_type: 'cancelled_center' | 'cancelled_family'
+            cancel_type: one of the values in CANCEL_TYPES
             reason: optional text reason stored in cancel_notes
         """
-        valid_cancel_types = ("cancelled_center", "cancelled_family")
-        if cancel_type not in valid_cancel_types:
-            raise ValidationError(
-                _("Invalid cancel type. Must be cancelled_center or cancelled_family.")
-            )
+        # Privileged roles always take precedence — a dev user with both
+        # group_teacher and group_parent should be treated as a teacher.
+        is_privileged = (
+            self.env.user.has_group("educare_security.group_teacher")
+            or self.env.user.has_group("educare_security.group_supervisor")
+            or self.env.user.has_group("educare_security.group_admin")
+        )
+        is_parent = not is_privileged and self.env.user.has_group("educare_security.group_parent")
+
+        parent_type_keys = [t[0] for t in PARENT_CANCEL_TYPES]
+        teacher_type_keys = [t[0] for t in TEACHER_CANCEL_TYPES]
+
+        if is_parent:
+            if cancel_type is None:
+                cancel_type = "cancelled_family"
+            if cancel_type not in parent_type_keys:
+                raise ValidationError(
+                    _("Lý do hủy không hợp lệ. Phụ huynh chỉ có thể chọn một trong các lý do: %s")
+                    % ", ".join(label for _, label in PARENT_CANCEL_TYPES)
+                )
+        else:
+            if cancel_type is None:
+                cancel_type = "cancelled_center"
+            if cancel_type not in teacher_type_keys:
+                raise ValidationError(
+                    _("Lý do hủy không hợp lệ.")
+                )
+
         for rec in self:
             if rec.status not in ("draft", "scheduled"):
                 raise ValidationError(
@@ -624,7 +663,12 @@ class EducareSessionLog(models.Model):
             }
             if reason:
                 write_vals["cancel_notes"] = reason
-            rec.write(write_vals)
+            # Parents have perm_write=False on the record rule; use sudo for
+            # the status+cancel_type write only after all validation has passed.
+            if is_parent:
+                rec.sudo().write(write_vals)
+            else:
+                rec.write(write_vals)
         return True
 
     def action_cancel_center(self):
@@ -652,14 +696,25 @@ class EducareSessionLog(models.Model):
     # ── Post-Review Helpers ───────────────────────────────────────
 
     def _update_objective_progress(self):
-        """Trigger status-sync on related IEP objectives after review.
-        Call this AFTER setting session status to 'done' so computed fields
-        (_compute_accuracy, _compute_consecutive) read the fresh session data.
+        """Set result_phase on results then sync IEP objective progress.
+        Call AFTER session status = 'done' so computed fields read fresh data.
+        result_phase is based on objective.status at review time:
+          in_progress/not_started → intervention
+          mastered                → maintenance
         """
+        # 1. Stamp result_phase on each result line BEFORE computing progress.
+        # skip_done_edit_guard: session.status is already "done" at this point —
+        # bypass the done-edit guard since this is an internal system operation.
+        for result in self.result_line_ids:
+            phase = "maintenance" if result.objective_id.status == "mastered" else "intervention"
+            if result.result_phase != phase:
+                result.with_context(
+                    skip_auto_objective_status_sync=True,
+                    skip_done_edit_guard=True,
+                ).write({"result_phase": phase})
+
         objectives = self.mapped("result_line_ids.objective_id")
         if objectives:
-            # Flush session status write to DB, then force fresh recompute of
-            # session-derived metrics before the mastery check runs.
             self.flush_recordset(["status"])
             objectives._compute_accuracy()
             objectives._compute_consecutive()

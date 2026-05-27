@@ -71,9 +71,6 @@ function StudentDetailContent({ route, navigation }: Props) {
         >
           {student.student_code}
         </Text>
-        <View style={[styles.headerRow, { marginTop: 6 }]}>
-          <StatusBadge status={student.status} />
-        </View>
       </View>
 
       {/* Top Tabs */}

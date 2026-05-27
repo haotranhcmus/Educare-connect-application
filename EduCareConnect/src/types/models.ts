@@ -19,9 +19,10 @@ import type {
   EnergyLevel,
   EngagementLevel,
   OverallPerformance,
+  MeasurementType,
   PromptLevel,
-  ResultType,
   Phase,
+  ResultPhase,
   TeachingMethod,
   ReportStatus,
   UserRole,
@@ -126,6 +127,8 @@ export interface IepPlan {
   review_frequency: ReviewFrequency;
   parent_consent: boolean;
   supervisor_approved: boolean;
+  maintenance_mode: boolean;
+  closing_reason?: string;
 
   student_id: OdooRef;
   assigned_teacher_id: OdooRef;
@@ -179,7 +182,11 @@ export interface IepObjectiveListItem {
   last_session_date?: string;
   last_session_accuracy?: number;
   mastery_date?: string;
-  measurement_method?: string;
+  locked_accuracy_pct?: number;
+  measurement_type: MeasurementType;
+  target_duration_seconds?: number;
+  baseline_count?: number;
+  target_count?: number;
   implementation_steps?: string;
   materials_needed?: string;
   smart_specific?: string;
@@ -214,11 +221,20 @@ export interface IepObjectiveDetail {
   last_session_date?: string;
   last_session_accuracy?: number;
   mastery_date?: string;
+  locked_accuracy_pct?: number;
 
-  measurement_method?: string;
+  measurement_type: MeasurementType;
+  target_duration_seconds?: number;
+  baseline_count?: number;
+  target_count?: number;
   materials_needed?: string;
   implementation_steps?: string;
+  baseline_description?: string;
   difficulty_id?: OdooRef | false;
+  smart_specific?: string;
+  smart_measurable?: string;
+  smart_analysis?: string;
+  smart_timebound?: string;
 }
 
 // ===== Session =====
@@ -305,24 +321,39 @@ export interface SessionLogDetail {
 
 // ===== Session Result =====
 
+export interface SessionResultTrial {
+  id: number;
+  sequence: number;
+  prompt_level: PromptLevel;
+  weight: number;
+}
+
 export interface SessionResult {
   id: number;
   session_id: OdooRef;
   objective_id: OdooRef;
   session_date?: string;
 
+  measurement_type: MeasurementType;
+  score_pct: number;
+  is_recorded: boolean;
+
+  // accuracy
   correct_trials: number;
   total_trials: number;
-  accuracy_pct: number;
-  baseline_accuracy_pct?: number;
-  target_accuracy_pct?: number;
+  // prompt_level
+  trial_ids?: number[];
+  /** Resolved per-trial details (fetched separately, sorted by sequence). */
+  trials?: SessionResultTrial[];
+  // duration
+  actual_duration_seconds?: number;
+  // frequency
+  actual_count?: number;
 
-  result_type: ResultType;
-  prompt_level_used: PromptLevel;
   phase: Phase;
+  result_phase: ResultPhase;
   teaching_method?: TeachingMethod;
 
-  prompt_fading_noted: boolean;
   mastery_achieved: boolean;
   notes?: string;
 }

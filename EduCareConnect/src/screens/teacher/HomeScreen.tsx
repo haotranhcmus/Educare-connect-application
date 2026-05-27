@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Image,
   type NativeSyntheticEvent,
   type NativeScrollEvent,
 } from "react-native";
@@ -26,6 +27,9 @@ import { AvatarLabel, ProgressRingAvatar } from "@components/common";
 import StudyJson from "@assets/placeholder/json/study.json";
 import { TodaySessionCard } from "@components/session/TodaySessionCard";
 import { StatusBadge } from "@components/common/StatusBadge";
+import { NotificationBell } from "@components/notification/NotificationBell";
+import { ChatBell } from "@components/chat/ChatBell";
+import { useUnreadCount } from "@hooks/useNotification";
 import { formatFloatTime } from "@utils/formatters";
 import {
   SESSION_PURPOSE_LABELS,
@@ -36,10 +40,17 @@ import LottieView from "lottie-react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TODAY_CARD_H = 162;
-const CARD_W = SCREEN_WIDTH - 48;   // visual card width
-const CARD_SPACING = 8;              // gap between cards
-const CARD_PEEK = 24;               // = (SCREEN_WIDTH - CARD_W) / 2 — content padding for centering
+const CARD_W = SCREEN_WIDTH - 48; // visual card width
+const CARD_SPACING = 8; // gap between cards
+const CARD_PEEK = 24; // = (SCREEN_WIDTH - CARD_W) / 2 — content padding for centering
 const SNAP_INTERVAL = CARD_W + CARD_SPACING; // FlatList snap interval
+
+// ── Homescreen stat icons ────────────────────────────────────
+const ICON_TODAY = require("../../../assets/homescreen_icon/7-days.png");
+const ICON_WEEK = require("../../../assets/homescreen_icon/week.png");
+const ICON_MONTH = require("../../../assets/homescreen_icon/month.png");
+const ICON_REPORT = require("../../../assets/homescreen_icon/seo-report.png");
+const ICON_SUN = require("../../../assets/homescreen_icon/sun.png");
 
 export function HomeScreen({ navigation }: any) {
   const theme = useTheme();
@@ -48,6 +59,7 @@ export function HomeScreen({ navigation }: any) {
   const uid = useAuthStore((s) => s.uid);
   const queryClient = useQueryClient();
   const { data: todaySessions = [] } = useTodaySessions();
+  const { data: unreadCount = 0 } = useUnreadCount();
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselIndexRef = useRef(0);
   const flatListRef = useRef<FlatList>(null);
@@ -107,10 +119,7 @@ export function HomeScreen({ navigation }: any) {
   const handleMomentumScrollEnd = useCallback(() => {
     // Resume auto-scroll 5s after user stops interacting
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    pauseTimerRef.current = setTimeout(
-      () => setAutoScrollPaused(false),
-      5000,
-    );
+    pauseTimerRef.current = setTimeout(() => setAutoScrollPaused(false), 5000);
   }, []);
 
   // Invalidate today's sessions every time HomeScreen comes into focus
@@ -215,8 +224,19 @@ export function HomeScreen({ navigation }: any) {
               {userName}
             </Text>
           </View>
-          <View style={styles.datePill}>
-            <Text style={styles.dateText}>{dateStr}</Text>
+          <View style={styles.headerActions}>
+            <ChatBell
+              onPress={() => navigation.navigate("ConversationList")}
+              color="#fff"
+            />
+            <NotificationBell
+              unreadCount={unreadCount}
+              onPress={() => navigation.navigate("NotificationList")}
+              color="#fff"
+            />
+            {/* <View style={styles.datePill}>
+              <Text style={styles.dateText}>{dateStr}</Text>
+            </View> */}
           </View>
         </View>
       </LinearGradient>
@@ -224,28 +244,28 @@ export function HomeScreen({ navigation }: any) {
       {/* ── Quick Stats Row — always 4 equal pills ─────────── */}
       <View style={styles.statsRow}>
         <StatPill
-          icon="calendar-today"
+          icon={ICON_TODAY}
           label="Hôm nay"
           value={String(todaySessions.length)}
           color="#1565C0"
           bg="#E3F2FD"
         />
         <StatPill
-          icon="calendar-week"
+          icon={ICON_WEEK}
           label="Tuần này"
           value={String(weekCount)}
           color="#2E7D32"
           bg="#E8F5E9"
         />
         <StatPill
-          icon="calendar-month"
+          icon={ICON_MONTH}
           label="Tháng này"
           value={String(monthCount)}
           color="#6A1B9A"
           bg="#F3E5F5"
         />
         <StatPill
-          icon="file-document-alert"
+          icon={ICON_REPORT}
           label="Chưa báo cáo"
           value={String(pendingCount)}
           color={pendingCount > 0 ? "#E65100" : "#9E9E9E"}
@@ -451,15 +471,17 @@ export function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         ) : !ongoingSession ? (
           <View style={styles.motivationalCard}>
-            <MaterialCommunityIcons
-              name="star-circle-outline"
-              size={32}
-              color={theme.colors.primary}
-            />
+            <View style={styles.motivationalIconWrap}>
+              <Image
+                source={ICON_SUN}
+                style={styles.motivationalIcon}
+                resizeMode="contain"
+              />
+            </View>
             <View style={{ marginLeft: 12, flex: 1 }}>
               <Text
                 variant="titleSmall"
-                style={{ fontWeight: "700", color: theme.colors.onSurface }}
+                style={{ fontWeight: "700", color: "#5D4037" }}
               >
                 {weekCount > 0
                   ? `${weekCount} buổi đã dạy tuần này 🎉`
@@ -467,7 +489,7 @@ export function HomeScreen({ navigation }: any) {
               </Text>
               <Text
                 variant="bodySmall"
-                style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}
+                style={{ color: "#795548", marginTop: 2 }}
               >
                 {monthCount > 0
                   ? `Tổng ${monthCount} buổi trong tháng này`
@@ -508,7 +530,10 @@ export function HomeScreen({ navigation }: any) {
                 <View
                   style={[
                     styles.carouselItem,
-                    { marginRight: index < todaySessions.length - 1 ? CARD_SPACING : 0 },
+                    {
+                      marginRight:
+                        index < todaySessions.length - 1 ? CARD_SPACING : 0,
+                    },
                   ]}
                 >
                   <TodaySessionCard
@@ -622,7 +647,7 @@ export function HomeScreen({ navigation }: any) {
                     </Text>
                   )}
                 </View>
-                <StatusBadge status={s.status} size="small" />
+                {/* <StatusBadge status={s.status} size="small" /> */}
               </View>
             </TouchableOpacity>
           ))}
@@ -780,7 +805,7 @@ function StatPill({
   urgent,
   onPress,
 }: {
-  icon: string;
+  icon: ReturnType<typeof require>;
   label: string;
   value: string;
   color: string;
@@ -790,10 +815,12 @@ function StatPill({
 }) {
   const inner = (
     <View style={[styles.statPill, { backgroundColor: bg }]}>
-      <MaterialCommunityIcons name={icon as any} size={16} color={color} />
+      {urgent && <View style={styles.urgentDot} />}
+      <View style={[styles.statIconWrap, { backgroundColor: color + "20" }]}>
+        <Image source={icon} style={styles.statIconImg} resizeMode="contain" />
+      </View>
       <Text style={[styles.statValue, { color }]}>{value}</Text>
       <Text style={[styles.statLabel, { color }]}>{label}</Text>
-      {urgent && <View style={styles.urgentDot} />}
     </View>
   );
 
@@ -821,6 +848,11 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
   },
   headerRow: { flexDirection: "row", alignItems: "center" },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   greetLabel: { color: "rgba(255,255,255,0.80)", fontSize: 11 },
   greetName: { color: "#fff", fontSize: 16, fontWeight: "700" },
   datePill: {
@@ -840,13 +872,24 @@ const styles = StyleSheet.create({
   statPillWrapper: { flex: 1 },
   statPill: {
     borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
     alignItems: "center",
     gap: 2,
     elevation: 2,
   },
-  statValue: { fontSize: 20, fontWeight: "800", lineHeight: 24 },
+  statIconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statIconImg: {
+    width: 18,
+    height: 18,
+  },
+  statValue: { fontSize: 17, fontWeight: "800", lineHeight: 21 },
   statLabel: { fontSize: 9, fontWeight: "600", textAlign: "center" },
   urgentDot: {
     position: "absolute",
@@ -856,6 +899,8 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: "#E65100",
+    borderWidth: 1.5,
+    borderColor: "#fff",
   },
   // Cards
   upcomingCard: {
@@ -935,12 +980,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     padding: 14,
     borderRadius: 14,
-    backgroundColor: "#E8F5E9",
-    // shadowColor: "#000",
-    // shadowOpacity: 0.05,
-    // shadowRadius: 4,
-    // shadowOffset: { width: 0, height: 2 },
+    backgroundColor: "#FFFDE7",
     elevation: 1,
+  },
+  motivationalIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#FFF9C4",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  motivationalIcon: {
+    width: 28,
+    height: 28,
   },
   // Content
   section: { paddingHorizontal: 16, marginBottom: 16 },

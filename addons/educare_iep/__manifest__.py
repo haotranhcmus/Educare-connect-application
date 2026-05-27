@@ -42,10 +42,10 @@
         'views/iep_actions.xml',
         'views/iep_menu.xml',
         'data/iep_template_seed_data.xml',
+        'data/demo_seed.xml',
     ],
     'demo': [
-        'data/iep_demo_data.xml',
-        'data/iep_demo_data_patch.xml',
+        'data/demo_seed.xml',
     ],
     'installable': True,
     'license': 'LGPL-3',

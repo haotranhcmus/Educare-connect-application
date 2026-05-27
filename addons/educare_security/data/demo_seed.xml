@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <function model="res.users" name="_seed_demo_avatars" />
+        <function model="res.users" name="_reset_demo_passwords" />
+    </data>
+</odoo>

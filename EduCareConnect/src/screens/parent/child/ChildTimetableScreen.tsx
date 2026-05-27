@@ -1,13 +1,18 @@
 import React, { useMemo, useState } from "react";
-import { View, FlatList, StyleSheet, RefreshControl } from "react-native";
+import { View, StyleSheet, RefreshControl, TouchableOpacity } from "react-native";
 import { Text, useTheme, type MD3Theme } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Animated from "react-native-reanimated";
 import dayjs from "dayjs";
 import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import { EmptyState } from "@components/common/EmptyState";
-// import SessionPlaceholder from "@assets/placeholder/svg/session-placeholder.svg";
 import SessionPlaceholderJson from "@assets/placeholder/json/session-placeholder.json";
 import { MiniCalendar } from "@components/common/MiniCalendar";
+import {
+  StickyParallaxChildHeader,
+  useStickyHeaderHeights,
+} from "@components/parent/StickyParallaxChildHeader";
 import { useStudentTimetable } from "@hooks/useParent";
 import { useParentStore } from "@store/parentStore";
 import { formatFloatTime, formatWeekdayDayMonth } from "@utils/formatters";
@@ -62,13 +67,10 @@ const SESSION_TYPE_LABELS: Record<string, string> = {
   consultation: "Tư vấn",
 };
 
-// ("individual", "Cá nhân (1:1)"),
-// ("small_group", "Nhóm nhỏ (2-4 học viên)"),
-// ("consultation", "Tư vấn"),
-
 // ── SessionCard ────────────────────────────────────────────────────────────────
 
 function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
+  const navigation = useNavigation<any>();
   const cfg = STATUS_CONFIG[session.status] ?? {
     label: session.status,
     bg: "#F5F5F5",
@@ -87,7 +89,9 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
     : theme.colors.primary;
 
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.75}
+      onPress={() => navigation.navigate("SessionDetail", { sessionId: session.id })}
       style={[
         styles.sessionCard,
         {
@@ -96,7 +100,6 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
         },
       ]}
     >
-      {/* Time + status */}
       <View style={styles.timeRow}>
         <Text
           variant="titleSmall"
@@ -112,7 +115,6 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
         </View>
       </View>
 
-      {/* Teacher */}
       {teacherName && (
         <View style={styles.teacherRow}>
           <View style={[styles.avatarCircle, { backgroundColor: avatarColor }]}>
@@ -146,7 +148,7 @@ function SessionCard({ session, theme }: { session: any; theme: MD3Theme }) {
           ) : null}
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -222,6 +224,8 @@ export function ChildTimetableScreen() {
   const { selectedStudentId } = useParentStore();
   const studentId = selectedStudentId ?? 0;
 
+  const { collapsedHeight } = useStickyHeaderHeights();
+
   const [calMonth, setCalMonth] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string>(
     dayjs().format("YYYY-MM-DD"),
@@ -262,11 +266,8 @@ export function ChildTimetableScreen() {
     return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   }, [visibleSessions, selectedDate]);
 
-  if (isLoading) return <LoadingOverlay visible />;
-
-  return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {/* Month calendar */}
+  const calendarHeader = (
+    <View style={styles.calendarWrap}>
       <MiniCalendar
         month={calMonth}
         sessionDates={sessionDates}
@@ -275,20 +276,43 @@ export function ChildTimetableScreen() {
         onPrevMonth={() => setCalMonth((m) => m.subtract(1, "month"))}
         onNextMonth={() => setCalMonth((m) => m.add(1, "month"))}
       />
+    </View>
+  );
 
-      {/* Session list */}
+  if (isLoading) return <LoadingOverlay visible />;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <StickyParallaxChildHeader />
+
       {grouped.length === 0 ? (
-        <EmptyState
-          lottie={SessionPlaceholderJson}
-          title="Không có buổi học nào"
-          description={
-            selectedDate
-              ? `Không có buổi học nào vào ngày ${dayjs(selectedDate).format("DD/MM/YYYY")}`
-              : "Không có buổi học nào trong tháng này"
+        <Animated.ScrollView
+          contentContainerStyle={{
+            paddingTop: collapsedHeight,
+            paddingHorizontal: 16,
+            flexGrow: 1,
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              progressViewOffset={collapsedHeight}
+            />
           }
-        />
+        >
+          {calendarHeader}
+          <EmptyState
+            lottie={SessionPlaceholderJson}
+            title="Không có buổi học nào"
+            description={
+              selectedDate
+                ? `Không có buổi học nào vào ngày ${dayjs(selectedDate).format("DD/MM/YYYY")}`
+                : "Không có buổi học nào trong tháng này"
+            }
+          />
+        </Animated.ScrollView>
       ) : (
-        <FlatList
+        <Animated.FlatList
           data={grouped}
           keyExtractor={([dateStr]) => dateStr}
           renderItem={({ item: [dateStr, items] }) => (
@@ -299,9 +323,18 @@ export function ChildTimetableScreen() {
               theme={theme}
             />
           )}
-          contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+          ListHeaderComponent={calendarHeader}
+          contentContainerStyle={{
+            paddingTop: collapsedHeight,
+            paddingHorizontal: 16,
+            paddingBottom: 40,
+          }}
           refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              progressViewOffset={collapsedHeight}
+            />
           }
         />
       )}
@@ -312,6 +345,10 @@ export function ChildTimetableScreen() {
 // ── Styles ─────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  calendarWrap: {
+    marginHorizontal: -16,
+    marginBottom: 8,
+  },
   daySection: { marginBottom: 8 },
   dayHeader: {
     flexDirection: "row",

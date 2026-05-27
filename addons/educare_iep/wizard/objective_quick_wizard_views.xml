@@ -20,10 +20,23 @@
                                 <field name="description"
                                     placeholder="Detailed description of the short-term skill to achieve..." />
                             </group>
+                            <group>
+                                <field name="measurement_type" />
+                            </group>
                             <group col="2">
-                                <group string="Accuracy">
+                                <group string="Accuracy"
+                                    invisible="measurement_type not in ('accuracy','prompt_level')">
                                     <field name="baseline_accuracy_pct" />
                                     <field name="target_accuracy_pct" />
+                                </group>
+                                <group string="Thời gian"
+                                    invisible="measurement_type != 'duration'">
+                                    <field name="target_duration_seconds" />
+                                </group>
+                                <group string="Tần suất"
+                                    invisible="measurement_type not in ('frequency_increase','frequency_decrease')">
+                                    <field name="baseline_count" />
+                                    <field name="target_count" />
                                 </group>
                             </group>
                             <group string="Mastery Criteria">

@@ -25,6 +25,21 @@ TREND_VALUES = [
     ("insufficient_data", "Chưa đủ dữ liệu"),
 ]
 
+# Data collection / measurement method for an objective.
+# Each type drives different config fields and a different scoring formula.
+MEASUREMENT_TYPES = [
+    ("accuracy", "Độ chính xác (đúng / tổng số lần)"),
+    ("prompt_level", "Mức độ hỗ trợ (theo từng lần thử)"),
+    ("duration", "Thời gian (giây)"),
+    ("frequency_increase", "Tần suất - Tăng hành vi tích cực"),
+    ("frequency_decrease", "Tần suất - Giảm hành vi tiêu cực"),
+]
+
+# Types where baseline/target are expressed as a normalized score:
+# baseline is forced to 0 and target to 100 so the unified mastery rule
+# (score_pct >= target_accuracy_pct) keeps working.
+NORMALIZED_THRESHOLD_TYPES = ("duration", "frequency_increase", "frequency_decrease")
+
 
 class EducareIepObjective(models.Model):
     _name = "educare.iep.objective"
@@ -93,6 +108,12 @@ class EducareIepObjective(models.Model):
         index=True,
     )
     mastery_date = fields.Date(string="Mastery Date", tracking=True)
+    locked_accuracy_pct = fields.Float(
+        string="Độ chính xác lúc thành thạo (%)",
+        digits=(5, 2),
+        default=0.0,
+        help="Đóng băng tại thời điểm đạt mastery. Dùng làm giá trị hiển thị cố định.",
+    )
     can_delete = fields.Boolean(
         string="Can Delete",
         compute="_compute_can_delete",
@@ -100,6 +121,13 @@ class EducareIepObjective(models.Model):
     )
 
     # Tab 2: Success Criteria
+    measurement_type = fields.Selection(
+        selection=MEASUREMENT_TYPES,
+        string="Cách thu thập & đánh giá",
+        required=True,
+        default="accuracy",
+        help="Phương pháp thu thập dữ liệu. Quyết định cấu hình cần nhập và công thức tính điểm.",
+    )
     baseline_accuracy_pct = fields.Float(
         string="Độ chính xác ban đầu (%)",
         digits=(5, 2),
@@ -112,6 +140,23 @@ class EducareIepObjective(models.Model):
         default=80.0,
         required=True,
     )
+    # --- Duration config (measurement_type = 'duration') ---
+    target_duration_seconds = fields.Integer(
+        string="Thời gian mục tiêu (giây)",
+        default=0,
+        help="Số giây cần đạt/duy trì. Chỉ dùng khi cách thu thập là Thời gian.",
+    )
+    # --- Frequency config (measurement_type = 'frequency_increase'/'frequency_decrease') ---
+    baseline_count = fields.Integer(
+        string="Số lần cơ sở",
+        default=0,
+        help="Mức cơ sở số lần hành vi/buổi. Chỉ dùng khi cách thu thập là Tần suất.",
+    )
+    target_count = fields.Integer(
+        string="Số lần mục tiêu",
+        default=0,
+        help="Số lần mục tiêu/buổi. Tăng: cần đạt; Giảm: ngưỡng tối đa cho phép.",
+    )
     consecutive_sessions_required = fields.Integer(
         string="Consecutive Sessions Required",
         default=3,
@@ -122,11 +167,6 @@ class EducareIepObjective(models.Model):
         string="Consecutive Sessions Achieved",
         compute="_compute_consecutive",
         store=True,
-    )
-    measurement_method = fields.Text(
-        string="Data Collection Method",
-        default="Direct observation during session.",
-        required=True,
     )
     weight = fields.Float(
         string="Weight",
@@ -255,22 +295,10 @@ class EducareIepObjective(models.Model):
     # )
 
     # SQL constraints
+    # Baseline/target validation is enforced in Python (_check_measurement_config)
+    # because the valid range depends on measurement_type — e.g. frequency_decrease
+    # legitimately has baseline_count > target_count.
     _sql_constraints = [
-        (
-            "target_accuracy_check",
-            "CHECK(target_accuracy_pct >= 0 AND target_accuracy_pct <= 100)",
-            "Target accuracy must be between 0 and 100.",
-        ),
-        (
-            "baseline_accuracy_check",
-            "CHECK(baseline_accuracy_pct >= 0 AND baseline_accuracy_pct <= 100)",
-            "Baseline accuracy must be between 0 and 100.",
-        ),
-        (
-            "baseline_lt_target_check",
-            "CHECK(baseline_accuracy_pct < target_accuracy_pct)",
-            "Baseline accuracy must be less than target accuracy.",
-        ),
         (
             "consecutive_sessions_check",
             "CHECK(consecutive_sessions_required >= 1)",
@@ -298,6 +326,57 @@ class EducareIepObjective(models.Model):
         """)
 
     # Python constraints
+    @api.constrains(
+        "measurement_type",
+        "baseline_accuracy_pct",
+        "target_accuracy_pct",
+        "target_duration_seconds",
+        "baseline_count",
+        "target_count",
+    )
+    def _check_measurement_config(self):
+        """Validate config fields per measurement_type.
+
+        accuracy / prompt_level → 0 <= baseline < target <= 100 (percent)
+        duration               → target_duration_seconds > 0
+        frequency_increase     → 0 <= baseline_count < target_count
+        frequency_decrease     → 0 <= target_count < baseline_count
+        """
+        for obj in self:
+            mtype = obj.measurement_type
+            if mtype in ("accuracy", "prompt_level"):
+                if not (0 <= obj.baseline_accuracy_pct <= 100):
+                    raise ValidationError(
+                        _("Độ chính xác ban đầu phải trong khoảng 0–100%.")
+                    )
+                if not (0 <= obj.target_accuracy_pct <= 100):
+                    raise ValidationError(
+                        _("Độ chính xác mục tiêu phải trong khoảng 0–100%.")
+                    )
+                if obj.baseline_accuracy_pct >= obj.target_accuracy_pct:
+                    raise ValidationError(
+                        _("Độ chính xác ban đầu phải nhỏ hơn độ chính xác mục tiêu.")
+                    )
+            elif mtype == "duration":
+                if obj.target_duration_seconds <= 0:
+                    raise ValidationError(
+                        _("Thời gian mục tiêu (giây) phải lớn hơn 0.")
+                    )
+            elif mtype == "frequency_increase":
+                if obj.baseline_count < 0 or obj.target_count < 0:
+                    raise ValidationError(_("Số lần không được âm."))
+                if obj.target_count <= obj.baseline_count:
+                    raise ValidationError(
+                        _("Tần suất tăng: số lần mục tiêu phải lớn hơn số lần cơ sở.")
+                    )
+            elif mtype == "frequency_decrease":
+                if obj.baseline_count < 0 or obj.target_count < 0:
+                    raise ValidationError(_("Số lần không được âm."))
+                if obj.baseline_count <= obj.target_count:
+                    raise ValidationError(
+                        _("Tần suất giảm: số lần cơ sở phải lớn hơn số lần mục tiêu.")
+                    )
+
     @api.constrains("status", "mastery_date")
     def _check_mastery_date(self):
         for obj in self:
@@ -347,6 +426,7 @@ class EducareIepObjective(models.Model):
             ):
                 vals["status"] = "mastered"
                 vals["mastery_date"] = objective.mastery_date or today
+                vals["locked_accuracy_pct"] = objective.current_accuracy_pct
 
             if vals:
                 objective.with_context(skip_auto_objective_status_sync=True).write(vals)
@@ -363,6 +443,16 @@ class EducareIepObjective(models.Model):
         objectives._auto_sync_status_from_rules()
 
     # ORM overrides
+    @staticmethod
+    def _normalize_threshold_vals(vals):
+        """Force baseline=0 / target=100 for duration & frequency types so the
+        unified mastery rule (score_pct >= target_accuracy_pct) holds regardless
+        of entry path (wizard, demo, import)."""
+        if vals.get("measurement_type") in NORMALIZED_THRESHOLD_TYPES:
+            vals["baseline_accuracy_pct"] = 0.0
+            vals["target_accuracy_pct"] = 100.0
+        return vals
+
     def _next_objective_code(self):
         """Generate next objective code with collision detection and UUID fallback."""
         sequence_model = self.env["ir.sequence"].sudo()
@@ -391,6 +481,7 @@ class EducareIepObjective(models.Model):
         for vals in vals_list:
             if not vals.get("objective_code") or vals["objective_code"] == "/":
                 vals["objective_code"] = self._next_objective_code()
+            self._normalize_threshold_vals(vals)
         objectives = super().create(vals_list)
         objectives._auto_sync_status_from_rules()
         objectives.mapped("goal_id")._auto_update_status_from_workflow()
@@ -398,6 +489,8 @@ class EducareIepObjective(models.Model):
 
     def write(self, vals):
         vals = dict(vals)
+        if "measurement_type" in vals:
+            self._normalize_threshold_vals(vals)
         if "objective_code" in vals and vals["objective_code"] == "/":
             vals["objective_code"] = self._next_objective_code()
         if "objective_code" not in vals:
@@ -623,6 +716,17 @@ class EducareIepObjective(models.Model):
     def _onchange_status(self):
         if self.status == "mastered" and not self.mastery_date:
             self.mastery_date = fields.Date.today()
+
+    @api.onchange("measurement_type")
+    def _onchange_measurement_type(self):
+        """For duration/frequency, baseline/target are normalized thresholds
+        (0 and 100). Reset accuracy defaults when switching back."""
+        if self.measurement_type in NORMALIZED_THRESHOLD_TYPES:
+            self.baseline_accuracy_pct = 0.0
+            self.target_accuracy_pct = 100.0
+        else:
+            if not self.target_accuracy_pct or self.target_accuracy_pct == 100.0:
+                self.target_accuracy_pct = 80.0
 
     def action_start(self):
         """Start objective: move from Not Started to In Progress."""

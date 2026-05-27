@@ -54,9 +54,16 @@ export const STATUS_COLORS: Record<string, StatusConfig> = {
   // ─── IEP Plan statuses ───────────────────────────────────────────────────────
   active: {
     label: "Đang hoạt động",
-    color: "#2E7D32", // Xanh lá — active
-    backgroundColor: "#C8E6C9",
+    color: "#1565C0", // Xanh dương — đang hoạt động
+    backgroundColor: "#BBDEFB",
     icon: "play-circle",
+  },
+  // Use "iep_completed" key to avoid collision with session "completed" status
+  iep_completed: {
+    label: "Hoàn thành",
+    color: "#2E7D32", // Xanh lá — đã hoàn thành kỳ IEP
+    backgroundColor: "#C8E6C9",
+    icon: "trophy-outline",
   },
   ready_review: {
     label: "Chờ duyệt",

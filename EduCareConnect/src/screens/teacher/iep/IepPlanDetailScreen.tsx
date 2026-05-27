@@ -8,7 +8,17 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { toast } from "@utils/toast";
-import { Text, useTheme, IconButton } from "react-native-paper";
+import {
+  Text,
+  useTheme,
+  IconButton,
+  Button,
+  Surface,
+  Modal,
+  Portal,
+} from "react-native-paper";
+import { useQueryClient } from "@tanstack/react-query";
+import { callKw } from "@api/odooClient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -25,7 +35,9 @@ import {
   IepPlanDetailSkeleton,
   IepPlanGoalsSkeleton,
 } from "@screens/teacher/iep/IepPlanDetailSkeleton";
-import { ODOO_BASE_URL, client } from "@api/odooClient";
+import { ODOO_BASE_URL, client, searchRead } from "@api/odooClient";
+import { queryKeys } from "@api/queryKeys";
+import { useAuthStore } from "@store/authStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import IepPlaceholder from "@assets/placeholder/svg/iep-placeholder.svg";
 import { formatDate } from "@utils/formatters";
@@ -55,6 +67,15 @@ const G1 = "#2E7D32";
 const G2 = "#43A047";
 const G_LIGHT = "#E8F5E9";
 const G_TEXT = "#1B5E20";
+
+const PLAN_GRADIENT: Record<string, [string, string]> = {
+  draft: ["#616161", "#9E9E9E"],
+  ready_review: ["#F57F17", "#FFA000"],
+  supervisor_approved: ["#1565C0", "#1E88E5"],
+  active: ["#1565C0", "#1E88E5"],
+  completed: ["#2E7D32", "#43A047"],
+  closed: ["#424242", "#616161"],
+};
 
 interface Objective {
   name: string;
@@ -393,11 +414,70 @@ function IepPlanDetailContent({ route, navigation }: any) {
       objectiveRouteName?: string;
     };
   const theme = useTheme();
+  const role = useAuthStore((s) => s.role);
+  const isTeacher = role === "teacher";
   const [expandedGoalId, setExpandedGoalId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
 
+  const queryClient = useQueryClient();
   const { data: plan, refetch } = useIepPlanDetailSuspense(planId);
   const { data: goals = [], isLoading: goalsLoading } = useGoalsForPlan(planId);
+  const planGrad = PLAN_GRADIENT[plan?.status ?? "active"] ?? PLAN_GRADIENT.active;
+  const [endingIep, setEndingIep] = useState(false);
+  const [endIepModalVisible, setEndIepModalVisible] = useState(false);
+  const [scheduledSessions, setScheduledSessions] = useState<Array<{
+    id: number; name: string; session_date: string; start_time: number; end_time: number; status: string;
+  }>>([]);
+  const [loadingScheduled, setLoadingScheduled] = useState(false);
+
+  const openEndIepModal = useCallback(async () => {
+    setLoadingScheduled(true);
+    setEndIepModalVisible(true);
+    try {
+      const studentId = Array.isArray(plan?.student_id)
+        ? plan.student_id[0]
+        : null;
+      if (studentId) {
+        const sessions = await searchRead<{
+            id: number;
+            name: string;
+            session_date: string;
+            start_time: number;
+            end_time: number;
+            status: string;
+          }>(
+            "educare.session.log",
+            [
+              ["student_id", "=", studentId],
+              ["status", "in", ["scheduled", "completed"]],
+            ],
+            ["id", "name", "session_date", "start_time", "end_time", "status"],
+            { limit: 20 },
+          );
+        setScheduledSessions(sessions as any[]);
+      }
+    } catch {
+      setScheduledSessions([]);
+    } finally {
+      setLoadingScheduled(false);
+    }
+  }, [plan]);
+
+  const handleEndIep = useCallback(async () => {
+    setEndingIep(true);
+    try {
+      await callKw("educare.iep.plan", "action_end_iep_period", [[planId]]);
+      setEndIepModalVisible(false);
+      toast.success("Kỳ IEP đã kết thúc");
+      queryClient.invalidateQueries({ queryKey: queryKeys.iepPlans.all });
+      queryClient.invalidateQueries({ queryKey: ["students", "iep-plans"] });
+      refetch();
+    } catch (e: any) {
+      toast.error("Không thể kết thúc kỳ IEP", e?.message);
+    } finally {
+      setEndingIep(false);
+    }
+  }, [planId, refetch, queryClient]);
 
   const handleDownload = useCallback(async () => {
     if (downloading) return;
@@ -494,9 +574,9 @@ function IepPlanDetailContent({ route, navigation }: any) {
           { backgroundColor: theme.colors.surface },
         ]}
       >
-        {/* Gradient banner */}
+        {/* Gradient banner — color tracks plan.status */}
         <LinearGradient
-          colors={[G1, G2]}
+          colors={planGrad}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={screenStyles.planGradHeader}
@@ -513,7 +593,9 @@ function IepPlanDetailContent({ route, navigation }: any) {
               {plan.iep_period}
             </Text>
           </View>
-          <StatusBadge status={plan.status} />
+          <StatusBadge
+            status={plan.status === "completed" ? "iep_completed" : plan.status}
+          />
         </LinearGradient>
 
         {/* Meta rows */}
@@ -523,7 +605,7 @@ function IepPlanDetailContent({ route, navigation }: any) {
               <MaterialCommunityIcons
                 name="calendar-range"
                 size={15}
-                color={G1}
+                color={planGrad[0]}
               />
               <Text
                 variant="bodySmall"
@@ -541,7 +623,7 @@ function IepPlanDetailContent({ route, navigation }: any) {
               <MaterialCommunityIcons
                 name="account-tie-outline"
                 size={15}
-                color={G1}
+                color={planGrad[0]}
               />
               <Text
                 variant="bodySmall"
@@ -559,7 +641,7 @@ function IepPlanDetailContent({ route, navigation }: any) {
               <MaterialCommunityIcons
                 name="account-supervisor-outline"
                 size={15}
-                color={G1}
+                color={planGrad[0]}
               />
               <Text
                 variant="bodySmall"
@@ -586,6 +668,131 @@ function IepPlanDetailContent({ route, navigation }: any) {
           </View>
         </View>
       </View>
+
+      {/* ── Maintenance mode banner ── */}
+      {plan.status === "active" && plan.maintenance_mode && (
+        <Surface style={screenStyles.maintenanceBanner} elevation={0}>
+          <MaterialCommunityIcons
+            name="check-decagram"
+            size={20}
+            color="#2E7D32"
+          />
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <Text
+              variant="labelLarge"
+              style={{
+                fontWeight: "700",
+                color: "#1B5E20",
+                textAlign: "center",
+              }}
+            >
+              Đang ở chế độ duy trì
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{
+                color: "#388E3C",
+                marginVertical: 8,
+                textAlign: "center",
+              }}
+            >
+              Tất cả mục tiêu đã hoàn thành.
+            </Text>
+          </View>
+          {isTeacher && (
+            <Button
+              mode="contained"
+              compact
+              onPress={openEndIepModal}
+              disabled={endingIep}
+              buttonColor="#2E7D32"
+              style={{ borderRadius: 8 }}
+              labelStyle={{ fontSize: 12 }}
+            >
+              Kết thúc kỳ IEP
+            </Button>
+          )}
+        </Surface>
+      )}
+
+      {/* ── End IEP confirmation modal (teacher only) ── */}
+      {isTeacher && (
+      <Portal>
+        <Modal
+          visible={endIepModalVisible}
+          onDismiss={() => !endingIep && setEndIepModalVisible(false)}
+          contentContainerStyle={[
+            screenStyles.endIepModal,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={screenStyles.endIepModalContent}>
+            <View style={screenStyles.endIepIconWrap}>
+              <MaterialCommunityIcons name="alert-outline" size={40} color="#E65100" />
+            </View>
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "800", textAlign: "center", marginTop: 12, color: "#BF360C" }}
+            >
+              Kết thúc kỳ IEP?
+            </Text>
+
+            {loadingScheduled ? (
+              <ActivityIndicator style={{ marginTop: 16 }} />
+            ) : scheduledSessions.length > 0 ? (
+              <View style={[screenStyles.endIepInfoBox, { backgroundColor: "#FFF3E0", borderColor: "#FFE0B2" }]}>
+                <Text variant="bodySmall" style={{ color: "#E65100", fontWeight: "700", marginBottom: 4 }}>
+                  {scheduledSessions.length} buổi học đã lên lịch sẽ bị hủy
+                </Text>
+                {scheduledSessions.slice(0, 4).map((s) => (
+                  <Text key={s.id} variant="bodySmall" style={{ color: "#BF360C", lineHeight: 20 }}>
+                    • {s.name} — {s.session_date}
+                  </Text>
+                ))}
+                {scheduledSessions.length > 4 && (
+                  <Text variant="bodySmall" style={{ color: "#BF360C" }}>
+                    và {scheduledSessions.length - 4} buổi khác...
+                  </Text>
+                )}
+              </View>
+            ) : (
+              <View style={[screenStyles.endIepInfoBox, { backgroundColor: "#FFF3E0", borderColor: "#FFE0B2" }]}>
+                <Text variant="bodySmall" style={{ color: "#BF360C", lineHeight: 20 }}>
+                  Không có buổi học nào đang lên lịch.
+                </Text>
+              </View>
+            )}
+
+            <View style={[screenStyles.endIepInfoBox, { backgroundColor: "#F3E5F5", borderColor: "#E1BEE7", marginTop: 8 }]}>
+              <Text variant="bodySmall" style={{ color: "#6A1B9A", lineHeight: 20 }}>
+                Sau khi kết thúc, bạn cần tạo kế hoạch IEP mới cho kỳ tiếp theo.
+              </Text>
+            </View>
+
+            <View style={screenStyles.endIepBtnRow}>
+              <Button
+                mode="outlined"
+                onPress={() => setEndIepModalVisible(false)}
+                style={screenStyles.endIepBtn}
+                disabled={endingIep}
+              >
+                Quay lại
+              </Button>
+              <Button
+                mode="contained"
+                onPress={handleEndIep}
+                style={screenStyles.endIepBtn}
+                loading={endingIep}
+                disabled={endingIep}
+                buttonColor="#BF360C"
+              >
+                Xác nhận
+              </Button>
+            </View>
+          </View>
+        </Modal>
+      </Portal>
+      )}
 
       {/* ── Goals — load độc lập với plan header ── */}
       {goalsLoading ? (
@@ -638,6 +845,45 @@ export function IepPlanDetailScreen(props: any) {
 
 const screenStyles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 32 },
+
+  // ── Maintenance banner ────────────────────────────────────────
+  maintenanceBanner: {
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "#E8F5E9",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#A5D6A7",
+    textAlign: "center",
+  },
+
+  // ── End IEP confirmation modal ───────────────────────────────
+  endIepModal: { marginHorizontal: 20, borderRadius: 20, overflow: "hidden" },
+  endIepModalContent: { padding: 24, alignItems: "center" },
+  endIepIconWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "#FFF3E0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  endIepInfoBox: {
+    width: "100%",
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 12,
+  },
+  endIepBtnRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 20,
+    width: "100%",
+  },
+  endIepBtn: { flex: 1 },
 
   // ── Plan header card ─────────────────────────────────────────
   planCard: {

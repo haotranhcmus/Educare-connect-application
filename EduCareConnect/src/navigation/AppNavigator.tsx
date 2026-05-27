@@ -1,10 +1,15 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  createNavigationContainerRef,
+} from "@react-navigation/native";
 import { useAuthStore } from "@store/authStore";
 import { SplashScreen } from "@screens/auth/SplashScreen";
 import { AuthNavigator } from "@navigation/AuthNavigator";
 import { TeacherNavigator } from "@navigation/TeacherNavigator";
 import { ParentNavigator } from "@navigation/ParentNavigator";
+
+export const navigationRef = createNavigationContainerRef();
 
 export function AppNavigator() {
   const { isLoading, isAuthenticated, role } = useAuthStore();
@@ -14,7 +19,7 @@ export function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       {!isAuthenticated ? (
         <AuthNavigator />
       ) : role === "teacher" ? (

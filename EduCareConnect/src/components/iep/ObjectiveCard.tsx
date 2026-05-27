@@ -6,6 +6,7 @@ import { StatusBadge } from "@components/common/StatusBadge";
 import { TrendChip } from "@components/common/TrendChip";
 import type { IepObjectiveListItem } from "@t";
 import { formatDate } from "@utils/formatters";
+import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
 import { theme } from "@theme";
 
 interface ObjectiveCardProps {
@@ -37,7 +38,7 @@ function ObjectiveCardImpl({
   const hasDetail =
     selectable &&
     (objective.description ||
-      objective.measurement_method ||
+      objective.measurement_type ||
       objective.implementation_steps ||
       objective.materials_needed ||
       objective.consecutive_sessions_required);
@@ -219,11 +220,14 @@ function ObjectiveCardImpl({
                   value={objective.description}
                 />
               ) : null}
-              {objective.measurement_method ? (
+              {objective.measurement_type ? (
                 <DetailRow
                   icon="ruler"
-                  label="Phương pháp đo lường"
-                  value={objective.measurement_method}
+                  label="Cách thu thập & đánh giá"
+                  value={
+                    MEASUREMENT_TYPE_LABELS[objective.measurement_type] ||
+                    objective.measurement_type
+                  }
                 />
               ) : null}
               {objective.implementation_steps ? (

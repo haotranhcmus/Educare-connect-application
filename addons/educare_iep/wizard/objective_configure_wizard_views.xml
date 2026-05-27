@@ -19,9 +19,22 @@
                     <notebook>
                         <!-- Tab 1: Editable configuration -->
                         <page string="Configure" name="configure">
-                            <group string="Accuracy Targets">
+                            <group>
+                                <field name="measurement_type" />
+                            </group>
+                            <group string="Accuracy Targets"
+                                invisible="measurement_type not in ('accuracy','prompt_level')">
                                 <field name="baseline_accuracy_pct" />
                                 <field name="target_accuracy_pct" />
+                            </group>
+                            <group string="Duration Target"
+                                invisible="measurement_type != 'duration'">
+                                <field name="target_duration_seconds" />
+                            </group>
+                            <group string="Frequency Targets"
+                                invisible="measurement_type not in ('frequency_increase','frequency_decrease')">
+                                <field name="baseline_count" />
+                                <field name="target_count" />
                             </group>
                             <group string="Mastery Criteria">
                                 <field name="consecutive_sessions_required" />
@@ -90,8 +103,17 @@
                     <field name="line_ids" nolabel="1">
                         <tree create="false" delete="true" editable="bottom">
                             <field name="name" />
-                            <field name="baseline_accuracy_pct" string="Mức ban đầu (%)" />
-                            <field name="target_accuracy_pct" string="Mục tiêu (%)" />
+                            <field name="measurement_type" string="Cách thu thập" />
+                            <field name="baseline_accuracy_pct" string="Mức ban đầu (%)"
+                                readonly="measurement_type not in ('accuracy','prompt_level')" />
+                            <field name="target_accuracy_pct" string="Mục tiêu (%)"
+                                readonly="measurement_type not in ('accuracy','prompt_level')" />
+                            <field name="target_duration_seconds" string="Mục tiêu (giây)"
+                                readonly="measurement_type != 'duration'" />
+                            <field name="baseline_count" string="Cơ sở (lần)"
+                                readonly="measurement_type not in ('frequency_increase','frequency_decrease')" />
+                            <field name="target_count" string="Mục tiêu (lần)"
+                                readonly="measurement_type not in ('frequency_increase','frequency_decrease')" />
                             <field name="consecutive_sessions_required" string="Số buổi liên tiếp" />
                             <field name="template_id" column_invisible="1" />
                         </tree>

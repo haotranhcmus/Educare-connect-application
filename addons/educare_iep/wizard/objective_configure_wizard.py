@@ -41,12 +41,15 @@ class EducareIepObjectiveConfigureWizard(models.TransientModel):
                 "goal_id": self.goal_id.id,
                 "name": line.name,
                 "description": line.description,
+                "measurement_type": line.measurement_type,
                 "baseline_accuracy_pct": line.baseline_accuracy_pct,
                 "target_accuracy_pct": line.target_accuracy_pct,
+                "target_duration_seconds": line.target_duration_seconds,
+                "baseline_count": line.baseline_count,
+                "target_count": line.target_count,
                 "consecutive_sessions_required": line.consecutive_sessions_required,
                 "weight": line.weight,
                 "status": "not_started",
-                "measurement_method": _("Direct observation during session."),
             }
             # Carry all enrichment data from source template
             if line.template_id:
@@ -81,10 +84,6 @@ class EducareIepObjectiveConfigureWizard(models.TransientModel):
                         ),
                     }
                 )
-                if tpl.measurement_template_id:
-                    vals["measurement_method"] = (
-                        tpl.measurement_template_id.criteria_template
-                    )
             Objective.create(vals)
 
         return {
@@ -114,6 +113,18 @@ class EducareIepObjectiveConfigureWizardLine(models.TransientModel):
     )
     name = fields.Char(string="Objective Name", required=True)
     description = fields.Text(string="Description")
+    measurement_type = fields.Selection(
+        selection=[
+            ("accuracy", "Độ chính xác (đúng / tổng số lần)"),
+            ("prompt_level", "Mức độ hỗ trợ (theo từng lần thử)"),
+            ("duration", "Thời gian (giây)"),
+            ("frequency_increase", "Tần suất - Tăng hành vi tích cực"),
+            ("frequency_decrease", "Tần suất - Giảm hành vi tiêu cực"),
+        ],
+        string="Cách thu thập",
+        required=True,
+        default="accuracy",
+    )
     baseline_accuracy_pct = fields.Float(
         string="Baseline (%)",
         digits=(5, 2),
@@ -124,10 +135,21 @@ class EducareIepObjectiveConfigureWizardLine(models.TransientModel):
         digits=(5, 2),
         default=80.0,
     )
+    target_duration_seconds = fields.Integer(string="Thời gian mục tiêu (giây)", default=0)
+    baseline_count = fields.Integer(string="Số lần cơ sở", default=0)
+    target_count = fields.Integer(string="Số lần mục tiêu", default=0)
     consecutive_sessions_required = fields.Integer(
         string="Consec. Sessions",
         default=3,
     )
+
+    @api.onchange("measurement_type")
+    def _onchange_measurement_type(self):
+        if self.measurement_type in ("duration", "frequency_increase", "frequency_decrease"):
+            self.baseline_accuracy_pct = 0.0
+            self.target_accuracy_pct = 100.0
+        elif not self.target_accuracy_pct or self.target_accuracy_pct == 100.0:
+            self.target_accuracy_pct = 80.0
     weight = fields.Float(
         string="Weight",
         digits=(5, 2),

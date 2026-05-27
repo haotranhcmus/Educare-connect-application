@@ -21,8 +21,23 @@ class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMi
     )
     name = fields.Char(string="Objective Name", required=True)
     description = fields.Text(string="Objective Description", required=True)
+    measurement_type = fields.Selection(
+        selection=[
+            ("accuracy", "Độ chính xác (đúng / tổng số lần)"),
+            ("prompt_level", "Mức độ hỗ trợ (theo từng lần thử)"),
+            ("duration", "Thời gian (giây)"),
+            ("frequency_increase", "Tần suất - Tăng hành vi tích cực"),
+            ("frequency_decrease", "Tần suất - Giảm hành vi tiêu cực"),
+        ],
+        string="Cách thu thập & đánh giá",
+        required=True,
+        default="accuracy",
+    )
     baseline_accuracy_pct = fields.Float(string="Baseline Accuracy (%)", default=0.0)
     target_accuracy_pct = fields.Float(string="Target Accuracy (%)", default=80.0)
+    target_duration_seconds = fields.Integer(string="Thời gian mục tiêu (giây)", default=0)
+    baseline_count = fields.Integer(string="Số lần cơ sở", default=0)
+    target_count = fields.Integer(string="Số lần mục tiêu", default=0)
     consecutive_sessions_required = fields.Integer(
         string="Consecutive Sessions Required",
         default=3,
@@ -70,6 +85,14 @@ class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMi
                     _("Consecutive sessions required must be at least 1.")
                 )
 
+    @api.onchange("measurement_type")
+    def _onchange_measurement_type(self):
+        if self.measurement_type in ("duration", "frequency_increase", "frequency_decrease"):
+            self.baseline_accuracy_pct = 0.0
+            self.target_accuracy_pct = 100.0
+        elif not self.target_accuracy_pct or self.target_accuracy_pct == 100.0:
+            self.target_accuracy_pct = 80.0
+
     @api.onchange("baseline_accuracy_pct", "target_accuracy_pct")
     def _onchange_accuracy_warning(self):
         if self.target_accuracy_pct and self.baseline_accuracy_pct:
@@ -86,20 +109,19 @@ class EducareIepObjectiveQuickWizard(models.TransientModel, AccuracyValidationMi
 
     def action_create_objective(self):
         self.ensure_one()
-        measurement_method = _("Direct observation during session.")
-        if self.measurement_template_id:
-            measurement_method = self.measurement_template_id.criteria_template
-
         objective = self.env["educare.iep.objective"].create(
             {
                 "goal_id": self.goal_id.id,
                 "name": self.name,
                 "description": self.description,
+                "measurement_type": self.measurement_type,
                 "baseline_accuracy_pct": self.baseline_accuracy_pct,
                 "target_accuracy_pct": self.target_accuracy_pct,
+                "target_duration_seconds": self.target_duration_seconds,
+                "baseline_count": self.baseline_count,
+                "target_count": self.target_count,
                 "weight": self.difficulty_id.weight if self.difficulty_id else 1.0,
                 "consecutive_sessions_required": self.consecutive_sessions_required,
-                "measurement_method": measurement_method,
                 "baseline_description": self.baseline_description or False,
                 "measurement_template_id": (
                     self.measurement_template_id.id

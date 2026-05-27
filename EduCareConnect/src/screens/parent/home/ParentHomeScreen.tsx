@@ -14,6 +14,9 @@ import { AvatarLabel } from "@components/common/AvatarLabel";
 import { StatusBadge } from "@components/common/StatusBadge";
 import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import { ChildSelectorModal } from "@screens/parent/home/ChildSelectorModal";
+import { NotificationBell } from "@components/notification/NotificationBell";
+import { ChatBell } from "@components/chat/ChatBell";
+import { useUnreadCount } from "@hooks/useNotification";
 import {
   useMyStudents,
   useUnreadReportCount,
@@ -53,6 +56,7 @@ export function ParentHomeScreen({ navigation }: any) {
   const { selectedStudent, selectedStudentId, setSelectedStudent } =
     useParentStore();
   const [selectorOpen, setSelectorOpen] = useState(false);
+  const { data: notiUnread = 0 } = useUnreadCount();
 
   const {
     data: students = [],
@@ -132,8 +136,16 @@ export function ParentHomeScreen({ navigation }: any) {
                 {userName || "Phụ huynh"}
               </Text>
             </View>
-            <View style={styles.datePill}>
-              <Text style={styles.dateText}>{dateStr}</Text>
+            <View style={styles.headerActions}>
+              <ChatBell
+                onPress={() => navigation.navigate("ConversationList")}
+                color="#fff"
+              />
+              <NotificationBell
+                unreadCount={notiUnread}
+                onPress={() => navigation.navigate("NotificationList")}
+                color="#fff"
+              />
             </View>
           </View>
 
@@ -192,9 +204,6 @@ export function ParentHomeScreen({ navigation }: any) {
                   >
                     {selectedStudent.name}
                   </Text>
-                  <View style={{ marginTop: 3 }}>
-                    <StatusBadge status={selectedStudent.status} size="small" />
-                  </View>
                 </View>
 
                 {students.length > 1 && (
@@ -212,48 +221,6 @@ export function ParentHomeScreen({ navigation }: any) {
                       Chọn con
                     </Text>
                   </TouchableOpacity>
-                )}
-              </View>
-
-              {/* Divider */}
-              <View
-                style={[
-                  styles.cardDivider,
-                  { backgroundColor: theme.colors.outlineVariant },
-                ]}
-              />
-
-              {/* Bottom: teacher + center chips */}
-              <View style={styles.childCardBottom}>
-                {teacherName && (
-                  <View style={styles.metaChip}>
-                    <MaterialCommunityIcons
-                      name="account-tie-outline"
-                      size={13}
-                      color={G1}
-                    />
-                    <Text
-                      style={[styles.metaChipText, { color: G_TEXT }]}
-                      numberOfLines={1}
-                    >
-                      {teacherName}
-                    </Text>
-                  </View>
-                )}
-                {centerName && (
-                  <View style={styles.metaChip}>
-                    <MaterialCommunityIcons
-                      name="home-city-outline"
-                      size={13}
-                      color={G1}
-                    />
-                    <Text
-                      style={[styles.metaChipText, { color: G_TEXT }]}
-                      numberOfLines={1}
-                    >
-                      {centerName}
-                    </Text>
-                  </View>
                 )}
               </View>
             </View>
@@ -278,9 +245,7 @@ export function ParentHomeScreen({ navigation }: any) {
             label="Thời khóa biểu"
             iconBg="#E3F2FD"
             iconColor="#1565C0"
-            onPress={() =>
-              navigation.navigate("ChildTab", { screen: "ChildTimetable" })
-            }
+            onPress={() => navigation.navigate("TimetableTab")}
             surface={theme.colors.surface}
           />
           <QuickBtn
@@ -528,6 +493,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0, // controlled by inner spacer
   },
   headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 18 },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: 8 },
   avatarCircle: {
     width: 42,
     height: 42,

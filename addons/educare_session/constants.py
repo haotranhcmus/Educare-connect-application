@@ -5,29 +5,23 @@ These constants are defined at module level to allow sharing
 across multiple models and for easier maintenance.
 """
 
-# Prompt/Support levels in ABA training
-# Order matters: index 0 (independent) = best, index 4 (full_physical) = needs most support
-PROMPT_LEVELS = [
-    ("independent", "Độc lập"),
-    ("verbal_prompt", "Gợi ý bằng lời"),
-    ("gestural_prompt", "Gợi ý bằng cử chỉ"),
-    ("partial_physical", "Hỗ trợ thể chất một phần"),
-    ("full_physical", "Hỗ trợ thể chất toàn phần"),
+# Prompt/Support levels for per-trial data collection (measurement_type = 'prompt_level').
+# Each level maps to a weight; trial score = weight, objective score = avg of trial weights.
+TRIAL_PROMPT_LEVELS = [
+    ("independent", "Độc lập hoàn toàn"),
+    ("gestural_visual", "Nhắc bằng cử chỉ / hình ảnh"),
+    ("verbal", "Nhắc bằng lời nói"),
+    ("physical", "Hỗ trợ thể chất"),
+    ("no_response", "Từ chối / Không phản hồi"),
 ]
 
-# Extracted keys in order - for index-based comparison
-# used_idx <= max_idx => mastery achieved
-# used_idx > max_idx => requires more support than allowed
-PROMPT_ORDER = [key for key, _ in PROMPT_LEVELS]
-
-# Result/data collection types in ABA
-RESULT_TYPES = [
-    ("trial_by_trial", "Từng trial"),
-    ("probe", "Thăm dò"),
-    ("whole_task", "Toàn bộ nhiệm vụ"),
-    ("partial_interval", "Khoảng thời gian một phần"),
-    ("momentary_time_sample", "Lấy mẫu thời điểm"),
-]
+TRIAL_PROMPT_WEIGHTS = {
+    "independent": 100,
+    "gestural_visual": 75,
+    "verbal": 50,
+    "physical": 25,
+    "no_response": 0,
+}
 
 # Objective-level ABA phase at the moment data is collected.
 RESULT_PHASES = [
@@ -53,9 +47,32 @@ REINFORCEMENT_EFFECTIVENESS = [
     ("low", "Thấp - Học viên phản ứng hạn chế"),
 ]
 
-# Cancel type for session cancellation
+# Cancel types — all possible values stored in the database
 CANCEL_TYPES = [
+    # Teacher / Center reasons
+    ("teacher_sick", "Giáo viên bệnh"),
+    ("teacher_personal", "Giáo viên bận việc cá nhân"),
+    ("center_rescheduled", "Trung tâm thay đổi lịch"),
     ("cancelled_center", "Trung tâm hủy"),
+    # Family / Parent reasons
+    ("child_sick", "Con bệnh"),
+    ("family_event", "Gia đình có việc"),
+    ("family_travel", "Đi du lịch / đi xa"),
+    ("cancelled_family", "Gia đình hủy"),
+]
+
+# Subsets shown in each cancel UI context
+TEACHER_CANCEL_TYPES = [
+    ("teacher_sick", "Giáo viên bệnh"),
+    ("teacher_personal", "Giáo viên bận việc cá nhân"),
+    ("center_rescheduled", "Trung tâm thay đổi lịch"),
+    ("cancelled_center", "Trung tâm hủy"),
+]
+
+PARENT_CANCEL_TYPES = [
+    ("child_sick", "Con bệnh"),
+    ("family_event", "Gia đình có việc"),
+    ("family_travel", "Đi du lịch / đi xa"),
     ("cancelled_family", "Gia đình hủy"),
 ]
 
@@ -84,9 +101,8 @@ SESSION_TYPES = [
 # Session purpose controls objective selection policy.
 SESSION_PURPOSES = [
     ("intervention", "Can thiệp"),
-    ("maintenance_probe", "Kiểm tra duy trì"),
-    ("generalization_probe", "Kiểm tra khái quát hóa"),
-    ("parent_training", "Đào tạo phụ huynh"),
+    ("maintenance", "Duy trì"),
+    ("mixed", "Can thiệp có duy trì"),
 ]
 
 HOME_PRACTICE_STATUS = [

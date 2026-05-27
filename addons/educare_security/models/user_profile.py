@@ -383,3 +383,79 @@ class ResUsers(models.Model):
         "user_id",
         string="Educare Profiles",
     )
+
+    @api.model
+    def _seed_demo_avatars(self):
+        """Force-set avatars for all educare profiles based on role.
+        Runs on every --update via demo_seed.xml so it fixes existing DBs too.
+        """
+        import base64
+        import logging
+        import os
+
+        _log = logging.getLogger(__name__)
+        avatar_dir = os.path.join(
+            os.path.dirname(__file__), "..", "static", "img", "avatar"
+        )
+
+        def load(filename):
+            try:
+                with open(os.path.join(avatar_dir, filename), "rb") as fh:
+                    return base64.b64encode(fh.read())
+            except OSError:
+                _log.warning("educare_security: avatar not found: %s/%s", avatar_dir, filename)
+                return False
+
+        teacher_img = load("teacher.png")
+        father_img = load("father.png")
+        mom_img = load("mom.png")
+
+        profiles = self.env["educare.user.profile"].sudo().search(
+            [("user_id", "!=", False)]
+        )
+        updated = 0
+        for profile in profiles:
+            if profile.role in ("teacher", "supervisor", "admin"):
+                img = teacher_img
+            elif profile.role == "parent":
+                # Parent relation from profile first; fall back to linked student
+                # (only when educare.student is already loaded in this registry)
+                relation = profile.parent_relation
+                if not relation and "educare.student" in self.env.registry:
+                    student = self.env["educare.student"].sudo().search(
+                        [("parent_user_id", "=", profile.user_id.id),
+                         ("parent_relation", "!=", False)],
+                        limit=1,
+                    )
+                    relation = student.parent_relation if student else ""
+                img = mom_img if relation == "mother" else father_img
+            else:
+                continue
+            if img:
+                profile.user_id.sudo().write({"image_1920": img})
+                updated += 1
+
+        _log.info("educare_security._seed_demo_avatars: updated %d users", updated)
+
+    @api.model
+    def _reset_demo_passwords(self):
+        """Reset demo teacher and parent account passwords to '123'."""
+        import logging
+
+        _log = logging.getLogger(__name__)
+        logins = [
+            "teacher.hcm01@example.com",
+            "teacher.hcm02@example.com",
+            "teacher.hanoi01@example.com",
+            "teacher.hanoi02@example.com",
+            "parent01@example.com",
+            "parent02@example.com",
+            "parent03@example.com",
+            "parent04@example.com",
+        ]
+        users = self.sudo().search([("login", "in", logins)])
+        for user in users:
+            user.sudo().write({"password": "123"})
+        _log.info(
+            "educare_security._reset_demo_passwords: reset %d accounts", len(users)
+        )

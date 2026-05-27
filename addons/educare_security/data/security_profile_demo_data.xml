@@ -33,7 +33,7 @@
             <field name="name">Giáo viên TP.HCM 01</field>
             <field name="login">teacher.hcm01@example.com</field>
             <field name="email">teacher.hcm01@example.com</field>
-            <field name="password">Teacher@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_teacher')])]" />
         </record>
@@ -42,7 +42,7 @@
             <field name="name">Giáo viên TP.HCM 02</field>
             <field name="login">teacher.hcm02@example.com</field>
             <field name="email">teacher.hcm02@example.com</field>
-            <field name="password">Teacher@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_teacher')])]" />
         </record>
@@ -51,7 +51,7 @@
             <field name="name">Giáo viên Hà Nội 01</field>
             <field name="login">teacher.hanoi01@example.com</field>
             <field name="email">teacher.hanoi01@example.com</field>
-            <field name="password">Teacher@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_teacher')])]" />
         </record>
@@ -60,7 +60,7 @@
             <field name="name">Giáo viên Hà Nội 02</field>
             <field name="login">teacher.hanoi02@example.com</field>
             <field name="email">teacher.hanoi02@example.com</field>
-            <field name="password">Teacher@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_teacher')])]" />
         </record>
@@ -69,7 +69,7 @@
             <field name="name">Phụ huynh 01</field>
             <field name="login">parent01@example.com</field>
             <field name="email">parent01@example.com</field>
-            <field name="password">Parent@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_parent')])]" />
         </record>
@@ -78,7 +78,7 @@
             <field name="name">Phụ huynh 02</field>
             <field name="login">parent02@example.com</field>
             <field name="email">parent02@example.com</field>
-            <field name="password">Parent@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_parent')])]" />
         </record>
@@ -87,7 +87,7 @@
             <field name="name">Phụ huynh 03</field>
             <field name="login">parent03@example.com</field>
             <field name="email">parent03@example.com</field>
-            <field name="password">Parent@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_parent')])]" />
         </record>
@@ -96,7 +96,7 @@
             <field name="name">Phụ huynh 04</field>
             <field name="login">parent04@example.com</field>
             <field name="email">parent04@example.com</field>
-            <field name="password">Parent@123</field>
+            <field name="password">123</field>
             <field name="groups_id"
                 eval="[(6, 0, [ref('base.group_user'), ref('educare_security.group_parent')])]" />
         </record>

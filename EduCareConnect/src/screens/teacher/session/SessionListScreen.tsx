@@ -81,7 +81,6 @@ const headerSearchStyle = {
   elevation: 0,
   height: 50,
   borderRadius: 10,
-  marginBottom: 10,
 };
 const headerSearchInputStyle = {
   color: "#fff",

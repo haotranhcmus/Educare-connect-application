@@ -86,16 +86,29 @@ class EducareIepObjectiveTemplate(models.Model):
         string="Measurement Template",
         ondelete="set null",
     )
-    default_data_collection_method = fields.Selection(
+    default_measurement_type = fields.Selection(
         selection=[
-            ("discrete_trial", "Discrete Trial"),
-            ("frequency", "Frequency Count"),
-            ("duration", "Duration"),
-            ("interval", "Interval Recording"),
-            ("task_analysis", "Task Analysis"),
-            ("anecdotal", "Anecdotal"),
+            ("accuracy", "Độ chính xác (đúng / tổng số lần)"),
+            ("prompt_level", "Mức độ hỗ trợ (theo từng lần thử)"),
+            ("duration", "Thời gian (giây)"),
+            ("frequency_increase", "Tần suất - Tăng hành vi tích cực"),
+            ("frequency_decrease", "Tần suất - Giảm hành vi tiêu cực"),
         ],
-        string="Suggested Data Collection",
+        string="Cách thu thập gợi ý",
+        default="accuracy",
+        help="Cách thu thập & đánh giá gợi ý. Giáo viên có thể điều chỉnh khi tạo mục tiêu.",
+    )
+    default_target_duration_seconds = fields.Integer(
+        string="Thời gian mục tiêu gợi ý (giây)",
+        default=0,
+    )
+    default_baseline_count = fields.Integer(
+        string="Số lần cơ sở gợi ý",
+        default=0,
+    )
+    default_target_count = fields.Integer(
+        string="Số lần mục tiêu gợi ý",
+        default=0,
     )
 
     # --- Implementation guidance ---

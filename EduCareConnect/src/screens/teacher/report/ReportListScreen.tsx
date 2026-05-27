@@ -101,9 +101,9 @@ const headerSearchStyle = {
   height: 50,
   borderRadius: 10,
   padding: 0,
-  marginBottom: 10,
 };
 const headerSearchInputStyle = { color: "#fff", fontSize: 13, paddingLeft: 0 };
+const filterBtnStyle = { margin: 0 };
 const headerBadgeStyle = {
   position: "absolute" as const,
   top: 4,
@@ -193,22 +193,23 @@ function ReportListContent({ navigation }: Props) {
           inputStyle={headerSearchInputStyle}
           iconColor="rgba(255,255,255,0.75)"
           placeholderTextColor="rgba(255,255,255,0.55)"
-        />
-      ),
-      headerRight: () => (
-        <View>
-          <IconButton
-            icon="filter-variant"
-            size={22}
-            iconColor={activeFilterCount > 0 ? "#A5D6A7" : "#fff"}
-            onPress={openFilter}
-          />
-          {activeFilterCount > 0 && (
-            <Badge style={headerBadgeStyle} size={14}>
-              {activeFilterCount}
-            </Badge>
+          right={() => (
+            <View>
+              <IconButton
+                icon="filter-variant"
+                size={22}
+                iconColor={activeFilterCount > 0 ? "#A5D6A7" : "rgba(255,255,255,0.75)"}
+                onPress={openFilter}
+                style={filterBtnStyle}
+              />
+              {activeFilterCount > 0 && (
+                <Badge style={headerBadgeStyle} size={14}>
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </View>
           )}
-        </View>
+        />
       ),
     });
   }, [navigation, search, activeFilterCount, openFilter]);

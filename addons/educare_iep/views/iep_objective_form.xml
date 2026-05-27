@@ -90,12 +90,6 @@
                                     colspan="2" />
                             </group>
                             <group>
-                                <field name="measurement_method"
-                                    placeholder="E.g.: Number of correct responses / total trials"
-                                    readonly="plan_status != 'draft'"
-                                    colspan="2" />
-                            </group>
-                            <group>
                                 <field name="discontinued_reason"
                                     placeholder="Reason for permanently discontinuing objective..."
                                     required="status == 'discontinued'"
@@ -106,10 +100,27 @@
                         <!-- Tab 2: Success Criteria -->
                         <page string="Criteria" name="criteria">
                             <group>
-                                <group string="Accuracy Targets">
+                                <field name="measurement_type"
+                                    readonly="plan_status != 'draft'" />
+                            </group>
+                            <group>
+                                <group string="Accuracy Targets"
+                                    invisible="measurement_type not in ('accuracy','prompt_level')">
                                     <field name="baseline_accuracy_pct"
                                         readonly="plan_status != 'draft'" />
                                     <field name="target_accuracy_pct"
+                                        readonly="plan_status != 'draft'" />
+                                </group>
+                                <group string="Duration Target"
+                                    invisible="measurement_type != 'duration'">
+                                    <field name="target_duration_seconds"
+                                        readonly="plan_status != 'draft'" />
+                                </group>
+                                <group string="Frequency Targets"
+                                    invisible="measurement_type not in ('frequency_increase','frequency_decrease')">
+                                    <field name="baseline_count"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="target_count"
                                         readonly="plan_status != 'draft'" />
                                 </group>
                                 <group string="Session Rules">

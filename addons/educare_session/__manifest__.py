@@ -16,7 +16,6 @@
         "security/educare_session_rules.xml",
         "data/ir_sequence_data.xml",
         "views/session_cancel_wizard_views.xml",
-        "views/session_review_wizard_views.xml",
         "views/session_result_form.xml",
         "views/session_result_tree.xml",
         "views/session_result_search.xml",
@@ -27,9 +26,7 @@
         "views/session_actions.xml",
         "views/session_menu.xml",
     ],
-    "demo": [
-        "data/session_demo_data.xml",
-    ],
+    "demo": [],
     "installable": True,
     "license": "LGPL-3",
 }

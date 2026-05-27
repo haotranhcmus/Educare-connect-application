@@ -203,7 +203,7 @@ export function StudentInfoTab({ student }: Props) {
           />
         </View>
         <Divider />
-        <SectionHeader icon="school" title="Học tập" />
+        {/* <SectionHeader icon="school" title="Học tập" />
         <View style={styles.section}>
           <InfoGrid
             items={[
@@ -226,7 +226,7 @@ export function StudentInfoTab({ student }: Props) {
               },
             ]}
           />
-        </View>
+        </View> */}
       </View>
       <View style={{ height: 24 }} />
     </ScrollView>

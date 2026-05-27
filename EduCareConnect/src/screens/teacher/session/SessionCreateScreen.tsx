@@ -1,10 +1,22 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  FlatList,
+  TextInput,
+  Animated,
+  Dimensions,
+  Pressable,
 } from "react-native";
+import ReAnimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { toast } from "@utils/toast";
 import {
@@ -14,9 +26,9 @@ import {
   Modal,
   Portal,
   Divider,
-  HelperText,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AvatarLabel } from "@components/common/AvatarLabel";
 import { StepIndicator } from "@components/common/StepIndicator";
 import { ObjectiveCard } from "@components/iep/ObjectiveCard";
 import { SectionHeader } from "@components/common/SectionHeader";
@@ -45,7 +57,7 @@ import {
   SESSION_TYPE_LABELS,
   toPickerOptions,
 } from "@utils/labels";
-import type { IepGoal } from "@t";
+import type { IepGoal, StudentListItem } from "@t";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "@navigation/types";
 
@@ -243,13 +255,19 @@ function SelectGoalCard({
           <Divider />
           <View style={{ paddingTop: 8 }}>
             {objectives.map((obj) => (
-              <ObjectiveCard
-                key={obj.id}
-                objective={obj}
-                selectable
-                selected={selectedObjIds.has(obj.id)}
-                onSelect={onToggleObj}
-              />
+              <View key={obj.id} style={{ position: "relative" }}>
+                <ObjectiveCard
+                  objective={obj}
+                  selectable
+                  selected={selectedObjIds.has(obj.id)}
+                  onSelect={onToggleObj}
+                />
+                {obj.status === "mastered" && (
+                  <View style={gcStyles.masteredBadge}>
+                    <Text style={gcStyles.masteredBadgeText}>✓ Duy trì</Text>
+                  </View>
+                )}
+              </View>
             ))}
           </View>
         </View>
@@ -307,6 +325,17 @@ const gcStyles = StyleSheet.create({
     justifyContent: "center",
   },
   badgeText: { color: "#fff", fontSize: 11, fontWeight: "700" },
+  masteredBadge: {
+    position: "absolute",
+    top: 8,
+    right: 10,
+    backgroundColor: "#2E7D32",
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    zIndex: 1,
+  },
+  masteredBadgeText: { color: "#fff", fontSize: 10, fontWeight: "700" },
   objectivesWrap: {
     borderTopWidth: 1,
     paddingHorizontal: 10,
@@ -320,6 +349,550 @@ const gcStyles = StyleSheet.create({
   },
 });
 
+// ── Student Picker ────────────────────────────────────────────────
+
+const SHEET_HEIGHT = Dimensions.get("window").height * 0.82;
+
+function calcAge(dob?: string): number | null {
+  if (!dob) return null;
+  const birth = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  if (
+    today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())
+  )
+    age--;
+  return age >= 0 ? age : null;
+}
+
+function studyDuration(enrollmentDate?: string): string | null {
+  if (!enrollmentDate) return null;
+  const days = Math.floor(
+    (Date.now() - new Date(enrollmentDate).getTime()) / 86400000,
+  );
+  if (days < 1) return "Mới nhập học";
+  const years = Math.floor(days / 365);
+  const months = Math.floor((days - years * 365) / 30);
+  if (years > 0 && months > 0) return `${years} năm ${months} tháng`;
+  if (years > 0) return `${years} năm`;
+  if (months > 0) return `${months} tháng`;
+  return `${days} ngày`;
+}
+
+function StudentPickerItem({
+  student,
+  isSelected,
+  onPress,
+}: {
+  student: StudentListItem;
+  isSelected: boolean;
+  onPress: (id: number) => void;
+}) {
+  const theme = useTheme();
+  const scale = useRef(new Animated.Value(1)).current;
+  const age = calcAge(student.date_of_birth);
+  const duration = studyDuration(student.enrollment_date);
+
+  const onPressIn = () =>
+    Animated.spring(scale, {
+      toValue: 0.97,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 3,
+    }).start();
+
+  return (
+    <Pressable
+      onPress={() => onPress(student.id)}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+    >
+      <Animated.View
+        style={[
+          pickerItemStyles.card,
+          {
+            backgroundColor: isSelected
+              ? theme.colors.primaryContainer
+              : theme.colors.surface,
+            borderColor: isSelected
+              ? theme.colors.primary
+              : theme.colors.outlineVariant,
+          },
+          { transform: [{ scale }] },
+        ]}
+      >
+        {/* Avatar with selection ring */}
+        <View
+          style={[
+            pickerItemStyles.avatarRing,
+            {
+              borderColor: isSelected
+                ? theme.colors.primary
+                : `${theme.colors.primary}22`,
+            },
+          ]}
+        >
+          <AvatarLabel uri={student.avatar_url} name={student.name} size={50} />
+          {isSelected && (
+            <View
+              style={[
+                pickerItemStyles.checkBadge,
+                { backgroundColor: theme.colors.primary },
+              ]}
+            >
+              <MaterialCommunityIcons name="check" size={10} color="#fff" />
+            </View>
+          )}
+        </View>
+
+        {/* Info */}
+        <View style={{ flex: 1, gap: 4 }}>
+          {student.nickname ? (
+            <>
+              <Text
+                style={[
+                  pickerItemStyles.nickname,
+                  {
+                    color: isSelected
+                      ? theme.colors.primary
+                      : theme.colors.onSurface,
+                  },
+                ]}
+                numberOfLines={1}
+              >
+                {student.nickname}
+              </Text>
+              <Text
+                style={[
+                  pickerItemStyles.fullName,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+                numberOfLines={1}
+              >
+                {student.name}
+              </Text>
+            </>
+          ) : (
+            <Text
+              style={[
+                pickerItemStyles.nickname,
+                {
+                  color: isSelected
+                    ? theme.colors.primary
+                    : theme.colors.onSurface,
+                },
+              ]}
+              numberOfLines={1}
+            >
+              {student.name}
+            </Text>
+          )}
+
+          <View style={pickerItemStyles.badgeRow}>
+            {age !== null && (
+              <View
+                style={[
+                  pickerItemStyles.badge,
+                  { backgroundColor: theme.colors.surfaceVariant },
+                ]}
+              >
+                <Text
+                  style={[
+                    pickerItemStyles.badgeText,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  {age} tuổi
+                </Text>
+              </View>
+            )}
+            {duration && (
+              <View
+                style={[
+                  pickerItemStyles.badge,
+                  { backgroundColor: `${theme.colors.primary}14` },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="clock-outline"
+                  size={10}
+                  color={theme.colors.primary}
+                />
+                <Text
+                  style={[
+                    pickerItemStyles.badgeText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
+                  {duration}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Right indicator */}
+        {isSelected ? (
+          <View
+            style={[
+              pickerItemStyles.checkCircle,
+              { backgroundColor: theme.colors.primary },
+            ]}
+          >
+            <MaterialCommunityIcons name="check" size={16} color="#fff" />
+          </View>
+        ) : (
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={20}
+            color={theme.colors.outline}
+          />
+        )}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+const pickerItemStyles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    gap: 12,
+  },
+  avatarRing: {
+    borderRadius: 30,
+    borderWidth: 2,
+    overflow: "visible",
+  },
+  checkBadge: {
+    position: "absolute",
+    bottom: -2,
+    right: -2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  nickname: { fontSize: 16, fontWeight: "700", letterSpacing: 0.1 },
+  fullName: { fontSize: 13, marginTop: -2 },
+  badgeRow: { flexDirection: "row", flexWrap: "wrap", gap: 5 },
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    gap: 3,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
+  },
+  checkCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+function StudentPickerSheet({
+  visible,
+  students,
+  selectedId,
+  onSelect,
+  onClose,
+}: {
+  visible: boolean;
+  students: StudentListItem[];
+  selectedId: number;
+  onSelect: (id: number) => void;
+  onClose: () => void;
+}) {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const [search, setSearch] = useState("");
+
+  const translateY = useSharedValue(SHEET_HEIGHT);
+  const backdropOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (visible) {
+      backdropOpacity.value = withTiming(1, { duration: 280 });
+      translateY.value = withSpring(0, {
+        damping: 22,
+        stiffness: 220,
+        mass: 0.9,
+      });
+      setSearch("");
+    } else {
+      backdropOpacity.value = withTiming(0, { duration: 220 });
+      translateY.value = withTiming(SHEET_HEIGHT, { duration: 260 });
+    }
+  }, [visible]);
+
+  const sheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    if (!q) return students;
+    return students.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.nickname?.toLowerCase().includes(q),
+    );
+  }, [students, search]);
+
+  return (
+    <Portal>
+      {/* Backdrop */}
+      <ReAnimated.View
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: "rgba(0,0,0,0.52)" },
+          backdropStyle,
+        ]}
+        pointerEvents={visible ? "auto" : "none"}
+      >
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+      </ReAnimated.View>
+
+      {/* Sheet */}
+      <ReAnimated.View
+        style={[
+          pickerSheetStyles.sheet,
+          {
+            backgroundColor: theme.colors.background,
+            height: SHEET_HEIGHT,
+            paddingBottom: insets.bottom,
+          },
+          sheetStyle,
+        ]}
+        pointerEvents={visible ? "auto" : "none"}
+      >
+        {/* Drag handle */}
+        <View style={pickerSheetStyles.handleWrap}>
+          <View
+            style={[
+              pickerSheetStyles.handle,
+              { backgroundColor: theme.colors.outlineVariant },
+            ]}
+          />
+        </View>
+
+        {/* Header */}
+        <View
+          style={[
+            pickerSheetStyles.header,
+            { borderBottomColor: theme.colors.outlineVariant },
+          ]}
+        >
+          <Text
+            variant="titleLarge"
+            style={{ fontWeight: "800", flex: 1, letterSpacing: -0.3 }}
+          >
+            Chọn học sinh
+          </Text>
+          <View
+            style={[
+              pickerSheetStyles.countBadge,
+              { backgroundColor: theme.colors.primaryContainer },
+            ]}
+          >
+            <Text
+              variant="labelMedium"
+              style={{ color: theme.colors.primary, fontWeight: "700" }}
+            >
+              {students.length}
+            </Text>
+          </View>
+          <Pressable
+            onPress={onClose}
+            style={[
+              pickerSheetStyles.closeBtn,
+              { backgroundColor: theme.colors.surfaceVariant },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="close"
+              size={18}
+              color={theme.colors.onSurfaceVariant}
+            />
+          </Pressable>
+        </View>
+
+        {/* Search bar */}
+        <View
+          style={[
+            pickerSheetStyles.searchContainer,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View
+            style={[
+              pickerSheetStyles.searchPill,
+              { backgroundColor: theme.colors.surfaceVariant },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="magnify"
+              size={20}
+              color={theme.colors.outline}
+            />
+            <TextInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Tìm theo tên hoặc biệt danh…"
+              placeholderTextColor={theme.colors.outline}
+              style={[
+                pickerSheetStyles.searchInput,
+                { color: theme.colors.onSurface },
+              ]}
+              autoCorrect={false}
+            />
+            {search.length > 0 && (
+              <Pressable onPress={() => setSearch("")}>
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={18}
+                  color={theme.colors.outline}
+                />
+              </Pressable>
+            )}
+          </View>
+        </View>
+
+        {/* List */}
+        <FlatList
+          data={filtered}
+          keyExtractor={(s) => String(s.id)}
+          contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
+          renderItem={({ item }) => (
+            <StudentPickerItem
+              student={item}
+              isSelected={item.id === selectedId}
+              onPress={(id) => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                onSelect(id);
+                onClose();
+              }}
+            />
+          )}
+          ListEmptyComponent={
+            <View style={pickerSheetStyles.emptyWrap}>
+              <MaterialCommunityIcons
+                name="account-search-outline"
+                size={44}
+                color={theme.colors.outline}
+              />
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.outline, marginTop: 10 }}
+              >
+                Không tìm thấy học sinh
+              </Text>
+            </View>
+          }
+          keyboardShouldPersistTaps="handled"
+        />
+      </ReAnimated.View>
+    </Portal>
+  );
+}
+
+const pickerSheetStyles = StyleSheet.create({
+  sheet: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: "hidden",
+    elevation: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: -4 },
+  },
+  handleWrap: {
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    gap: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  countBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  closeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  searchContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  searchPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    paddingVertical: 0,
+  },
+  emptyWrap: {
+    alignItems: "center",
+    paddingTop: 48,
+  },
+});
+
 // ── Form types ────────────────────────────────────────────────────
 
 interface FormData {
@@ -329,7 +902,6 @@ interface FormData {
   end_time: TimeValue;
   location: string;
   session_type: string;
-  session_purpose: string;
 }
 
 // ── Screen ────────────────────────────────────────────────────────
@@ -365,7 +937,6 @@ export function SessionCreateScreen({ route, navigation }: Props) {
     end_time: { hours: 9, minutes: 0 },
     location: "center",
     session_type: "individual",
-    session_purpose: "intervention",
   });
 
   // ── Conflict check ───────────────────────────────────────────────
@@ -373,7 +944,9 @@ export function SessionCreateScreen({ route, navigation }: Props) {
   const [conflictModalVisible, setConflictModalVisible] = useState(false);
   const [noObjectivesModalVisible, setNoObjectivesModalVisible] =
     useState(false);
+  const [pastDateModalVisible, setPastDateModalVisible] = useState(false);
   const [conflictChecking, setConflictChecking] = useState(false);
+  const [studentPickerVisible, setStudentPickerVisible] = useState(false);
 
   // Debounced fetch — only for inline red-border UI feedback while user edits
   useEffect(() => {
@@ -425,6 +998,17 @@ export function SessionCreateScreen({ route, navigation }: Props) {
 
   const [selectedObjIds, setSelectedObjIds] = useState<Set<number>>(new Set());
 
+  // Computed session purpose based on selected objectives (mirrors backend logic)
+  const computedPurpose = useMemo(() => {
+    if (selectedObjIds.size === 0) return null;
+    const selected = objectives.filter((o) => selectedObjIds.has(o.id));
+    const allMastered = selected.every((o) => o.status === "mastered");
+    const anyMastered = selected.some((o) => o.status === "mastered");
+    if (allMastered) return "maintenance";
+    if (anyMastered) return "mixed";
+    return "intervention";
+  }, [selectedObjIds, objectives]);
+
   const updateForm = (key: keyof FormData, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -436,6 +1020,11 @@ export function SessionCreateScreen({ route, navigation }: Props) {
     }
     if (!form.session_date) {
       toast.error("Vui lòng chọn ngày");
+      return false;
+    }
+    const today = new Date().toISOString().split("T")[0];
+    if (form.session_date < today) {
+      setPastDateModalVisible(true);
       return false;
     }
     const toFloat = (t: TimeValue) => t.hours + t.minutes / 60;
@@ -489,10 +1078,7 @@ export function SessionCreateScreen({ route, navigation }: Props) {
   };
 
   const handleSave = async () => {
-    if (
-      selectedObjIds.size === 0 &&
-      form.session_purpose !== "parent_training"
-    ) {
+    if (selectedObjIds.size === 0) {
       setNoObjectivesModalVisible(true);
       return;
     }
@@ -505,7 +1091,6 @@ export function SessionCreateScreen({ route, navigation }: Props) {
         end_time: toFloat(form.end_time),
         location: form.location,
         session_type: form.session_type,
-        session_purpose: form.session_purpose,
         objective_ids: [[6, 0, Array.from(selectedObjIds)]],
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -534,19 +1119,65 @@ export function SessionCreateScreen({ route, navigation }: Props) {
             Bước 1: Thông Tin Cơ Bản
           </Text>
 
-          <Picker
-            label="Học sinh"
-            value={form.student_id}
-            options={students.map((s) => ({
-              value: s.id,
-              label: s.name || "",
-            }))}
-            onChange={(v) => updateForm("student_id", v)}
-          />
+          {/* Student picker trigger */}
+          <View style={styles.fieldWrap}>
+            <Text variant="labelMedium" style={{ marginBottom: 4 }}>
+              Học sinh
+            </Text>
+            <TouchableOpacity
+              onPress={() => setStudentPickerVisible(true)}
+              style={[
+                styles.studentTrigger,
+                {
+                  borderColor: form.student_id
+                    ? theme.colors.primary
+                    : theme.colors.outline,
+                  backgroundColor: theme.colors.surface,
+                },
+              ]}
+              activeOpacity={0.7}
+            >
+              {form.student_id ? (
+                <View style={styles.studentTriggerSelected}>
+                  <MaterialCommunityIcons
+                    name="account-circle-outline"
+                    size={18}
+                    color={theme.colors.primary}
+                  />
+                  <Text
+                    style={[
+                      styles.studentTriggerText,
+                      { color: theme.colors.onSurface },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {studentName}
+                  </Text>
+                </View>
+              ) : (
+                <Text
+                  style={[
+                    styles.studentTriggerText,
+                    { color: theme.colors.outline },
+                  ]}
+                >
+                  Chọn học sinh...
+                </Text>
+              )}
+              <MaterialCommunityIcons
+                name="chevron-down"
+                size={20}
+                color={
+                  form.student_id ? theme.colors.primary : theme.colors.outline
+                }
+              />
+            </TouchableOpacity>
+          </View>
           <DatePickerField
             label="Ngày học"
             value={form.session_date}
             onChange={(v) => updateForm("session_date", v)}
+            disablePast
           />
           <View style={styles.timeRow}>
             <TimePickerField
@@ -608,12 +1239,6 @@ export function SessionCreateScreen({ route, navigation }: Props) {
               <Text variant="titleSmall" style={{ fontWeight: "700" }}>
                 Bước 2: Chọn Mục Tiêu
               </Text>
-              <Text
-                variant="bodySmall"
-                style={{ color: theme.colors.outline, marginTop: 2 }}
-              >
-                {studentName}
-              </Text>
             </View>
             {totalSelected > 0 && (
               <View
@@ -628,6 +1253,61 @@ export function SessionCreateScreen({ route, navigation }: Props) {
               </View>
             )}
           </View>
+
+          {/* Session purpose indicator
+          {computedPurpose && (
+            <View
+              style={[
+                styles.purposeChip,
+                {
+                  backgroundColor:
+                    computedPurpose === "maintenance"
+                      ? "#E8F5E9"
+                      : computedPurpose === "mixed"
+                        ? "#FFF3E0"
+                        : "#E3F2FD",
+                },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name={
+                  computedPurpose === "maintenance"
+                    ? "check-decagram"
+                    : computedPurpose === "mixed"
+                      ? "swap-horizontal"
+                      : "school-outline"
+                }
+                size={14}
+                color={
+                  computedPurpose === "maintenance"
+                    ? "#2E7D32"
+                    : computedPurpose === "mixed"
+                      ? "#E65100"
+                      : "#1565C0"
+                }
+              />
+              <Text
+                variant="labelSmall"
+                style={{
+                  marginLeft: 6,
+                  fontWeight: "700",
+                  color:
+                    computedPurpose === "maintenance"
+                      ? "#2E7D32"
+                      : computedPurpose === "mixed"
+                        ? "#E65100"
+                        : "#1565C0",
+                }}
+              >
+                Loại buổi:{" "}
+                {computedPurpose === "maintenance"
+                  ? "Duy trì"
+                  : computedPurpose === "mixed"
+                    ? "Can thiệp + Duy trì"
+                    : "Can thiệp"}
+              </Text>
+            </View>
+          )} */}
 
           {isStep2Loading ? (
             <LoadingOverlay visible />
@@ -744,7 +1424,7 @@ export function SessionCreateScreen({ route, navigation }: Props) {
               >
                 Lịch đã có — {formatDate(form.session_date)}
               </Text>
-              {daySessions.map((s, i) => {
+              {daySessions.map((s) => {
                 const toFloat = (t: TimeValue) => t.hours + t.minutes / 60;
                 const newStart = toFloat(form.start_time);
                 const newEnd = toFloat(form.end_time);
@@ -860,6 +1540,61 @@ export function SessionCreateScreen({ route, navigation }: Props) {
           </View>
         </Modal>
 
+        {/* ── Past date modal ─────────────────────────────────────── */}
+        <Modal
+          visible={pastDateModalVisible}
+          onDismiss={() => setPastDateModalVisible(false)}
+          contentContainerStyle={[
+            styles.modal,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.conflictModalContent}>
+            <View
+              style={[styles.conflictIconWrap, { backgroundColor: "#FFF8E1" }]}
+            >
+              <MaterialCommunityIcons
+                name="calendar-remove"
+                size={40}
+                color="#F57F17"
+              />
+            </View>
+            <Text
+              variant="titleMedium"
+              style={{
+                fontWeight: "800",
+                textAlign: "center",
+                marginTop: 12,
+                color: "#E65100",
+              }}
+            >
+              Không thể chọn ngày đã qua
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                textAlign: "center",
+                marginTop: 8,
+                lineHeight: 20,
+              }}
+            >
+              Buổi học chỉ có thể được lên lịch từ{" "}
+              <Text style={{ fontWeight: "700" }}>hôm nay trở đi</Text>.{"\n"}
+              Vui lòng chọn lại ngày học.
+            </Text>
+            <Button
+              mode="contained"
+              buttonColor="#E65100"
+              style={{ marginTop: 20, borderRadius: 10, width: "100%" }}
+              contentStyle={{ paddingVertical: 4 }}
+              onPress={() => setPastDateModalVisible(false)}
+            >
+              Chọn lại ngày
+            </Button>
+          </View>
+        </Modal>
+
         {/* ── Success modal ───────────────────────────────────────── */}
         <Modal
           visible={successModalVisible}
@@ -907,6 +1642,14 @@ export function SessionCreateScreen({ route, navigation }: Props) {
           </View>
         </Modal>
       </Portal>
+
+      <StudentPickerSheet
+        visible={studentPickerVisible}
+        students={students}
+        selectedId={form.student_id}
+        onSelect={(id) => updateForm("student_id", id)}
+        onClose={() => setStudentPickerVisible(false)}
+      />
     </View>
   );
 }
@@ -945,6 +1688,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   inlineErrorText: { color: "#B71C1C", flex: 1, lineHeight: 16 },
+  purposeChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+  },
+  fieldWrap: { marginBottom: 16 },
+  studentTrigger: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    minHeight: 48,
+  },
+  studentTriggerSelected: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flex: 1,
+  },
+  studentTriggerText: {
+    flex: 1,
+    fontSize: 14,
+  },
   modal: {
     marginHorizontal: 24,
     borderRadius: 20,

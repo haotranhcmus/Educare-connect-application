@@ -45,7 +45,7 @@ class GenerateReportWizard(models.TransientModel):
 
         baseline = result_line.objective_id.baseline_accuracy_pct or 0.0
         # Positive progress = meaningful gain from baseline with enough performance level.
-        if result_line.accuracy_pct >= max(60.0, baseline + 10.0):
+        if result_line.score_pct >= max(60.0, baseline + 10.0):
             return 'progress'
         return False
 
@@ -68,7 +68,7 @@ class GenerateReportWizard(models.TransientModel):
                             objectives=', '.join(obj_names),
                         )
 
-                    reviewed_lines = results.filtered(lambda r: r.total_trials > 0)
+                    reviewed_lines = results.filtered(lambda r: r.is_recorded)
                     if reviewed_lines:
                         mastered = []
                         progressing = []

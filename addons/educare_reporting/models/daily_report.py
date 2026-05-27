@@ -4,16 +4,15 @@ from odoo.exceptions import ValidationError
 # General observation constants (formerly on educare.session.log)
 ATTENDANCE_STATUS = [
     ("present", "Có mặt"),
-    ("absent_excused", "Vắng có phép"),
-    ("absent_unexcused", "Vắng không phép"),
+    ("absent", "Vắng"),
 ]
 
 MOOD_LEVELS = [
-    ("very_good", "Rất tốt"),
+    ("very_good", "Vui"),
     ("good", "Tốt"),
     ("neutral", "Bình thường"),
-    ("difficult", "Khó khăn"),
-    ("very_difficult", "Rất khó khăn"),
+    ("difficult", "Buồn"),
+    ("very_difficult", "Khó chịu"),
 ]
 
 ENERGY_LEVELS = [
@@ -24,16 +23,17 @@ ENERGY_LEVELS = [
 
 ENGAGEMENT_LEVELS = [
     ("highly_engaged", "Rất tập trung"),
-    ("engaged", "Tập trung"),
+    ("engaged", "Tham gia"),
     ("somewhat_engaged", "Khá tập trung"),
-    ("disengaged", "Mất tập trung"),
+    ("disengaged", "Phân tâm"),
 ]
 
 PERFORMANCE_LEVELS = [
-    ("excellent", "Xuất sắc"),
-    ("good", "Tốt"),
-    ("fair", "Khá"),
+    ("very_poor", "Rất yếu"),
     ("poor", "Cần cải thiện"),
+    ("fair", "Khá"),
+    ("good", "Tốt"),
+    ("excellent", "Xuất sắc"),
 ]
 
 REPORT_STATUS = [
@@ -246,7 +246,7 @@ class EducareDailyReport(models.Model):
 
     @api.depends(
         "session_log_id.result_line_ids.objective_id",
-        "session_log_id.result_line_ids.accuracy_pct",
+        "session_log_id.result_line_ids.score_pct",
     )
     def _compute_session_summary(self):
         for report in self:
@@ -264,8 +264,8 @@ class EducareDailyReport(models.Model):
             )
             acc_lines = []
             for r in results:
-                if r.total_trials > 0:
-                    acc_lines.append(f"- {r.objective_id.name}: {r.accuracy_pct:.0f}%")
+                if r.is_recorded:
+                    acc_lines.append(f"- {r.objective_id.name}: {r.score_pct:.0f}%")
             report.accuracy_summary = "\n".join(acc_lines) if acc_lines else False
 
     # ── Onchange Helpers ──────────────────────────────────────────

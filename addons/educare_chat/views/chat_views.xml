@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Conversation ──────────────────────────────────────── -->
+    <record id="view_chat_conversation_tree" model="ir.ui.view">
+        <field name="name">educare.chat.conversation.tree</field>
+        <field name="model">educare.chat.conversation</field>
+        <field name="arch" type="xml">
+            <tree string="Conversations" default_order="last_message_at desc">
+                <field name="parent_user_id"/>
+                <field name="teacher_user_id"/>
+                <field name="last_message_at"/>
+                <field name="last_message_preview"/>
+                <field name="last_message_sender_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_chat_conversation_form" model="ir.ui.view">
+        <field name="name">educare.chat.conversation.form</field>
+        <field name="model">educare.chat.conversation</field>
+        <field name="arch" type="xml">
+            <form string="Conversation">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="parent_user_id"/>
+                            <field name="teacher_user_id"/>
+                        </group>
+                        <group>
+                            <field name="last_message_at"/>
+                            <field name="last_message_sender_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tin nhắn">
+                            <field name="message_ids">
+                                <tree>
+                                    <field name="create_date"/>
+                                    <field name="sender_id"/>
+                                    <field name="content"/>
+                                    <field name="is_read"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_chat_conversation" model="ir.actions.act_window">
+        <field name="name">Conversations</field>
+        <field name="res_model">educare.chat.conversation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ── Message ──────────────────────────────────────── -->
+    <record id="view_chat_message_tree" model="ir.ui.view">
+        <field name="name">educare.chat.message.tree</field>
+        <field name="model">educare.chat.message</field>
+        <field name="arch" type="xml">
+            <tree string="Messages" default_order="create_date desc">
+                <field name="create_date"/>
+                <field name="conversation_id"/>
+                <field name="sender_id"/>
+                <field name="content"/>
+                <field name="is_read" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_chat_message" model="ir.actions.act_window">
+        <field name="name">Messages</field>
+        <field name="res_model">educare.chat.message</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- ── Menu (under Educare > Thông Báo) ─────────────────────── -->
+    <menuitem id="menu_chat_root"
+        name="Chat"
+        parent="educare_base.menu_educare_root"
+        sequence="85"/>
+
+    <menuitem id="menu_chat_conversation"
+        name="Cuộc trò chuyện"
+        parent="menu_chat_root"
+        action="action_chat_conversation"
+        sequence="10"/>
+
+    <menuitem id="menu_chat_message"
+        name="Tin nhắn"
+        parent="menu_chat_root"
+        action="action_chat_message"
+        sequence="20"/>
+</odoo>

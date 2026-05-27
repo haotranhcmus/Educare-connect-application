@@ -17,7 +17,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
-            <field name="difficulty_id" ref="difficulty_weight_1"/>
+            <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
         <!-- Mẫu STO: Giao tiếp - yêu cầu 2 từ -->
@@ -26,6 +26,7 @@
                 eval="[(6, 0, [ref('educare_base.domain_communication')])]" />
             <field name="sequence">20</field>
             <field name="name">Kết hợp 2 từ để yêu cầu</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ sử dụng cụm từ chức năng 2 từ (ví dụ: “muốn bánh”, “mở hộp”).</field>
             <field name="smart_specific">Dùng cụm 2 từ trong bối cảnh NET và DTT.</field>
             <field name="smart_measurable">Đạt >= 70% trong 3 buổi liên tiếp.</field>
@@ -36,7 +37,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Hành vi - ngồi học -->
@@ -44,6 +45,8 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_behavior')])]" />
             <field name="sequence">10</field>
             <field name="name">Ngồi yên 5 phút liên tục</field>
+            <field name="default_measurement_type">duration</field>
+            <field name="default_target_duration_seconds">300</field>
             <field name="description">Trẻ duy trì tư thế ngồi, không rời khỏi ghế trong buổi học có cấu trúc.</field>
             <field name="smart_specific">Duy trì vị trí ngồi tối thiểu 5 phút.</field>
             <field name="smart_measurable">Đạt 4/5 buổi mỗi tuần, duy trì trong 2 tuần.</field>
@@ -54,7 +57,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Nhận thức - phân loại -->
@@ -73,7 +76,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- ═══ DOMAIN: XÃ HỐI ═══ -->
@@ -83,6 +86,7 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_social')])]" />
             <field name="sequence">10</field>
             <field name="name">Bắt chước hành động đơn giản của người lớn</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ quan sát và bắt chước lại hành động đơn giản (ví dụ: vỗ tay, vẫy tay, gõ bàn) trong tình huống chơi tương tác.</field>
             <field name="smart_specific">Bắt chước 1 hành động đơn giản ngay sau khi được chứng minh.</field>
             <field name="smart_measurable">Đạt >= 80% trong 3 buổi liên tiếp.</field>
@@ -93,7 +97,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
-            <field name="difficulty_id" ref="difficulty_weight_1"/>
+            <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
         <!-- Mẫu STO: Xã hội - luân phiên chơi -->
@@ -101,6 +105,7 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_social')])]" />
             <field name="sequence">20</field>
             <field name="name">Luân phiên chơi 2 lượt với bạn cùng tuổi</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ có thể chờ đợi lượt của mình và chuyển đồ chơi cho bạn trong trò chơi có cấu trúc.</field>
             <field name="smart_specific">Chờ đợi và chuyển đồ chơi đúng lượt trong 2 lượt liên tiếp.</field>
             <field name="smart_measurable">Đạt 4/5 buổi, không cần nhắc nhở sau 2 tuần.</field>
@@ -111,7 +116,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Xã hội - chủ động đến gần bạn -->
@@ -119,6 +124,9 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_social')])]" />
             <field name="sequence">30</field>
             <field name="name">Tự chủ động đến gần bạn để chơi chung</field>
+            <field name="default_measurement_type">frequency_increase</field>
+            <field name="default_baseline_count">0</field>
+            <field name="default_target_count">3</field>
             <field name="description">Trẻ tự mình tiếp cận bạn cùng tuổi, đưa đồ chơi hoặc gọi tên bạn để bắt đầu chơi.</field>
             <field name="smart_specific">Chủ động tiếp cận bạn ít nhất 1 lần trong giờ chơi tự do.</field>
             <field name="smart_measurable">Xảy ra trong 4/5 buổi trong 2 tuần liên tiếp.</field>
@@ -129,7 +137,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- ═══ DOMAIN: VẬN ĐỘNG THÔ ═══ -->
@@ -150,7 +158,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Vận động thô - leo cầu thang -->
@@ -159,6 +167,7 @@
                 eval="[(6, 0, [ref('educare_base.domain_motor_gross')])]" />
             <field name="sequence">20</field>
             <field name="name">Leo xuống cầu thang xen kế chân</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ lên và xuống cầu thang bằng cách xen kế chân trái - phải (không đếm hai chân cùng một bậc), có tay vịt.</field>
             <field name="smart_specific">Leo xuống 5 bậc cầu thang xen kế chân không cần hỗ trợ thể chất.</field>
             <field name="smart_measurable">Đạt 4/5 thử từ 2 buổi liên tiếp.</field>
@@ -169,7 +178,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- Mẫu STO: Vận động thô - ném bắt bóng -->
@@ -188,7 +197,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- ═══ DOMAIN: VẬN ĐỘNG TINH ═══ -->
@@ -209,7 +218,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
-            <field name="difficulty_id" ref="difficulty_weight_1"/>
+            <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
         <!-- Mẫu STO: Vận động tinh - vẽ đường thẳng -->
@@ -228,7 +237,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Vận động tinh - cắt bằng kéo -->
@@ -237,6 +246,7 @@
                 eval="[(6, 0, [ref('educare_base.domain_motor_fine')])]" />
             <field name="sequence">30</field>
             <field name="name">Cắt theo đường kẻ bằng kéo con</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ cầm kéo bằng tay thuận, mở và nhíp kéo để cắt theo đường kẻ thẳng.</field>
             <field name="smart_specific">Cắt đường thẳng dài 10cm, lệch không quá 5mm so với đường kẻ.</field>
             <field name="smart_measurable">Đạt 3/5 thử trong 3 buổi liên tiếp.</field>
@@ -247,7 +257,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">42</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- ═══ DOMAIN: TỰ PHỤC VỤ ═══ -->
@@ -258,6 +268,7 @@
                 eval="[(6, 0, [ref('educare_base.domain_self_care')])]" />
             <field name="sequence">10</field>
             <field name="name">Tự mặc quần và áo thun không cần hỗ trợ</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ tự kéo quần lên và mặc áo thun qua đầu rồi chỉnh lại cho phẳng, không cần trợ giúp thể chất.</field>
             <field name="smart_specific">Hoàn thành cả 2 bước (quần và áo) trong 10 phút mà không cần ký hiệu hoặc hỗ trợ thể chất.</field>
             <field name="smart_measurable">Đạt 4/5 buổi trong 2 tuần liên tiếp.</field>
@@ -268,7 +279,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Tự phục vụ - rửa tay đúng cách -->
@@ -287,7 +298,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_1"/>
+            <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
         <!-- Mẫu STO: Tự phục vụ - ăn cơm bằng muỗng -->
@@ -296,6 +307,7 @@
                 eval="[(6, 0, [ref('educare_base.domain_self_care')])]" />
             <field name="sequence">30</field>
             <field name="name">Tự xúc cơm bằng muỗng không làm đổ</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ cầm muỗng đúng cách, múc cơm và đưa lên miệng mà không làm đổ cơm ra ngoài quá nhiều.</field>
             <field name="smart_specific">Ăn hết 1 bát cơm, đổ cơm &lt;20% so với lượng ăn.</field>
             <field name="smart_measurable">Đạt 4/5 buổi ăn trong 2 tuần liên tiếp.</field>
@@ -306,7 +318,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_id" ref="difficulty_weight_1"/>
+            <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
         <!-- ═══ DOMAIN: HỌC TẬP ═══ -->
@@ -326,7 +338,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">42</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mẫu STO: Học tập - phân biệt màu sắc cơ bản -->
@@ -344,7 +356,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_1"/>
+            <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
         <!-- Mẫu STO: Học tập - viết tên -->
@@ -352,6 +364,7 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_academic')])]" />
             <field name="sequence">30</field>
             <field name="name">Viết tên mình theo mẫu chữ</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ copy tên mình (3-5 chữ cái) theo đường kẻ mờ, các chữ rõ ràng và đúng chiều.</field>
             <field name="smart_specific">Viết đủ các chữ cái trong tên, mỗi chữ không lệch quá 2 đường kẻ.</field>
             <field name="smart_measurable">Đạt 4/5 thử trong 3 buổi liên tiếp.</field>
@@ -362,7 +375,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">54</field>
             <field name="age_max_months">96</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- ═══ DOMAIN: THÍCH ỨNG ═══ -->
@@ -382,7 +395,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- Mau STO: Thich ung - chap nhan thay doi lich -->
@@ -400,7 +413,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">96</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- Mẫu STO: Thích ứng - theo quy trình bằng hình ảnh -->
@@ -408,6 +421,7 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_adaptive')])]" />
             <field name="sequence">30</field>
             <field name="name">Theo lịch trình bằng hình ảnh 4 bước độc lập</field>
+            <field name="default_measurement_type">prompt_level</field>
             <field name="description">Trẻ xem bảng hình ảnh lịch trình (4 thẻ hình), tự chuyển sang bước tiếp theo sau khi hoàn thành bước trước.</field>
             <field name="smart_specific">Hoàn thành 4 bước đúng thứ tự theo bảng hình mà không cần nhắc nhở miệng.</field>
             <field name="smart_measurable">Đạt 4/5 buổi trong 2 tuần liên tiếp.</field>
@@ -418,7 +432,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- ═══ DOMAIN: HÀNH VI (additional) ═══ -->
@@ -428,6 +442,9 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_behavior')])]" />
             <field name="sequence">20</field>
             <field name="name">Giảm tần suất bùng phát khi bị từ chối xuống 1 lần/buổi</field>
+            <field name="default_measurement_type">frequency_decrease</field>
+            <field name="default_baseline_count">5</field>
+            <field name="default_target_count">1</field>
             <field name="description">Khi bị từ chối đồ vật/hoạt động mong muốn, trẻ không có bùng phát (la hét, nằn sàn) vượt quá 1 lần trong buổi học.</field>
             <field name="smart_specific">Bùng phát &lt;= 1 lần trong một buổi học 30 phút.</field>
             <field name="smart_measurable">Đạt trong 4/5 buổi trong 2 tuần liên tiếp.</field>
@@ -438,7 +455,7 @@
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">84</field>
-            <field name="difficulty_id" ref="difficulty_weight_3"/>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
 
         <!-- Mẫu STO: Hành vi - tự yêu cầu nghỉ -->
@@ -446,6 +463,9 @@
             <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_behavior')])]" />
             <field name="sequence">30</field>
             <field name="name">Tự yêu cầu nghỉ bằng thẻ “Nghỉ” hoặc chữ “Nghỉ”</field>
+            <field name="default_measurement_type">frequency_increase</field>
+            <field name="default_baseline_count">0</field>
+            <field name="default_target_count">2</field>
             <field name="description">Khi cảm thấy mệt hoặc khó chịu, trẻ chủ động lấy thẻ hình/nói từ “Nghỉ” để yêu cầu nghỉ ngơi thay vì có hành vi thách thức.</field>
             <field name="smart_specific">Sử dụng thẻ/từ “Nghỉ” để yêu cầu nghỉ ít nhất 1 lần khi có dấu hiệu mệt.</field>
             <field name="smart_measurable">Xảy ra trong 4/5 buổi có tình huống trong 2 tuần.</field>
@@ -456,7 +476,7 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">72</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
         </record>
 
         <!-- ═══ DOMAIN: NHẬN THỨC (additional) ═══ -->
@@ -477,7 +497,65 @@
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
-            <field name="difficulty_id" ref="difficulty_weight_2"/>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
+        </record>
+
+        <!-- ═══ Bổ sung: phủ thêm các loại đo lường ═══ -->
+
+        <!-- Mẫu STO: Học tập - tập trung nhiệm vụ (DURATION) -->
+        <record id="tpl_obj_academic_focus_duration" model="educare.iep.objective.template">
+            <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_academic')])]" />
+            <field name="sequence">40</field>
+            <field name="name">Tập trung vào nhiệm vụ học liên tục 10 phút</field>
+            <field name="description">Trẻ duy trì sự chú ý vào một nhiệm vụ học (xếp hình, tô màu, ghép chữ) liên tục mà không rời khỏi nhiệm vụ.</field>
+            <field name="default_measurement_type">duration</field>
+            <field name="default_target_duration_seconds">600</field>
+            <field name="smart_specific">Duy trì chú ý vào nhiệm vụ tối thiểu 10 phút (600 giây).</field>
+            <field name="smart_measurable">Đạt mốc thời gian trong 3 buổi liên tiếp.</field>
+            <field name="smart_analysis">Khả năng tập trung kéo dài là nền tảng cho học tập có cấu trúc.</field>
+            <field name="smart_timebound">10 tuần</field>
+            <field name="default_consecutive_sessions">3</field>
+            <field name="age_min_months">42</field>
+            <field name="age_max_months">84</field>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
+        </record>
+
+        <!-- Mẫu STO: Giao tiếp - chủ động giơ tay/đưa mắt (FREQUENCY INCREASE) -->
+        <record id="tpl_obj_comm_initiate_freq" model="educare.iep.objective.template">
+            <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_communication')])]" />
+            <field name="sequence">30</field>
+            <field name="name">Chủ động giơ tay/đưa mắt để bắt đầu giao tiếp</field>
+            <field name="description">Đếm số lần trẻ tự khởi xướng giao tiếp (giơ tay, đưa mắt giao tiếp, gọi tên) trong buổi học — càng nhiều càng tốt.</field>
+            <field name="default_measurement_type">frequency_increase</field>
+            <field name="default_baseline_count">1</field>
+            <field name="default_target_count">5</field>
+            <field name="smart_specific">Khởi xướng giao tiếp tự phát nhiều lần trong buổi.</field>
+            <field name="smart_measurable">Đạt >= 5 lần/buổi trong 3 buổi liên tiếp.</field>
+            <field name="smart_analysis">Tăng khởi xướng giao tiếp là chỉ báo tiến bộ ngôn ngữ - xã hội.</field>
+            <field name="smart_timebound">8 tuần</field>
+            <field name="default_consecutive_sessions">3</field>
+            <field name="age_min_months">24</field>
+            <field name="age_max_months">72</field>
+            <field name="difficulty_id" ref="difficulty_weight_2" />
+        </record>
+
+        <!-- Mẫu STO: Hành vi - giảm hành vi tự kích thích (FREQUENCY DECREASE) -->
+        <record id="tpl_obj_behavior_reduce_stim" model="educare.iep.objective.template">
+            <field name="template_domain_ids" eval="[(6, 0, [ref('educare_base.domain_behavior')])]" />
+            <field name="sequence">40</field>
+            <field name="name">Giảm hành vi tự kích thích (vỗ tay/lắc người) trong buổi</field>
+            <field name="description">Đếm tổng số lần trẻ vỗ tay liên tục hoặc lắc lư người trong buổi học — càng ít càng tốt.</field>
+            <field name="default_measurement_type">frequency_decrease</field>
+            <field name="default_baseline_count">10</field>
+            <field name="default_target_count">2</field>
+            <field name="smart_specific">Giảm số lần hành vi tự kích thích xuống tối đa 2 lần/buổi.</field>
+            <field name="smart_measurable">Đạt &lt;= 2 lần/buổi trong 4 buổi liên tiếp.</field>
+            <field name="smart_analysis">Giảm hành vi tự kích thích giúp trẻ tập trung và tham gia tốt hơn.</field>
+            <field name="smart_timebound">10 tuần</field>
+            <field name="default_consecutive_sessions">4</field>
+            <field name="age_min_months">24</field>
+            <field name="age_max_months">84</field>
+            <field name="difficulty_id" ref="difficulty_weight_3" />
         </record>
     </data>
 </odoo>

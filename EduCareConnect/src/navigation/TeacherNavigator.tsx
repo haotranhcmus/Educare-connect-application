@@ -10,6 +10,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type {
   TeacherTabParamList,
   TeacherRootStackParamList,
+  HomeStackParamList,
   StudentStackParamList,
   SessionStackParamList,
   ReportStackParamList,
@@ -37,6 +38,10 @@ import { ReportCreateScreen } from "@screens/teacher/report/ReportCreateScreen";
 import { ReportDetailScreen } from "@screens/teacher/report/ReportDetailScreen";
 import { SessionPickerScreen } from "@screens/teacher/report/SessionPickerScreen";
 import { ChangePasswordScreen } from "@screens/teacher/profile/ChangePasswordScreen";
+import { NotificationListScreen } from "@screens/common/NotificationListScreen";
+import { ConversationListScreen } from "@screens/common/ConversationListScreen";
+import { ChatRoomScreen } from "@screens/common/ChatRoomScreen";
+import { AiChatScreen } from "@screens/common/AiChatScreen";
 
 import { ErrorBoundary } from "@components/common/ErrorBoundary";
 import { ScreenErrorFallback } from "@components/common/ScreenErrorFallback";
@@ -44,6 +49,7 @@ import { ScreenErrorFallback } from "@components/common/ScreenErrorFallback";
 const Tab = createBottomTabNavigator<TeacherTabParamList>();
 const TeacherRootStack =
   createNativeStackNavigator<TeacherRootStackParamList>();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const StudentStack = createNativeStackNavigator<StudentStackParamList>();
 const SessionStack = createNativeStackNavigator<SessionStackParamList>();
 const ReportStack = createNativeStackNavigator<ReportStackParamList>();
@@ -221,7 +227,7 @@ function ProfileStackNavigator() {
         <ProfileStack.Screen
           name="Profile"
           component={TeacherProfileScreen}
-          options={{ title: "Cá nhân" }}
+          options={{ title: "Cá nhân", headerShown: false }}
         />
         <ProfileStack.Screen
           name="ChangePassword"
@@ -229,6 +235,46 @@ function ProfileStackNavigator() {
           options={{ title: "Đổi mật khẩu" }}
         />
       </ProfileStack.Navigator>
+    </ErrorBoundary>
+  );
+}
+
+function HomeStackNavigator() {
+  const headerOptions = useHeaderOptions();
+  return (
+    <ErrorBoundary
+      name="HomeStack"
+      fallback={(error, reset) => (
+        <ScreenErrorFallback error={error} reset={reset} />
+      )}
+    >
+      <HomeStack.Navigator screenOptions={headerOptions}>
+        <HomeStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <HomeStack.Screen
+          name="NotificationList"
+          component={NotificationListScreen}
+          options={{ title: "Thông báo" }}
+        />
+        <HomeStack.Screen
+          name="ConversationList"
+          component={ConversationListScreen}
+          options={{ title: "Tin nhắn" }}
+        />
+        <HomeStack.Screen
+          name="ChatRoom"
+          component={ChatRoomScreen}
+          options={{ title: "" }}
+        />
+        <HomeStack.Screen
+          name="AiChat"
+          component={AiChatScreen}
+          options={{ title: "Trợ lý AI" }}
+        />
+      </HomeStack.Navigator>
     </ErrorBoundary>
   );
 }
@@ -284,14 +330,9 @@ function TeacherTabsNavigator() {
     >
       <Tab.Screen
         name="HomeTab"
-        component={HomeScreen}
-        options={{
-          title: "Trang chủ",
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" size={size} color={color} />
-          ),
-        }}
+        component={HomeStackNavigator}
+        options={makeStackTabOptions(theme, "Home", "Trang chủ", "home")}
+        listeners={popToTopOnTabPress}
       />
       <Tab.Screen
         name="StudentTab"

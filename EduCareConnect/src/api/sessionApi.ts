@@ -199,12 +199,16 @@ export async function fetchSessionResults(
       [
         "id",
         "objective_id",
-        "result_type",
+        "measurement_type",
+        "score_pct",
+        "is_recorded",
         "correct_trials",
         "total_trials",
-        "accuracy_pct",
-        "prompt_level_used",
+        "actual_duration_seconds",
+        "actual_count",
+        "trial_ids",
         "phase",
+        "mastery_achieved",
         "notes",
         "teaching_method",
       ],
@@ -227,7 +231,6 @@ export async function createSession(vals: {
   end_time: number;
   location: string;
   session_type: string;
-  session_purpose: string;
   objective_ids?: [number, number, number[]][];
 }): Promise<number> {
   logger.session("createSession", "start", {
@@ -304,7 +307,10 @@ type ActiveObjective = Pick<
   | "description"
   | "consecutive_sessions_required"
   | "consecutive_sessions_achieved"
-  | "measurement_method"
+  | "measurement_type"
+  | "target_duration_seconds"
+  | "baseline_count"
+  | "target_count"
   | "implementation_steps"
   | "materials_needed"
   | "smart_specific"
@@ -324,7 +330,8 @@ export async function fetchStudentActiveObjectives(
       "educare.iep.objective",
       [
         ["student_id", "=", studentId],
-        ["status", "in", ["not_started", "in_progress"]],
+        ["status", "not in", ["discontinued"]],
+        ["goal_id.plan_id.status", "=", "active"],
       ],
       [
         "id",
@@ -341,7 +348,10 @@ export async function fetchStudentActiveObjectives(
         "description",
         "consecutive_sessions_required",
         "consecutive_sessions_achieved",
-        "measurement_method",
+        "measurement_type",
+        "target_duration_seconds",
+        "baseline_count",
+        "target_count",
         "implementation_steps",
         "materials_needed",
       ],
@@ -413,7 +423,10 @@ export async function fetchObjectivesByIds(
         "description",
         "consecutive_sessions_required",
         "consecutive_sessions_achieved",
-        "measurement_method",
+        "measurement_type",
+        "target_duration_seconds",
+        "baseline_count",
+        "target_count",
         "implementation_steps",
         "materials_needed",
         "smart_specific",
@@ -522,7 +535,7 @@ export async function deleteSession(sessionId: number): Promise<boolean> {
 
 export async function cancelSession(
   sessionId: number,
-  cancelType: "cancelled_center" | "cancelled_family",
+  cancelType: string,
   reason: string = "",
 ): Promise<boolean> {
   logger.session("cancelSession", "start", { sessionId, cancelType });

@@ -11,14 +11,12 @@
                 <field name="session_purpose" />
                 <filter name="my_sessions" string="My Sessions"
                     domain="[('teacher_id', '=', uid)]" />
-                <filter name="intervention" string="Intervention"
+                <filter name="intervention" string="Can thiệp"
                     domain="[('session_purpose', '=', 'intervention')]" />
-                <filter name="maintenance_probe" string="Maintenance Probe"
-                    domain="[('session_purpose', '=', 'maintenance_probe')]" />
-                <filter name="generalization_probe" string="Generalization Probe"
-                    domain="[('session_purpose', '=', 'generalization_probe')]" />
-                <filter name="parent_training" string="Parent Training"
-                    domain="[('session_purpose', '=', 'parent_training')]" />
+                <filter name="maintenance" string="Duy trì"
+                    domain="[('session_purpose', '=', 'maintenance')]" />
+                <filter name="mixed" string="Can thiệp có duy trì"
+                    domain="[('session_purpose', '=', 'mixed')]" />
                 <filter name="active_sessions" string="Active Sessions"
                     domain="[('status', 'in', ['scheduled', 'completed', 'done'])]"
                     help="Hide draft sessions — used as default view in Calendar" />

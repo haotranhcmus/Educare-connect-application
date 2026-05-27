@@ -52,25 +52,32 @@ export const PERFORMANCE_CONFIG: Record<string, PerformanceMeta> = {
     icon: "thumb-up",
   },
   fair: {
-    label: "Trung bình",
+    label: "Khá",
     color: "#E65100",
     bg: "#FFF3E0",
     icon: "minus-circle",
   },
+  poor: {
+    label: "Cần cải thiện",
+    color: "#B71C1C",
+    bg: "#FFEBEE",
+    icon: "heart-pulse",
+  },
+  very_poor: {
+    label: "Rất yếu",
+    color: "#7B1FA2",
+    bg: "#F3E5F5",
+    icon: "alert-circle",
+  },
+  // Legacy aliases kept for backward compatibility
   average: {
-    label: "Trung bình",
+    label: "Khá",
     color: "#E65100",
     bg: "#FFF3E0",
     icon: "minus-circle",
   },
   needs_support: {
     label: "Cần hỗ trợ",
-    color: "#B71C1C",
-    bg: "#FFEBEE",
-    icon: "heart-pulse",
-  },
-  poor: {
-    label: "Kém",
     color: "#B71C1C",
     bg: "#FFEBEE",
     icon: "heart-pulse",

@@ -50,10 +50,18 @@
 
                         </group>
                         <group string="Mặc định đề xuất">
-                            <field name="default_baseline_accuracy_pct" />
-                            <field name="default_target_accuracy_pct" />
+                            <field name="default_measurement_type" />
+                            <field name="default_baseline_accuracy_pct"
+                                invisible="default_measurement_type not in ('accuracy','prompt_level')" />
+                            <field name="default_target_accuracy_pct"
+                                invisible="default_measurement_type not in ('accuracy','prompt_level')" />
+                            <field name="default_target_duration_seconds"
+                                invisible="default_measurement_type != 'duration'" />
+                            <field name="default_baseline_count"
+                                invisible="default_measurement_type not in ('frequency_increase','frequency_decrease')" />
+                            <field name="default_target_count"
+                                invisible="default_measurement_type not in ('frequency_increase','frequency_decrease')" />
                             <field name="default_consecutive_sessions" />
-                            <field name="default_data_collection_method" />
                         </group>
                     </group>
 

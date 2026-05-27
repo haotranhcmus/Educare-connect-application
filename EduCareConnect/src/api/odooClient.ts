@@ -142,6 +142,29 @@ export async function getSessionInfo() {
 }
 
 /**
+ * Generic JSON-RPC call to any Odoo controller route (`@http.route(type="json")`).
+ *
+ * Used for custom REST endpoints under `/api/...` declared by our own modules
+ * (e.g. `educare_notification/controllers/api.py`). Goes through the same
+ * interceptors (auth cookie, error normalization, logging) as `callKw`.
+ *
+ * @example
+ *   await callJsonRoute<{ count: number }>("/api/notifications/unread-count");
+ */
+export async function callJsonRoute<T = unknown>(
+  path: string,
+  params: Record<string, unknown> = {},
+): Promise<T> {
+  const response = await client.post<OdooRpcResponse<T>>(path, {
+    jsonrpc: "2.0",
+    method: "call",
+    id: nextRpcId(),
+    params,
+  });
+  return response.data.result;
+}
+
+/**
  * Generic call_kw — gọi bất kỳ method trên bất kỳ model
  */
 export async function callKw<T = unknown>(

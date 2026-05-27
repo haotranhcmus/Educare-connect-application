@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { PROMPT_LEVEL_LABELS } from "@utils/labels";
+import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
 import type { SessionResult } from "@t";
 
 /** Map accuracy → { color, bg, label } */
@@ -29,16 +29,24 @@ function ResultSummaryCardImpl({ result }: ResultSummaryCardProps) {
   const objCode = objName.split(" ")[0];
   const displayObjName = objName.substring(objCode.length).trim();
 
-  const accuracy = Math.round(result.accuracy_pct);
+  const accuracy = Math.round(result.score_pct ?? 0);
   const accMeta = getAccuracyMeta(
     accuracy,
     theme.colors.primary,
     theme.colors.error,
   );
-  const promptLabel =
-    PROMPT_LEVEL_LABELS[result.prompt_level_used] ||
-    result.prompt_level_used ||
-    "—";
+  const mt = result.measurement_type;
+  const typeLabel = MEASUREMENT_TYPE_LABELS[mt] || mt;
+  let detailValue = "—";
+  if (mt === "accuracy") {
+    detailValue = `${result.correct_trials ?? 0}/${result.total_trials ?? 0}`;
+  } else if (mt === "duration") {
+    detailValue = `${result.actual_duration_seconds ?? 0}s`;
+  } else if (mt === "frequency_increase" || mt === "frequency_decrease") {
+    detailValue = `${result.actual_count ?? 0} lần`;
+  } else if (mt === "prompt_level") {
+    detailValue = `${result.trial_ids?.length ?? 0} lần thử`;
+  }
 
   return (
     <View
@@ -107,20 +115,12 @@ function ResultSummaryCardImpl({ result }: ResultSummaryCardProps) {
           },
         ]}
       >
-        {/* Số lần đúng */}
+        {/* Chi tiết */}
         <View style={styles.statCell}>
-          <Text style={styles.statLabel}>Số lần đúng</Text>
+          <Text style={styles.statLabel}>Chi tiết</Text>
           <View style={styles.statValueRow}>
             <Text style={[styles.statBig, { color: theme.colors.onSurface }]}>
-              {result.correct_trials}
-            </Text>
-            <Text
-              style={[
-                styles.statSmall,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
-            >
-              /{result.total_trials}
+              {detailValue}
             </Text>
           </View>
         </View>
@@ -147,16 +147,16 @@ function ResultSummaryCardImpl({ result }: ResultSummaryCardProps) {
           ]}
         />
 
-        {/* Mức gợi ý */}
+        {/* Cách đo */}
         <View style={[styles.statCell, styles.statCellWide]}>
-          <Text style={styles.statLabel}>Mức gợi ý</Text>
+          <Text style={styles.statLabel}>Cách đo</Text>
           <Text
             style={[styles.statBig, { color: theme.colors.onSurface }]}
             numberOfLines={2}
             adjustsFontSizeToFit
             minimumFontScale={0.8}
           >
-            {promptLabel}
+            {typeLabel}
           </Text>
         </View>
       </View>

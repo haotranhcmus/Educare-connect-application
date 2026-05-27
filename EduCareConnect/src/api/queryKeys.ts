@@ -76,8 +76,7 @@ export const queryKeys = {
     today: (uid: Uid) => ["sessions", "today", uid] as const,
     my: (uid: Uid, filters?: { dateFrom?: string; dateTo?: string } | null) =>
       ["sessions", "my", uid, filters ?? null] as const,
-    detail: (sessionId: MaybeId) =>
-      ["sessions", "detail", sessionId] as const,
+    detail: (sessionId: MaybeId) => ["sessions", "detail", sessionId] as const,
     results: (sessionId: MaybeId) =>
       ["sessions", "results", sessionId] as const,
     availableForReport: (uid: Uid) =>
@@ -89,8 +88,7 @@ export const queryKeys = {
   // ── Reports ─────────────────────────────────────────────────────────────
   reports: {
     all: ["reports"] as const,
-    student: (studentId: MaybeId) =>
-      ["reports", "student", studentId] as const,
+    student: (studentId: MaybeId) => ["reports", "student", studentId] as const,
     my: (uid: Uid) => ["reports", "my", uid] as const,
     detail: (reportId: MaybeId) => ["reports", "detail", reportId] as const,
     forSession: (sessionId: MaybeId) =>
@@ -127,8 +125,7 @@ export const queryKeys = {
       ["parent", "plan-history", studentId] as const,
     goalsObjectives: (planId: MaybeId) =>
       ["parent", "goals-objectives", planId] as const,
-    reports: (studentId: MaybeId) =>
-      ["parent", "reports", studentId] as const,
+    reports: (studentId: MaybeId) => ["parent", "reports", studentId] as const,
     /** Broad prefix for invalidating any `parent.reports(*)` cache. */
     reportsAll: () => ["parent", "reports"] as const,
     /** Broad prefix for invalidating any `parent.unreadCount(*)` cache. */
@@ -138,5 +135,28 @@ export const queryKeys = {
       dateFrom: string | undefined,
       dateTo: string | undefined,
     ) => ["parent", "timetable", studentId, dateFrom, dateTo] as const,
+  },
+  // ── Notifications ───────────────────────────────────────────────────────
+  notifications: {
+    all: ["notifications"] as const,
+    list: (uid: Uid, onlyUnread: boolean) =>
+      ["notifications", "list", uid, onlyUnread] as const,
+    unreadCount: (uid: Uid) => ["notifications", "unread-count", uid] as const,
+  },
+
+  // ── Chat ────────────────────────────────────────────────────────────────
+  chat: {
+    all: ["chat"] as const,
+    conversations: (uid: Uid) => ["chat", "conversations", uid] as const,
+    messages: (conversationId: MaybeId) =>
+      ["chat", "messages", conversationId] as const,
+    unreadCount: (uid: Uid) => ["chat", "unread-count", uid] as const,
+  },
+
+  // ── AI assistant ────────────────────────────────────────────────────────
+  ai: {
+    all: ["ai"] as const,
+    session: (uid: Uid) => ["ai", "session", uid] as const,
+    messages: (channelId: MaybeId) => ["ai", "messages", channelId] as const,
   },
 } as const;

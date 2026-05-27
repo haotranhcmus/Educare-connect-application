@@ -8,8 +8,10 @@
     "depends": [
         "educare_student",
         "educare_session",
+        "educare_iep",
         "mail",
     ],
+    "post_init_hook": "post_init_hook",
     "data": [
         "security/ir.model.access.csv",
         "security/record_rules.xml",
@@ -23,9 +25,7 @@
         "views/session_log_inherit.xml",
         "views/menu.xml",
     ],
-    "demo": [
-        "data/report_demo_data.xml",
-    ],
+    "demo": [],
     "installable": True,
     "application": False,
 }

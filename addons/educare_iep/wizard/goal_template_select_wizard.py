@@ -128,8 +128,12 @@ class EducareIepGoalTemplateSelectWizard(models.TransientModel):
                     "template_id": tpl.id,
                     "name": tpl.name,
                     "description": tpl.description,
+                    "measurement_type": tpl.default_measurement_type or "accuracy",
                     "baseline_accuracy_pct": tpl.default_baseline_accuracy_pct or 0.0,
                     "target_accuracy_pct": tpl.default_target_accuracy_pct or 80.0,
+                    "target_duration_seconds": tpl.default_target_duration_seconds or 0,
+                    "baseline_count": tpl.default_baseline_count or 0,
+                    "target_count": tpl.default_target_count or 0,
                     "consecutive_sessions_required": tpl.default_consecutive_sessions
                     or 3,
                     "weight": weight,

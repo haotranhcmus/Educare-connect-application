@@ -31,9 +31,17 @@ interface DatePickerFieldProps {
   label: string;
   value: string; // YYYY-MM-DD
   onChange: (v: string) => void;
+  disablePast?: boolean;
+  minDate?: string; // YYYY-MM-DD — takes precedence over disablePast
 }
 
-export function DatePickerField({ label, value, onChange }: DatePickerFieldProps) {
+export function DatePickerField({
+  label,
+  value,
+  onChange,
+  disablePast,
+  minDate,
+}: DatePickerFieldProps) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [calMonth, setCalMonth] = useState(() => {
@@ -76,7 +84,9 @@ export function DatePickerField({ label, value, onChange }: DatePickerFieldProps
       >
         <View style={styles.overlay}>
           <Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} />
-          <View style={[styles.sheet, { backgroundColor: theme.colors.surface }]}>
+          <View
+            style={[styles.sheet, { backgroundColor: theme.colors.surface }]}
+          >
             <View style={styles.handle} />
 
             {/* Month navigation */}
@@ -91,7 +101,9 @@ export function DatePickerField({ label, value, onChange }: DatePickerFieldProps
                   color={theme.colors.primary}
                 />
               </TouchableOpacity>
-              <RNText style={[styles.monthLabel, { color: theme.colors.onSurface }]}>
+              <RNText
+                style={[styles.monthLabel, { color: theme.colors.onSurface }]}
+              >
                 Tháng {calMonth.format("MM / YYYY")}
               </RNText>
               <TouchableOpacity
@@ -124,26 +136,36 @@ export function DatePickerField({ label, value, onChange }: DatePickerFieldProps
                 {week.map((day, di) => {
                   if (!day) return <View key={di} style={styles.dayCell} />;
                   const dateStr = calMonth.date(day).format("YYYY-MM-DD");
+                  const effectiveMin =
+                    minDate ?? (disablePast ? today : undefined);
+                  const isDisabled = !!effectiveMin && dateStr < effectiveMin;
                   const isSelected = dateStr === value;
                   const isToday = dateStr === today;
                   return (
                     <TouchableOpacity
                       key={di}
                       style={styles.dayCell}
-                      onPress={() => {
-                        onChange(dateStr);
-                        setOpen(false);
-                      }}
-                      activeOpacity={0.7}
+                      onPress={
+                        isDisabled
+                          ? undefined
+                          : () => {
+                              onChange(dateStr);
+                              setOpen(false);
+                            }
+                      }
+                      disabled={isDisabled}
+                      activeOpacity={isDisabled ? 1 : 0.7}
                     >
                       <View
                         style={[
                           styles.dayCircle,
-                          isSelected && {
-                            backgroundColor: theme.colors.primary,
-                          },
+                          isSelected &&
+                            !isDisabled && {
+                              backgroundColor: theme.colors.primary,
+                            },
                           isToday &&
-                            !isSelected && {
+                            !isSelected &&
+                            !isDisabled && {
                               borderWidth: 1.5,
                               borderColor: theme.colors.primary,
                             },
@@ -153,12 +175,15 @@ export function DatePickerField({ label, value, onChange }: DatePickerFieldProps
                           style={[
                             styles.dayText,
                             {
-                              color: isSelected
-                                ? theme.colors.onPrimary
-                                : theme.colors.onSurface,
+                              color: isDisabled
+                                ? theme.colors.outlineVariant
+                                : isSelected
+                                  ? theme.colors.onPrimary
+                                  : theme.colors.onSurface,
                             },
                             isToday &&
-                              !isSelected && {
+                              !isSelected &&
+                              !isDisabled && {
                                 color: theme.colors.primary,
                                 fontWeight: "700",
                               },
@@ -172,6 +197,7 @@ export function DatePickerField({ label, value, onChange }: DatePickerFieldProps
                 })}
               </View>
             ))}
+            <View style={{ height: 16 }} />
           </View>
         </View>
       </Modal>
@@ -199,7 +225,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#ddd",
     marginBottom: 12,
   },
   monthRow: {
