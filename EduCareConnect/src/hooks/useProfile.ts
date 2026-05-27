@@ -1,11 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchMyProfile, changePassword, uploadAvatar } from "../api/profileApi";
-import { useAuthStore } from "../store/authStore";
+import {
+  fetchMyProfile,
+  changePassword,
+  uploadAvatar,
+} from "@api/profileApi";
+import { queryKeys } from "@api/queryKeys";
+import { useAuthStore } from "@store/authStore";
 
 export function useMyProfile() {
   const uid = useAuthStore((s) => s.uid);
   return useQuery({
-    queryKey: ["profile", "me", uid],
+    queryKey: queryKeys.profile.me(uid),
     queryFn: () => fetchMyProfile(uid!),
     enabled: !!uid,
   });
@@ -18,7 +23,7 @@ export function useUploadAvatar() {
     mutationFn: ({ base64Image }: { base64Image: string }) =>
       uploadAvatar(uid!, base64Image),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["profile", "me", uid] });
+      qc.invalidateQueries({ queryKey: queryKeys.profile.me(uid) });
     },
   });
 }
@@ -34,5 +39,3 @@ export function useChangePassword() {
     }) => changePassword(oldPassword, newPassword),
   });
 }
-
-

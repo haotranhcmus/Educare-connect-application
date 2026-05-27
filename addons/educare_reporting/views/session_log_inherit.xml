@@ -11,7 +11,10 @@
                     type="action"
                     string="Generate Report"
                     class="btn-primary"
-                    invisible="status != 'done'" />
+                    invisible="status != 'done' or daily_report_count > 0" />
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <field name="daily_report_count" invisible="1" />
             </xpath>
         </field>
     </record>

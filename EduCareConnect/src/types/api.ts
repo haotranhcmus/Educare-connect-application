@@ -38,5 +38,18 @@ export interface ListParams {
   offset?: number;
   limit?: number;
   order?: string;
-  domain?: unknown[];
+  domain?: OdooDomain;
 }
+
+/**
+ * Odoo search domain. Tuple `[field, operator, value]` or logical operator
+ * literals like `"&"`, `"|"`, `"!"`. We allow mixed entries via union since
+ * Odoo accepts heterogeneous arrays.
+ */
+export type OdooDomainOperator = "&" | "|" | "!";
+export type OdooDomainLeaf = readonly [string, string, unknown];
+export type OdooDomainNode = OdooDomainLeaf | OdooDomainOperator;
+export type OdooDomain = ReadonlyArray<OdooDomainNode>;
+
+/** Mutable form for builders that push leaves incrementally. */
+export type OdooMutableDomain = OdooDomainNode[];

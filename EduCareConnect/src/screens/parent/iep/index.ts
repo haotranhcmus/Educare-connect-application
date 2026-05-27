@@ -1,2 +1,1 @@
-export { ParentIepPlanScreen } from "./ParentIepPlanScreen";
-export { IepHistoryScreen } from "./IepHistoryScreen";
+export { ChildIepHistoryScreen } from "@screens/parent/iep/ChildIepHistoryScreen";

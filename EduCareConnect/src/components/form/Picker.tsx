@@ -27,6 +27,11 @@ export function Picker({ label, value, options, onChange }: PickerProps) {
             mode="outlined"
             onPress={() => setVisible(true)}
             contentStyle={styles.btnContent}
+            labelStyle={
+              selected
+                ? { color: theme.colors.onSurface, textAlign: "left" }
+                : { color: theme.colors.outline, textAlign: "left" }
+            }
           >
             {selected?.label || "Chọn..."}
           </Button>

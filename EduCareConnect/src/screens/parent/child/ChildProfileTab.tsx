@@ -1,14 +1,16 @@
 import React from "react";
-import { ScrollView, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import Animated from "react-native-reanimated";
 import { Text, Divider, useTheme } from "react-native-paper";
-import { SectionHeader } from "../../../components/common/SectionHeader";
-import { AvatarLabel } from "../../../components/common/AvatarLabel";
+import { SectionHeader } from "@components/common/SectionHeader";
+import { AvatarLabel } from "@components/common/AvatarLabel";
+import { formatDate } from "@utils/formatters";
+import { GENDER_LABELS, DIAGNOSIS_LABELS } from "@utils/labels";
 
 interface ChildProfileTabProps {
   student: any;
+  contentInsetTop?: number;
 }
-
-const GENDER_LABELS: Record<string, string> = { male: "Nam", female: "Nữ" };
 
 function InfoCell({ label, value }: { label: string; value?: string | null }) {
   const theme = useTheme();
@@ -43,13 +45,10 @@ function InfoGrid({
   );
 }
 
-function formatDate(date: string | false | undefined): string {
-  if (!date) return "";
-  const d = new Date(date + "T00:00:00");
-  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
-}
-
-export function ChildProfileTab({ student }: ChildProfileTabProps) {
+export function ChildProfileTab({
+  student,
+  contentInsetTop = 0,
+}: ChildProfileTabProps) {
   const theme = useTheme();
   if (!student) return null;
 
@@ -63,14 +62,21 @@ export function ChildProfileTab({ student }: ChildProfileTabProps) {
     ? student.center_id[1]
     : undefined;
 
-  const dobStr = formatDate(student.date_of_birth);
+  // Guard against the "—" placeholder formatDate returns for falsy input
+  // so we don't render an empty-age cell.
+  const dobStr = student.date_of_birth ? formatDate(student.date_of_birth) : "";
   const dobWithAge = dobStr
     ? `${dobStr}${student.age ? `  (${student.age} tuổi)` : ""}`
     : undefined;
 
   return (
-    <ScrollView style={{ backgroundColor: theme.colors.background }}>
-      <SectionHeader icon="account" title="Thông tin cơ bản" />
+    <Animated.ScrollView
+      style={{ backgroundColor: theme.colors.background }}
+      contentContainerStyle={{ paddingTop: contentInsetTop }}
+    >
+      <View style={{ paddingHorizontal: 12 }}>
+        <SectionHeader icon="account" title="Thông tin cơ bản" />
+      </View>
       <View style={styles.section}>
         <InfoGrid
           items={[
@@ -84,17 +90,26 @@ export function ChildProfileTab({ student }: ChildProfileTabProps) {
               label: "Ngày bắt đầu can thiệp",
               value: formatDate(student.enrollment_date),
             },
+            {
+              label: "Trung tâm can thiệp",
+              value: centerName,
+            },
           ]}
         />
       </View>
 
       <Divider />
 
-      <SectionHeader icon="medical-bag" title="Chẩn đoán" />
+      <View style={{ paddingHorizontal: 12 }}>
+        <SectionHeader icon="clipboard-list" title="Chẩn đoán" />
+      </View>
       <View style={styles.section}>
         <InfoGrid
           items={[
-            { label: "Chẩn đoán chính", value: student.primary_diagnosis },
+            {
+              label: "Chẩn đoán chính",
+              value: DIAGNOSIS_LABELS[student.primary_diagnosis],
+            },
             { label: "Chẩn đoán phụ", value: student.secondary_diagnosis },
           ]}
         />
@@ -102,29 +117,20 @@ export function ChildProfileTab({ student }: ChildProfileTabProps) {
 
       <Divider />
 
-      <SectionHeader icon="account-group" title="Đội ngũ can thiệp" />
+      <View style={{ paddingHorizontal: 12 }}>
+        <SectionHeader icon="account-group" title="Đội ngũ can thiệp" />
+      </View>
       <View style={styles.section}>
-        {teacherName && (
-          <View style={styles.teamRow}>
-            <Text
-              variant="labelSmall"
-              style={{ color: theme.colors.outline, marginBottom: 4 }}
-            >
-              Giáo viên phụ trách
-            </Text>
-            <AvatarLabel name={teacherName} size={32} />
-          </View>
-        )}
         <InfoGrid
           items={[
-            { label: "Supervisor / BCBA", value: supervisorName },
-            { label: "Trung tâm", value: centerName },
+            { label: "Giáo viên phụ trách", value: teacherName },
+            { label: "Giám sát viên", value: supervisorName },
           ]}
         />
       </View>
 
       <View style={{ height: 40 }} />
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 

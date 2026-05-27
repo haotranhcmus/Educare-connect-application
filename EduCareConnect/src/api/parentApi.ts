@@ -1,8 +1,22 @@
-import { callKw, searchCount, searchRead } from "./odooClient";
+import dayjs from "dayjs";
+import { callKw, searchCount, searchRead } from "@api/odooClient";
+import type {
+  ParentStudent,
+  StudentDetail,
+  ParentActiveIepPlan,
+  ParentIepPlanGoal,
+  ParentGoalWithObjectives,
+  ParentObjectiveRow,
+  ParentLatestSession,
+  ParentTimetableSession,
+  ReportListItem,
+} from "@t";
 
 // ── Fetch parent's student (first child, backward-compat) ─────
-export async function fetchMyStudent(uid: number) {
-  const result = await searchRead<any>(
+export async function fetchMyStudent(
+  uid: number,
+): Promise<StudentDetail | null> {
+  const result = await searchRead<StudentDetail>(
     "educare.student",
     [["parent_user_id", "=", uid]],
     [
@@ -24,12 +38,12 @@ export async function fetchMyStudent(uid: number) {
     ],
     { limit: 1 },
   );
-  return result[0] || null;
+  return result[0] ?? null;
 }
 
 // ── Fetch all children of a parent ───────────────────────────
-export async function fetchMyStudents(uid: number) {
-  return searchRead<any>(
+export async function fetchMyStudents(uid: number): Promise<ParentStudent[]> {
+  return searchRead<ParentStudent>(
     "educare.student",
     [["parent_user_id", "=", uid]],
     [
@@ -48,8 +62,10 @@ export async function fetchMyStudents(uid: number) {
 }
 
 // ── Fetch a single student by ID ─────────────────────────────
-export async function fetchStudentById(studentId: number) {
-  const result = await searchRead<any>(
+export async function fetchStudentById(
+  studentId: number,
+): Promise<StudentDetail | null> {
+  const result = await searchRead<StudentDetail>(
     "educare.student",
     [["id", "=", studentId]],
     [
@@ -66,13 +82,32 @@ export async function fetchStudentById(studentId: number) {
       "class_name",
       "enrollment_date",
       "primary_diagnosis",
+      "secondary_diagnosis_ids",
+      "diagnosis_date",
+      "diagnosed_by",
+      "current_medications",
+      "medical_alert",
+      "medical_alert_detail",
       "assigned_teacher_id",
+      "co_teacher_ids",
       "supervisor_id",
+      "parent_user_id",
+      "parent_name",
+      "parent_phone",
+      "parent_email",
+      "parent_relation",
+      "preferred_contact_method",
+      "receive_daily_report",
+      "learning_style",
+      "communication_level",
+      "attention_span",
+      "behavior_notes",
+      "reinforcement_preferences",
       "center_id",
     ],
     { limit: 1 },
   );
-  return result[0] || null;
+  return result[0] ?? null;
 }
 
 // ── Fetch unread report count ─────────────────────────────────
@@ -87,8 +122,10 @@ export async function fetchUnreadReportCount(
 }
 
 // ── Fetch active IEP plan with goals ──────────────────────────
-export async function fetchActiveIepPlan(studentId: number) {
-  const plans = await searchRead<any>(
+export async function fetchActiveIepPlan(
+  studentId: number,
+): Promise<ParentActiveIepPlan | null> {
+  const plans = await searchRead<Omit<ParentActiveIepPlan, "goals">>(
     "educare.iep.plan",
     [
       ["student_id", "=", studentId],
@@ -108,7 +145,7 @@ export async function fetchActiveIepPlan(studentId: number) {
   if (!plans.length) return null;
 
   const plan = plans[0];
-  const goals = await searchRead<any>(
+  const goals = await searchRead<ParentIepPlanGoal>(
     "educare.iep.goal",
     [["plan_id", "=", plan.id]],
     [
@@ -124,8 +161,10 @@ export async function fetchActiveIepPlan(studentId: number) {
 }
 
 // ── Fetch latest completed session ────────────────────────────
-export async function fetchLatestSession(studentId: number) {
-  const result = await searchRead<any>(
+export async function fetchLatestSession(
+  studentId: number,
+): Promise<ParentLatestSession | null> {
+  const result = await searchRead<ParentLatestSession>(
     "educare.session.log",
     [
       ["student_id", "=", studentId],
@@ -134,12 +173,14 @@ export async function fetchLatestSession(studentId: number) {
     ["id", "session_date", "start_time", "end_time", "location", "status"],
     { limit: 1, order: "session_date desc" },
   );
-  return result[0] || null;
+  return result[0] ?? null;
 }
 
 // ── Fetch all IEP plans (for history) ─────────────────────────
-export async function fetchIepPlanHistory(studentId: number) {
-  return searchRead<any>(
+export async function fetchIepPlanHistory(
+  studentId: number,
+): Promise<Omit<ParentActiveIepPlan, "goals">[]> {
+  return searchRead<Omit<ParentActiveIepPlan, "goals">>(
     "educare.iep.plan",
     [["student_id", "=", studentId]],
     [
@@ -156,8 +197,10 @@ export async function fetchIepPlanHistory(studentId: number) {
 }
 
 // ── Fetch goals with objectives for a plan ────────────────────
-export async function fetchGoalsWithObjectives(planId: number) {
-  const goals = await searchRead<any>(
+export async function fetchGoalsWithObjectives(
+  planId: number,
+): Promise<ParentGoalWithObjectives[]> {
+  const goals = await searchRead<ParentIepPlanGoal>(
     "educare.iep.goal",
     [["plan_id", "=", planId]],
     [
@@ -170,9 +213,9 @@ export async function fetchGoalsWithObjectives(planId: number) {
     ],
   );
 
-  // Fetch objectives for each goal
+  const result: ParentGoalWithObjectives[] = [];
   for (const goal of goals) {
-    goal.objectives = await searchRead<any>(
+    const objectives = await searchRead<ParentObjectiveRow>(
       "educare.iep.objective",
       [["goal_id", "=", goal.id]],
       [
@@ -188,8 +231,9 @@ export async function fetchGoalsWithObjectives(planId: number) {
         "last_session_accuracy",
       ],
     );
+    result.push({ ...goal, objectives });
   }
-  return goals;
+  return result;
 }
 
 // ── Count sessions this week ──────────────────────────────────
@@ -203,7 +247,7 @@ export async function fetchSessionsThisWeek(
   monday.setDate(now.getDate() - offsetToMonday);
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
-  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  const fmt = (d: Date) => dayjs(d).format("YYYY-MM-DD");
   return searchCount("educare.session.log", [
     ["student_id", "=", studentId],
     ["session_date", ">=", fmt(monday)],
@@ -217,11 +261,11 @@ export async function fetchStudentTimetable(
   studentId: number,
   dateFrom?: string,
   dateTo?: string,
-) {
-  const domain: any[] = [["student_id", "=", studentId]];
+): Promise<ParentTimetableSession[]> {
+  const domain: unknown[] = [["student_id", "=", studentId]];
   if (dateFrom) domain.push(["session_date", ">=", dateFrom]);
   if (dateTo) domain.push(["session_date", "<=", dateTo]);
-  return searchRead<any>(
+  return searchRead<ParentTimetableSession>(
     "educare.session.log",
     domain,
     [
@@ -243,8 +287,10 @@ export async function fetchStudentTimetable(
 }
 
 // ── Fetch parent reports ──────────────────────────────────────
-export async function fetchParentReports(studentId: number) {
-  return searchRead<any>(
+export async function fetchParentReports(
+  studentId: number,
+): Promise<ReportListItem[]> {
+  return searchRead<ReportListItem>(
     "educare.daily.report",
     [
       ["student_id", "=", studentId],

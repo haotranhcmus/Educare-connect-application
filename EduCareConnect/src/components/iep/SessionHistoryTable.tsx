@@ -1,14 +1,44 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { DataTable, Text, useTheme } from "react-native-paper";
-import { formatDate } from "../../utils/formatters";
-import type { SessionResult } from "../../types";
+import { formatDate } from "@utils/formatters";
+import type { SessionResult, MeasurementType } from "@t";
 
 interface SessionHistoryTableProps {
   results: SessionResult[];
+  measurementType: MeasurementType;
 }
 
-export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
+/** Header label for the detail column, per measurement type. */
+const DETAIL_HEADER: Record<MeasurementType, string> = {
+  accuracy: "Đúng/Tổng",
+  prompt_level: "Số lần thử",
+  duration: "Thời gian",
+  frequency_increase: "Số lần",
+  frequency_decrease: "Số lần",
+};
+
+/** Per-row detail value, matching the objective's measurement type. */
+function rowDetail(r: SessionResult, mt: MeasurementType): string {
+  switch (mt) {
+    case "accuracy":
+      return `${r.correct_trials ?? 0}/${r.total_trials ?? 0}`;
+    case "duration":
+      return `${r.actual_duration_seconds ?? 0}s`;
+    case "frequency_increase":
+    case "frequency_decrease":
+      return `${r.actual_count ?? 0} lần`;
+    case "prompt_level":
+      return `${r.trial_ids?.length ?? 0} lần`;
+    default:
+      return "—";
+  }
+}
+
+export function SessionHistoryTable({
+  results,
+  measurementType,
+}: SessionHistoryTableProps) {
   const theme = useTheme();
 
   if (results.length === 0) {
@@ -25,10 +55,10 @@ export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
     <DataTable>
       <DataTable.Header>
         <DataTable.Title>Ngày</DataTable.Title>
-        <DataTable.Title numeric>Đúng/Tổng</DataTable.Title>
-        <DataTable.Title numeric>%</DataTable.Title>
-        {/* 1. Thêm numeric vào Title để nó căn phải giống dữ liệu bên dưới */}
-        <DataTable.Title numeric>Prompt</DataTable.Title>
+        <DataTable.Title numeric>
+          {DETAIL_HEADER[measurementType] || "Chi tiết"}
+        </DataTable.Title>
+        <DataTable.Title numeric>Điểm</DataTable.Title>
       </DataTable.Header>
 
       {results.slice(0, 10).map((r) => (
@@ -37,31 +67,22 @@ export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
             <Text variant="bodySmall">{formatDate(r.session_date)}</Text>
           </DataTable.Cell>
           <DataTable.Cell numeric>
-            <Text variant="bodySmall">
-              {r.correct_trials}/{r.total_trials}
-            </Text>
+            <Text variant="bodySmall">{rowDetail(r, measurementType)}</Text>
           </DataTable.Cell>
           <DataTable.Cell numeric>
             <Text
               variant="bodySmall"
               style={{
                 color:
-                  r.accuracy_pct >= 80
+                  r.score_pct >= 80
                     ? theme.colors.primary
-                    : r.accuracy_pct >= 50
+                    : r.score_pct >= 50
                       ? "#F57C00"
                       : theme.colors.error,
                 fontWeight: "600",
               }}
             >
-              {Math.round(r.accuracy_pct)}%
-            </Text>
-          </DataTable.Cell>
-
-          {/* 2. Đổi style flex-end thành prop numeric cho đồng bộ với Header */}
-          <DataTable.Cell numeric>
-            <Text variant="labelSmall" numberOfLines={1}>
-              {PROMPT_SHORT[r.prompt_level_used] || r.prompt_level_used || "—"}
+              {Math.round(r.score_pct ?? 0)}%
             </Text>
           </DataTable.Cell>
         </DataTable.Row>
@@ -69,14 +90,6 @@ export function SessionHistoryTable({ results }: SessionHistoryTableProps) {
     </DataTable>
   );
 }
-
-const PROMPT_SHORT: Record<string, string> = {
-  independent: "ĐL",
-  verbal_prompt: "Lời",
-  gestural_prompt: "Cử chỉ",
-  partial_physical: "Một phần",
-  full_physical: "Hoàn toàn",
-};
 
 const styles = StyleSheet.create({
   empty: { alignItems: "center", paddingVertical: 24 },

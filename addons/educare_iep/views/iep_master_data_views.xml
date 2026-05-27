@@ -259,4 +259,56 @@
         </field>
     </record>
 
+    <!-- ================================================= -->
+    <!-- DIFFICULTY WEIGHT CONFIGURATION                   -->
+    <!-- ================================================= -->
+    <record id="view_iep_difficulty_weight_form" model="ir.ui.view">
+        <field name="name">educare.iep.difficulty.weight.form</field>
+        <field name="model">educare.iep.difficulty.weight</field>
+        <field name="arch" type="xml">
+            <form string="Cấu hình Trọng số độ khó">
+                <sheet>
+                    <group>
+                        <group string="Cài đặt">
+                            <field name="sequence" />
+                            <field name="name" />
+                            <field name="weight" />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" colspan="2" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_iep_difficulty_weight_tree" model="ir.ui.view">
+        <field name="name">educare.iep.difficulty.weight.tree</field>
+        <field name="model">educare.iep.difficulty.weight</field>
+        <field name="arch" type="xml">
+            <tree string="Trọng số theo Độ khó" editable="bottom" decoration-muted="active == False">
+                <field name="active" column_invisible="1" />
+                <field name="sequence" />
+                <field name="name" />
+                <field name="weight" />
+                <field name="description" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_iep_difficulty_weight" model="ir.actions.act_window">
+        <field name="name">Trọng số theo Độ khó</field>
+        <field name="res_model">educare.iep.difficulty.weight</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Cấu hình trọng số tương ứng với từng mức độ khó của mục tiêu ngắn hạn.
+                Trọng số sẽ được tự động gán khi import template vào kế hoạch IEP.
+            </p>
+        </field>
+    </record>
+
 </odoo>

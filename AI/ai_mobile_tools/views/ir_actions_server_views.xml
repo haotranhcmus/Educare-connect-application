@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_server_action_form_ai_mobile" model="ir.ui.view">
+        <field name="name">ir.actions.server.form.ai.mobile</field>
+        <field name="model">ir.actions.server</field>
+        <field name="inherit_id" ref="ai.ir_actions_server_view_form" />
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <!-- Extend notebook visibility to include ai_mobile state -->
+            <xpath expr="//notebook[@invisible]" position="attributes">
+                <attribute name="invisible">state not in ('code', 'ai', 'ai_mobile')</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='code']/.." position="after">
+                <page string="AI Mobile Tool" invisible="state != 'ai_mobile'">
+                    <group>
+                        <field name="ai_mobile_code" widget="ace" placeholder="// JavaScript code for mobile execution (React Navigation)&#10;// Available: navigation, Alert, params, env, services&#10;&#10;navigation.navigate('ListView', {&#10;  model: 'project.project',&#10;  domain: JSON.stringify([['user_id', '=', params.userId]])&#10;});"/>
+                        <field name="ai_tool_schema"
+                            placeholder="JSON schema for the parameters of the action (leave empty if no arguments are needed)"
+                            widget="ai_json_schema" />
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Available Context:</strong>
+                        <ul>
+                            <li><code>navigation</code>: React Navigation instance (NavigationProp) - navigate, push, goBack, etc.</li>
+                            <li><code>StackActions</code>: React Navigation StackActions - push, pop, replace, etc.</li>
+                            <li><code>Alert</code>: React Native Alert API</li>
+                            <li><code>Linking</code>: React Native Linking API - openURL, canOpenURL, etc.</li>
+                            <li><code>params</code>: Tool parameters (userId, bundleId, record, arguments from AI)</li>
+                            <li><code>env</code>: Global environment (app context)</li>
+                            <li><code>services</code>: RPC, ORM services</li>
+                            <li><code>JSON</code>: JSON object (parse, stringify)</li>
+                            <li><code>Math</code>: Math object</li>
+                            <li><code>Date</code>: Date constructor</li>
+                            <li><code>console</code>: Console object (log, warn, error)</li>
+                        </ul>
+                        <strong>Forbidden:</strong> eval(), Function(), __proto__, constructor[], document.*, window.*, global.*, require(), import, .prototype, setTimeout, setInterval, XMLHttpRequest, fetch() (use services.rpc instead)
+                        <br/><br/>
+                        <strong>Error Handling:</strong> If JS execution fails on mobile, user will see AI text response only (fallback mode)
+                        <br/><br/>
+                        <strong>Bundle ID Restriction:</strong> Supports exact match (com.xboss.project.app) and wildcard (com.xboss.*)
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

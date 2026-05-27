@@ -36,7 +36,11 @@ export type IepPlanStatus =
   | "ready_review"
   | "supervisor_approved"
   | "active"
+  | "completed"
   | "closed";
+
+export type ResultPhase = "intervention" | "maintenance";
+export type SessionPurpose = "intervention" | "maintenance" | "mixed";
 export type ReviewFrequency = "weekly" | "biweekly" | "monthly" | "quarterly";
 
 // ===== IEP Goal =====
@@ -64,19 +68,22 @@ export type SessionStatus =
   | "completed"
   | "done"
   | "cancelled";
+
+export type CancelType =
+  // Teacher / Center reasons
+  | "teacher_sick"
+  | "teacher_personal"
+  | "center_rescheduled"
+  | "cancelled_center"
+  // Family / Parent reasons
+  | "child_sick"
+  | "family_event"
+  | "family_travel"
+  | "cancelled_family";
 export type SessionLocation = "center" | "home" | "school" | "online";
 export type SessionType = "individual" | "small_group" | "consultation";
-export type SessionPurpose =
-  | "intervention"
-  | "maintenance_probe"
-  | "generalization_probe"
-  | "parent_training";
-export type Attendance =
-  | "present"
-  | "absent_excused"
-  | "absent_unexcused"
-  | "cancelled_center"
-  | "cancelled_family";
+// SessionPurpose is defined above (line 43) — removed old values here.
+export type Attendance = "present" | "absent";
 export type Mood =
   | "very_good"
   | "good"
@@ -89,21 +96,28 @@ export type EngagementLevel =
   | "engaged"
   | "somewhat_engaged"
   | "disengaged";
-export type OverallPerformance = "excellent" | "good" | "fair" | "poor";
+export type OverallPerformance =
+  | "very_poor"
+  | "poor"
+  | "fair"
+  | "good"
+  | "excellent";
 
-// ===== Session Result =====
+// ===== Measurement / Data collection =====
+export type MeasurementType =
+  | "accuracy"
+  | "prompt_level"
+  | "duration"
+  | "frequency_increase"
+  | "frequency_decrease";
+
+// Per-trial prompt levels (measurement_type = 'prompt_level').
 export type PromptLevel =
   | "independent"
-  | "verbal_prompt"
-  | "gestural_prompt"
-  | "partial_physical"
-  | "full_physical";
-export type ResultType =
-  | "trial_by_trial"
-  | "probe"
-  | "whole_task"
-  | "partial_interval"
-  | "momentary_time_sample";
+  | "gestural_visual"
+  | "verbal"
+  | "physical"
+  | "no_response";
 export type Phase =
   | "baseline"
   | "intervention"

@@ -89,4 +89,29 @@
 
 
     </data>
+
+    <!-- ══════════════════════════════════════════════════════
+         SELF-ACCESS RULES (noupdate=0 — always updated on install/upgrade)
+    ══════════════════════════════════════════════════════ -->
+    <data noupdate="0">
+        <!--
+          Any authenticated user can read their OWN profile record.
+          This is a safety baseline that allows "Hồ sơ của tôi" to work
+          even when the group-specific rule (teacher/supervisor) would exclude
+          the record (e.g. profile has no center_id yet).
+          Rules within the same model/group are combined with OR per user,
+          so this adds access without removing anything from existing role rules.
+        -->
+        <record id="rule_user_profile_self_read" model="ir.rule">
+            <field name="name">User Profile: Any user reads own profile</field>
+            <field name="model_id" ref="model_educare_user_profile" />
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="False" />
+            <field name="perm_create" eval="False" />
+            <field name="perm_unlink" eval="False" />
+        </record>
+    </data>
+
 </odoo>

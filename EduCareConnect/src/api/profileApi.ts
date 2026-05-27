@@ -1,4 +1,4 @@
-import { callKw, searchRead, write } from "./odooClient";
+import { callKw, searchRead, write } from "@api/odooClient";
 
 export interface UserProfile {
   id: number;
@@ -11,7 +11,8 @@ export interface UserProfile {
   years_experience: number;
   max_students: number;
   current_student_count: number;
-  avatar: string | false; // base64
+  avatar: string | false; // base64 — always set because Odoo auto-generates a default letter avatar
+  has_custom_avatar: boolean; // true only when the user actually uploaded their own image
 }
 
 export async function fetchMyProfile(userId: number): Promise<UserProfile> {
@@ -30,6 +31,7 @@ export async function fetchMyProfile(userId: number): Promise<UserProfile> {
       "max_students",
       "current_student_count",
       "avatar",
+      "has_custom_avatar",
     ],
     { limit: 1 },
   );

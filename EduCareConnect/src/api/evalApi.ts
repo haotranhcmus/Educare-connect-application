@@ -1,26 +1,78 @@
-import { callKw, create, read, searchRead, write } from "./odooClient";
-import { logger } from "../utils/logger";
+import { callKw, create, read, searchRead, write } from "@api/odooClient";
+import { logger } from "@utils/logger";
+import type { MeasurementType } from "@t/enums";
 
 const SESSION_MODEL = "educare.session.log";
 const RESULT_MODEL = "educare.session.result";
 
 export interface ResultInput {
   objective_id: number;
-  result_type: string;
-  correct_trials: number;
-  total_trials: number;
-  prompt_level_used: string;
-  phase: string;
+  measurement_type: MeasurementType;
+  // accuracy
+  correct_trials?: number;
+  total_trials?: number;
+  // prompt_level — ordered list of prompt level keys, one per trial
+  trial_prompts?: string[];
+  // duration
+  actual_duration_seconds?: number;
+  // frequency_increase / frequency_decrease
+  actual_count?: number;
   notes?: string;
+  /** Client-side score preview (0–100). Not sent — backend recomputes. */
+  score_pct?: number;
 }
 
-export interface ObservationInput {
-  attendance: string;
-  mood: string;
-  energy_level: string;
-  engagement_level: string;
-  overall_performance: string;
-  notes?: string;
+/**
+ * Build the ORM vals for one result line based on its measurement_type.
+ * is_recorded is always set so the row counts as evaluated (frequency_decrease
+ * can legitimately be 0, so we never infer "recorded" from values).
+ */
+function buildResultVals(sessionId: number, r: ResultInput): Record<string, unknown> {
+  const vals: Record<string, unknown> = {
+    session_id: sessionId,
+    objective_id: r.objective_id,
+    is_recorded: true,
+    notes: r.notes || "",
+  };
+  switch (r.measurement_type) {
+    case "accuracy":
+      vals.correct_trials = r.correct_trials ?? 0;
+      vals.total_trials = r.total_trials ?? 0;
+      break;
+    case "prompt_level":
+      // Replace any existing trials, then recreate from the entered list.
+      vals.trial_ids = [
+        [5, 0, 0],
+        ...(r.trial_prompts ?? []).map((level, idx) => [
+          0,
+          0,
+          { sequence: (idx + 1) * 10, prompt_level: level },
+        ]),
+      ];
+      break;
+    case "duration":
+      vals.actual_duration_seconds = r.actual_duration_seconds ?? 0;
+      break;
+    case "frequency_increase":
+    case "frequency_decrease":
+      vals.actual_count = r.actual_count ?? 0;
+      break;
+  }
+  return vals;
+}
+
+export interface RemainingSession {
+  id: number;
+  session_date: string;
+  start_time: number;
+  end_time: number;
+  status: string;
+}
+
+export interface IepCompletionSignal {
+  iep_just_completed: boolean;
+  plan_id: number | false;
+  remaining_sessions: RemainingSession[];
 }
 
 interface SessionResultRow {
@@ -34,24 +86,23 @@ interface SessionStateRow {
 }
 
 /**
- * Submit all results + observations and finalize session
- * Steps: create results → update session observations → confirm (status=done)
+ * Submit all results and finalize session
+ * Steps: create/update results → confirm (status=done)
  */
 export async function submitEvaluation(
   sessionId: number,
   results: ResultInput[],
-  observation: ObservationInput,
-): Promise<boolean> {
+): Promise<IepCompletionSignal> {
   logger.eval("submitEvaluation", "start", {
     sessionId,
     resultCount: results.length,
-    observation: {
-      attendance: observation.attendance,
-      mood: observation.mood,
-    },
   });
 
-  // 1. Upsert session results by objective (avoid duplicate rows per objective/session)
+  // Ensure result lines exist (idempotent — creates them if missing, no-op if already present).
+  // This handles sessions that entered 'completed' state without going through action_schedule.
+  logger.eval("submitEvaluation", "step 0 — ensuring result lines exist...");
+  await callKw(SESSION_MODEL, "api_ensure_result_lines", [[sessionId]]);
+
   logger.eval("submitEvaluation", "step 1 — fetching existing result rows...");
   const existingRows = await searchRead<SessionResultRow>(
     RESULT_MODEL,
@@ -73,16 +124,7 @@ export async function submitEvaluation(
   }
 
   for (const r of results) {
-    const vals = {
-      session_id: sessionId,
-      objective_id: r.objective_id,
-      result_type: r.result_type,
-      correct_trials: r.correct_trials,
-      total_trials: r.total_trials,
-      prompt_level_used: r.prompt_level_used,
-      phase: r.phase,
-      notes: r.notes || "",
-    };
+    const vals = buildResultVals(sessionId, r);
 
     const existingId = rowByObjectiveId.get(r.objective_id);
     if (existingId) {
@@ -100,22 +142,7 @@ export async function submitEvaluation(
     }
   }
 
-  // 2. Update session with observations
-  logger.eval(
-    "submitEvaluation",
-    "step 2 — writing observations to session...",
-  );
-  await write(SESSION_MODEL, [sessionId], {
-    attendance: observation.attendance,
-    mood: observation.mood,
-    energy_level: observation.energy_level,
-    engagement_level: observation.engagement_level,
-    overall_performance: observation.overall_performance,
-    notes: observation.notes || "",
-  });
-
-  // 3. Advance workflow to done via real backend actions.
-  logger.eval("submitEvaluation", "step 3 — reading current session status...");
+  // 2. Advance workflow to done via real backend actions.
   const [session] = await read<SessionStateRow>(
     SESSION_MODEL,
     [sessionId],
@@ -125,23 +152,37 @@ export async function submitEvaluation(
   if (!session) {
     logger.error(
       "submitEvaluation",
-      `Cannot read session ${sessionId} after write — access control issue or record deleted`,
+      `Cannot read session ${sessionId} — access control issue or record deleted`,
     );
     throw new Error(
-      `Không thể đọc trạng thái buổi học #${sessionId} sau khi ghi. Kiểm tra quyền truy cập.`,
+      `Không thể đọc trạng thái buổi học #${sessionId}. Kiểm tra quyền truy cập.`,
     );
   }
 
   logger.eval("submitEvaluation", `current status = "${session.status}"`);
 
+  const emptySignal: IepCompletionSignal = {
+    iep_just_completed: false,
+    plan_id: false,
+    remaining_sessions: [],
+  };
+
+  let signal: IepCompletionSignal = emptySignal;
+
   if (session.status === "scheduled") {
     logger.eval("submitEvaluation", "calling action_complete...");
     await callKw(SESSION_MODEL, "action_complete", [[sessionId]]);
     logger.eval("submitEvaluation", "calling action_submit_review...");
-    await callKw(SESSION_MODEL, "action_submit_review", [[sessionId]]);
+    const raw = await callKw(SESSION_MODEL, "action_submit_review", [[sessionId]]);
+    if (raw && typeof raw === "object" && "iep_just_completed" in raw) {
+      signal = raw as IepCompletionSignal;
+    }
   } else if (session.status === "completed") {
     logger.eval("submitEvaluation", "calling action_submit_review...");
-    await callKw(SESSION_MODEL, "action_submit_review", [[sessionId]]);
+    const raw = await callKw(SESSION_MODEL, "action_submit_review", [[sessionId]]);
+    if (raw && typeof raw === "object" && "iep_just_completed" in raw) {
+      signal = raw as IepCompletionSignal;
+    }
   } else {
     logger.warn(
       "submitEvaluation",
@@ -150,5 +191,5 @@ export async function submitEvaluation(
   }
 
   logger.eval("submitEvaluation", `DONE — session ${sessionId} finalized`);
-  return true;
+  return signal;
 }

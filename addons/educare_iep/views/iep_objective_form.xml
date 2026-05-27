@@ -65,15 +65,12 @@
                                     <field name="domain_ids" widget="many2many_tags"
                                         readonly="plan_status != 'draft'" />
                                     <field name="sequence" readonly="plan_status != 'draft'" />
-                                    <field name="start_date" readonly="1" />
-                                    <field name="target_date" readonly="1" />
                                     <field name="mastery_date"
                                         invisible="status != 'mastered'" />
                                 </group>
                                 <group string="Method &amp; Workflow">
                                     <field name="weight" readonly="plan_status != 'draft'" />
                                     <field name="status" readonly="1" />
-                                    <field name="is_overdue" readonly="1" />
                                     <field name="trend" widget="badge"
                                         decoration-success="trend == 'improving'"
                                         decoration-warning="trend == 'stable'"
@@ -93,12 +90,6 @@
                                     colspan="2" />
                             </group>
                             <group>
-                                <field name="measurement_method"
-                                    placeholder="E.g.: Number of correct responses / total trials"
-                                    readonly="plan_status != 'draft'"
-                                    colspan="2" />
-                            </group>
-                            <group>
                                 <field name="discontinued_reason"
                                     placeholder="Reason for permanently discontinuing objective..."
                                     required="status == 'discontinued'"
@@ -109,10 +100,27 @@
                         <!-- Tab 2: Success Criteria -->
                         <page string="Criteria" name="criteria">
                             <group>
-                                <group string="Accuracy Targets">
+                                <field name="measurement_type"
+                                    readonly="plan_status != 'draft'" />
+                            </group>
+                            <group>
+                                <group string="Accuracy Targets"
+                                    invisible="measurement_type not in ('accuracy','prompt_level')">
                                     <field name="baseline_accuracy_pct"
                                         readonly="plan_status != 'draft'" />
                                     <field name="target_accuracy_pct"
+                                        readonly="plan_status != 'draft'" />
+                                </group>
+                                <group string="Duration Target"
+                                    invisible="measurement_type != 'duration'">
+                                    <field name="target_duration_seconds"
+                                        readonly="plan_status != 'draft'" />
+                                </group>
+                                <group string="Frequency Targets"
+                                    invisible="measurement_type not in ('frequency_increase','frequency_decrease')">
+                                    <field name="baseline_count"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="target_count"
                                         readonly="plan_status != 'draft'" />
                                 </group>
                                 <group string="Session Rules">
@@ -162,7 +170,7 @@
                         <page string="Guidance" name="guidance">
                             <group>
                                 <group string="Student Context">
-                                    <field name="difficulty_level"
+                                    <field name="difficulty_id"
                                         readonly="plan_status != 'draft'" />
                                     <field name="age_min_months"
                                         readonly="plan_status != 'draft'" />
@@ -205,7 +213,6 @@
                                 <group string="Statistics">
                                     <field name="total_sessions_worked" />
                                     <field name="trend" widget="badge" />
-                                    <field name="is_overdue" />
                                     <field name="alert_triggered" />
                                     <field name="alert_message"
                                         invisible="not alert_triggered" />

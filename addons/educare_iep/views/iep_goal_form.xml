@@ -21,8 +21,7 @@
                 <field name="slow_progress_alert" invisible="1" />
                 <div class="alert alert-warning" role="alert"
                     invisible="not slow_progress_alert">
-                    <strong>Slow Progress</strong> Objective(s) are not progressing as expected.
-                    Please review the objectives and update the intervention strategies. </div>
+                    <strong>Slow Progress</strong> Objective(s) are not progressing as expected. Please review the objectives and update the intervention strategies. </div>
 
                 <sheet>
                     <!-- Smart Buttons -->
@@ -66,21 +65,16 @@
 
                     <!-- Quick Info -->
                     <group>
-                        <group string="Information">
+                        <group>
                             <field name="plan_id" readonly="1" />
                             <field name="student_id" readonly="1" />
                             <field name="goal_domain_id" readonly="plan_status != 'draft'" />
                             <field name="priority" readonly="plan_status != 'draft'" />
+
+                        </group>
+                        <group>
                             <field name="assigned_teacher_id" readonly="1" />
                             <field name="supervisor_id" readonly="1" />
-                            <field name="goal_description"
-                                placeholder="Overall long-term goal description..."
-                                readonly="plan_status != 'draft'"
-                                colspan="2" />
-                        </group>
-                        <group string="Time Frame">
-                            <field name="start_date" invisible="1" />
-                            <field name="target_date" readonly="plan_status != 'draft'" />
                             <field name="achieved_date"
                                 invisible="status != 'achieved'" />
                             <field name="discontinue_reason"
@@ -91,6 +85,10 @@
                     <!-- Progress Bar -->
                     <group>
                         <field name="progress_pct" widget="progressbar"
+                            colspan="2" />
+                        <field name="goal_description"
+                            placeholder="Overall long-term goal description..."
+                            readonly="plan_status != 'draft'"
                             colspan="2" />
                     </group>
 
@@ -106,7 +104,6 @@
                                 <tree open="full"
                                     create="false"
                                     decoration-success="status == 'mastered'"
-                                    decoration-warning="is_overdue == True"
                                     decoration-danger="alert_triggered == True"
                                     decoration-muted="status == 'discontinued'">
                                     <header>
@@ -114,13 +111,12 @@
                                             type="object"
                                             string="Delete Objective"
                                             class="btn-link text-danger"
+                                            invisible="not can_delete"
                                             confirm="Are you sure you want to delete the selected short-term objective? This action cannot be undone." />
                                     </header>
                                     <field name="objective_code" readonly="1"
                                         column_invisible="1" />
                                     <field name="name" />
-                                    <field name="start_date" />
-                                    <field name="target_date" />
                                     <field name="target_accuracy_pct" string="Target (%)" />
                                     <field name="current_accuracy_pct"
                                         widget="progressbar" string="Accuracy" />
@@ -131,10 +127,10 @@
                                         decoration-primary="status == 'on_hold'"
                                         decoration-danger="status == 'discontinued'" />
                                     <field name="alert_triggered" widget="boolean" />
-                                    <field name="is_overdue" column_invisible="1" />
                                     <field name="trend" column_invisible="1" />
                                     <field name="baseline_accuracy_pct" column_invisible="1" />
                                     <field name="weight" column_invisible="1" />
+                                    <field name="can_delete" column_invisible="1" />
                                 </tree>
                             </field>
                             <div class="align-items-center text-center">

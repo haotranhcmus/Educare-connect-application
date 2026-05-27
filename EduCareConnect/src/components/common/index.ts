@@ -1,7 +1,11 @@
-export { StatusBadge } from "./StatusBadge";
-export { AvatarLabel } from "./AvatarLabel";
-export { SectionHeader } from "./SectionHeader";
-export { ProgressBar } from "./ProgressBar";
-export { TrendChip } from "./TrendChip";
-export { EmptyState } from "./EmptyState";
-export { LoadingOverlay } from "./LoadingOverlay";
+export { StatusBadge } from "@components/common/StatusBadge";
+export { AvatarLabel, getInitials, hashColor } from "@components/common/AvatarLabel";
+export { SectionHeader } from "@components/common/SectionHeader";
+export { ProgressBar } from "@components/common/ProgressBar";
+export { TrendChip } from "@components/common/TrendChip";
+export { EmptyState } from "@components/common/EmptyState";
+export { LoadingOverlay } from "@components/common/LoadingOverlay";
+export { MiniCalendar } from "@components/common/MiniCalendar";
+export type { MiniCalendarProps } from "@components/common/MiniCalendar";
+export { ProgressRingAvatar } from "@components/common/ProgressRingAvatar";
+export { GradientHeader } from "@components/common/GradientHeader";

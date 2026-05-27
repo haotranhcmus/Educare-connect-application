@@ -1,4 +1,4 @@
-export { ReportListScreen } from "./ReportListScreen";
-export { ReportCreateScreen } from "./ReportCreateScreen";
-export { ReportDetailScreen } from "./ReportDetailScreen";
-export { SessionPickerScreen } from "./SessionPickerScreen";
+export { ReportListScreen } from "@screens/teacher/report/ReportListScreen";
+export { ReportCreateScreen } from "@screens/teacher/report/ReportCreateScreen";
+export { ReportDetailScreen } from "@screens/teacher/report/ReportDetailScreen";
+export { SessionPickerScreen } from "@screens/teacher/report/SessionPickerScreen";

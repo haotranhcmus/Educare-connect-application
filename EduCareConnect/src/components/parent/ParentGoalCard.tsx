@@ -23,7 +23,7 @@ interface ParentGoalCardProps {
   onToggle: () => void;
 }
 
-export function ParentGoalCard({
+function ParentGoalCardImpl({
   goal,
   isExpanded,
   onToggle,
@@ -150,6 +150,8 @@ export function ParentGoalCard({
     </TouchableOpacity>
   );
 }
+
+export const ParentGoalCard = React.memo(ParentGoalCardImpl);
 
 const styles = StyleSheet.create({
   card: { padding: 16, borderRadius: 12, marginBottom: 12, elevation: 1 },

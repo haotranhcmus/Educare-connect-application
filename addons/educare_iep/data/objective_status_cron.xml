@@ -10,4 +10,14 @@
         <field name="numbercall">-1</field>
         <field name="active">True</field>
     </record>
+    <record id="ir_cron_handle_expired_iep_plans" model="ir.cron">
+        <field name="name">IEP Plan: Xu ly het han va canh bao sap het han</field>
+        <field name="model_id" ref="model_educare_iep_plan" />
+        <field name="state">code</field>
+        <field name="code">model._cron_handle_expired_plans()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
 </odoo>

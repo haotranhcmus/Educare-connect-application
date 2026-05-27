@@ -11,10 +11,12 @@
         'security/ir.model.access.csv',
         'security/record_rules.xml',
         'data/security_profile_demo_data.xml',
+        'data/demo_seed.xml',
         'views/user_profile_views.xml',
         'views/audit_log_views.xml',
         'views/menu.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'license': 'LGPL-3',
 }

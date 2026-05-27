@@ -4,148 +4,156 @@
 
         <!-- ══ COMMUNICATION (COMM) ══ -->
         <record id="assess_item_comm_receptive" model="educare.assessment.item">
-            <field name="name">Ngon ngu tiep nhan</field>
+            <field name="name">Ngôn ngữ tiếp nhận</field>
             <field name="domain_id" ref="educare_base.domain_communication" />
             <field name="sequence">10</field>
-            <field name="description">Kha nang hieu ngon ngu noi, lam theo huong dan va nhan biet tu vung.</field>
+            <field name="description">Khả năng hiểu ngôn ngữ nói, làm theo hướng dẫn và nhận biết từ
+                vựng.</field>
         </record>
         <record id="assess_item_comm_expressive" model="educare.assessment.item">
-            <field name="name">Ngon ngu dien dat</field>
+            <field name="name">Ngôn ngữ diễn đạt</field>
             <field name="domain_id" ref="educare_base.domain_communication" />
             <field name="sequence">20</field>
-            <field name="description">Kha nang su dung ngon ngu de yeu cau, mo ta va ke lai.</field>
+            <field name="description">Khả năng sử dụng ngôn ngữ để yêu cầu, mô tả và kể lại.</field>
         </record>
         <record id="assess_item_comm_nonverbal" model="educare.assessment.item">
-            <field name="name">Giao tiep phi ngon ngu</field>
+            <field name="name">Giao tiếp phi ngôn ngữ</field>
             <field name="domain_id" ref="educare_base.domain_communication" />
             <field name="sequence">30</field>
-            <field name="description">Su dung giao tiep mat, cu chi va bieu cam khuon mat trong giao tiep.</field>
+            <field name="description">Sử dụng giao tiếp mắt, cử chỉ và biểu cảm khuôn mặt trong giao
+                tiếp.</field>
         </record>
 
         <!-- ══ SOCIAL ══ -->
         <record id="assess_item_social_peer" model="educare.assessment.item">
-            <field name="name">Tuong tac ban be</field>
+            <field name="name">Tương tác bạn bè</field>
             <field name="domain_id" ref="educare_base.domain_social" />
             <field name="sequence">10</field>
-            <field name="description">Kha nang chu dong va duy tri tuong tac voi ban dong trang lua.</field>
+            <field name="description">Khả năng chủ động và duy trì tương tác với bạn đồng trang lứa.</field>
         </record>
         <record id="assess_item_social_emotion" model="educare.assessment.item">
-            <field name="name">Nhan biet cam xuc</field>
+            <field name="name">Nhận biết cảm xúc</field>
             <field name="domain_id" ref="educare_base.domain_social" />
             <field name="sequence">20</field>
-            <field name="description">Nhan biet va phan hoi phu hop voi cam xuc cua ban than va nguoi khac.</field>
+            <field name="description">Nhận biết và phản hồi phù hợp với cảm xúc của bản thân và
+                người khác.</field>
         </record>
         <record id="assess_item_social_play" model="educare.assessment.item">
-            <field name="name">Ky nang choi</field>
+            <field name="name">Kỹ năng chơi</field>
             <field name="domain_id" ref="educare_base.domain_social" />
             <field name="sequence">30</field>
-            <field name="description">Choi tuong tuong, choi theo luat va choi hop tac voi ban be.</field>
+            <field name="description">Chơi tướng tượng, chơi theo luật và chơi hợp tác với bạn bè.</field>
         </record>
 
         <!-- ══ COGNITIVE ══ -->
         <record id="assess_item_cognitive_attention" model="educare.assessment.item">
-            <field name="name">Chu y</field>
+            <field name="name">Chú ý</field>
             <field name="domain_id" ref="educare_base.domain_cognitive" />
             <field name="sequence">10</field>
-            <field name="description">Kha nang tap trung va duy tri chu y vao nhiem vu.</field>
+            <field name="description">Khả năng tập trung và duy trì chú ý vào nhiệm vụ.</field>
         </record>
         <record id="assess_item_cognitive_memory" model="educare.assessment.item">
-            <field name="name">Tri nho</field>
+            <field name="name">Trí nhớ</field>
             <field name="domain_id" ref="educare_base.domain_cognitive" />
             <field name="sequence">20</field>
-            <field name="description">Tri nho ngan han va dai han, kha nang nho trinh tu va thong tin.</field>
+            <field name="description">Trí nhớ ngắn hạn và dài hạn, khả năng nhớ trình tự và thông
+                tin.</field>
         </record>
         <record id="assess_item_cognitive_problem_solving" model="educare.assessment.item">
-            <field name="name">Giai quyet van de</field>
+            <field name="name">Giải quyết vấn đề</field>
             <field name="domain_id" ref="educare_base.domain_cognitive" />
             <field name="sequence">30</field>
-            <field name="description">Kha nang phan tich tinh huong, tim giai phap va thu-sai de hoc.</field>
+            <field name="description">Khả năng phân tích tình huống, tìm giải pháp và thử-sai để
+                học.</field>
         </record>
         <record id="assess_item_cognitive_categorize" model="educare.assessment.item">
-            <field name="name">Phan loai</field>
+            <field name="name">Phân loại</field>
             <field name="domain_id" ref="educare_base.domain_cognitive" />
             <field name="sequence">40</field>
-            <field name="description">Nhom do vat, so sanh dac diem va nhan ra quy luat.</field>
+            <field name="description">Nhóm đồ vật, so sánh đặc điểm và nhận ra quy luật.</field>
         </record>
 
         <!-- ══ GROSS MOTOR ══ -->
         <record id="assess_item_motor_gross_locomotion" model="educare.assessment.item">
-            <field name="name">Van dong tho</field>
+            <field name="name">Vận động thô</field>
             <field name="domain_id" ref="educare_base.domain_motor_gross" />
             <field name="sequence">10</field>
-            <field name="description">Di, chay, nhay, leo treo va van dong toan than.</field>
+            <field name="description">Đi, chạy, nhảy, leo trèo và vận động toàn thân.</field>
         </record>
         <record id="assess_item_motor_gross_balance" model="educare.assessment.item">
-            <field name="name">Thang bang</field>
+            <field name="name">Thăng bằng</field>
             <field name="domain_id" ref="educare_base.domain_motor_gross" />
             <field name="sequence">20</field>
-            <field name="description">Kha nang giu thang bang khi dung, di tren duong hep va dung mot chan.</field>
+            <field name="description">Khả năng giữ thăng bằng khi đứng, đi trên đường hẹp và đứng
+                một chân.</field>
         </record>
         <record id="assess_item_motor_gross_coordination" model="educare.assessment.item">
-            <field name="name">Phoi hop co the</field>
+            <field name="name">Phối hợp cơ thể</field>
             <field name="domain_id" ref="educare_base.domain_motor_gross" />
             <field name="sequence">30</field>
-            <field name="description">Phoi hop tay-chan, bat va da bong, van dong theo nhip.</field>
+            <field name="description">Phối hợp tay-chân, bắt và đá bóng, vận động theo nhịp.</field>
         </record>
 
         <!-- ══ FINE MOTOR ══ -->
         <record id="assess_item_motor_fine_grasp" model="educare.assessment.item">
-            <field name="name">Cam nam va viet</field>
+            <field name="name">Cầm nắm và viết</field>
             <field name="domain_id" ref="educare_base.domain_motor_fine" />
             <field name="sequence">10</field>
-            <field name="description">Cam but, viet, ve hinh va ky nang tien viet.</field>
+            <field name="description">Cầm bút, viết, vẽ hình và kỹ năng tiền viết.</field>
         </record>
         <record id="assess_item_motor_fine_cutting" model="educare.assessment.item">
-            <field name="name">Cat va ghep hinh</field>
+            <field name="name">Cắt và ghép hình</field>
             <field name="domain_id" ref="educare_base.domain_motor_fine" />
             <field name="sequence">20</field>
-            <field name="description">Su dung keo, ghep hinh, xau hat va thao tac do vat nho.</field>
+            <field name="description">Sử dụng kéo, ghép hình, xâu hạt và thao tác đồ vật nhỏ.</field>
         </record>
         <record id="assess_item_motor_fine_hand_eye" model="educare.assessment.item">
-            <field name="name">Phoi hop tay-mat</field>
+            <field name="name">Phối hợp tay-mắt</field>
             <field name="domain_id" ref="educare_base.domain_motor_fine" />
             <field name="sequence">30</field>
-            <field name="description">To mau trong vien, noi diem va thao tac do vat nho.</field>
+            <field name="description">Tô màu trong viền, nối điểm và thao tác đồ vật nhỏ.</field>
         </record>
 
         <!-- ══ SELF-CARE ══ -->
         <record id="assess_item_self_care_eating" model="educare.assessment.item">
-            <field name="name">An uong</field>
+            <field name="name">Ăn uống</field>
             <field name="domain_id" ref="educare_base.domain_self_care" />
             <field name="sequence">10</field>
-            <field name="description">Tu an, su dung dung cu an, uong nuoc va thoi quen an uong.</field>
+            <field name="description">Tự ăn, sử dụng dụng cụ ăn, uống nước và thói quen ăn uống.</field>
         </record>
         <record id="assess_item_self_care_hygiene" model="educare.assessment.item">
-            <field name="name">Ve sinh ca nhan</field>
+            <field name="name">Vệ sinh cá nhân</field>
             <field name="domain_id" ref="educare_base.domain_self_care" />
             <field name="sequence">20</field>
-            <field name="description">Rua tay, danh rang, di ve sinh va rua mat.</field>
+            <field name="description">Rửa tay, đánh răng, đi vệ sinh và rửa mặt.</field>
         </record>
         <record id="assess_item_self_care_dressing" model="educare.assessment.item">
-            <field name="name">Mac do</field>
+            <field name="name">Mặc đồ</field>
             <field name="domain_id" ref="educare_base.domain_self_care" />
             <field name="sequence">30</field>
-            <field name="description">Tu mac va thay do, cai nut, keo khoa va mang giay.</field>
+            <field name="description">Tự mặc và thay đồ, cài nút, kéo khóa và mang giày.</field>
         </record>
 
         <!-- ══ BEHAVIOR ══ -->
         <record id="assess_item_behavior_emotion_control" model="educare.assessment.item">
-            <field name="name">Dieu chinh cam xuc</field>
+            <field name="name">Điều chỉnh cảm xúc</field>
             <field name="domain_id" ref="educare_base.domain_behavior" />
             <field name="sequence">10</field>
-            <field name="description">Quan ly cam xuc, giu binh tinh khi uc che va tu dieu chinh.</field>
+            <field name="description">Quản lý cảm xúc, giữ bình tĩnh khi ức chế và tự điều chỉnh.</field>
         </record>
         <record id="assess_item_behavior_compliance" model="educare.assessment.item">
-            <field name="name">Tuan thu quy tac</field>
+            <field name="name">Tuân thủ quy tắc</field>
             <field name="domain_id" ref="educare_base.domain_behavior" />
             <field name="sequence">20</field>
-            <field name="description">Lam theo huong dan, cho den luot va chap nhan chuyen doi hoat dong.</field>
+            <field name="description">Làm theo hướng dẫn, chờ đến lượt và chấp nhận chuyển đổi hoạt
+                động.</field>
         </record>
         <record id="assess_item_behavior_challenging" model="educare.assessment.item">
-            <field name="name">Giam hanh vi thach thuc</field>
+            <field name="name">Giảm hành vi thách thức</field>
             <field name="domain_id" ref="educare_base.domain_behavior" />
             <field name="sequence">30</field>
-            <field name="description">Giam tu gay thuong tich, hanh vi tan cong, la het va hanh vi lap lai.</field>
+            <field name="description">Giảm tự gây thương tích, hành vi tấn công, la hét và hành vi
+                lặp lại.</field>
         </record>
 
     </data>

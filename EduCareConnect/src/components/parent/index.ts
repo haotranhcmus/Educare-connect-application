@@ -1,2 +1,2 @@
-export { ParentGoalCard } from "./ParentGoalCard";
-export { ParentReportCard } from "./ParentReportCard";
+export { ParentGoalCard } from "@components/parent/ParentGoalCard";
+export { ParentReportCard } from "@components/parent/ParentReportCard";

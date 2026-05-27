@@ -171,4 +171,38 @@
         <field name="sequence">50</field>
     </record>
 
+    <!-- ============================= -->
+    <!-- Cau hinh trong so do kho      -->
+    <!-- ============================= -->
+    <record id="difficulty_weight_1" model="educare.iep.difficulty.weight">
+        <field name="name">Rất dễ</field>
+        <field name="sequence">10</field>
+        <field name="weight">0.5</field>
+        <field name="description">Kỹ năng rất đơn giản, phù hợp giai đoạn đầu can thiệp.</field>
+    </record>
+    <record id="difficulty_weight_2" model="educare.iep.difficulty.weight">
+        <field name="name">Dễ</field>
+        <field name="sequence">20</field>
+        <field name="weight">0.75</field>
+        <field name="description">Kỹ năng cơ bản, học sinh có thể tiếp thu tương đối nhanh.</field>
+    </record>
+    <record id="difficulty_weight_3" model="educare.iep.difficulty.weight">
+        <field name="name">Trung bình</field>
+        <field name="sequence">30</field>
+        <field name="weight">1.0</field>
+        <field name="description">Kỹ năng trung bình, đòi hỏi một số lần thực hành và hỗ trợ.</field>
+    </record>
+    <record id="difficulty_weight_4" model="educare.iep.difficulty.weight">
+        <field name="name">Khó</field>
+        <field name="sequence">40</field>
+        <field name="weight">1.5</field>
+        <field name="description">Kỹ năng phức tạp, cần nhiều lần thực hành và hỗ trợ đa dạng.</field>
+    </record>
+    <record id="difficulty_weight_5" model="educare.iep.difficulty.weight">
+        <field name="name">Rất khó</field>
+        <field name="sequence">50</field>
+        <field name="weight">2.0</field>
+        <field name="description">Kỹ năng nâng cao, thường là mục tiêu cuối cùng của lộ trình can thiệp.</field>
+    </record>
+
 </odoo>

@@ -13,12 +13,61 @@ export function formatDate(dateStr: string | false | undefined): string {
 }
 
 /**
+ * Format Odoo datetime string → "DD/MM/YYYY HH:mm" display.
+ * Empty / falsy input returns "".
+ */
+export function formatDateTime(
+  dtStr: string | false | undefined | null,
+): string {
+  if (!dtStr) return "";
+  return dayjs(dtStr).format("DD/MM/YYYY HH:mm");
+}
+
+/**
  * Format date with day name
  * "2026-04-07" → "Thứ Hai, 07/04/2026"
  */
 export function formatDateFull(dateStr: string): string {
   return dayjs(dateStr).format("dddd, DD/MM/YYYY");
 }
+
+/**
+ * Format date with short Vietnamese weekday prefix.
+ * "2026-04-07" → "T3 07/04"
+ */
+export function formatDateShort(dateStr: string): string {
+  const d = dayjs(dateStr);
+  const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+  return `${days[d.day()]} ${d.format("DD/MM")}`;
+}
+
+/**
+ * Format date with full Vietnamese weekday appended.
+ * "2026-04-07" → "07/04/2026  Thứ Ba"
+ */
+export function formatDateWithWeekday(dateStr: string): string {
+  const d = dayjs(dateStr);
+  return `${d.format("DD/MM/YYYY")}  ${VI_DAY_NAMES[d.day()]}`;
+}
+
+/**
+ * Format date as long Vietnamese weekday + day/month (no year).
+ * "2026-04-07" → "Thứ Ba 07/04"
+ */
+export function formatWeekdayDayMonth(dateStr: string): string {
+  const d = dayjs(dateStr);
+  return `${VI_DAY_NAMES[d.day()]} ${d.format("DD/MM")}`;
+}
+
+const VI_DAY_NAMES = [
+  "Chủ Nhật",
+  "Thứ Hai",
+  "Thứ Ba",
+  "Thứ Tư",
+  "Thứ Năm",
+  "Thứ Sáu",
+  "Thứ Bảy",
+];
 
 /**
  * Odoo Float time → HH:mm string

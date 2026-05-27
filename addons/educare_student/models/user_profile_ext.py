@@ -8,21 +8,27 @@ class ResUsersEducare(models.Model):
     domain filter on Many2one/Many2many fields in educare.student.
     Automatic recompute via @api.depends whenever the linked profile's role changes.
     """
-    _inherit = 'res.users'
+
+    _inherit = "res.users"
 
     educare_profile_ids = fields.One2many(
-        'educare.user.profile',
-        'user_id',
-        string='Educare Profiles',
+        "educare.user.profile",
+        "user_id",
+        string="Educare Profiles",
     )
-    educare_role = fields.Selection([
-        ('admin', 'Admin'),
-        ('supervisor', 'Supervisor'),
-        ('teacher', 'Teacher'),
-        ('parent', 'Parent'),
-    ], compute='_compute_educare_role', store=True, string='Educare Role')
+    educare_role = fields.Selection(
+        [
+            ("admin", "Quản trị"),
+            ("supervisor", "Giám sát"),
+            ("teacher", "Giáo viên"),
+            ("parent", "Phụ huynh"),
+        ],
+        compute="_compute_educare_role",
+        store=True,
+        string="Educare Role",
+    )
 
-    @api.depends('educare_profile_ids.role')
+    @api.depends("educare_profile_ids.role")
     def _compute_educare_role(self):
         for user in self:
             profile = user.educare_profile_ids[:1]
@@ -38,49 +44,54 @@ class EducareUserProfileExt(models.Model):
     - educare_security CANNOT depend on educare_student (student depends on security)
     - So the reverse relation (profile -> students) must be declared from the student module
     """
-    _inherit = 'educare.user.profile'
+
+    _inherit = "educare.user.profile"
 
     # ── Override: fix comodel from res.partner (placeholder) to educare.student ──
     student_ids = fields.Many2many(
-        'educare.student',
-        compute='_compute_student_ids',
-        string='Students',
-        help='List of students linked to this parent account.',
+        "educare.student",
+        compute="_compute_student_ids",
+        string="Students",
+        help="List of students linked to this parent account.",
     )
 
     # ── Computed Overrides ────────────────────────────────────────────────────
 
-    @api.depends('user_id', 'role')
+    @api.depends("user_id", "role")
     def _compute_student_ids(self):
-        Student = self.env['educare.student']
+        Student = self.env["educare.student"]
         for rec in self:
-            if rec.role == 'parent' and rec.user_id:
-                rec.student_ids = Student.search([
-                    ('parent_user_id', '=', rec.user_id.id),
-                ])
+            if rec.role == "parent" and rec.user_id:
+                rec.student_ids = Student.search(
+                    [
+                        ("parent_user_id", "=", rec.user_id.id),
+                    ]
+                )
             else:
                 rec.student_ids = Student
 
-    @api.depends('user_id', 'role')
+    @api.depends("user_id", "role")
     def _compute_student_count(self):
         """
         Override placeholder in user_profile.py:
         - Teacher/Supervisor: count active assigned students
         - Other roles: 0
         """
-        Student = self.env['educare.student']
+        Student = self.env["educare.student"]
         for rec in self:
-            if rec.role in ('teacher', 'supervisor') and rec.user_id:
-                rec.current_student_count = Student.search_count([
-                    ('assigned_teacher_id', '=', rec.user_id.id),
-                    ('status', '=', 'active'),
-                ])
+            if rec.role in ("teacher", "supervisor") and rec.user_id:
+                rec.current_student_count = Student.search_count(
+                    [
+                        ("assigned_teacher_id", "=", rec.user_id.id),
+                        ("status", "=", "active"),
+                    ]
+                )
             else:
                 rec.current_student_count = 0
 
     # ── ORM Overrides ────────────────────────────────────────────────────────
 
-    @api.onchange('role')
+    @api.onchange("role")
     def _onchange_role_check_students(self):
         """
         First protection layer (UI): warn immediately when changing role on the form.
@@ -100,16 +111,16 @@ class EducareUserProfileExt(models.Model):
 
         uid = user.id
         name = self._origin.display_name or user.name
-        Student = self.env['educare.student']
+        Student = self.env["educare.student"]
         msgs = []
 
         # Parent -> another role: direct query because student_ids was recomputed
-        if old_role == 'parent' and new_role != 'parent':
-            linked = Student.search([('parent_user_id', '=', uid)], limit=4)
+        if old_role == "parent" and new_role != "parent":
+            linked = Student.search([("parent_user_id", "=", uid)], limit=4)
             if linked:
-                sample = ', '.join(linked.mapped('name')[:3])
-                total = Student.search_count([('parent_user_id', '=', uid)])
-                extra = _(' and %d more') % (total - 3) if total > 3 else ''
+                sample = ", ".join(linked.mapped("name")[:3])
+                total = Student.search_count([("parent_user_id", "=", uid)])
+                extra = _(" and %d more") % (total - 3) if total > 3 else ""
                 msgs.append(
                     _('"%s" is currently linked as parent of %d students (%s%s).')
                     % (name, total, sample, extra)
@@ -117,39 +128,44 @@ class EducareUserProfileExt(models.Model):
 
         # Teacher/Supervisor/Admin -> non-staff role
         # Direct query because current_student_count was recomputed to 0
-        if old_role in ('teacher', 'supervisor', 'admin') \
-                and new_role not in ('teacher', 'admin', 'supervisor'):
-            assigned = Student.search_count([
-                ('assigned_teacher_id', '=', uid),
-                ('status', '=', 'active'),
-            ])
+        if old_role in ("teacher", "supervisor", "admin") and new_role not in (
+            "teacher",
+            "admin",
+            "supervisor",
+        ):
+            assigned = Student.search_count(
+                [
+                    ("assigned_teacher_id", "=", uid),
+                    ("status", "=", "active"),
+                ]
+            )
             if assigned:
                 msgs.append(
                     _('"%s" is currently the main teacher of %d active students.')
                     % (name, assigned)
                 )
-            co_count = Student.search_count([('co_teacher_ids', 'in', [uid])])
+            co_count = Student.search_count([("co_teacher_ids", "in", [uid])])
             if co_count:
                 msgs.append(
-                    _('"%s" is currently co-teacher of %d students.')
-                    % (name, co_count)
+                    _('"%s" is currently co-teacher of %d students.') % (name, co_count)
                 )
 
         # Supervisor/Admin -> no longer supervisor/admin
-        if old_role in ('supervisor', 'admin') \
-                and new_role not in ('supervisor', 'admin'):
-            sup_count = Student.search_count([('supervisor_id', '=', uid)])
+        if old_role in ("supervisor", "admin") and new_role not in (
+            "supervisor",
+            "admin",
+        ):
+            sup_count = Student.search_count([("supervisor_id", "=", uid)])
             if sup_count:
                 msgs.append(
-                    _('"%s" is currently supervising %d students.')
-                    % (name, sup_count)
+                    _('"%s" is currently supervising %d students.') % (name, sup_count)
                 )
 
         if msgs:
             raise ValidationError(
-                _('Cannot change role because student links still exist:\n\n')
-                + '\n'.join('• ' + m for m in msgs)
-                + _('\n\nPlease remove these links on student records first.')
+                _("Cannot change role because student links still exist:\n\n")
+                + "\n".join("• " + m for m in msgs)
+                + _("\n\nPlease remove these links on student records first.")
             )
 
     def write(self, vals):
@@ -162,9 +178,9 @@ class EducareUserProfileExt(models.Model):
           co_teacher_ids      → role must be in ('teacher', 'admin', 'supervisor')
           supervisor_id       → role must be in ('supervisor', 'admin')
         """
-        if 'role' in vals:
-            new_role = vals['role']
-            Student = self.env['educare.student']
+        if "role" in vals:
+            new_role = vals["role"]
+            Student = self.env["educare.student"]
             errors = []
 
             for rec in self:
@@ -174,46 +190,56 @@ class EducareUserProfileExt(models.Model):
                 name = rec.display_name
 
                 # parent_user_id: only role 'parent' is valid
-                if new_role != 'parent':
-                    count = Student.search_count([('parent_user_id', '=', uid)])
+                if new_role != "parent":
+                    count = Student.search_count([("parent_user_id", "=", uid)])
                     if count:
                         errors.append(
-                            _('• "%s" is parent of %d students. '
-                              'Please unlink these student records before changing role.')
+                            _(
+                                '• "%s" is parent of %d students. '
+                                "Please unlink these student records before changing role."
+                            )
                             % (name, count)
                         )
 
                 # assigned_teacher_id + co_teacher_ids: only teacher/admin/supervisor are valid
-                if new_role not in ('teacher', 'admin', 'supervisor'):
-                    assigned = Student.search_count([('assigned_teacher_id', '=', uid)])
+                if new_role not in ("teacher", "admin", "supervisor"):
+                    assigned = Student.search_count([("assigned_teacher_id", "=", uid)])
                     if assigned:
                         errors.append(
-                            _('• "%s" is main teacher of %d students. '
-                              'Please reassign students to another teacher first.')
+                            _(
+                                '• "%s" is main teacher of %d students. '
+                                "Please reassign students to another teacher first."
+                            )
                             % (name, assigned)
                         )
-                    co_taught = Student.search_count([('co_teacher_ids', 'in', [uid])])
+                    co_taught = Student.search_count([("co_teacher_ids", "in", [uid])])
                     if co_taught:
                         errors.append(
-                            _('• "%s" is co-teacher of %d students. '
-                              'Please remove from co-teacher lists first.')
+                            _(
+                                '• "%s" is co-teacher of %d students. '
+                                "Please remove from co-teacher lists first."
+                            )
                             % (name, co_taught)
                         )
 
                 # supervisor_id: only supervisor/admin are valid
-                if new_role not in ('supervisor', 'admin'):
-                    supervised = Student.search_count([('supervisor_id', '=', uid)])
+                if new_role not in ("supervisor", "admin"):
+                    supervised = Student.search_count([("supervisor_id", "=", uid)])
                     if supervised:
                         errors.append(
-                            _('• "%s" is supervising %d students. '
-                              'Please remove supervision assignments first.')
+                            _(
+                                '• "%s" is supervising %d students. '
+                                "Please remove supervision assignments first."
+                            )
                             % (name, supervised)
                         )
 
             if errors:
                 raise ValidationError(
-                    _('Cannot change role because linked student data still exists:\n\n')
-                    + '\n'.join(errors)
+                    _(
+                        "Cannot change role because linked student data still exists:\n\n"
+                    )
+                    + "\n".join(errors)
                 )
 
         return super().write(vals)

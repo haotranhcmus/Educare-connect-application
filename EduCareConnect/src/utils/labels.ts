@@ -11,27 +11,52 @@ export const SESSION_TYPE_LABELS: Record<string, string> = {
   consultation: "Tư vấn",
 };
 
+/** Short variants of SESSION_TYPE_LABELS for compact UI like list cards. */
+export const SESSION_TYPE_SHORT_LABELS: Record<string, string> = {
+  individual: "Cá nhân",
+  small_group: "Nhóm nhỏ",
+  consultation: "Tư vấn",
+};
+
 export const SESSION_PURPOSE_LABELS: Record<string, string> = {
   intervention: "Can thiệp",
-  maintenance_probe: "Đánh giá duy trì",
+  maintenance: "Duy trì",
   generalization_probe: "Đánh giá tổng quát hóa",
   parent_training: "Hướng dẫn phụ huynh",
 };
 
 export const PROMPT_LEVEL_LABELS: Record<string, string> = {
-  independent: "Độc lập",
-  verbal_prompt: "Gợi ý ngôn ngữ",
-  gestural_prompt: "Gợi ý cử chỉ",
-  partial_physical: "Hỗ trợ thể chất một phần",
-  full_physical: "Hỗ trợ thể chất hoàn toàn",
+  independent: "Độc lập hoàn toàn",
+  gestural_visual: "Nhắc bằng cử chỉ / hình ảnh",
+  verbal: "Nhắc bằng lời nói",
+  physical: "Hỗ trợ thể chất",
+  no_response: "Từ chối / Không phản hồi",
 };
 
-export const RESULT_TYPE_LABELS: Record<string, string> = {
-  trial_by_trial: "Trial-by-Trial",
-  probe: "Probe",
-  whole_task: "Whole Task",
-  partial_interval: "Khoảng thời gian một phần",
-  momentary_time_sample: "Khoảng thời điểm",
+/** Short variants of PROMPT_LEVEL_LABELS for narrow columns / chips. */
+export const PROMPT_LEVEL_SHORT_LABELS: Record<string, string> = {
+  independent: "Độc lập",
+  gestural_visual: "Cử chỉ/Hình",
+  verbal: "Nhắc lời",
+  physical: "Thể chất",
+  no_response: "Không PH",
+};
+
+/** Weight (%) of each prompt level — mirrors backend TRIAL_PROMPT_WEIGHTS. */
+export const PROMPT_LEVEL_WEIGHTS: Record<string, number> = {
+  independent: 100,
+  gestural_visual: 75,
+  verbal: 50,
+  physical: 25,
+  no_response: 0,
+};
+
+export const MEASUREMENT_TYPE_LABELS: Record<string, string> = {
+  accuracy: "Độ chính xác (đúng / tổng số lần)",
+  prompt_level: "Mức độ hỗ trợ (theo từng lần thử)",
+  duration: "Thời gian (giây)",
+  frequency_increase: "Tần suất - Tăng hành vi tích cực",
+  frequency_decrease: "Tần suất - Giảm hành vi tiêu cực",
 };
 
 export const PHASE_LABELS: Record<string, string> = {
@@ -42,11 +67,11 @@ export const PHASE_LABELS: Record<string, string> = {
 };
 
 export const MOOD_LABELS: Record<string, string> = {
-  very_good: "Rất tốt",
+  very_good: "Vui",
   good: "Tốt",
   neutral: "Bình thường",
-  difficult: "Khó khăn",
-  very_difficult: "Rất khó khăn",
+  difficult: "Buồn",
+  very_difficult: "Khó chịu",
 };
 
 export const ENERGY_LABELS: Record<string, string> = {
@@ -58,24 +83,52 @@ export const ENERGY_LABELS: Record<string, string> = {
 export const ENGAGEMENT_LABELS: Record<string, string> = {
   highly_engaged: "Rất tập trung",
   engaged: "Tham gia",
-  somewhat_engaged: "Có tham gia",
-  disengaged: "Không tập trung",
+  somewhat_engaged: "Khá tập trung",
+  disengaged: "Phân tâm",
 };
 
 export const PERFORMANCE_LABELS: Record<string, string> = {
-  excellent: "Xuất sắc",
+  very_poor: "Rất yếu",
+  poor: "Cần cải thiện",
+  fair: "Khá",
   good: "Tốt",
-  fair: "Trung bình",
-  poor: "Cần hỗ trợ",
+  excellent: "Xuất sắc",
 };
 
 export const ATTENDANCE_LABELS: Record<string, string> = {
   present: "Có mặt",
-  absent_excused: "Vắng có phép",
-  absent_unexcused: "Vắng không phép",
+  absent: "Vắng",
+};
+
+/** Cancel-reason labels used on session detail when status === 'cancelled'. */
+export const CANCEL_TYPE_LABELS: Record<string, string> = {
+  // Teacher / Center reasons
+  teacher_sick: "Giáo viên bệnh",
+  teacher_personal: "Giáo viên bận việc cá nhân",
+  center_rescheduled: "Trung tâm thay đổi lịch",
   cancelled_center: "Huỷ bởi trung tâm",
+  // Family / Parent reasons
+  child_sick: "Con bệnh",
+  family_event: "Gia đình có việc",
+  family_travel: "Đi du lịch / đi xa",
   cancelled_family: "Huỷ bởi gia đình",
 };
+
+/** Cancel options shown to teachers in the cancel modal. */
+export const TEACHER_CANCEL_OPTIONS: { value: string; label: string }[] = [
+  { value: "teacher_sick", label: "Giáo viên bệnh" },
+  { value: "teacher_personal", label: "Giáo viên bận việc cá nhân" },
+  { value: "center_rescheduled", label: "Trung tâm thay đổi lịch" },
+  { value: "cancelled_center", label: "Trung tâm hủy" },
+];
+
+/** Cancel options shown to parents in the cancel modal. */
+export const PARENT_CANCEL_OPTIONS: { value: string; label: string }[] = [
+  { value: "child_sick", label: "Con bệnh" },
+  { value: "family_event", label: "Gia đình có việc" },
+  { value: "family_travel", label: "Đi du lịch / đi xa" },
+  { value: "cancelled_family", label: "Gia đình hủy" },
+];
 
 export const DIAGNOSIS_LABELS: Record<string, string> = {
   autism: "Rối loạn phổ tự kỷ (ASD)",
@@ -100,3 +153,46 @@ export const REVIEW_FREQUENCY_LABELS: Record<string, string> = {
   monthly: "Hàng tháng",
   quarterly: "Hàng quý",
 };
+
+/**
+ * Observation-field label namespaces. Used by report-detail screens to look
+ * up the right Vietnamese label for any of the four obs enums.
+ *
+ * Replaces multiple inline OBS_LABELS definitions.
+ */
+export const OBS_LABELS = {
+  attendance: ATTENDANCE_LABELS,
+  mood: MOOD_LABELS,
+  energy_level: ENERGY_LABELS,
+  engagement_level: ENGAGEMENT_LABELS,
+} as const;
+
+export type ObsField = keyof typeof OBS_LABELS;
+
+/**
+ * Resolve a single observation value to its display label, falling back to
+ * the raw value if the enum isn't mapped.
+ */
+export function obsLabel(
+  field: ObsField,
+  value: string | undefined | null | false,
+): string {
+  if (!value) return "—";
+  return OBS_LABELS[field][value] ?? value;
+}
+
+/**
+ * Convert a label-map (Record<value, label>) into the shape expected by
+ * the form Picker component (`{ value, label }[]`).
+ *
+ * Preserves insertion order, which mirrors the visual order each label-map
+ * was authored in.
+ */
+export function toPickerOptions<V extends string>(
+  labels: Record<V, string>,
+): { value: V; label: string }[] {
+  return (Object.keys(labels) as V[]).map((value) => ({
+    value,
+    label: labels[value],
+  }));
+}

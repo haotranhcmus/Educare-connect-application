@@ -12,12 +12,12 @@
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="template_domain_ids" widget="many2many_tags" />
-                <field name="difficulty_level" />
-                <field name="age_min_months" string="Min Age" optional="show" />
+                <field name="difficulty_id" />
+                <!-- <field name="age_min_months" string="Min Age" optional="show" />
                 <field name="age_max_months" string="Max Age" optional="show" />
-                <field name="default_target_accuracy_pct" string="Suggested Target (%)"
+                <field name="default_target_accuracy_pct" string="Mục tiêu (%)"
                     optional="show" />
-                <field name="active" widget="boolean_toggle" optional="hide" />
+                <field name="active" widget="boolean_toggle" optional="hide" /> -->
             </tree>
         </field>
     </record>
@@ -43,24 +43,33 @@
                             <field name="template_domain_ids" widget="many2many_tags" />
                             <field name="sequence" />
                             <field name="active" />
+
+                            <field name="age_min_months" />
+                            <field name="age_max_months" />
+                            <field name="difficulty_id" />
+
                         </group>
-                        <group string="Suggested Defaults">
-                            <field name="default_baseline_accuracy_pct" />
-                            <field name="default_target_accuracy_pct" />
+                        <group string="Mặc định đề xuất">
+                            <field name="default_measurement_type" />
+                            <field name="default_baseline_accuracy_pct"
+                                invisible="default_measurement_type not in ('accuracy','prompt_level')" />
+                            <field name="default_target_accuracy_pct"
+                                invisible="default_measurement_type not in ('accuracy','prompt_level')" />
+                            <field name="default_target_duration_seconds"
+                                invisible="default_measurement_type != 'duration'" />
+                            <field name="default_baseline_count"
+                                invisible="default_measurement_type not in ('frequency_increase','frequency_decrease')" />
+                            <field name="default_target_count"
+                                invisible="default_measurement_type not in ('frequency_increase','frequency_decrease')" />
                             <field name="default_consecutive_sessions" />
-                            <field name="default_data_collection_method" />
                         </group>
                     </group>
 
                     <notebook>
-                        <page string="Description &amp; Guidance" name="description">
+                        <page string="Mô tả &amp; Hướng dẫn" name="description">
                             <group>
                                 <field name="description"
                                     placeholder="Detailed description of the behavior/skill to achieve..." />
-                            </group>
-                            <group>
-                                <field name="baseline_description"
-                                    placeholder="Description of initial level before intervention..." />
                             </group>
                             <group>
                                 <field name="materials_needed"
@@ -71,7 +80,7 @@
                                     placeholder="Step-by-step teaching instructions..." />
                             </group>
                         </page>
-                        <page string="SMART Components" name="smart">
+                        <page string="Mô tả SMART" name="smart">
                             <group>
                                 <field name="smart_specific"
                                     placeholder="Specific behavior to be achieved..." />
@@ -83,23 +92,13 @@
                                     placeholder="E.g.: 8 weeks" />
                             </group>
                         </page>
-                        <page string="Enrichment" name="enrichment">
+                        <page string="Tài liệu tham khảo" name="enrichment">
                             <group>
-                                <group string="Age &amp; Difficulty">
-                                    <field name="age_min_months" />
-                                    <field name="age_max_months" />
-                                    <field name="difficulty_level" />
-                                </group>
-                                <group string="Clinical References">
-                                    <field name="relevant_diagnosis_ids" widget="many2many_tags" />
-                                    <field name="suggested_prompt_level" />
-                                    <field name="measurement_template_id" />
-                                </group>
-                            </group>
-                            <group string="Prerequisites">
-                                <field name="prerequisite_objective_ids" widget="many2many_tags"
-                                    nolabel="1"
-                                    options='{"no_create": true}' />
+
+                                <field name="relevant_diagnosis_ids" widget="many2many_tags" />
+                                <field name="suggested_prompt_level" />
+                                <field name="measurement_template_id" />
+
                             </group>
                         </page>
                     </notebook>
@@ -124,7 +123,7 @@
                 <separator />
                 <group expand="0" string="Group By">
                     <filter name="group_difficulty" string="Difficulty"
-                        context="{'group_by': 'difficulty_level'}" />
+                        context="{'group_by': 'difficulty_id'}" />
                 </group>
             </search>
         </field>

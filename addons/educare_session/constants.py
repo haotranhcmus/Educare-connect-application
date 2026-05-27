@@ -5,124 +5,109 @@ These constants are defined at module level to allow sharing
 across multiple models and for easier maintenance.
 """
 
-# Prompt/Support levels in ABA training
-# Order matters: index 0 (independent) = best, index 4 (full_physical) = needs most support
-PROMPT_LEVELS = [
-    ('independent', 'Independent'),
-    ('verbal_prompt', 'Verbal Prompt'),
-    ('gestural_prompt', 'Gestural Prompt'),
-    ('partial_physical', 'Partial Physical Prompt'),
-    ('full_physical', 'Full Physical Prompt'),
+# Prompt/Support levels for per-trial data collection (measurement_type = 'prompt_level').
+# Each level maps to a weight; trial score = weight, objective score = avg of trial weights.
+TRIAL_PROMPT_LEVELS = [
+    ("independent", "Độc lập hoàn toàn"),
+    ("gestural_visual", "Nhắc bằng cử chỉ / hình ảnh"),
+    ("verbal", "Nhắc bằng lời nói"),
+    ("physical", "Hỗ trợ thể chất"),
+    ("no_response", "Từ chối / Không phản hồi"),
 ]
 
-# Extracted keys in order - for index-based comparison
-# used_idx <= max_idx => mastery achieved
-# used_idx > max_idx => requires more support than allowed
-PROMPT_ORDER = [key for key, _ in PROMPT_LEVELS]
-
-# Result/data collection types in ABA
-RESULT_TYPES = [
-    ('trial_by_trial', 'Trial by Trial'),
-    ('probe', 'Probe'),
-    ('whole_task', 'Whole Task'),
-    ('partial_interval', 'Partial Interval'),
-    ('momentary_time_sample', 'Momentary Time Sample'),
-]
+TRIAL_PROMPT_WEIGHTS = {
+    "independent": 100,
+    "gestural_visual": 75,
+    "verbal": 50,
+    "physical": 25,
+    "no_response": 0,
+}
 
 # Objective-level ABA phase at the moment data is collected.
 RESULT_PHASES = [
-    ('baseline', 'Baseline'),
-    ('intervention', 'Intervention'),
-    ('maintenance', 'Maintenance'),
-    ('generalization', 'Generalization'),
+    ("baseline", "Cơ sở"),
+    ("intervention", "Can thiệp"),
+    ("maintenance", "Duy trì"),
+    ("generalization", "Khái quát hóa"),
 ]
 
 # Teaching method used for a specific objective inside one session.
 TEACHING_METHODS = [
-    ('dtt', 'Discrete Trial Training (DTT)'),
-    ('net', 'Natural Environment Teaching (NET)'),
-    ('task_analysis', 'Task Analysis'),
-    ('incidental', 'Incidental Teaching'),
-    ('errorless', 'Errorless Learning'),
+    ("dtt", "Luyện tập theo trial rời rạc (DTT)"),
+    ("net", "Dạy học trong môi trường tự nhiên (NET)"),
+    ("task_analysis", "Phân tích nhiệm vụ"),
+    ("incidental", "Dạy học ngẫu nhiên"),
+    ("errorless", "Học không lỗi"),
 ]
 
 # Teacher-rated reinforcement effectiveness for that objective result.
 REINFORCEMENT_EFFECTIVENESS = [
-    ('high', 'High - Strong learner response'),
-    ('medium', 'Medium - Moderate learner response'),
-    ('low', 'Low - Limited learner response'),
+    ("high", "Cao - Học viên phản ứng mạnh"),
+    ("medium", "Trung bình - Học viên phản ứng vừa phải"),
+    ("low", "Thấp - Học viên phản ứng hạn chế"),
+]
+
+# Cancel types — all possible values stored in the database
+CANCEL_TYPES = [
+    # Teacher / Center reasons
+    ("teacher_sick", "Giáo viên bệnh"),
+    ("teacher_personal", "Giáo viên bận việc cá nhân"),
+    ("center_rescheduled", "Trung tâm thay đổi lịch"),
+    ("cancelled_center", "Trung tâm hủy"),
+    # Family / Parent reasons
+    ("child_sick", "Con bệnh"),
+    ("family_event", "Gia đình có việc"),
+    ("family_travel", "Đi du lịch / đi xa"),
+    ("cancelled_family", "Gia đình hủy"),
+]
+
+# Subsets shown in each cancel UI context
+TEACHER_CANCEL_TYPES = [
+    ("teacher_sick", "Giáo viên bệnh"),
+    ("teacher_personal", "Giáo viên bận việc cá nhân"),
+    ("center_rescheduled", "Trung tâm thay đổi lịch"),
+    ("cancelled_center", "Trung tâm hủy"),
+]
+
+PARENT_CANCEL_TYPES = [
+    ("child_sick", "Con bệnh"),
+    ("family_event", "Gia đình có việc"),
+    ("family_travel", "Đi du lịch / đi xa"),
+    ("cancelled_family", "Gia đình hủy"),
 ]
 
 # Session status workflow
 SESSION_STATUS = [
-    ('draft', 'Draft'),
-    ('scheduled', 'Scheduled'),
-    ('completed', 'Completed'),
-    ('done', 'Reviewed'),
-    ('cancelled', 'Cancelled'),
-]
-
-ATTENDANCE_STATUS = [
-    ('present', 'Present'),
-    ('absent_excused', 'Absent (Excused)'),
-    ('absent_unexcused', 'Absent (Unexcused)'),
-    ('cancelled_center', 'Cancelled by Center'),
-    ('cancelled_family', 'Cancelled by Family'),
-]
-
-# Environmental factors during session
-MOOD_LEVELS = [
-    ('very_good', 'Very Good'),
-    ('good', 'Good'),
-    ('neutral', 'Neutral'),
-    ('difficult', 'Difficult'),
-    ('very_difficult', 'Very Difficult'),
-]
-
-ENERGY_LEVELS = [
-    ('high', 'High'),
-    ('normal', 'Normal'),
-    ('low', 'Low'),
-]
-
-ENGAGEMENT_LEVELS = [
-    ('highly_engaged', 'Highly Engaged'),
-    ('engaged', 'Engaged'),
-    ('somewhat_engaged', 'Somewhat Engaged'),
-    ('disengaged', 'Disengaged'),
-]
-
-PERFORMANCE_LEVELS = [
-    ('excellent', 'Excellent'),
-    ('good', 'Good'),
-    ('fair', 'Fair'),
-    ('poor', 'Needs Improvement'),
+    ("draft", "Bản nháp"),
+    ("scheduled", "Đã lên lịch"),
+    ("completed", "Đã hoàn thành"),
+    ("done", "Đã xét duyệt"),
+    ("cancelled", "Đã hủy"),
 ]
 
 LOCATIONS = [
-    ('center', 'Center'),
-    ('home', 'Home'),
-    ('school', 'School'),
-    ('online', 'Online'),
+    ("center", "Tại trung tâm"),
+    ("home", "Tại nhà"),
+    ("school", "Tại trường"),
+    ("online", "Trực tuyến"),
 ]
 
 SESSION_TYPES = [
-    ('individual', '1:1 (Individual)'),
-    ('small_group', 'Small Group (2-4 Learners)'),
-    ('consultation', 'Consultation'),
+    ("individual", "Cá nhân (1:1)"),
+    ("small_group", "Nhóm nhỏ (2-4 học viên)"),
+    ("consultation", "Tư vấn"),
 ]
 
 # Session purpose controls objective selection policy.
 SESSION_PURPOSES = [
-    ('intervention', 'Intervention'),
-    ('maintenance_probe', 'Maintenance Probe'),
-    ('generalization_probe', 'Generalization Probe'),
-    ('parent_training', 'Parent Training'),
+    ("intervention", "Can thiệp"),
+    ("maintenance", "Duy trì"),
+    ("mixed", "Can thiệp có duy trì"),
 ]
 
 HOME_PRACTICE_STATUS = [
-    ('yes', 'Completed Fully'),
-    ('partial', 'Completed Partially'),
-    ('no', 'Not Completed'),
-    ('not_assigned', 'Not Assigned'),
+    ("yes", "Hoàn thành đầy đủ"),
+    ("partial", "Hoàn thành một phần"),
+    ("no", "Chưa hoàn thành"),
+    ("not_assigned", "Chưa được giao"),
 ]

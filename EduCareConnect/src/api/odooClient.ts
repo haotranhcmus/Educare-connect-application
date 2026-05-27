@@ -1,14 +1,15 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
-import { getSessionId, clearSession } from "../utils/secureStore";
-import { logger } from "../utils/logger";
+import { getSessionId, clearSession } from "@utils/secureStore";
+import { logger } from "@utils/logger";
 import type {
   OdooRpcResponse,
-  OdooSearchReadResult,
   OdooError,
-} from "../types";
+  OdooDomain,
+} from "@t";
 
-const BASE_URL =
+export const ODOO_BASE_URL =
   process.env.EXPO_PUBLIC_ODOO_URL || "http://educare-connect.me";
+const BASE_URL = ODOO_BASE_URL;
 const DB_NAME = process.env.EXPO_PUBLIC_ODOO_DB || "educare";
 
 let rpcId = 0;
@@ -74,8 +75,8 @@ client.interceptors.response.use(
           ? JSON.parse(response.config.data as string)?.params
           : undefined,
       });
-      const error = new Error(message);
-      (error as any).odooError = odooError;
+      const error = new Error(message) as Error & { odooError: OdooError };
+      error.odooError = odooError;
       throw error;
     }
     logger.api(
@@ -141,13 +142,36 @@ export async function getSessionInfo() {
 }
 
 /**
+ * Generic JSON-RPC call to any Odoo controller route (`@http.route(type="json")`).
+ *
+ * Used for custom REST endpoints under `/api/...` declared by our own modules
+ * (e.g. `educare_notification/controllers/api.py`). Goes through the same
+ * interceptors (auth cookie, error normalization, logging) as `callKw`.
+ *
+ * @example
+ *   await callJsonRoute<{ count: number }>("/api/notifications/unread-count");
+ */
+export async function callJsonRoute<T = unknown>(
+  path: string,
+  params: Record<string, unknown> = {},
+): Promise<T> {
+  const response = await client.post<OdooRpcResponse<T>>(path, {
+    jsonrpc: "2.0",
+    method: "call",
+    id: nextRpcId(),
+    params,
+  });
+  return response.data.result;
+}
+
+/**
  * Generic call_kw — gọi bất kỳ method trên bất kỳ model
  */
-export async function callKw<T = any>(
+export async function callKw<T = unknown>(
   model: string,
   method: string,
-  args: any[] = [],
-  kwargs: Record<string, any> = {},
+  args: unknown[] = [],
+  kwargs: Record<string, unknown> = {},
 ): Promise<T> {
   const response = await client.post<OdooRpcResponse<T>>(
     "/web/dataset/call_kw",
@@ -179,7 +203,7 @@ export async function callKw<T = any>(
  */
 export async function searchRead<T>(
   model: string,
-  domain: any[] = [],
+  domain: OdooDomain | unknown[] = [],
   fields: string[] = [],
   options: {
     limit?: number;
@@ -212,7 +236,7 @@ export async function read<T>(
  */
 export async function create(
   model: string,
-  values: Record<string, any>,
+  values: Record<string, unknown>,
 ): Promise<number> {
   return callKw<number>(model, "create", [values]);
 }
@@ -223,7 +247,7 @@ export async function create(
 export async function write(
   model: string,
   ids: number[],
-  values: Record<string, any>,
+  values: Record<string, unknown>,
 ): Promise<boolean> {
   return callKw<boolean>(model, "write", [ids, values]);
 }
@@ -233,7 +257,7 @@ export async function write(
  */
 export async function searchCount(
   model: string,
-  domain: any[] = [],
+  domain: OdooDomain | unknown[] = [],
 ): Promise<number> {
   return callKw<number>(model, "search_count", [domain]);
 }
