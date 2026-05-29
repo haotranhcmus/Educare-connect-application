@@ -184,6 +184,7 @@ export interface IepObjectiveListItem {
   mastery_date?: string;
   locked_accuracy_pct?: number;
   measurement_type: MeasurementType;
+  target_prompt_level?: PromptLevel | false;
   target_duration_seconds?: number;
   baseline_count?: number;
   target_count?: number;
@@ -224,6 +225,7 @@ export interface IepObjectiveDetail {
   locked_accuracy_pct?: number;
 
   measurement_type: MeasurementType;
+  target_prompt_level?: PromptLevel | false;
   target_duration_seconds?: number;
   baseline_count?: number;
   target_count?: number;

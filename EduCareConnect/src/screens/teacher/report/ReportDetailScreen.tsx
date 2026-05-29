@@ -30,6 +30,7 @@ import {
   useReportDetailSuspense,
 } from "@hooks/useReports";
 import { useSessionObjectives } from "@hooks/useSessions";
+import { useRequireOnline } from "@hooks/useRequireOnline";
 import { ObjectiveCard } from "@components/iep/ObjectiveCard";
 import {
   REPORT_STATUS_HERO_CONFIG,
@@ -93,13 +94,16 @@ function ReportDetailContent({ navigation, route }: Props) {
     ? PERFORMANCE_CONFIG[report.overall_performance]
     : null;
 
+  const requireOnline = useRequireOnline();
   const handleEdit = () =>
-    navigation.navigate("ReportCreate", {
-      reportId: report.id,
-      sessionId: Array.isArray(report.session_log_id)
-        ? report.session_log_id[0]
-        : undefined,
-    });
+    requireOnline(() =>
+      navigation.navigate("ReportCreate", {
+        reportId: report.id,
+        sessionId: Array.isArray(report.session_log_id)
+          ? report.session_log_id[0]
+          : undefined,
+      }),
+    );
 
   const handleSend = () => {
     Alert.alert(

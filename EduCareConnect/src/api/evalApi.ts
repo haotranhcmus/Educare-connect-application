@@ -92,11 +92,27 @@ interface SessionStateRow {
 export async function submitEvaluation(
   sessionId: number,
   results: ResultInput[],
+  skippedObjectiveIds: number[] = [],
 ): Promise<IepCompletionSignal> {
   logger.eval("submitEvaluation", "start", {
     sessionId,
     resultCount: results.length,
+    skippedCount: skippedObjectiveIds.length,
   });
+
+  // Step −1: unlink skipped objectives from the session (and their stub result
+  // rows) so they leave no trace in the session history. Done before
+  // api_ensure_result_lines so no stub gets re-created.
+  if (skippedObjectiveIds.length > 0) {
+    logger.eval(
+      "submitEvaluation",
+      `unlinking ${skippedObjectiveIds.length} skipped objective(s)...`,
+    );
+    await callKw(SESSION_MODEL, "api_drop_objectives_for_skip", [
+      [sessionId],
+      skippedObjectiveIds,
+    ]);
+  }
 
   // Ensure result lines exist (idempotent — creates them if missing, no-op if already present).
   // This handles sessions that entered 'completed' state without going through action_schedule.

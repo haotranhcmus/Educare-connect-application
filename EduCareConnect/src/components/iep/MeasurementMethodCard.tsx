@@ -2,23 +2,23 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
-import type { MeasurementType } from "@t";
+import {
+  MEASUREMENT_TYPE_LABELS,
+  PROMPT_LEVEL_LABELS,
+  pctToPromptLevel,
+} from "@utils/labels";
+import { formatDurationSeconds } from "@utils/formatters";
+import type { MeasurementType, PromptLevel } from "@t";
 
 export interface MeasurementInfo {
   measurement_type: MeasurementType;
   baseline_accuracy_pct?: number;
   target_accuracy_pct?: number;
+  target_prompt_level?: PromptLevel | false;
   target_duration_seconds?: number;
   baseline_count?: number;
   target_count?: number;
   consecutive_sessions_required?: number;
-}
-
-function fmtSeconds(s: number): string {
-  return s >= 60
-    ? `${Math.floor(s / 60)}'${String(s % 60).padStart(2, "0")}"`
-    : `${s}s`;
 }
 
 /** Human-readable mastery criterion for the objective's measurement type. */
@@ -26,10 +26,15 @@ function criteriaText(o: MeasurementInfo): string {
   switch (o.measurement_type) {
     case "accuracy":
       return `Đạt ≥ ${o.target_accuracy_pct ?? 0}% độ chính xác (từ mức ${o.baseline_accuracy_pct ?? 0}%).`;
-    case "prompt_level":
-      return `Đạt ≥ ${o.target_accuracy_pct ?? 0}% điểm hỗ trợ — chấm theo mức hỗ trợ từng lần thử.`;
+    case "prompt_level": {
+      const lvl =
+        (o.target_prompt_level as string | false | undefined) ||
+        pctToPromptLevel(o.target_accuracy_pct ?? 0);
+      const label = PROMPT_LEVEL_LABELS[lvl] ?? lvl;
+      return `Đạt mức hỗ trợ "${label}" — chấm theo mức hỗ trợ từng lần thử.`;
+    }
     case "duration":
-      return `Duy trì hành vi mục tiêu ≥ ${fmtSeconds(o.target_duration_seconds ?? 0)}.`;
+      return `Duy trì hành vi mục tiêu ≥ ${formatDurationSeconds(o.target_duration_seconds ?? 0)}.`;
     case "frequency_increase":
       return `Tăng lên ≥ ${o.target_count ?? 0} lần/buổi (mức cơ sở ${o.baseline_count ?? 0} lần).`;
     case "frequency_decrease":

@@ -1,5 +1,13 @@
 import { onlineManager, QueryClient } from "@tanstack/react-query";
 import NetInfo from "@react-native-community/netinfo";
+import type { AxiosError } from "axios";
+
+/** HTTP 4xx errors won't fix themselves with a retry — skip the storm. */
+function shouldRetry(failureCount: number, error: unknown): boolean {
+  const status = (error as AxiosError | undefined)?.response?.status;
+  if (status && status >= 400 && status < 500) return false;
+  return failureCount < 2;
+}
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -9,9 +17,10 @@ export const queryClient = new QueryClient({
       // and avoids unnecessary network requests.
       staleTime: 5 * 60 * 1000,
 
-      // Retry failed requests up to 2 times before
-      // exposing the error to the UI.
-      retry: 2,
+      // Retry network/5xx errors twice; 4xx (404/401/403) skip retry.
+      retry: shouldRetry,
+      // Cap exponential backoff so a flaky tunnel doesn't loop fast.
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
 
       // Prevent automatic refetch when the app/window
       // regains focus (useful for mobile apps to reduce API calls).
@@ -19,9 +28,9 @@ export const queryClient = new QueryClient({
     },
 
     mutations: {
-      // Retry failed write operations (create/update/delete)
-      // once before returning an error.
-      retry: 1,
+      // Same 4xx-skip rule applies to writes (eg. validation errors).
+      retry: (failureCount, error) =>
+        shouldRetry(failureCount, error) && failureCount < 1,
     },
   },
 });

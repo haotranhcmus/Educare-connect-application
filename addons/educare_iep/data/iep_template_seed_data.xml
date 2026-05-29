@@ -20,20 +20,21 @@
             <field name="difficulty_id" ref="difficulty_weight_1" />
         </record>
 
-        <!-- Mẫu STO: Giao tiếp - yêu cầu 2 từ -->
+        <!-- Mẫu STO: Giao tiếp - yêu cầu 2 từ (prompt_level, target=gestural_visual=75) -->
         <record id="tpl_obj_comm_request_2w" model="educare.iep.objective.template">
             <field name="template_domain_ids"
                 eval="[(6, 0, [ref('educare_base.domain_communication')])]" />
             <field name="sequence">20</field>
             <field name="name">Kết hợp 2 từ để yêu cầu</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">gestural_visual</field>
             <field name="description">Trẻ sử dụng cụm từ chức năng 2 từ (ví dụ: “muốn bánh”, “mở hộp”).</field>
             <field name="smart_specific">Dùng cụm 2 từ trong bối cảnh NET và DTT.</field>
             <field name="smart_measurable">Đạt >= 70% trong 3 buổi liên tiếp.</field>
             <field name="smart_analysis">Tăng dần độ dài câu sau khi ổn định mức 1 từ.</field>
             <field name="smart_timebound">12 tuần</field>
             <field name="default_baseline_accuracy_pct">0</field>
-            <field name="default_target_accuracy_pct">70</field>
+            <field name="default_target_accuracy_pct">75</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
@@ -87,13 +88,14 @@
             <field name="sequence">10</field>
             <field name="name">Bắt chước hành động đơn giản của người lớn</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">independent</field>
             <field name="description">Trẻ quan sát và bắt chước lại hành động đơn giản (ví dụ: vỗ tay, vẫy tay, gõ bàn) trong tình huống chơi tương tác.</field>
             <field name="smart_specific">Bắt chước 1 hành động đơn giản ngay sau khi được chứng minh.</field>
             <field name="smart_measurable">Đạt >= 80% trong 3 buổi liên tiếp.</field>
             <field name="smart_analysis">Bắt chước là nền tảng của học hỏi xã hội và ngôn ngữ.</field>
             <field name="smart_timebound">8 tuần</field>
-            <field name="default_baseline_accuracy_pct">10</field>
-            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_baseline_accuracy_pct">25</field>
+            <field name="default_target_accuracy_pct">100</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">18</field>
             <field name="age_max_months">48</field>
@@ -106,12 +108,13 @@
             <field name="sequence">20</field>
             <field name="name">Luân phiên chơi 2 lượt với bạn cùng tuổi</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">gestural_visual</field>
             <field name="description">Trẻ có thể chờ đợi lượt của mình và chuyển đồ chơi cho bạn trong trò chơi có cấu trúc.</field>
             <field name="smart_specific">Chờ đợi và chuyển đồ chơi đúng lượt trong 2 lượt liên tiếp.</field>
             <field name="smart_measurable">Đạt 4/5 buổi, không cần nhắc nhở sau 2 tuần.</field>
             <field name="smart_analysis">Luân phiên là kỹ năng xã hội cơ bản cho giao tiếp nhóm.</field>
             <field name="smart_timebound">10 tuần</field>
-            <field name="default_baseline_accuracy_pct">15</field>
+            <field name="default_baseline_accuracy_pct">25</field>
             <field name="default_target_accuracy_pct">75</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
@@ -168,13 +171,14 @@
             <field name="sequence">20</field>
             <field name="name">Leo xuống cầu thang xen kế chân</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">independent</field>
             <field name="description">Trẻ lên và xuống cầu thang bằng cách xen kế chân trái - phải (không đếm hai chân cùng một bậc), có tay vịt.</field>
             <field name="smart_specific">Leo xuống 5 bậc cầu thang xen kế chân không cần hỗ trợ thể chất.</field>
             <field name="smart_measurable">Đạt 4/5 thử từ 2 buổi liên tiếp.</field>
             <field name="smart_analysis">Xen kế chân leo cầu thang thể hiện sự phát triển phối hợp vận động thô.</field>
             <field name="smart_timebound">10 tuần</field>
             <field name="default_baseline_accuracy_pct">25</field>
-            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_target_accuracy_pct">100</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
@@ -247,13 +251,14 @@
             <field name="sequence">30</field>
             <field name="name">Cắt theo đường kẻ bằng kéo con</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">gestural_visual</field>
             <field name="description">Trẻ cầm kéo bằng tay thuận, mở và nhíp kéo để cắt theo đường kẻ thẳng.</field>
             <field name="smart_specific">Cắt đường thẳng dài 10cm, lệch không quá 5mm so với đường kẻ.</field>
             <field name="smart_measurable">Đạt 3/5 thử trong 3 buổi liên tiếp.</field>
             <field name="smart_analysis">Cắt theo đường kẻ thể hiện sự phát triển của kỹ năng vận động tinh phối hợp.</field>
             <field name="smart_timebound">10 tuần</field>
-            <field name="default_baseline_accuracy_pct">15</field>
-            <field name="default_target_accuracy_pct">70</field>
+            <field name="default_baseline_accuracy_pct">25</field>
+            <field name="default_target_accuracy_pct">75</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">42</field>
             <field name="age_max_months">72</field>
@@ -269,13 +274,14 @@
             <field name="sequence">10</field>
             <field name="name">Tự mặc quần và áo thun không cần hỗ trợ</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">independent</field>
             <field name="description">Trẻ tự kéo quần lên và mặc áo thun qua đầu rồi chỉnh lại cho phẳng, không cần trợ giúp thể chất.</field>
             <field name="smart_specific">Hoàn thành cả 2 bước (quần và áo) trong 10 phút mà không cần ký hiệu hoặc hỗ trợ thể chất.</field>
             <field name="smart_measurable">Đạt 4/5 buổi trong 2 tuần liên tiếp.</field>
             <field name="smart_analysis">Mặc đồ độc lập là kỹ năng tự phục vụ cơ bản ảnh hưởng đến tự tin và sinh hoạt hàng ngày.</field>
             <field name="smart_timebound">12 tuần</field>
-            <field name="default_baseline_accuracy_pct">20</field>
-            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_baseline_accuracy_pct">25</field>
+            <field name="default_target_accuracy_pct">100</field>
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">36</field>
             <field name="age_max_months">72</field>
@@ -308,13 +314,14 @@
             <field name="sequence">30</field>
             <field name="name">Tự xúc cơm bằng muỗng không làm đổ</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">independent</field>
             <field name="description">Trẻ cầm muỗng đúng cách, múc cơm và đưa lên miệng mà không làm đổ cơm ra ngoài quá nhiều.</field>
             <field name="smart_specific">Ăn hết 1 bát cơm, đổ cơm &lt;20% so với lượng ăn.</field>
             <field name="smart_measurable">Đạt 4/5 buổi ăn trong 2 tuần liên tiếp.</field>
             <field name="smart_analysis">Tự ăn là kỹ năng tự phục vụ cơ bản, tăng độc lập trong sinh hoạt gia đình.</field>
             <field name="smart_timebound">10 tuần</field>
-            <field name="default_baseline_accuracy_pct">20</field>
-            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_baseline_accuracy_pct">25</field>
+            <field name="default_target_accuracy_pct">100</field>
             <field name="default_consecutive_sessions">4</field>
             <field name="age_min_months">24</field>
             <field name="age_max_months">60</field>
@@ -365,13 +372,14 @@
             <field name="sequence">30</field>
             <field name="name">Viết tên mình theo mẫu chữ</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">gestural_visual</field>
             <field name="description">Trẻ copy tên mình (3-5 chữ cái) theo đường kẻ mờ, các chữ rõ ràng và đúng chiều.</field>
             <field name="smart_specific">Viết đủ các chữ cái trong tên, mỗi chữ không lệch quá 2 đường kẻ.</field>
             <field name="smart_measurable">Đạt 4/5 thử trong 3 buổi liên tiếp.</field>
             <field name="smart_analysis">Viết tên là kỹ năng học tập cơ bản và ảnh hưởng trực tiếp đến học đường.</field>
             <field name="smart_timebound">12 tuần</field>
             <field name="default_baseline_accuracy_pct">25</field>
-            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_target_accuracy_pct">75</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">54</field>
             <field name="age_max_months">96</field>
@@ -422,13 +430,14 @@
             <field name="sequence">30</field>
             <field name="name">Theo lịch trình bằng hình ảnh 4 bước độc lập</field>
             <field name="default_measurement_type">prompt_level</field>
+            <field name="default_target_prompt_level">gestural_visual</field>
             <field name="description">Trẻ xem bảng hình ảnh lịch trình (4 thẻ hình), tự chuyển sang bước tiếp theo sau khi hoàn thành bước trước.</field>
             <field name="smart_specific">Hoàn thành 4 bước đúng thứ tự theo bảng hình mà không cần nhắc nhở miệng.</field>
             <field name="smart_measurable">Đạt 4/5 buổi trong 2 tuần liên tiếp.</field>
             <field name="smart_analysis">Sử dụng lịch trình bằng hình là chiến lược hỗ trợ thích ứng phổ biến và hiệu quả.</field>
             <field name="smart_timebound">8 tuần</field>
-            <field name="default_baseline_accuracy_pct">20</field>
-            <field name="default_target_accuracy_pct">80</field>
+            <field name="default_baseline_accuracy_pct">25</field>
+            <field name="default_target_accuracy_pct">75</field>
             <field name="default_consecutive_sessions">3</field>
             <field name="age_min_months">30</field>
             <field name="age_max_months">84</field>

@@ -25,6 +25,7 @@ import {
   type ChatMessage,
 } from "@hooks/useChat";
 import { useKeyboardHeight } from "@hooks/useKeyboardHeight";
+import { useRequireOnline } from "@hooks/useRequireOnline";
 import type { ChatRoomParams } from "@navigation/types";
 
 dayjs.locale("vi");
@@ -145,17 +146,20 @@ export function ChatRoomScreen() {
     return () => clearTimeout(t);
   }, [isKbOpen]);
 
+  const requireOnline = useRequireOnline();
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
     if (!trimmed || !conversationId || send.isPending) return;
-    setInput("");
-    send.mutate(trimmed, {
-      onError: () => {
-        // Restore the input so the user doesn't lose what they typed.
-        setInput(trimmed);
-      },
+    requireOnline(() => {
+      setInput("");
+      send.mutate(trimmed, {
+        onError: () => {
+          // Restore the input so the user doesn't lose what they typed.
+          setInput(trimmed);
+        },
+      });
     });
-  }, [input, conversationId, send]);
+  }, [input, conversationId, send, requireOnline]);
 
   const canSend = input.trim().length > 0 && !send.isPending;
 

@@ -35,11 +35,11 @@ export const PROMPT_LEVEL_LABELS: Record<string, string> = {
 
 /** Short variants of PROMPT_LEVEL_LABELS for narrow columns / chips. */
 export const PROMPT_LEVEL_SHORT_LABELS: Record<string, string> = {
-  independent: "Độc lập",
-  gestural_visual: "Cử chỉ/Hình",
-  verbal: "Nhắc lời",
-  physical: "Thể chất",
-  no_response: "Không PH",
+  independent: "Độc lập hoàn toàn",
+  gestural_visual: "Nhắc bằng cử chỉ / hình ảnh",
+  verbal: "Nhắc bằng lời nói",
+  physical: "Hỗ trợ thể chất",
+  no_response: "Từ chối / Không phản hồi",
 };
 
 /** Weight (%) of each prompt level — mirrors backend TRIAL_PROMPT_WEIGHTS. */
@@ -51,10 +51,25 @@ export const PROMPT_LEVEL_WEIGHTS: Record<string, number> = {
   no_response: 0,
 };
 
+/**
+ * Map a 0–100 score into the prompt level whose support band it falls into.
+ * Bands use a "floor" convention (each band represents the level the learner
+ * has fully reached): pct=0 → no_response, (0,25] → physical, (25,50] →
+ * verbal, (50,75] → gestural_visual, (75,100] → independent. Mirrors the
+ * weights in PROMPT_LEVEL_WEIGHTS so band edges match mastery thresholds.
+ */
+export function pctToPromptLevel(pct: number): string {
+  if (pct <= 0) return "no_response";
+  if (pct <= 25) return "physical";
+  if (pct <= 50) return "verbal";
+  if (pct <= 75) return "gestural_visual";
+  return "independent";
+}
+
 export const MEASUREMENT_TYPE_LABELS: Record<string, string> = {
   accuracy: "Độ chính xác (đúng / tổng số lần)",
   prompt_level: "Mức độ hỗ trợ (theo từng lần thử)",
-  duration: "Thời gian (giây)",
+  duration: "Thời lượng (giây)",
   frequency_increase: "Tần suất - Tăng hành vi tích cực",
   frequency_decrease: "Tần suất - Giảm hành vi tiêu cực",
 };

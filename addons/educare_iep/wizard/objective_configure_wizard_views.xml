@@ -25,7 +25,10 @@
                             <group string="Accuracy Targets"
                                 invisible="measurement_type not in ('accuracy','prompt_level')">
                                 <field name="baseline_accuracy_pct" />
-                                <field name="target_accuracy_pct" />
+                                <field name="target_accuracy_pct"
+                                    invisible="measurement_type != 'accuracy'" />
+                                <field name="target_prompt_level"
+                                    invisible="measurement_type != 'prompt_level'" />
                             </group>
                             <group string="Duration Target"
                                 invisible="measurement_type != 'duration'">
@@ -107,7 +110,9 @@
                             <field name="baseline_accuracy_pct" string="Mức ban đầu (%)"
                                 readonly="measurement_type not in ('accuracy','prompt_level')" />
                             <field name="target_accuracy_pct" string="Mục tiêu (%)"
-                                readonly="measurement_type not in ('accuracy','prompt_level')" />
+                                readonly="measurement_type != 'accuracy'" />
+                            <field name="target_prompt_level" string="Mức hỗ trợ"
+                                readonly="measurement_type != 'prompt_level'" />
                             <field name="target_duration_seconds" string="Mục tiêu (giây)"
                                 readonly="measurement_type != 'duration'" />
                             <field name="baseline_count" string="Cơ sở (lần)"

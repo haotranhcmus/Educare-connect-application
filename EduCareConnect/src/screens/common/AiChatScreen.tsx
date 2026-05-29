@@ -29,6 +29,7 @@ import {
   type AiMessage,
 } from "@hooks/useAiChat";
 import { useKeyboardHeight } from "@hooks/useKeyboardHeight";
+import { useRequireOnline } from "@hooks/useRequireOnline";
 
 import { theme } from "@/src/theme";
 
@@ -141,12 +142,15 @@ export function AiChatScreen() {
     return () => clearTimeout(t);
   }, [isKbOpen]);
 
+  const requireOnline = useRequireOnline();
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
     if (!trimmed || !channelId || send.isPending) return;
-    setInput("");
-    send.mutate(trimmed);
-  }, [input, channelId, send]);
+    requireOnline(() => {
+      setInput("");
+      send.mutate(trimmed);
+    });
+  }, [input, channelId, send, requireOnline]);
 
   const handleReset = useCallback(() => {
     if (!channelId) return;

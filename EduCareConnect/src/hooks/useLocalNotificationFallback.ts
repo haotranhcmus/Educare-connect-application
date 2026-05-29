@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as Notifications from "expo-notifications";
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import { useQueryClient } from "@tanstack/react-query";
+import { onlineManager, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@store/authStore";
 import { fetchNotifications } from "@api/notificationApi";
 import { queryKeys } from "@api/queryKeys";
@@ -10,6 +10,10 @@ import { logger } from "@utils/logger";
 const IS_EXPO_GO =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 const POLL_INTERVAL_MS = 10_000;
+// After this many back-to-back failures the poller slows to BACKOFF_INTERVAL_MS
+// to stop spamming the log when the network or backend is genuinely down.
+const FAILURE_THRESHOLD = 3;
+const BACKOFF_INTERVAL_MS = 60_000;
 const POLL_LIMIT = 10;
 
 /**
@@ -46,11 +50,31 @@ export function useLocalNotificationFallback() {
     initializedRef.current = false;
 
     let cancelled = false;
+    let consecutiveFailures = 0;
+    let currentInterval = POLL_INTERVAL_MS;
+    let handle: ReturnType<typeof setTimeout>;
+
+    function schedule() {
+      if (cancelled) return;
+      handle = setTimeout(poll, currentInterval);
+    }
 
     async function poll() {
+      // Skip cleanly when offline — react-query's onlineManager is the single
+      // source of truth (driven by NetInfo). Don't burn a request that will
+      // just throw ERR_NETWORK and bloat the log.
+      if (!onlineManager.isOnline()) {
+        schedule();
+        return;
+      }
       try {
         const items = await fetchNotifications({ limit: POLL_LIMIT });
-        if (cancelled || !items?.length) return;
+        consecutiveFailures = 0;
+        currentInterval = POLL_INTERVAL_MS;
+        if (cancelled || !items?.length) {
+          schedule();
+          return;
+        }
 
         const maxId = Math.max(...items.map((i) => i.id));
 
@@ -58,11 +82,15 @@ export function useLocalNotificationFallback() {
           // First poll: record high-water mark, don't fire for past noti.
           lastSeenIdRef.current = maxId;
           initializedRef.current = true;
+          schedule();
           return;
         }
 
         const newItems = items.filter((i) => i.id > lastSeenIdRef.current);
-        if (newItems.length === 0) return;
+        if (newItems.length === 0) {
+          schedule();
+          return;
+        }
 
         // Fire local notification for each new item. Reverse so OS stacks
         // them oldest → newest (newest stays on top).
@@ -91,21 +119,31 @@ export function useLocalNotificationFallback() {
           "push",
           `Fired ${newItems.length} local fallback notification(s)`,
         );
+        schedule();
       } catch (err: any) {
-        logger.warn(
-          "push",
-          `Local fallback poll failed: ${err?.message ?? err}`,
-        );
+        consecutiveFailures += 1;
+        // Only log the first failure at WARN. After that we're in a known
+        // failure mode (network down / backend down) — keep it quiet.
+        if (consecutiveFailures <= FAILURE_THRESHOLD) {
+          logger.warn(
+            "push",
+            `Local fallback poll failed (${consecutiveFailures}): ${err?.message ?? err}`,
+          );
+        }
+        if (consecutiveFailures >= FAILURE_THRESHOLD) {
+          currentInterval = BACKOFF_INTERVAL_MS;
+        }
+        schedule();
       }
     }
 
-    // Kick off immediately, then poll on interval.
+    // Kick off immediately; each successful or failed poll schedules its own
+    // follow-up so the interval can adapt to network state.
     poll();
-    const handle = setInterval(poll, POLL_INTERVAL_MS);
 
     return () => {
       cancelled = true;
-      clearInterval(handle);
+      clearTimeout(handle);
     };
   }, [isAuthenticated, uid, qc]);
 }

@@ -53,6 +53,7 @@ const OBJECTIVE_FIELDS = [
   "current_accuracy_pct",
   "locked_accuracy_pct",
   "target_accuracy_pct",
+  "target_prompt_level",
   "target_duration_seconds",
   "baseline_count",
   "target_count",

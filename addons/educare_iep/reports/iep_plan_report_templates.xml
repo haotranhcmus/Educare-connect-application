@@ -494,8 +494,7 @@
                                                 <tr>
                                                     <th style="width:10%;">Mã</th>
                                                     <th>Mục tiêu ngắn hạn</th>
-                                                    <th style="width:14%; text-align:center;">Ban đầu (%)</th>
-                                                    <th style="width:14%; text-align:center;">Mục tiêu (%)</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -506,12 +505,6 @@
                                                         </td>
                                                         <td>
                                                             <t t-esc="obj.name" />
-                                                        </td>
-                                                        <td class="center">
-                                                            <t t-esc="obj.baseline_accuracy_pct" />
-                                                        </td>
-                                                        <td class="center">
-                                                            <t t-esc="obj.target_accuracy_pct" />
                                                         </td>
                                                     </tr>
                                                 </t>

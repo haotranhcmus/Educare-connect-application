@@ -58,6 +58,25 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Session-expired callback registered by App on mount. Decoupled to avoid the
+// circular import that direct `import { useAuthStore }` from authStore would
+// create (authStore already imports from this module).
+let onSessionExpired: (() => void) | null = null;
+export function setOnSessionExpired(cb: () => void) {
+  onSessionExpired = cb;
+}
+
+// Odoo signals an expired session in two ways: HTTP 401/403 (rare, mainly on
+// /web/login style endpoints) OR HTTP 200 with JSON body `{error: {code: 100,
+// data: {name: "odoo.http.SessionExpiredException"}}}`. Both must trigger a
+// forced logout — otherwise the user stays "authenticated" with a dead cookie
+// and every subsequent RPC spams the same error.
+function isSessionExpiredError(odooError: OdooError | undefined): boolean {
+  if (!odooError) return false;
+  if (odooError.code === 100) return true;
+  return odooError.data?.name === "odoo.http.SessionExpiredException";
+}
+
 // ===== Response Interceptor: xử lý Odoo errors =====
 client.interceptors.response.use(
   (response) => {
@@ -75,6 +94,16 @@ client.interceptors.response.use(
           ? JSON.parse(response.config.data as string)?.params
           : undefined,
       });
+      if (isSessionExpiredError(odooError)) {
+        logger.warn(
+          "odooClient",
+          "Odoo session expired (RPC code 100) — clearing local session",
+        );
+        // Fire-and-forget; downstream onSessionExpired handler will set
+        // isAuthenticated=false and the navigator will route back to Login.
+        clearSession().catch(() => {});
+        onSessionExpired?.();
+      }
       const error = new Error(message) as Error & { odooError: OdooError };
       error.odooError = odooError;
       throw error;

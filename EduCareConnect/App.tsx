@@ -13,9 +13,11 @@ import * as Notifications from "expo-notifications";
 import { theme } from "./src/theme/theme";
 import { queryClient } from "./src/api/queryClient";
 import { queryPersister } from "./src/api/queryPersister";
+import { setOnSessionExpired } from "./src/api/odooClient";
 import { useAuthStore } from "./src/store/authStore";
 import { AppNavigator, navigationRef } from "./src/navigation/AppNavigator";
 import { OfflineBanner } from "./src/components/common/OfflineBanner";
+import { OfflineModal } from "./src/components/common/OfflineModal";
 import { useOnlineStatus } from "./src/hooks/useOnlineStatus";
 import { usePushRegistration } from "./src/hooks/usePushRegistration";
 import { useLocalNotificationFallback } from "./src/hooks/useLocalNotificationFallback";
@@ -69,6 +71,19 @@ function AppContent() {
 
   useEffect(() => {
     checkSession();
+  }, []);
+
+  // Wire the odooClient session-expired hook into authStore.logout so an
+  // expired cookie kicks the user back to the Login screen instead of letting
+  // the app spam dead RPCs.
+  useEffect(() => {
+    setOnSessionExpired(() => {
+      const { isAuthenticated: stillAuth, logout } = useAuthStore.getState();
+      if (!stillAuth) return; // already logged out
+      logger.warn("auth", "Forcing logout — Odoo session expired");
+      void logout();
+    });
+    return () => setOnSessionExpired(() => {});
   }, []);
 
   // Listener: noti arrives while app foreground (banner already shown by handler)
@@ -137,11 +152,32 @@ export default function App() {
             persistOptions={{
               persister: queryPersister,
               maxAge: ONE_WEEK_MS,
-              buster: "v1",
+              // Bumped to v2 to discard pre-whitelist caches that exceeded
+              // Android's 2MB CursorWindow row limit.
+              buster: "v2",
+              dehydrateOptions: {
+                // Only persist small, frequently-needed queries. Heavy ones
+                // (objective detail, session results, report detail) live in
+                // memory only and refetch on cold start — keeps the
+                // AsyncStorage row well under Android's 2MB SQLite limit.
+                shouldDehydrateQuery: (q) => {
+                  const k = q.queryKey as readonly unknown[];
+                  const root = String(k[0] ?? "");
+                  const sub = String(k[1] ?? "");
+                  if (root === "profile") return true;
+                  if (root === "students" && sub === "mine") return true;
+                  if (root === "sessions" && (sub === "today" || sub === "my"))
+                    return true;
+                  if (root === "reports" && sub === "pending-count")
+                    return true;
+                  return false;
+                },
+              },
             }}
           >
             <StatusBar style="auto" />
             <AppContent />
+            <OfflineModal />
             <Toast />
           </PersistQueryClientProvider>
         </PaperProvider>

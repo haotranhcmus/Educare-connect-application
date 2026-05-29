@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
@@ -17,7 +17,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEvalStore } from "@store/evalStore";
 import { useSubmitEval } from "@hooks/useEval";
 import { useSessionDetail, useSessionObjectives } from "@hooks/useSessions";
-import { formatDate, formatFloatTime, formatDuration } from "@utils/formatters";
+import {
+  formatDate,
+  formatFloatTime,
+  formatDuration,
+  formatDurationSeconds,
+} from "@utils/formatters";
 import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
 import { queryKeys } from "@api/queryKeys";
 import type { ResultInput, IepCompletionSignal } from "@api/evalApi";
@@ -48,8 +53,22 @@ export function EvalConfirmScreen({ route, navigation }: Props) {
     session?.objective_ids ?? [],
   );
   const results = useEvalStore((s) => s.results);
+  const skippedObjectiveIds = useEvalStore((s) => s.skippedObjectiveIds);
   const reset = useEvalStore((s) => s.reset);
+  const storeSessionId = useEvalStore((s) => s.sessionId);
   const submitMutation = useSubmitEval();
+
+  // Defensive guard: if the store still holds a different session's drafts
+  // (e.g. user backed out of session A's confirm without submitting and
+  // somehow landed here for session B), wipe the slate. EvalObjectiveScreen
+  // normally handles this on entry; this is a belt-and-braces second check.
+  const storeMismatch =
+    storeSessionId !== null && storeSessionId !== sessionId;
+  useEffect(() => {
+    if (storeMismatch) {
+      reset();
+    }
+  }, [storeMismatch, reset]);
 
   const queryClient = useQueryClient();
   const [iepSignal, setIepSignal] = useState<IepCompletionSignal | null>(null);
@@ -64,7 +83,9 @@ export function EvalConfirmScreen({ route, navigation }: Props) {
   const studentName = Array.isArray(session?.student_id)
     ? session.student_id[1]
     : "";
-  const resultsArray = Array.from(results.values());
+  // During the mismatch frame (before the reset effect runs), pretend the
+  // store is empty so the UI never displays another session's draft results.
+  const resultsArray = storeMismatch ? [] : Array.from(results.values());
   const avgAccuracy =
     resultsArray.length > 0
       ? Math.round(
@@ -87,11 +108,24 @@ export function EvalConfirmScreen({ route, navigation }: Props) {
     queryClient.invalidateQueries({ queryKey: ["students", "iep-plans"] });
   };
 
+  const skippedIdsArray = Array.from(skippedObjectiveIds);
+
   const handleConfirm = async () => {
+    // Block submit when nothing left to record — the session would land in
+    // "reviewed" state with zero results which is meaningless. Direct the
+    // teacher to cancel the session from the detail screen instead.
+    if (resultsArray.length === 0) {
+      toast.error(
+        "Không có mục tiêu nào để đánh giá",
+        "Vui lòng đánh giá ít nhất 1 mục tiêu, hoặc hủy buổi học từ màn chi tiết.",
+      );
+      return;
+    }
     try {
       const signal = await submitMutation.mutateAsync({
         sessionId,
         results: resultsArray,
+        skippedObjectiveIds: skippedIdsArray,
       });
       reset();
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -250,6 +284,20 @@ export function EvalConfirmScreen({ route, navigation }: Props) {
             Kết Quả Mục Tiêu ({resultsArray.length})
           </Text>
         </View>
+        {skippedIdsArray.length > 0 ? (
+          <Text
+            variant="labelSmall"
+            style={{
+              color: theme.colors.outline,
+              marginTop: 4,
+              marginBottom: 8,
+              fontStyle: "italic",
+            }}
+          >
+            {skippedIdsArray.length} mục tiêu đã bỏ qua — sẽ bị loại khỏi buổi
+            học khi bấm Hoàn tất.
+          </Text>
+        ) : null}
 
         {resultsArray.map((r, idx) => (
           <ResultCard
@@ -641,7 +689,7 @@ function ResultCard({
   } else if (mt === "prompt_level") {
     detailValue = `${result.trial_prompts?.length ?? 0} lần thử`;
   } else if (mt === "duration") {
-    detailValue = `${result.actual_duration_seconds ?? 0}s`;
+    detailValue = formatDurationSeconds(result.actual_duration_seconds ?? 0);
   } else {
     detailValue = `${result.actual_count ?? 0} lần`;
   }

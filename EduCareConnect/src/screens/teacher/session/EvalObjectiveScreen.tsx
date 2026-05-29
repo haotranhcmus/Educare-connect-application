@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import {
   View,
   ScrollView,
@@ -42,7 +47,7 @@ const STEPS = ["Mục tiêu", "Xác nhận"];
 
 const STAR_BLACK = require("../../../../assets/star/star-black.png");
 const STAR_YELLOW = require("../../../../assets/star/star-yellow.png");
-const ICON_MEASURANT = require("../../../../assets/result/measurant.png");
+// const ICON_MEASURANT = require("../../../../assets/result/measurant.png");
 const ICON_RESULT = require("../../../../assets/result/result.png");
 
 // Prompt levels ordered worst → best so star count (index + 1) maps intuitively:
@@ -65,7 +70,7 @@ const GUIDANCE: Record<string, string[]> = {
   duration: [
     "Đo THỜI GIAN trẻ duy trì hành vi mục tiêu (tính bằng giây).",
     "Nhập số giây thực tế đạt được.",
-    "Điểm = thời gian thực tế ÷ thời gian mục tiêu × 100% (tối đa 100%).",
+    "Điểm = thời gian thực tế / thời gian mục tiêu × 100% (tối đa 100%).",
   ],
   frequency_increase: [
     "Đếm SỐ LẦN hành vi tích cực xuất hiện — càng nhiều càng tốt.",
@@ -91,8 +96,21 @@ const PROMPT_GUIDE_ROWS = [
 export function EvalObjectiveScreen({ route, navigation }: Props) {
   const { sessionId, objectiveIndex = 0 } = route.params;
   const theme = useTheme();
-  const { setResult: storeSetResult } = useEvalStore();
+  const { setResult: storeSetResult, skipObjective } = useEvalStore();
   const results = useEvalStore((s) => s.results);
+  const storeSessionId = useEvalStore((s) => s.sessionId);
+  const setStoreSessionId = useEvalStore((s) => s.setSessionId);
+
+  // Reset eval draft whenever the user enters a *different* session's eval
+  // flow. Without this, leftover results/skipped from an unsubmitted previous
+  // session would leak into the new one's EvalConfirm screen.
+  // Navigating forward (push objectiveIndex+1) keeps the same sessionId, so
+  // mid-flow drafts are preserved.
+  useEffect(() => {
+    if (storeSessionId !== sessionId) {
+      setStoreSessionId(sessionId);
+    }
+  }, [sessionId, storeSessionId, setStoreSessionId]);
 
   const { data: session, isLoading: sessionLoading } =
     useSessionDetail(sessionId);
@@ -121,6 +139,16 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
   const [trialLevels, setTrialLevels] = useState<string[]>(
     savedResult?.trial_prompts ?? [],
   );
+  const initSavedSec = savedResult?.actual_duration_seconds ?? 0;
+  const [durationMode, setDurationMode] = useState<"minsec" | "seconds">(
+    "minsec",
+  );
+  const [durationMin, setDurationMin] = useState(
+    initSavedSec >= 60 ? String(Math.floor(initSavedSec / 60)) : "",
+  );
+  const [durationSecPart, setDurationSecPart] = useState(
+    initSavedSec > 0 ? String(initSavedSec % 60) : "",
+  );
   const [durationSec, setDurationSec] = useState(
     String(savedResult?.actual_duration_seconds ?? ""),
   );
@@ -137,7 +165,11 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
     setTotalTrials(String(saved?.total_trials ?? ""));
     setNumTrials(String(saved?.trial_prompts?.length ?? ""));
     setTrialLevels(saved?.trial_prompts ?? []);
-    setDurationSec(String(saved?.actual_duration_seconds ?? ""));
+    const sSec = saved?.actual_duration_seconds ?? 0;
+    setDurationSec(String(sSec || ""));
+    setDurationMin(sSec >= 60 ? String(Math.floor(sSec / 60)) : "");
+    setDurationSecPart(sSec > 0 ? String(sSec % 60) : "");
+    setDurationMode("minsec");
     setCount(String(saved?.actual_count ?? ""));
     setNotes(saved?.notes || "");
     setFormError("");
@@ -169,6 +201,27 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
     });
   };
 
+  // Derived: total seconds the user entered for duration, regardless of mode.
+  const durationTotal =
+    durationMode === "minsec"
+      ? (Number(durationMin) || 0) * 60 + (Number(durationSecPart) || 0)
+      : Number(durationSec) || 0;
+
+  const toggleDurationMode = () => {
+    setFormError("");
+    if (durationMode === "minsec") {
+      const total =
+        (Number(durationMin) || 0) * 60 + (Number(durationSecPart) || 0);
+      setDurationSec(total ? String(total) : "");
+      setDurationMode("seconds");
+    } else {
+      const total = Number(durationSec) || 0;
+      setDurationMin(total >= 60 ? String(Math.floor(total / 60)) : "");
+      setDurationSecPart(total > 0 ? String(total % 60) : "");
+      setDurationMode("minsec");
+    }
+  };
+
   // ── Live normalized score (0–100) per measurement type ──
   let scorePct = 0;
   if (measurementType === "accuracy") {
@@ -182,7 +235,7 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
     }
   } else if (measurementType === "duration") {
     const tgt = objective?.target_duration_seconds ?? 0;
-    scorePct = tgt > 0 ? Math.min(Number(durationSec) / tgt, 1) * 100 : 0;
+    scorePct = tgt > 0 ? Math.min(durationTotal / tgt, 1) * 100 : 0;
   } else if (measurementType === "frequency_increase") {
     const tgt = objective?.target_count ?? 0;
     scorePct = tgt > 0 ? Math.min(Number(count) / tgt, 1) * 100 : 0;
@@ -222,9 +275,21 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
         return false;
       }
     } else if (measurementType === "duration") {
-      const a = Number(durationSec);
-      if (durationSec === "" || isNaN(a) || a < 0) {
-        setFormError("Thời gian thực tế không hợp lệ (≥ 0 giây)");
+      if (durationMode === "minsec") {
+        if (durationMin === "" && durationSecPart === "") {
+          setFormError("Nhập phút và/hoặc giây.");
+          return false;
+        }
+        if (durationTotal < 0) {
+          setFormError("Thời gian không được âm.");
+          return false;
+        }
+      } else if (
+        durationSec === "" ||
+        isNaN(Number(durationSec)) ||
+        Number(durationSec) < 0
+      ) {
+        setFormError("Thời gian thực tế không hợp lệ (≥ 0 giây).");
         return false;
       }
     } else {
@@ -237,6 +302,68 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
     setFormError("");
     return true;
   };
+
+  /**
+   * Drop the current objective from this session permanently. The skip is
+   * cached in evalStore until submit, where the backend unlinks it from
+   * session.objective_ids — so after Hoàn tất the objective leaves no trace
+   * in this session's history. There is no undo after submit.
+   */
+  const handleSkip = useCallback(() => {
+    if (!objective) return;
+    Alert.alert(
+      "Bỏ qua mục tiêu?",
+      `Mục tiêu "${objective.name}" sẽ bị loại khỏi buổi học này và KHÔNG được ghi vào lịch sử. Hành động không hoàn tác sau khi bấm Hoàn tất.`,
+      [
+        { text: "Hủy", style: "cancel" },
+        {
+          text: "Bỏ qua",
+          style: "destructive",
+          onPress: () => {
+            skipObjective(objective.id);
+            if (isLast) {
+              navigation.navigate("EvalConfirm", { sessionId });
+            } else {
+              navigation.push("EvalObjective", {
+                sessionId,
+                objectiveIndex: objectiveIndex + 1,
+              });
+            }
+          },
+        },
+      ],
+    );
+  }, [objective, isLast, navigation, sessionId, objectiveIndex, skipObjective]);
+
+  // Header "Bỏ qua" button. Disabled while objective is loading.
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        objective ? (
+          <TouchableOpacity
+            onPress={handleSkip}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 4,
+              paddingHorizontal: 8,
+            }}
+          >
+            <Text
+              style={{
+                color: "#d6ffce",
+                fontWeight: "600",
+                fontSize: 13,
+                width: 60,
+              }}
+            >
+              Bỏ qua
+            </Text>
+          </TouchableOpacity>
+        ) : null,
+    });
+  }, [navigation, handleSkip, objective, theme.colors.error]);
 
   const handleNext = () => {
     if (objective) {
@@ -252,7 +379,7 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
       } else if (measurementType === "prompt_level") {
         result.trial_prompts = trialLevels;
       } else if (measurementType === "duration") {
-        result.actual_duration_seconds = Number(durationSec);
+        result.actual_duration_seconds = durationTotal;
       } else {
         result.actual_count = Number(count);
       }
@@ -343,18 +470,18 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
 
           {/* ── Measurement type card ─────────────────────── */}
           <Surface style={styles.typeCard} elevation={1}>
-            <View style={styles.typeIconWrap}>
+            {/* <View style={styles.typeIconWrap}>
               <Image
                 source={ICON_MEASURANT}
                 style={styles.typeIconImg}
                 resizeMode="contain"
               />
-            </View>
+            </View> */}
             <View style={{ flex: 1 }}>
               <Text
                 style={[styles.typeEyebrow, { color: theme.colors.outline }]}
               >
-                CÁCH THU THẬP &amp; ĐÁNH GIÁ
+                CÁCH ĐÁNH GIÁ
               </Text>
               <Text
                 variant="bodyMedium"
@@ -585,19 +712,76 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
             {/* Type 2: duration */}
             {measurementType === "duration" && (
               <View>
-                <TextInput
-                  label="Thời gian thực tế (giây)"
-                  value={durationSec}
-                  onChangeText={(v) => {
-                    setDurationSec(v);
-                    if (formError) setFormError("");
-                  }}
-                  keyboardType="numeric"
-                  mode="outlined"
-                  dense
-                  style={styles.trialInput}
-                  outlineStyle={styles.inputOutline}
-                />
+                {durationMode === "minsec" ? (
+                  <View style={styles.trialRow}>
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        label="Phút"
+                        value={durationMin}
+                        onChangeText={(v) => {
+                          setDurationMin(v);
+                          if (formError) setFormError("");
+                        }}
+                        keyboardType="numeric"
+                        mode="outlined"
+                        dense
+                        style={styles.trialInput}
+                        outlineStyle={styles.inputOutline}
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        label="Giây"
+                        value={durationSecPart}
+                        onChangeText={(v) => {
+                          setDurationSecPart(v);
+                          if (formError) setFormError("");
+                        }}
+                        keyboardType="numeric"
+                        mode="outlined"
+                        dense
+                        style={styles.trialInput}
+                        outlineStyle={styles.inputOutline}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  <TextInput
+                    label="Số giây"
+                    value={durationSec}
+                    onChangeText={(v) => {
+                      setDurationSec(v);
+                      if (formError) setFormError("");
+                    }}
+                    keyboardType="numeric"
+                    mode="outlined"
+                    dense
+                    style={styles.trialInput}
+                    outlineStyle={styles.inputOutline}
+                  />
+                )}
+                <TouchableOpacity
+                  style={styles.durationToggle}
+                  onPress={toggleDurationMode}
+                  activeOpacity={0.7}
+                >
+                  <MaterialCommunityIcons
+                    name="swap-horizontal"
+                    size={16}
+                    color={theme.colors.primary}
+                  />
+                  <Text
+                    style={{
+                      color: theme.colors.primary,
+                      fontWeight: "600",
+                      fontSize: 12,
+                    }}
+                  >
+                    {durationMode === "minsec"
+                      ? "Đổi sang số giây"
+                      : "Đổi sang phút : giây"}
+                  </Text>
+                </TouchableOpacity>
               </View>
             )}
 
@@ -832,6 +1016,15 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingVertical: 4,
     paddingHorizontal: 6,
+  },
+  durationToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginTop: 4,
   },
   guideCard: {
     borderRadius: 12,

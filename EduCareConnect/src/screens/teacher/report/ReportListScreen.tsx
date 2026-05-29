@@ -34,6 +34,7 @@ import ReportPlaceholderJson from "@assets/placeholder/json/report-placeholder.j
 import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import { DatePickerField } from "@components/form/DatePickerField";
 import { useMyReports } from "@hooks/useReports";
+import { useRequireOnline } from "@hooks/useRequireOnline";
 import { formatDate } from "@utils/formatters";
 import { groupByDate } from "@utils/groupByDate";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -118,6 +119,7 @@ const CHIP_TEXT_ACTIVE = {
 
 function ReportListContent({ navigation }: Props) {
   const theme = useTheme();
+  const requireOnline = useRequireOnline();
   const [search, setSearch] = useState("");
 
   // Applied filters
@@ -329,7 +331,9 @@ function ReportListContent({ navigation }: Props) {
         label="Tạo báo cáo"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color="#fff"
-        onPress={() => navigation.navigate("ReportCreate", {})}
+        onPress={() =>
+          requireOnline(() => navigation.navigate("ReportCreate", {}))
+        }
       />
 
       {/* Filter bottom sheet */}

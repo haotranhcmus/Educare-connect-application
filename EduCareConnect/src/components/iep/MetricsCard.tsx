@@ -4,6 +4,12 @@ import { Text, useTheme, Divider } from "react-native-paper";
 import Svg, { Circle, Path, G, Text as SvgText } from "react-native-svg";
 import { ProgressBar } from "@components/common/ProgressBar";
 import { TrendChip } from "@components/common/TrendChip";
+import { formatDurationSeconds } from "@utils/formatters";
+import {
+  PROMPT_LEVEL_LABELS,
+  PROMPT_LEVEL_SHORT_LABELS,
+  pctToPromptLevel,
+} from "@utils/labels";
 import type { IepObjectiveDetail } from "@t";
 
 interface MetricsCardProps {
@@ -105,95 +111,189 @@ export function MetricsCard({ objective }: MetricsCardProps) {
   const mt = objective.measurement_type;
   const currentPct = Math.round(objective.current_accuracy_pct || 0);
 
-  const fmtSeconds = (s: number) =>
-    s >= 60 ? `${Math.floor(s / 60)}'${String(s % 60).padStart(2, "0")}"` : `${s}s`;
+  const fmtSeconds = formatDurationSeconds;
 
-  // Per measurement type: which two flanking tiles + title + gauge caption to show.
+  // Per measurement type: left / center / right tiles + card title.
+  // Center is a SemiGauge for accuracy (the only type where % is the natural
+  // unit). Every other type shows the *current value* in its own unit, so
+  // baseline / current / target all sit in the same dimension.
   let cardTitle = "Tiến độ";
-  let gaugeCaption = "Đã đạt";
   let leftTile: { label: string; value: string; color?: string } | null = null;
   let rightTile: { label: string; value: string; color?: string } | null = null;
+  let centerTile: { label: string; value: string } | null = null;
 
-  if (mt === "accuracy" || mt === "prompt_level") {
-    cardTitle = mt === "prompt_level" ? "Mức độ hỗ trợ" : "Độ chính xác";
-    gaugeCaption = "Hiện tại";
-    leftTile = { label: "Mức ban đầu", value: `${objective.baseline_accuracy_pct}%` };
+  if (mt === "accuracy") {
+    cardTitle = "Độ chính xác";
+    leftTile = {
+      label: "Mức ban đầu",
+      value: `${objective.baseline_accuracy_pct}%`,
+    };
     rightTile = {
       label: "Mục tiêu",
       value: `${objective.target_accuracy_pct}%`,
       color: "#4CAF50",
     };
-  } else if (mt === "duration") {
-    cardTitle = "Thời gian";
+  } else if (mt === "prompt_level") {
+    cardTitle = "Mức độ hỗ trợ";
+    const baselineLvl = pctToPromptLevel(objective.baseline_accuracy_pct || 0);
+    const targetLvl =
+      (objective.target_prompt_level as string | false | undefined) ||
+      pctToPromptLevel(objective.target_accuracy_pct || 0);
+    const currentLvl = pctToPromptLevel(currentPct);
     leftTile = {
-      label: "Thời gian mục tiêu",
-      value: fmtSeconds(objective.target_duration_seconds || 0),
-      color: "#4CAF50",
+      label: "Mức ban đầu",
+      value: PROMPT_LEVEL_SHORT_LABELS[baselineLvl] ?? baselineLvl,
     };
-  } else if (mt === "frequency_increase") {
-    cardTitle = "Tần suất (tăng hành vi)";
-    leftTile = { label: "Cơ sở", value: `${objective.baseline_count || 0} lần` };
     rightTile = {
       label: "Mục tiêu",
-      value: `${objective.target_count || 0} lần`,
+      value: PROMPT_LEVEL_SHORT_LABELS[targetLvl] ?? targetLvl,
       color: "#4CAF50",
     };
+    centerTile = {
+      label: "Mức can thiệp hiện tại",
+      value: PROMPT_LEVEL_LABELS[currentLvl] ?? currentLvl,
+    };
+  } else if (mt === "duration") {
+    cardTitle = "Thời gian";
+    const targetSec = objective.target_duration_seconds || 0;
+    const currentSec = Math.round((targetSec * currentPct) / 100);
+    leftTile = {
+      label: "Mức ban đầu",
+      value: fmtSeconds(0),
+    };
+    rightTile = {
+      label: "Mục tiêu",
+      value: fmtSeconds(targetSec),
+      color: "#4CAF50",
+    };
+    centerTile = { label: "Hiện tại", value: fmtSeconds(currentSec) };
+  } else if (mt === "frequency_increase") {
+    cardTitle = "Tần suất (tăng hành vi)";
+    const tgt = objective.target_count || 0;
+    const current = Math.round((tgt * currentPct) / 100);
+    leftTile = {
+      label: "Cơ sở",
+      value: `${objective.baseline_count || 0} lần`,
+    };
+    rightTile = {
+      label: "Mục tiêu",
+      value: `${tgt} lần`,
+      color: "#4CAF50",
+    };
+    centerTile = { label: "Hiện tại", value: `${current} lần` };
   } else if (mt === "frequency_decrease") {
     cardTitle = "Tần suất (giảm hành vi)";
-    leftTile = { label: "Cơ sở", value: `${objective.baseline_count || 0} lần` };
+    const baseline = objective.baseline_count || 0;
+    const cap = objective.target_count || 0;
+    const current = Math.round(
+      baseline - ((baseline - cap) * currentPct) / 100,
+    );
+    leftTile = {
+      label: "Cơ sở",
+      value: `${baseline} lần`,
+    };
     rightTile = {
       label: "Tối đa cho phép",
-      value: `${objective.target_count || 0} lần`,
+      value: `${cap} lần`,
       color: "#4CAF50",
     };
+    centerTile = { label: "Hiện tại", value: `${current} lần` };
   }
 
   return (
     <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-      <Text variant="labelMedium" style={{ color: theme.colors.outline, fontWeight: "700" }}>
+      <Text
+        variant="labelMedium"
+        style={{ color: theme.colors.outline, fontWeight: "700" }}
+      >
         {cardTitle}
       </Text>
-      {/* Top row: leftTile | GAUGE | rightTile */}
+      {/* Top row: left | center (gauge for accuracy, text tile otherwise) | right
+          alignItems: "stretch" + each cell uses space-between so the label
+          always hugs the top edge and the value the bottom edge, even when
+          one cell's text wraps onto a second line (e.g. prompt_level). */}
       <View style={styles.accuracyRow}>
         {leftTile && (
           <View style={styles.metricItem}>
-            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+            <Text
+              variant="labelSmall"
+              numberOfLines={4}
+              style={[styles.tileLabel, { color: theme.colors.outline }]}
+            >
               {leftTile.label}
             </Text>
             <Text
               variant="titleMedium"
-              style={{ fontWeight: "700", color: leftTile.color }}
+              numberOfLines={4}
+              style={[
+                styles.tileValue,
+                { fontWeight: "700", color: leftTile.color },
+              ]}
             >
               {leftTile.value}
             </Text>
           </View>
         )}
 
-        {/* Center: gauge = % achievement of the goal */}
-        <View style={{ alignItems: "center" }}>
-          <SemiGauge
-            value={currentPct}
-            max={100}
-            size={100}
-            color={theme.colors.primary}
-            trackColor={theme.colors.surfaceVariant}
-          />
-          <Text
-            variant="labelSmall"
-            style={{ color: theme.colors.outline, marginTop: -4 }}
-          >
-            {gaugeCaption}
-          </Text>
+        <View style={styles.centerCell}>
+          {mt === "accuracy" ? (
+            <>
+              <SemiGauge
+                value={currentPct}
+                max={100}
+                size={100}
+                color={theme.colors.primary}
+                trackColor={theme.colors.surfaceVariant}
+              />
+              <Text
+                variant="labelSmall"
+                style={{ color: theme.colors.outline, marginTop: -4 }}
+              >
+                Hiện tại
+              </Text>
+            </>
+          ) : centerTile ? (
+            <>
+              <Text
+                variant="labelSmall"
+                numberOfLines={4}
+                style={[styles.tileLabel, { color: theme.colors.outline }]}
+              >
+                {centerTile.label}
+              </Text>
+              <Text
+                variant="titleMedium"
+                numberOfLines={4}
+                style={[
+                  styles.tileValue,
+                  {
+                    fontWeight: "800",
+                    color: theme.colors.primary,
+                  },
+                ]}
+              >
+                {centerTile.value}
+              </Text>
+            </>
+          ) : null}
         </View>
 
         {rightTile && (
           <View style={styles.metricItem}>
-            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+            <Text
+              variant="labelSmall"
+              numberOfLines={4}
+              style={[styles.tileLabel, { color: theme.colors.outline }]}
+            >
               {rightTile.label}
             </Text>
             <Text
               variant="titleMedium"
-              style={{ fontWeight: "700", color: rightTile.color }}
+              numberOfLines={4}
+              style={[
+                styles.tileValue,
+                { fontWeight: "700", color: rightTile.color },
+              ]}
             >
               {rightTile.value}
             </Text>
@@ -201,6 +301,17 @@ export function MetricsCard({ objective }: MetricsCardProps) {
         )}
       </View>
 
+      {/* <View style={styles.progressLabelRow}>
+        <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+          Tiến độ hoàn thành
+        </Text>
+        <Text
+          variant="labelSmall"
+          style={{ color: theme.colors.onSurface, fontWeight: "600" }}
+        >
+          {Math.round(objective.progress_pct || 0)}%
+        </Text>
+      </View> */}
       <ProgressBar progress={objective.progress_pct || 0} size="medium" />
 
       <Divider style={{ marginVertical: 8 }} />
@@ -243,11 +354,37 @@ const styles = StyleSheet.create({
   card: { padding: 16, borderRadius: 12, elevation: 1 },
   accuracyRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
+    alignItems: "stretch",
     marginBottom: 8,
+    minHeight: 80,
   },
-  metricItem: { alignItems: "center", gap: 4 },
+  // Each cell is 1/3 wide; label pinned to top, value pinned to bottom via
+  // justifyContent: space-between. That way long wrapping text in one cell
+  // (e.g. prompt level full name) does not push the other cells' labels or
+  // values out of alignment — the top and bottom edges stay flush.
+  metricItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    gap: 4,
+  },
+  centerCell: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 4,
+    gap: 4,
+  },
+  tileLabel: { textAlign: "center" },
+  tileValue: { textAlign: "center" },
+  progressLabelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
   secondaryRow: {
     flexDirection: "row",
     justifyContent: "space-around",

@@ -109,6 +109,10 @@
                                     <field name="baseline_accuracy_pct"
                                         readonly="plan_status != 'draft'" />
                                     <field name="target_accuracy_pct"
+                                        invisible="measurement_type != 'accuracy'"
+                                        readonly="plan_status != 'draft'" />
+                                    <field name="target_prompt_level"
+                                        invisible="measurement_type != 'prompt_level'"
                                         readonly="plan_status != 'draft'" />
                                 </group>
                                 <group string="Duration Target"

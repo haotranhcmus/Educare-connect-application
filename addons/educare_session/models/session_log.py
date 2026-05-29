@@ -443,6 +443,31 @@ class EducareSessionLog(models.Model):
         self.ensure_one()
         self._populate_result_lines()
 
+    def api_drop_objectives_for_skip(self, objective_ids):
+        """Permanently remove the given objectives from this session.
+
+        Called by the mobile eval flow right before submit when the teacher
+        chose "Bỏ qua" on some objectives. The objectives are unlinked from
+        ``objective_ids`` and their (still-empty) result rows are deleted by
+        ``_populate_result_lines``, so the session reads as if those targets
+        were never planned for this lesson. Safe to call with already-removed
+        ids — they are simply skipped.
+        """
+        self.ensure_one()
+        if not objective_ids:
+            return True
+        valid_ids = [
+            oid for oid in objective_ids if oid in self.objective_ids.ids
+        ]
+        if not valid_ids:
+            return True
+        # write() with (3, id) removes from the M2M; the inherited write hook
+        # (or our explicit _populate_result_lines below) cleans up stale
+        # result_line_ids whose objective is no longer in the set.
+        self.write({"objective_ids": [(3, oid) for oid in valid_ids]})
+        self._populate_result_lines()
+        return True
+
     def _populate_result_lines(self):
         """Create result lines for each selected objective."""
         self.ensure_one()

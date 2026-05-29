@@ -22,10 +22,10 @@ ENERGY_LEVELS = [
 ]
 
 ENGAGEMENT_LEVELS = [
-    ("highly_engaged", "Rất tập trung"),
-    ("engaged", "Tham gia"),
+    ("highly_engaged", "Rất tích cực"),
+    ("engaged", "Tập trung"),
     ("somewhat_engaged", "Khá tập trung"),
-    ("disengaged", "Phân tâm"),
+    ("disengaged", "Mất tập trung"),
 ]
 
 PERFORMANCE_LEVELS = [

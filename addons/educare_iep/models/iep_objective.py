@@ -40,6 +40,24 @@ MEASUREMENT_TYPES = [
 # (score_pct >= target_accuracy_pct) keeps working.
 NORMALIZED_THRESHOLD_TYPES = ("duration", "frequency_increase", "frequency_decrease")
 
+# Prompt-level target options for measurement_type="prompt_level".
+# Each option maps to the % weight already used by the per-trial scoring,
+# so target_accuracy_pct can be derived from the chosen level.
+PROMPT_TARGET_LEVELS = [
+    ("independent", "Độc lập hoàn toàn"),
+    ("gestural_visual", "Nhắc bằng cử chỉ / hình ảnh"),
+    ("verbal", "Nhắc bằng lời nói"),
+    ("physical", "Hỗ trợ thể chất"),
+    ("no_response", "Từ chối / Không phản hồi"),
+]
+PROMPT_TARGET_WEIGHTS = {
+    "independent": 100,
+    "gestural_visual": 75,
+    "verbal": 50,
+    "physical": 25,
+    "no_response": 0,
+}
+
 
 class EducareIepObjective(models.Model):
     _name = "educare.iep.objective"
@@ -139,6 +157,13 @@ class EducareIepObjective(models.Model):
         digits=(5, 2),
         default=80.0,
         required=True,
+    )
+    # --- Prompt-level config (measurement_type = 'prompt_level') ---
+    target_prompt_level = fields.Selection(
+        selection=PROMPT_TARGET_LEVELS,
+        string="Mức hỗ trợ cần đạt",
+        help="Mức hỗ trợ tối thiểu cần đạt để được tính là mastery. "
+        "Khi chọn, target_accuracy_pct sẽ tự suy ra từ trọng số của mức này.",
     )
     # --- Duration config (measurement_type = 'duration') ---
     target_duration_seconds = fields.Integer(
@@ -447,10 +472,17 @@ class EducareIepObjective(models.Model):
     def _normalize_threshold_vals(vals):
         """Force baseline=0 / target=100 for duration & frequency types so the
         unified mastery rule (score_pct >= target_accuracy_pct) holds regardless
-        of entry path (wizard, demo, import)."""
+        of entry path (wizard, demo, import). For prompt_level, when a target
+        support level is given, derive target_accuracy_pct from its weight —
+        runs regardless of whether measurement_type is in vals (covers updates
+        that only touch the target level)."""
         if vals.get("measurement_type") in NORMALIZED_THRESHOLD_TYPES:
             vals["baseline_accuracy_pct"] = 0.0
             vals["target_accuracy_pct"] = 100.0
+        if vals.get("target_prompt_level"):
+            vals["target_accuracy_pct"] = PROMPT_TARGET_WEIGHTS.get(
+                vals["target_prompt_level"], vals.get("target_accuracy_pct", 80.0)
+            )
         return vals
 
     def _next_objective_code(self):
@@ -489,7 +521,7 @@ class EducareIepObjective(models.Model):
 
     def write(self, vals):
         vals = dict(vals)
-        if "measurement_type" in vals:
+        if "measurement_type" in vals or "target_prompt_level" in vals:
             self._normalize_threshold_vals(vals)
         if "objective_code" in vals and vals["objective_code"] == "/":
             vals["objective_code"] = self._next_objective_code()
@@ -727,6 +759,15 @@ class EducareIepObjective(models.Model):
         else:
             if not self.target_accuracy_pct or self.target_accuracy_pct == 100.0:
                 self.target_accuracy_pct = 80.0
+
+    @api.onchange("target_prompt_level")
+    def _onchange_target_prompt_level(self):
+        """When user picks a target support level for prompt_level objectives,
+        derive target_accuracy_pct from its weight so mastery threshold matches."""
+        if self.measurement_type == "prompt_level" and self.target_prompt_level:
+            self.target_accuracy_pct = PROMPT_TARGET_WEIGHTS.get(
+                self.target_prompt_level, self.target_accuracy_pct
+            )
 
     def action_start(self):
         """Start objective: move from Not Started to In Progress."""

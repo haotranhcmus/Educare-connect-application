@@ -92,6 +92,19 @@ export function formatDuration(hours: number): string {
 }
 
 /**
+ * Format a raw seconds value as `m'ss"` (e.g. 270 → "4'30\"", 45 → "0'45\"",
+ * 0 → "0'00\""). Always renders the full m'ss" form so duration tiles stay
+ * visually aligned regardless of magnitude. Use for objective-level duration
+ * data (target_duration_seconds, actual_duration_seconds).
+ */
+export function formatDurationSeconds(seconds: number): string {
+  const s = Math.max(0, Math.round(seconds));
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return `${m}'${String(rem).padStart(2, "0")}"`;
+}
+
+/**
  * Format percentage
  * 72.5 → "73%"
  */

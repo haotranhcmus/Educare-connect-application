@@ -3,11 +3,105 @@ import { View, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 import { Text, useTheme, Divider, MD3Theme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBadge } from "@components/common/StatusBadge";
-import { TrendChip } from "@components/common/TrendChip";
-import type { IepObjectiveListItem } from "@t";
-import { formatDate } from "@utils/formatters";
-import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
+import type { IepObjectiveListItem, MeasurementType } from "@t";
+import { formatDate, formatDurationSeconds } from "@utils/formatters";
+import { PROMPT_LEVEL_SHORT_LABELS, pctToPromptLevel } from "@utils/labels";
 import { theme } from "@theme";
+
+/** Color accent + short chip label per measurement type. */
+const TYPE_ACCENTS: Record<
+  MeasurementType,
+  { color: string; bg: string; short: string }
+> = {
+  accuracy: { color: "#1565C0", bg: "#E3F2FD", short: "Độ chính xác" },
+  prompt_level: { color: "#6A1B9A", bg: "#F3E5F5", short: "Mức hỗ trợ" },
+  duration: { color: "#EF6C00", bg: "#FFF3E0", short: "Thời gian" },
+  frequency_increase: {
+    color: "#2E7D32",
+    bg: "#E8F5E9",
+    short: "Tần suất ↑",
+  },
+  frequency_decrease: {
+    color: "#C62828",
+    bg: "#FFEBEE",
+    short: "Tần suất ↓",
+  },
+};
+
+interface TileTriple {
+  leftLabel: string;
+  leftValue: string;
+  centerValue: string;
+  rightLabel: string;
+  rightValue: string;
+}
+
+/** 3-stat tile content adapted to the objective's measurement type.
+ *  Middle cell is always derived from current_accuracy_pct but rendered in the
+ *  same unit as the side tiles, so all three cells share one unit per row. */
+function getTiles(o: IepObjectiveListItem): TileTriple {
+  const pct = Math.max(0, Math.min(100, o.current_accuracy_pct ?? 0));
+  switch (o.measurement_type) {
+    case "duration": {
+      const targetSec = o.target_duration_seconds ?? 0;
+      const currentSec = Math.round((targetSec * pct) / 100);
+      return {
+        leftLabel: "Mục tiêu",
+        leftValue: formatDurationSeconds(targetSec),
+        centerValue: formatDurationSeconds(currentSec),
+        rightLabel: "Buổi liên tiếp",
+        rightValue: `${o.consecutive_sessions_achieved ?? 0}/${o.consecutive_sessions_required ?? 0}`,
+      };
+    }
+    case "frequency_increase": {
+      const tgt = o.target_count ?? 0;
+      const current = Math.round((tgt * pct) / 100);
+      return {
+        leftLabel: "Cơ sở",
+        leftValue: `${o.baseline_count ?? 0} lần`,
+        centerValue: `${current} lần`,
+        rightLabel: "Mục tiêu",
+        rightValue: `${tgt} lần`,
+      };
+    }
+    case "frequency_decrease": {
+      // For decrease, "current" = baseline reduced toward target (cap).
+      const baseline = o.baseline_count ?? 0;
+      const cap = o.target_count ?? 0;
+      const current = Math.round(baseline - ((baseline - cap) * pct) / 100);
+      return {
+        leftLabel: "Cơ sở",
+        leftValue: `${baseline} lần`,
+        centerValue: `${current} lần`,
+        rightLabel: "Tối đa",
+        rightValue: `${cap} lần`,
+      };
+    }
+    case "prompt_level": {
+      const targetLvl =
+        (o.target_prompt_level as string | false | undefined) ||
+        pctToPromptLevel(o.target_accuracy_pct ?? 0);
+      const baselineLvl = pctToPromptLevel(o.baseline_accuracy_pct ?? 0);
+      const currentLvl = pctToPromptLevel(pct);
+      return {
+        leftLabel: "Ban đầu",
+        leftValue: PROMPT_LEVEL_SHORT_LABELS[baselineLvl] ?? baselineLvl,
+        centerValue: PROMPT_LEVEL_SHORT_LABELS[currentLvl] ?? currentLvl,
+        rightLabel: "Mục tiêu",
+        rightValue: PROMPT_LEVEL_SHORT_LABELS[targetLvl] ?? targetLvl,
+      };
+    }
+    default:
+      // accuracy
+      return {
+        leftLabel: "Ban đầu",
+        leftValue: `${o.baseline_accuracy_pct}%`,
+        centerValue: `${Math.round(pct)}%`,
+        rightLabel: "Mục tiêu",
+        rightValue: `${o.target_accuracy_pct}%`,
+      };
+  }
+}
 
 interface ObjectiveCardProps {
   objective: IepObjectiveListItem;
@@ -38,14 +132,16 @@ function ObjectiveCardImpl({
   const hasDetail =
     selectable &&
     (objective.description ||
-      objective.measurement_type ||
       objective.implementation_steps ||
       objective.materials_needed ||
       objective.consecutive_sessions_required);
 
   // Progress fill: từ baseline → current trên thang đến target
   const progressPct = objective.progress_pct ?? 0;
-  const currentPct = Math.round(objective.current_accuracy_pct ?? 0);
+
+  const accent =
+    TYPE_ACCENTS[objective.measurement_type] ?? TYPE_ACCENTS.accuracy;
+  const tiles = getTiles(objective);
 
   return (
     <View
@@ -83,6 +179,16 @@ function ObjectiveCardImpl({
             >
               {objective.objective_code}
             </Text>
+            <View
+              style={[
+                styles.typeChip,
+                { backgroundColor: accent.bg, marginLeft: 8 },
+              ]}
+            >
+              <Text style={[styles.typeChipText, { color: accent.color }]}>
+                {accent.short}
+              </Text>
+            </View>
           </View>
           <StatusBadge status={objective.status} size="small" />
         </View>
@@ -101,8 +207,8 @@ function ObjectiveCardImpl({
           style={[styles.statsRow, { backgroundColor: theme.colors.surface }]}
         >
           <StatCell
-            value={`${objective.baseline_accuracy_pct}%`}
-            label="Ban đầu"
+            value={tiles.leftValue}
+            label={tiles.leftLabel}
             theme={theme}
           />
           <View
@@ -112,9 +218,10 @@ function ObjectiveCardImpl({
             ]}
           />
           <StatCell
-            value={`${currentPct}%`}
+            value={tiles.centerValue}
             label="Hiện tại"
             highlight
+            highlightColor={accent.color}
             theme={theme}
           />
           <View
@@ -124,19 +231,38 @@ function ObjectiveCardImpl({
             ]}
           />
           <StatCell
-            value={`${objective.target_accuracy_pct}%`}
-            label="Mục tiêu"
+            value={tiles.rightValue}
+            label={tiles.rightLabel}
             theme={theme}
           />
         </View>
 
-        {/* ─── Footer: trend + date + chevron ─── */}
+        {/* ─── Footer: progress bar + date + chevron ─── */}
         <View style={styles.footer}>
-          {objective.trend ? (
-            <TrendChip trend={objective.trend} size="small" />
-          ) : (
-            <View />
-          )}
+          <View style={styles.footerProgress}>
+            <View
+              style={[
+                styles.footerProgressTrack,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            >
+              <View
+                style={[
+                  styles.footerProgressFill,
+                  {
+                    width: `${Math.min(progressPct, 100)}%` as any,
+                    backgroundColor: accent.color,
+                  },
+                ]}
+              />
+            </View>
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.outline, fontWeight: "600" }}
+            >
+              {Math.round(progressPct)}%
+            </Text>
+          </View>
           <View style={styles.footerRight}>
             {objective.last_session_date && (
               <Text
@@ -177,7 +303,7 @@ function ObjectiveCardImpl({
             <View style={styles.detailSection}>
               {/* Progress bar */}
               <View style={styles.progressWrap}>
-                <View style={styles.progressLabelRow}>
+                {/* <View style={styles.progressLabelRow}>
                   <Text
                     variant="labelSmall"
                     style={{ color: theme.colors.outline }}
@@ -193,7 +319,7 @@ function ObjectiveCardImpl({
                   >
                     {Math.round(progressPct)}%
                   </Text>
-                </View>
+                </View> */}
                 <View
                   style={[
                     styles.progressTrack,
@@ -218,16 +344,6 @@ function ObjectiveCardImpl({
                   icon="text-box-outline"
                   label="Mô tả mục tiêu"
                   value={objective.description}
-                />
-              ) : null}
-              {objective.measurement_type ? (
-                <DetailRow
-                  icon="ruler"
-                  label="Cách thu thập & đánh giá"
-                  value={
-                    MEASUREMENT_TYPE_LABELS[objective.measurement_type] ||
-                    objective.measurement_type
-                  }
                 />
               ) : null}
               {objective.implementation_steps ? (
@@ -289,11 +405,13 @@ function StatCell({
   value,
   label,
   highlight,
+  highlightColor,
   theme,
 }: {
   value: string;
   label: string;
   highlight?: boolean;
+  highlightColor?: string;
   theme: MD3Theme;
 }) {
   return (
@@ -301,7 +419,9 @@ function StatCell({
       <Text
         variant="titleSmall"
         style={{
-          color: highlight ? theme.colors.primary : theme.colors.onSurface,
+          color: highlight
+            ? (highlightColor ?? theme.colors.primary)
+            : theme.colors.onSurface,
           fontWeight: highlight ? "700" : "500",
           fontSize: 15,
         }}
@@ -382,6 +502,16 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
+  typeChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  typeChipText: {
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
   name: {
     lineHeight: 19,
     marginBottom: 10,
@@ -410,6 +540,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 10,
+  },
+  footerProgress: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  footerProgressTrack: {
+    flex: 1,
+    height: 6,
+    borderRadius: 99,
+    overflow: "hidden",
+  },
+  footerProgressFill: {
+    height: "100%",
+    borderRadius: 99,
   },
   footerRight: {
     flexDirection: "row",

@@ -9,10 +9,12 @@ export function useSubmitEval() {
     mutationFn: ({
       sessionId,
       results,
+      skippedObjectiveIds,
     }: {
       sessionId: number;
       results: ResultInput[];
-    }) => submitEvaluation(sessionId, results),
+      skippedObjectiveIds?: number[];
+    }) => submitEvaluation(sessionId, results, skippedObjectiveIds),
     onSuccess: (_, { sessionId }) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.sessions.detail(sessionId),

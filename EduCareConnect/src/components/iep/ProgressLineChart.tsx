@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { LineChart, BarChart } from "react-native-gifted-charts";
 import { theme } from "@theme";
+import { formatDurationSeconds } from "@utils/formatters";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const CHART_H = 160;
@@ -109,12 +110,16 @@ export function ProgressLineChart({
     );
     const sections = 4;
     const step = Math.max(1, Math.ceil((rawMax * 1.15) / sections));
-    return { axisMax: step * sections, stepValue: step, noOfSections: sections };
+    return {
+      axisMax: step * sections,
+      stepValue: step,
+      noOfSections: sections,
+    };
   }, [byDate, target, baseline, maxValue, unit]);
 
   const isBar = chartType === "bar";
-  const BAR_WIDTH = 26;
-  const BAR_GAP = 14;
+  const BAR_WIDTH = 24;
+  const BAR_GAP = 12;
   const lineSpacing = spacingForN(pageData.length) - 3;
   // Bars use a fixed width + small gap so they sit close together (left-aligned)
   // instead of being spread across the full plot width like line points.
@@ -126,7 +131,11 @@ export function ProgressLineChart({
       ? INITIAL_SPACING + lineSpacing * (pageData.length - 1) + END_SPACING
       : PLOT_W;
 
-  const fmtVal = (v: number) => `${v}${unit}`;
+  // Duration uses a m'ss" format end-to-end; other units keep the raw number.
+  const fmtVal = (v: number) =>
+    unit === "s" ? formatDurationSeconds(v) : `${v}${unit}`;
+  const fmtPoint = (v: number) =>
+    unit === "s" ? formatDurationSeconds(v) : String(v);
 
   const chartData = pageData.map((p, i) => {
     if (chartType === "bar") {
@@ -137,26 +146,22 @@ export function ProgressLineChart({
         frontColor: primaryColor,
         topLabelComponent: () => (
           <Text style={[styles.barTopLabel, { color: primaryColor }]}>
-            {p.acc}
+            {fmtPoint(p.acc)}
           </Text>
         ),
       };
     }
-    // Lines: show a tooltip bubble only on the tapped point.
+    // Lines: always show the raw number above each point (no unit, no tap).
     return {
       value: p.acc,
       label: fmtDate(p.date),
-      ...(selectedIndex === i
-        ? {
-            dataPointLabelComponent: () => (
-              <View style={styles.tooltipBubble}>
-                <Text style={styles.tooltipText}>{fmtVal(p.acc)}</Text>
-              </View>
-            ),
-            dataPointLabelShiftY: -28,
-            dataPointLabelShiftX: -6,
-          }
-        : {}),
+      dataPointLabelComponent: () => (
+        <Text style={[styles.pointLabel, { color: primaryColor }]}>
+          {fmtPoint(p.acc)}
+        </Text>
+      ),
+      dataPointLabelShiftY: -18,
+      dataPointLabelShiftX: -4,
     };
   });
 
@@ -369,6 +374,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 2,
     textAlign: "center",
+  },
+  pointLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    textAlign: "center",
+    width: 34,
   },
   navRow: {
     flexDirection: "row",

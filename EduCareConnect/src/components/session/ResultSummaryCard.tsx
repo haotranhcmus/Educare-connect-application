@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MEASUREMENT_TYPE_LABELS } from "@utils/labels";
+import { formatDurationSeconds } from "@utils/formatters";
 import type { SessionResult } from "@t";
 
 /** Map accuracy → { color, bg, label } */
@@ -41,7 +42,7 @@ function ResultSummaryCardImpl({ result }: ResultSummaryCardProps) {
   if (mt === "accuracy") {
     detailValue = `${result.correct_trials ?? 0}/${result.total_trials ?? 0}`;
   } else if (mt === "duration") {
-    detailValue = `${result.actual_duration_seconds ?? 0}s`;
+    detailValue = formatDurationSeconds(result.actual_duration_seconds ?? 0);
   } else if (mt === "frequency_increase" || mt === "frequency_decrease") {
     detailValue = `${result.actual_count ?? 0} lần`;
   } else if (mt === "prompt_level") {

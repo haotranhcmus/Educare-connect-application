@@ -110,6 +110,17 @@ class EducareIepObjectiveTemplate(models.Model):
         string="Số lần mục tiêu gợi ý",
         default=0,
     )
+    default_target_prompt_level = fields.Selection(
+        selection=[
+            ("independent", "Độc lập hoàn toàn"),
+            ("gestural_visual", "Nhắc bằng cử chỉ / hình ảnh"),
+            ("verbal", "Nhắc bằng lời nói"),
+            ("physical", "Hỗ trợ thể chất"),
+            ("no_response", "Từ chối / Không phản hồi"),
+        ],
+        string="Mức hỗ trợ cần đạt gợi ý",
+        help="Áp dụng khi cách thu thập = Mức độ hỗ trợ.",
+    )
 
     # --- Implementation guidance ---
     materials_needed = fields.Text(

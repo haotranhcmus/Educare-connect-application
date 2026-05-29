@@ -53,6 +53,10 @@ const EMOJI_MAP: Record<string, ReturnType<typeof require>> = {
 };
 const STAR_BLACK = require("../../../../assets/star/star-black.png");
 const STAR_YELLOW = require("../../../../assets/star/star-yellow.png");
+const ENGAGE_BORED = require("../../../../assets/engagement_level/bored.png");
+const ENGAGE_SLIGHT = require("../../../../assets/engagement_level/slightly-smiling-face.png");
+const ENGAGE_LIKE = require("../../../../assets/engagement_level/like.png");
+const ENGAGE_COOL = require("../../../../assets/engagement_level/smiling-face-with-sunglasses.png");
 
 // ── Performance star values (1 = worst, 5 = best) ───────────
 const PERF_VALUES = ["very_poor", "poor", "fair", "good", "excellent"] as const;
@@ -79,18 +83,10 @@ const ENERGY_CHIPS = [
 ] as const;
 
 const ENGAGEMENT_CHIPS = [
-  { value: "disengaged", label: "Phân tâm", icon: "minus-circle-outline" },
-  {
-    value: "somewhat_engaged",
-    label: "Khá tập trung",
-    icon: "circle-outline",
-  },
-  { value: "engaged", label: "Tham gia", icon: "check-circle-outline" },
-  {
-    value: "highly_engaged",
-    label: "Rất tập trung",
-    icon: "star-circle-outline",
-  },
+  { value: "disengaged", label: "Phân tâm", img: ENGAGE_BORED },
+  { value: "somewhat_engaged", label: "Khá tập trung", img: ENGAGE_SLIGHT },
+  { value: "engaged", label: "Tham gia", img: ENGAGE_LIKE },
+  { value: "highly_engaged", label: "Rất tập trung", img: ENGAGE_COOL },
 ] as const;
 
 // ── Form schema ──────────────────────────────────────────────
@@ -640,10 +636,10 @@ export function ReportCreateScreen({ navigation, route }: Props) {
                           },
                     ]}
                   >
-                    <MaterialCommunityIcons
-                      name={opt.icon as any}
-                      size={13}
-                      color={sel ? "#fff" : theme.colors.onSurface}
+                    <Image
+                      source={opt.img}
+                      style={[styles.engagementImg, !sel && { opacity: 0.7 }]}
+                      resizeMode="contain"
                     />
                     <Text
                       variant="labelSmall"
@@ -1166,6 +1162,10 @@ const styles = StyleSheet.create({
   starImg: {
     width: 30,
     height: 30,
+  },
+  engagementImg: {
+    width: 18,
+    height: 18,
   },
 
   // Photo section

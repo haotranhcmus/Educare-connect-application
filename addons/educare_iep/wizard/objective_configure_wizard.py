@@ -44,6 +44,7 @@ class EducareIepObjectiveConfigureWizard(models.TransientModel):
                 "measurement_type": line.measurement_type,
                 "baseline_accuracy_pct": line.baseline_accuracy_pct,
                 "target_accuracy_pct": line.target_accuracy_pct,
+                "target_prompt_level": line.target_prompt_level or False,
                 "target_duration_seconds": line.target_duration_seconds,
                 "baseline_count": line.baseline_count,
                 "target_count": line.target_count,
@@ -134,6 +135,16 @@ class EducareIepObjectiveConfigureWizardLine(models.TransientModel):
         string="Target (%)",
         digits=(5, 2),
         default=80.0,
+    )
+    target_prompt_level = fields.Selection(
+        selection=[
+            ("independent", "Độc lập hoàn toàn"),
+            ("gestural_visual", "Nhắc bằng cử chỉ / hình ảnh"),
+            ("verbal", "Nhắc bằng lời nói"),
+            ("physical", "Hỗ trợ thể chất"),
+            ("no_response", "Từ chối / Không phản hồi"),
+        ],
+        string="Mức hỗ trợ cần đạt",
     )
     target_duration_seconds = fields.Integer(string="Thời gian mục tiêu (giây)", default=0)
     baseline_count = fields.Integer(string="Số lần cơ sở", default=0)

@@ -396,8 +396,8 @@ function IepObjectiveDetailContent({ route }: Props) {
       {/* Cách đánh giá */}
       <MeasurementMethodCard objective={objective} />
 
-      {/* Metrics */}
-      <SectionHeader icon="chart-box-outline" title="Chỉ số hiệu suất" />
+      {/* Tổng quan tiến độ */}
+      <SectionHeader icon="trending-up" title="Tổng quan tiến độ" />
       <MetricsCard objective={objective} />
 
       {/* Progress history split: intervention | maintenance */}

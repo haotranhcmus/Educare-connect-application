@@ -35,6 +35,7 @@ import SessionPlaceholderJson from "@assets/placeholder/json/session-placeholder
 import { MiniCalendar } from "@components/common/MiniCalendar";
 import { useMySessionsSuspense } from "@hooks/useSessions";
 import { useSessionsForReport } from "@hooks/useReports";
+import { useRequireOnline } from "@hooks/useRequireOnline";
 import { formatDate } from "@utils/formatters";
 import { groupByDate } from "@utils/groupByDate";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -106,6 +107,7 @@ const ACTIVE_CHIP_TEXT_STYLE = {
 
 function SessionListContent({ navigation, route }: Props) {
   const theme = useTheme();
+  const requireOnline = useRequireOnline();
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -416,7 +418,9 @@ function SessionListContent({ navigation, route }: Props) {
         label="Tạo mới"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color="#fff"
-        onPress={() => navigation.navigate("SessionCreate", {})}
+        onPress={() =>
+          requireOnline(() => navigation.navigate("SessionCreate", {}))
+        }
       />
 
       {/* ── Filter bottom sheet ───────────────────────────────── */}
