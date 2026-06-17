@@ -1,4 +1,4 @@
-import { searchRead, searchCount, create, write, callKw } from "@api/odooClient";
+import { searchRead, create, write, callKw } from "@api/odooClient";
 import type { ReportListItem, ReportDetail, PhotoAsset } from "@t";
 
 function toAvatarUrl(b64?: string | false): string | undefined {
@@ -99,13 +99,44 @@ export async function fetchStudentReports(
   return mergeStudentAvatars(records, true);
 }
 
+/**
+ * Count finished sessions (done/completed) that don't have ANY report yet —
+ * i.e. the "Chưa báo cáo" badge. This MUST mirror the exclusion logic of
+ * `fetchSessionsAvailableForReport` so the badge matches the list it opens.
+ * (A saved draft already occupies the session's single report slot, so the
+ * session leaves this count once a draft exists.)
+ */
 export async function fetchPendingReportCount(
   teacherUid: number,
 ): Promise<number> {
-  return searchCount("educare.daily.report", [
-    ["status", "=", "draft"],
-    ["teacher_id", "=", teacherUid],
+  const sessions = await searchRead<{ id: number }>(
+    "educare.session.log",
+    [
+      ["teacher_id", "=", teacherUid],
+      ["status", "in", ["completed", "done"]],
+    ],
+    ["id"],
+    { limit: 1000 },
+  );
+  if (sessions.length === 0) return 0;
+
+  const existingReports = await searchRead<{
+    session_log_id: number | [number, string] | false;
+  }>("educare.daily.report", [["session_log_id", "!=", false]], [
+    "session_log_id",
   ]);
+
+  const reportedSessionIds = new Set(
+    existingReports
+      .map((r) =>
+        Array.isArray(r.session_log_id)
+          ? r.session_log_id[0]
+          : (r.session_log_id as number | false),
+      )
+      .filter((id): id is number => typeof id === "number"),
+  );
+
+  return sessions.filter((s) => !reportedSessionIds.has(s.id)).length;
 }
 
 export async function fetchMyReports(

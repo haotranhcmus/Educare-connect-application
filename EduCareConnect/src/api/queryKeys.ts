@@ -81,6 +81,8 @@ export const queryKeys = {
       ["sessions", "results", sessionId] as const,
     availableForReport: (uid: Uid) =>
       ["sessions", "available-for-report", uid] as const,
+    /** Broad prefix to invalidate every available-for-report cache regardless of uid. */
+    availableForReportAll: () => ["sessions", "available-for-report"] as const,
     /** Broad prefix to invalidate every "my sessions" cache regardless of uid/filters. */
     myAll: () => ["sessions", "my"] as const,
   },

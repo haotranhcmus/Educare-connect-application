@@ -386,8 +386,14 @@ class ResUsers(models.Model):
 
     @api.model
     def _seed_demo_avatars(self):
-        """Force-set avatars for all educare profiles based on role.
+        """Force-set unique avatars for each educare demo profile based on role.
         Runs on every --update via demo_seed.xml so it fixes existing DBs too.
+
+        Assignment:
+          teachers   → teacher_01..04 (unique per teacher, sorted by user id)
+          supervisors → teacher_05..06
+          admins     → teacher_07
+          parents    → cycle through father_01..02 or mother_01..03 by relation
         """
         import base64
         import logging
@@ -406,34 +412,75 @@ class ResUsers(models.Model):
                 _log.warning("educare_security: avatar not found: %s/%s", avatar_dir, filename)
                 return False
 
-        teacher_img = load("teacher.png")
-        father_img = load("father.png")
-        mom_img = load("mom.png")
+        def load_list(filenames):
+            return [img for img in (load(f) for f in filenames) if img]
+
+        teacher_imgs = load_list([f"teacher_{i:02d}.jpg" for i in range(1, 8)])
+        father_imgs = load_list(["father_01.jpg", "father_02.jpg"])
+        mother_imgs = load_list(["mother_01.jpg", "mother_02.jpg", "mother_03.jpg"])
+
+        # Fallback to legacy pngs if jpgs are missing
+        if not teacher_imgs:
+            teacher_imgs = [img for img in [load("teacher.png")] if img]
+        if not father_imgs:
+            father_imgs = [img for img in [load("father.png")] if img]
+        if not mother_imgs:
+            mother_imgs = [img for img in [load("mom.png")] if img]
 
         profiles = self.env["educare.user.profile"].sudo().search(
-            [("user_id", "!=", False)]
+            [("user_id", "!=", False)], order="user_id asc"
         )
+
+        teachers   = [p for p in profiles if p.role == "teacher"]
+        supervisors = [p for p in profiles if p.role == "supervisor"]
+        admins     = [p for p in profiles if p.role == "admin"]
+        parents    = [p for p in profiles if p.role == "parent"]
+
         updated = 0
-        for profile in profiles:
-            if profile.role in ("teacher", "supervisor", "admin"):
-                img = teacher_img
-            elif profile.role == "parent":
-                # Parent relation from profile first; fall back to linked student
-                # (only when educare.student is already loaded in this registry)
-                relation = profile.parent_relation
-                if not relation and "educare.student" in self.env.registry:
-                    student = self.env["educare.student"].sudo().search(
-                        [("parent_user_id", "=", profile.user_id.id),
-                         ("parent_relation", "!=", False)],
-                        limit=1,
-                    )
-                    relation = student.parent_relation if student else ""
-                img = mom_img if relation == "mother" else father_img
-            else:
-                continue
-            if img:
-                profile.user_id.sudo().write({"image_1920": img})
+
+        # teachers → teacher_01..04
+        teacher_pool = teacher_imgs[:4] or teacher_imgs
+        for i, p in enumerate(teachers):
+            if teacher_pool:
+                p.user_id.sudo().write({"image_1920": teacher_pool[i % len(teacher_pool)]})
                 updated += 1
+
+        # supervisors → teacher_05..06
+        supervisor_pool = teacher_imgs[4:6] or teacher_imgs
+        for i, p in enumerate(supervisors):
+            if supervisor_pool:
+                p.user_id.sudo().write({"image_1920": supervisor_pool[i % len(supervisor_pool)]})
+                updated += 1
+
+        # admins → teacher_07
+        admin_pool = teacher_imgs[6:7] or teacher_imgs[-1:]
+        for i, p in enumerate(admins):
+            if admin_pool:
+                p.user_id.sudo().write({"image_1920": admin_pool[i % len(admin_pool)]})
+                updated += 1
+
+        # parents → father or mother pool, unique cycling per gender
+        father_counter = 0
+        mother_counter = 0
+        for p in parents:
+            relation = p.parent_relation
+            if not relation and "educare.student" in self.env.registry:
+                student = self.env["educare.student"].sudo().search(
+                    [("parent_user_id", "=", p.user_id.id),
+                     ("parent_relation", "!=", False)],
+                    limit=1,
+                )
+                relation = student.parent_relation if student else ""
+            if relation == "mother":
+                if mother_imgs:
+                    p.user_id.sudo().write({"image_1920": mother_imgs[mother_counter % len(mother_imgs)]})
+                    mother_counter += 1
+                    updated += 1
+            else:
+                if father_imgs:
+                    p.user_id.sudo().write({"image_1920": father_imgs[father_counter % len(father_imgs)]})
+                    father_counter += 1
+                    updated += 1
 
         _log.info("educare_security._seed_demo_avatars: updated %d users", updated)
 

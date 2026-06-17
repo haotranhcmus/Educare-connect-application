@@ -80,7 +80,6 @@ export type CancelType =
   | "family_event"
   | "family_travel"
   | "cancelled_family";
-export type SessionLocation = "center" | "home" | "school" | "online";
 export type SessionType = "individual" | "small_group" | "consultation";
 // SessionPurpose is defined above (line 43) — removed old values here.
 export type Attendance = "present" | "absent";

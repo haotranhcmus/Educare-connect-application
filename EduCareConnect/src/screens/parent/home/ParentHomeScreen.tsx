@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ScrollView,
   View,
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,8 +13,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { AvatarLabel } from "@components/common/AvatarLabel";
 import { StatusBadge } from "@components/common/StatusBadge";
-import { LoadingOverlay } from "@components/common/LoadingOverlay";
 import { ChildSelectorModal } from "@screens/parent/home/ChildSelectorModal";
+import { ParentHomeScreenSkeleton } from "@screens/parent/home/ParentHomeScreenSkeleton";
+import { useFocusEffect } from "@react-navigation/native";
 import { NotificationBell } from "@components/notification/NotificationBell";
 import { ChatBell } from "@components/chat/ChatBell";
 import { useUnreadCount } from "@hooks/useNotification";
@@ -25,13 +27,9 @@ import {
 } from "@hooks/useParent";
 import { useParentStore } from "@store/parentStore";
 import { useAuthStore } from "@store/authStore";
+import { read } from "@api/odooClient";
+import { toAvatarUrl } from "@api/studentApi";
 import { formatFloatTime, formatDateShort } from "@utils/formatters";
-
-const LOCATION_LABELS: Record<string, string> = {
-  center: "Tại trung tâm",
-  home: "Tại nhà",
-  online: "Trực tuyến",
-};
 
 const SESSION_STATUS_CFG: Record<
   string,
@@ -53,17 +51,42 @@ export function ParentHomeScreen({ navigation }: any) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const userName = useAuthStore((s) => s.userName);
+  const uid = useAuthStore((s) => s.uid);
   const { selectedStudent, selectedStudentId, setSelectedStudent } =
     useParentStore();
   const [selectorOpen, setSelectorOpen] = useState(false);
+  const [parentAvatarUri, setParentAvatarUri] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (!uid) return;
+    read("res.users", [uid], ["image_128"])
+      .then(([user]: any[]) => {
+        if (user?.image_128) {
+          setParentAvatarUri(`data:image/png;base64,${user.image_128}`);
+        }
+      })
+      .catch(() => {});
+  }, [uid]);
   const { data: notiUnread = 0 } = useUnreadCount();
 
   const {
     data: students = [],
-    isLoading,
+    isFetching: studentsFetching,
     refetch,
     isRefetching,
   } = useMyStudents();
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  // Background-refresh on focus; skeleton only shows on first load (initial state = true).
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
+  useEffect(() => {
+    if (!studentsFetching) setShowSkeleton(false);
+  }, [studentsFetching]);
 
   useEffect(() => {
     if (students.length > 0 && !selectedStudentId)
@@ -80,7 +103,7 @@ export function ParentHomeScreen({ navigation }: any) {
     selectedStudentId ?? undefined,
   );
 
-  if (isLoading) return <LoadingOverlay visible />;
+  if (showSkeleton) return <ParentHomeScreenSkeleton />;
 
   const teacherName = Array.isArray(selectedStudent?.assigned_teacher_id)
     ? selectedStudent.assigned_teacher_id[1]
@@ -128,7 +151,14 @@ export function ParentHomeScreen({ navigation }: any) {
           {/* Greeting row */}
           <View style={styles.headerRow}>
             <View style={styles.avatarCircle}>
-              <MaterialCommunityIcons name="account" size={24} color="#fff" />
+              {parentAvatarUri ? (
+                <Image
+                  source={{ uri: parentAvatarUri }}
+                  style={styles.avatarImg}
+                />
+              ) : (
+                <MaterialCommunityIcons name="account" size={24} color="#fff" />
+              )}
             </View>
             <View style={{ flex: 1, marginLeft: 12 }}>
               <Text style={styles.greetLabel}>{greeting},</Text>
@@ -158,7 +188,7 @@ export function ParentHomeScreen({ navigation }: any) {
             />
             <View style={styles.headerStatDivider} />
             <HeaderStat
-              icon="bell-badge-outline"
+              icon="file-document-outline"
               label="Báo cáo chưa đọc"
               value={String(unreadCount)}
               urgent={unreadCount > 0}
@@ -184,11 +214,7 @@ export function ParentHomeScreen({ navigation }: any) {
               <View style={styles.childCardTop}>
                 <View style={[styles.childAvatarRing, { borderColor: G1 }]}>
                   <AvatarLabel
-                    uri={
-                      selectedStudent.avatar
-                        ? `data:image/png;base64,${selectedStudent.avatar}`
-                        : undefined
-                    }
+                    uri={toAvatarUrl(selectedStudent.avatar)}
                     name={selectedStudent.name}
                     size={48}
                   />
@@ -330,7 +356,7 @@ export function ParentHomeScreen({ navigation }: any) {
                     </View>
                   </View>
 
-                  {/* Date + location chips */}
+                  {/* Date chip */}
                   <View style={styles.sessionMeta}>
                     <View style={styles.sessionChip}>
                       <MaterialCommunityIcons
@@ -347,24 +373,6 @@ export function ParentHomeScreen({ navigation }: any) {
                         {formatDateShort(latestSession.session_date)}
                       </Text>
                     </View>
-                    {latestSession.location ? (
-                      <View style={styles.sessionChip}>
-                        <MaterialCommunityIcons
-                          name="map-marker-outline"
-                          size={11}
-                          color={theme.colors.outline}
-                        />
-                        <Text
-                          style={[
-                            styles.sessionChipText,
-                            { color: theme.colors.outline },
-                          ]}
-                        >
-                          {LOCATION_LABELS[latestSession.location] ??
-                            latestSession.location}
-                        </Text>
-                      </View>
-                    ) : null}
                   </View>
                 </View>
               </View>
@@ -501,6 +509,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.22)",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  avatarImg: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
   },
   greetLabel: { color: "rgba(255,255,255,0.78)", fontSize: 11 },
   greetName: { color: "#fff", fontSize: 16, fontWeight: "700" },

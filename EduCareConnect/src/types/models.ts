@@ -11,7 +11,6 @@ import type {
   ObjectiveStatus,
   Trend,
   SessionStatus,
-  SessionLocation,
   SessionType,
   SessionPurpose,
   Attendance,
@@ -252,7 +251,6 @@ export interface SessionListItem {
   session_date: string;
   start_time: number; // Float e.g. 8.0 = 08:00
   end_time: number;
-  location: SessionLocation;
   session_type: SessionType;
   session_purpose: SessionPurpose;
   status: SessionStatus;
@@ -269,7 +267,6 @@ export interface SessionDetail {
   start_time: number;
   end_time: number;
   duration: number;
-  location: SessionLocation;
   session_type: SessionType;
   session_purpose: SessionPurpose;
   status: SessionStatus;
@@ -302,7 +299,6 @@ export interface SessionLogDetail {
   start_time: number;
   end_time: number;
   duration: number;
-  location: SessionLocation;
   session_type: SessionType;
   session_purpose: SessionPurpose;
   status: SessionStatus;
@@ -509,7 +505,6 @@ export interface ParentTimetableSession {
   start_time: number;
   end_time: number;
   duration: number;
-  location: SessionLocation;
   session_type: SessionType;
   session_purpose: SessionPurpose;
   status: SessionStatus;
@@ -523,7 +518,6 @@ export interface ParentLatestSession {
   session_date: string;
   start_time: number;
   end_time: number;
-  location: SessionLocation;
   status: SessionStatus;
 }
 

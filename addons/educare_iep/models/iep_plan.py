@@ -1,5 +1,7 @@
 import json
 from datetime import timedelta
+
+from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -151,12 +153,25 @@ class EducareIepPlan(models.Model):
         default="monthly",
         tracking=True,
     )
+    last_reviewed_date = fields.Date(
+        string="Ngày đánh giá gần nhất",
+        readonly=True,
+        tracking=True,
+        copy=False,
+        help="Ngày giám sát viên/quản trị viên thực hiện đánh giá định kỳ gần nhất.",
+    )
     next_review_date = fields.Date(
-        string="Next Review Date",
+        string="Ngày đánh giá kế tiếp",
         compute="_compute_next_review_date",
         store=True,
-        help="Overall review date for this IEP plan.",
         tracking=True,
+        help="Tự động tính từ lần đánh giá gần nhất (hoặc ngày bắt đầu nếu chưa đánh giá lần nào) cộng với tần suất đánh giá.",
+    )
+    is_review_overdue = fields.Boolean(
+        string="Quá hạn đánh giá",
+        compute="_compute_is_review_overdue",
+        store=False,
+        help="True khi kế hoạch đang hoạt động và ngày đánh giá kế tiếp đã qua.",
     )
     closing_reason = fields.Selection(
         selection=[
@@ -316,21 +331,35 @@ class EducareIepPlan(models.Model):
         for plan in self:
             plan.goal_count = len(plan.goal_ids)
 
-    @api.depends("start_date", "review_frequency")
+    @api.depends("start_date", "review_frequency", "last_reviewed_date")
     def _compute_next_review_date(self):
-        frequency_days = {
-            "weekly": 7,
-            "biweekly": 14,
-            "monthly": 30,
-            "quarterly": 90,
+        """Rolling: tính từ lần review gần nhất (hoặc start_date nếu chưa review).
+
+        Dùng relativedelta để đúng với lịch thực (tháng dài/ngắn, quý).
+        """
+        _frequency_delta = {
+            "weekly": relativedelta(weeks=1),
+            "biweekly": relativedelta(weeks=2),
+            "monthly": relativedelta(months=1),
+            "quarterly": relativedelta(months=3),
         }
         for plan in self:
-            if plan.start_date and plan.review_frequency:
-                plan.next_review_date = plan.start_date + timedelta(
-                    days=frequency_days.get(plan.review_frequency, 30)
-                )
+            delta = _frequency_delta.get(plan.review_frequency)
+            base = plan.last_reviewed_date or plan.start_date
+            if base and delta:
+                plan.next_review_date = base + delta
             else:
                 plan.next_review_date = False
+
+    @api.depends("status", "next_review_date")
+    def _compute_is_review_overdue(self):
+        today = fields.Date.today()
+        for plan in self:
+            plan.is_review_overdue = (
+                plan.status == "active"
+                and bool(plan.next_review_date)
+                and plan.next_review_date < today
+            )
 
     def _sync_goal_statuses(self):
         for plan in self:
@@ -348,14 +377,56 @@ class EducareIepPlan(models.Model):
         Auto-close only happens via cron (end_date) or explicit teacher action."""
         pass
 
+    def action_mark_reviewed(self):
+        """Supervisor/Admin đánh dấu đã thực hiện đánh giá định kỳ.
+
+        Ghi nhận last_reviewed_date = hôm nay, next_review_date tự cuộn sang kỳ kế.
+        Chỉ được thực hiện khi plan đang Active.
+        """
+        self.ensure_one()
+        if self.status != "active":
+            raise ValidationError(
+                _("Chỉ có thể đánh dấu đã đánh giá khi kế hoạch đang hoạt động.")
+            )
+        is_supervisor = self.env.user.has_group("educare_security.group_supervisor")
+        is_admin = self.env.user.has_group("educare_security.group_admin")
+        if not is_supervisor and not is_admin:
+            raise ValidationError(
+                _(
+                    "Chỉ giám sát viên hoặc quản trị viên mới có thể đánh dấu đã đánh giá."
+                )
+            )
+        today = fields.Date.today()
+        self.write({"last_reviewed_date": today})
+        # next_review_date tự tính lại qua _compute_next_review_date (store=True)
+        self.message_post(
+            body=_(
+                "📋 Đánh giá định kỳ đã thực hiện ngày %s bởi %s. "
+                "Kỳ đánh giá kế tiếp: %s.",
+                today.strftime("%d/%m/%Y"),
+                self.env.user.name,
+                (
+                    self.next_review_date.strftime("%d/%m/%Y")
+                    if self.next_review_date
+                    else "—"
+                ),
+            ),
+            message_type="comment",
+            subtype_xmlid="mail.mt_note",
+        )
+
     def action_continue_maintenance(self):
         """Teacher chooses to continue maintenance sessions after all goals achieved."""
         self.ensure_one()
         if self.status != "active":
-            raise ValidationError(_("Chỉ có thể bật chế độ duy trì khi kế hoạch đang hoạt động."))
+            raise ValidationError(
+                _("Chỉ có thể bật chế độ duy trì khi kế hoạch đang hoạt động.")
+            )
         self.write({"maintenance_mode": True})
         self.message_post(
-            body=_("Giáo viên chọn tiếp tục học duy trì sau khi hoàn thành tất cả mục tiêu."),
+            body=_(
+                "Giáo viên chọn tiếp tục học duy trì sau khi hoàn thành tất cả mục tiêu."
+            ),
             message_type="comment",
             subtype_xmlid="mail.mt_note",
         )
@@ -367,23 +438,31 @@ class EducareIepPlan(models.Model):
             raise ValidationError(_("Chỉ có thể kết thúc kỳ IEP đang hoạt động."))
 
         Session = self.env["educare.session.log"]
-        scheduled = Session.search([
-            ("student_id", "=", self.student_id.id),
-            ("status", "=", "scheduled"),
-        ])
+        scheduled = Session.search(
+            [
+                ("student_id", "=", self.student_id.id),
+                ("status", "=", "scheduled"),
+            ]
+        )
         if scheduled:
-            scheduled.with_context(skip_status_transition_check=True).write({
-                "status": "cancelled",
-                "cancel_type": "cancelled_center",
-                "cancel_notes": _("Kỳ IEP đã kết thúc."),
-            })
+            scheduled.with_context(skip_status_transition_check=True).write(
+                {
+                    "status": "cancelled",
+                    "cancel_type": "cancelled_center",
+                    "cancel_notes": _("Kỳ IEP đã kết thúc."),
+                }
+            )
 
-        self.with_context(skip_status_transition_check=True).write({
-            "status": "completed",
-            "closing_reason": "completed_period",
-            "closing_notes": _("Giáo viên kết thúc kỳ IEP sau khi tất cả mục tiêu đã thành thạo."),
-            "maintenance_mode": False,
-        })
+        self.with_context(skip_status_transition_check=True).write(
+            {
+                "status": "completed",
+                "closing_reason": "completed_period",
+                "closing_notes": _(
+                    "Giáo viên kết thúc kỳ IEP sau khi tất cả mục tiêu đã thành thạo."
+                ),
+                "maintenance_mode": False,
+            }
+        )
         self.message_post(
             body=_("Kỳ IEP đã kết thúc. %d buổi học đã hủy.", len(scheduled)),
             message_type="comment",
@@ -397,10 +476,12 @@ class EducareIepPlan(models.Model):
         warning_date = today + timedelta(days=7)
 
         # 7-day warning
-        expiring = self.search([
-            ("status", "=", "active"),
-            ("end_date", "=", warning_date),
-        ])
+        expiring = self.search(
+            [
+                ("status", "=", "active"),
+                ("end_date", "=", warning_date),
+            ]
+        )
         for plan in expiring:
             plan.message_post(
                 body=_(
@@ -412,21 +493,25 @@ class EducareIepPlan(models.Model):
             )
 
         # Auto-close/complete expired plans
-        expired = self.search([
-            ("status", "=", "active"),
-            ("end_date", "<", today),
-        ])
+        expired = self.search(
+            [
+                ("status", "=", "active"),
+                ("end_date", "<", today),
+            ]
+        )
         for plan in expired:
             if plan.maintenance_mode or plan._all_goals_achieved():
                 # All objectives mastered → completed
                 plan.with_context(
                     skip_status_transition_check=True, skip_auto_status_flow=True
-                ).write({
-                    "status": "completed",
-                    "closing_reason": "completed_period",
-                    "closing_notes": _("Kỳ IEP tự động kết thúc sau khi hết hạn."),
-                    "maintenance_mode": False,
-                })
+                ).write(
+                    {
+                        "status": "completed",
+                        "closing_reason": "completed_period",
+                        "closing_notes": _("Kỳ IEP tự động kết thúc sau khi hết hạn."),
+                        "maintenance_mode": False,
+                    }
+                )
                 plan.message_post(
                     body=_("✅ Kỳ IEP tự động chuyển sang Hoàn thành sau khi hết hạn."),
                     message_type="comment",
@@ -436,8 +521,36 @@ class EducareIepPlan(models.Model):
                 # Not all mastered → closed, cascade discontinue
                 plan.action_close(
                     closing_reason="completed_period",
-                    closing_notes=_("Kỳ IEP tự động đóng sau khi hết hạn mà chưa hoàn thành toàn bộ mục tiêu."),
+                    closing_notes=_(
+                        "Kỳ IEP tự động đóng sau khi hết hạn mà chưa hoàn thành toàn bộ mục tiêu."
+                    ),
                 )
+
+    @api.model
+    def _cron_warn_overdue_reviews(self):
+        """Daily: post chatter warning on active plans whose next_review_date has passed."""
+        today = fields.Date.today()
+        overdue = self.search(
+            [
+                ("status", "=", "active"),
+                ("next_review_date", "!=", False),
+                ("next_review_date", "<", today),
+            ]
+        )
+        for plan in overdue:
+            plan.message_post(
+                body=_(
+                    "⚠️ Kỳ đánh giá định kỳ IEP đã quá hạn (dự kiến: %s). "
+                    "Vui lòng thực hiện đánh giá và bấm 'Đánh giá định kỳ'.",
+                    (
+                        plan.next_review_date.strftime("%d/%m/%Y")
+                        if plan.next_review_date
+                        else "—"
+                    ),
+                ),
+                message_type="comment",
+                subtype_xmlid="mail.mt_note",
+            )
 
     def _ensure_root_link(self):
         rootless = self.filtered(lambda p: not p.root_plan_id)
@@ -986,7 +1099,9 @@ class EducareIepPlan(models.Model):
                         "measurement_type": odata.get("measurement_type", "accuracy"),
                         "baseline_accuracy_pct": odata["baseline_accuracy_pct"],
                         "target_accuracy_pct": odata["target_accuracy_pct"],
-                        "target_duration_seconds": odata.get("target_duration_seconds", 0),
+                        "target_duration_seconds": odata.get(
+                            "target_duration_seconds", 0
+                        ),
                         "baseline_count": odata.get("baseline_count", 0),
                         "target_count": odata.get("target_count", 0),
                         "consecutive_sessions_required": odata[

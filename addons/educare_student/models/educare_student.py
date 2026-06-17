@@ -650,8 +650,8 @@ class EducareStudent(models.Model):
 
     @api.model
     def _seed_demo_avatars(self):
-        """Assign cycling student avatars to every student that has none.
-        Safe to call repeatedly — only touches records with avatar = False.
+        """Assign unique cycling avatars to all demo students.
+        Overwrites existing avatars so re-running after a file update takes effect.
         Called from demo_seed.xml (noupdate=0) so it runs on --update too.
         """
         import base64
@@ -662,13 +662,7 @@ class EducareStudent(models.Model):
         avatar_dir = os.path.join(
             os.path.dirname(__file__), "..", "static", "img", "avatar"
         )
-        filenames = [
-            "student1.png",
-            "student2.png",
-            "student3.png",
-            "student4.png",
-            "student5.png",
-        ]
+        filenames = [f"student_{i:02d}.jpg" for i in range(1, 10)]  # student_01..09
         imgs = []
         for fn in filenames:
             try:
@@ -677,10 +671,20 @@ class EducareStudent(models.Model):
             except OSError:
                 _log.warning("educare_student: avatar not found: %s/%s", avatar_dir, fn)
 
+        # Fallback to legacy pngs if jpgs are missing
         if not imgs:
+            for fn in ["student1.png", "student2.png", "student3.png", "student4.png", "student5.png"]:
+                try:
+                    with open(os.path.join(avatar_dir, fn), "rb") as fh:
+                        imgs.append(base64.b64encode(fh.read()))
+                except OSError:
+                    pass
+
+        if not imgs:
+            _log.warning("educare_student: no student avatar images found — skipping")
             return
 
-        students = self.sudo().search([("avatar", "=", False)], order="student_code")
+        students = self.sudo().search([], order="student_code")
         for i, student in enumerate(students):
             student.sudo().write({"avatar": imgs[i % len(imgs)]})
 

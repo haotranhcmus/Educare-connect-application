@@ -13,6 +13,7 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import {
   Text,
@@ -84,6 +85,14 @@ const GUIDANCE: Record<string, string[]> = {
   ],
 };
 
+const TYPE_ACCENTS: Record<string, { color: string; bg: string; icon: string }> = {
+  accuracy:           { color: "#1565C0", bg: "#E3F2FD", icon: "percent" },
+  prompt_level:       { color: "#6A1B9A", bg: "#F3E5F5", icon: "star-half-full" },
+  duration:           { color: "#EF6C00", bg: "#FFF3E0", icon: "timer-outline" },
+  frequency_increase: { color: "#2E7D32", bg: "#E8F5E9", icon: "trending-up" },
+  frequency_decrease: { color: "#C62828", bg: "#FFEBEE", icon: "trending-down" },
+};
+
 // Star ↔ support-level mapping shown in the prompt_level guidance card.
 const PROMPT_GUIDE_ROWS = [
   { stars: 5, label: "Độc lập hoàn toàn", pct: 100 },
@@ -125,6 +134,7 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
   const isFirst = objectiveIndex === 0;
 
   const measurementType = objective?.measurement_type ?? "accuracy";
+  const accent = TYPE_ACCENTS[measurementType] ?? TYPE_ACCENTS.accuracy;
 
   // ── Form state (per measurement type) ──
   const [correct, setCorrect] = useState(
@@ -469,28 +479,36 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
           </Surface>
 
           {/* ── Measurement type card ─────────────────────── */}
-          <Surface style={styles.typeCard} elevation={1}>
-            {/* <View style={styles.typeIconWrap}>
-              <Image
-                source={ICON_MEASURANT}
-                style={styles.typeIconImg}
-                resizeMode="contain"
+          <TouchableOpacity
+            style={[styles.typeCard, { backgroundColor: accent.bg }]}
+            onPress={() => setShowGuide(true)}
+            activeOpacity={0.75}
+          >
+            <View style={[styles.typeIconWrap, { backgroundColor: `${accent.color}18` }]}>
+              <MaterialCommunityIcons
+                name={accent.icon as any}
+                size={20}
+                color={accent.color}
               />
-            </View> */}
+            </View>
             <View style={{ flex: 1 }}>
-              <Text
-                style={[styles.typeEyebrow, { color: theme.colors.outline }]}
-              >
+              <Text style={[styles.typeEyebrow, { color: accent.color, opacity: 0.75 }]}>
                 CÁCH ĐÁNH GIÁ
               </Text>
               <Text
                 variant="bodyMedium"
-                style={{ fontWeight: "700", color: theme.colors.onSurface }}
+                style={{ fontWeight: "700", color: accent.color }}
               >
                 {MEASUREMENT_TYPE_LABELS[measurementType] || measurementType}
               </Text>
             </View>
-          </Surface>
+            <MaterialCommunityIcons
+              name="information-outline"
+              size={18}
+              color={accent.color}
+              style={{ opacity: 0.55 }}
+            />
+          </TouchableOpacity>
 
           {/* ── Eval form card ────────────────────────────── */}
           <Surface style={styles.formCard} elevation={1}>
@@ -506,121 +524,7 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
               >
                 Nhập kết quả
               </Text>
-              <View style={{ flex: 1 }} />
-              <TouchableOpacity
-                style={styles.guideBtn}
-                onPress={() => setShowGuide((g) => !g)}
-                activeOpacity={0.7}
-              >
-                <MaterialCommunityIcons
-                  name="help-circle-outline"
-                  size={16}
-                  color={theme.colors.primary}
-                />
-                <Text
-                  style={{
-                    color: theme.colors.primary,
-                    fontWeight: "600",
-                    fontSize: 12,
-                  }}
-                >
-                  Hướng dẫn
-                </Text>
-              </TouchableOpacity>
             </View>
-
-            {showGuide && (
-              <View
-                style={[
-                  styles.guideCard,
-                  {
-                    backgroundColor: theme.colors.surfaceVariant,
-                    borderColor: theme.colors.outlineVariant,
-                  },
-                ]}
-              >
-                <View style={styles.guideHeader}>
-                  <Text
-                    style={[styles.guideTitle, { color: theme.colors.primary }]}
-                  >
-                    Hướng dẫn nhập
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => setShowGuide(false)}
-                    hitSlop={8}
-                  >
-                    <MaterialCommunityIcons
-                      name="close-circle"
-                      size={20}
-                      color={theme.colors.outline}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                {measurementType === "prompt_level" ? (
-                  <View style={{ gap: 8 }}>
-                    <Text
-                      style={[
-                        styles.guideIntro,
-                        { color: theme.colors.onSurfaceVariant },
-                      ]}
-                    >
-                      Mỗi lần thử, chọn số sao theo mức hỗ trợ trẻ cần:
-                    </Text>
-                    {PROMPT_GUIDE_ROWS.map((r) => (
-                      <View key={r.stars} style={styles.guideStarRow}>
-                        <View style={styles.guideStars}>
-                          {[0, 1, 2, 3, 4].map((i) => (
-                            <Image
-                              key={i}
-                              source={i < r.stars ? STAR_YELLOW : STAR_BLACK}
-                              style={styles.guideStarImg}
-                              resizeMode="contain"
-                            />
-                          ))}
-                        </View>
-                        <Text
-                          style={[
-                            styles.guideRowText,
-                            { color: theme.colors.onSurface, flex: 1 },
-                          ]}
-                        >
-                          {r.label} ({r.pct}%)
-                        </Text>
-                      </View>
-                    ))}
-                    <Text
-                      style={[
-                        styles.guideNote,
-                        { color: theme.colors.onSurfaceVariant },
-                      ]}
-                    >
-                      Điểm = trung bình các lần thử.
-                    </Text>
-                  </View>
-                ) : (
-                  <View style={{ gap: 6 }}>
-                    {(GUIDANCE[measurementType] || []).map((line, i) => (
-                      <View key={i} style={styles.guideBulletRow}>
-                        <MaterialCommunityIcons
-                          name="circle-medium"
-                          size={16}
-                          color={theme.colors.primary}
-                        />
-                        <Text
-                          style={[
-                            styles.guideRowText,
-                            { color: theme.colors.onSurface, flex: 1 },
-                          ]}
-                        >
-                          {line}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
-            )}
 
             {/* Type 0: accuracy */}
             {measurementType === "accuracy" && (
@@ -849,6 +753,86 @@ export function EvalObjectiveScreen({ route, navigation }: Props) {
           {isLast ? "Xác nhận" : `Tiếp tục`}
         </Button>
       </SafeAreaView>
+
+      {/* ── Guide Modal ───────────────────────────────── */}
+      <Modal
+        visible={showGuide}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowGuide(false)}
+        statusBarTranslucent
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowGuide(false)}
+        >
+          {/* Inner press absorber prevents tap-through closing */}
+          <TouchableOpacity activeOpacity={1} style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
+            {/* Header */}
+            <View style={[styles.modalHeaderRow, { backgroundColor: accent.bg }]}>
+              <MaterialCommunityIcons
+                name={accent.icon as any}
+                size={18}
+                color={accent.color}
+              />
+              <Text style={[styles.modalTitle, { color: accent.color }]}>
+                Hướng dẫn đánh giá
+              </Text>
+              <TouchableOpacity onPress={() => setShowGuide(false)} hitSlop={8}>
+                <MaterialCommunityIcons name="close" size={20} color={accent.color} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Body */}
+            <View style={styles.modalBody}>
+              {measurementType === "prompt_level" ? (
+                <View style={{ gap: 10 }}>
+                  <Text style={[styles.guideIntro, { color: theme.colors.onSurfaceVariant }]}>
+                    Mỗi lần thử, chọn số sao theo mức hỗ trợ trẻ cần:
+                  </Text>
+                  {PROMPT_GUIDE_ROWS.map((r) => (
+                    <View key={r.stars} style={styles.guideStarRow}>
+                      <View style={styles.guideStars}>
+                        {[0, 1, 2, 3, 4].map((i) => (
+                          <Image
+                            key={i}
+                            source={i < r.stars ? STAR_YELLOW : STAR_BLACK}
+                            style={styles.guideStarImg}
+                            resizeMode="contain"
+                          />
+                        ))}
+                      </View>
+                      <Text style={[styles.guideRowText, { color: theme.colors.onSurface, flex: 1 }]}>
+                        {r.label}{" "}
+                        <Text style={{ color: theme.colors.outline }}>({r.pct}%)</Text>
+                      </Text>
+                    </View>
+                  ))}
+                  <Text style={[styles.guideNote, { color: theme.colors.onSurfaceVariant }]}>
+                    Điểm = trung bình các lần thử.
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ gap: 8 }}>
+                  {(GUIDANCE[measurementType] || []).map((line, i) => (
+                    <View key={i} style={styles.guideBulletRow}>
+                      <MaterialCommunityIcons
+                        name="circle-medium"
+                        size={16}
+                        color={accent.color}
+                      />
+                      <Text style={[styles.guideRowText, { color: theme.colors.onSurface, flex: 1 }]}>
+                        {line}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -987,8 +971,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 12,
-    backgroundColor: "#fff",
     marginBottom: 12,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
   },
   typeIconWrap: {
     width: 36,
@@ -1118,6 +1106,42 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "flex-start",
     marginTop: 10,
+  },
+
+  // Guide modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalCard: {
+    borderRadius: 16,
+    overflow: "hidden",
+    width: "100%",
+    maxWidth: 420,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+  },
+  modalHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  modalTitle: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  modalBody: {
+    padding: 16,
+    gap: 8,
   },
 
   // Footer

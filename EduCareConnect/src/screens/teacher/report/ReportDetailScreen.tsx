@@ -121,9 +121,7 @@ function ReportDetailContent({ navigation, route }: Props) {
               );
               setSentModalVisible(true);
             } catch {
-              Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Error,
-              );
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               toast.error("Không thể gửi báo cáo");
             }
           },
@@ -241,27 +239,7 @@ function ReportDetailContent({ navigation, route }: Props) {
             </>
           ) : null}
         </Surface>
-        {/* ── Mục Tiêu Đã Học — load độc lập với report header ─── */}
-        {objectivesLoading && (report.objective_ids?.length ?? 0) > 0 ? (
-          <ReportObjectivesSkeleton
-            count={Math.min(report.objective_ids?.length ?? 2, 3)}
-          />
-        ) : objectives.length > 0 ? (
-          <>
-            <SectionLabel
-              icon="target"
-              title={`Mục Tiêu Đã Học (${objectives.length})`}
-              theme={theme}
-            />
-            {objectives.map((obj) => (
-              <ObjectiveCard
-                key={obj.id}
-                objective={obj}
-                onPress={handleObjectivePress}
-              />
-            ))}
-          </>
-        ) : null}
+        {/* ── Overall Performance ──────────────────────────────── */}
         {report.attendance ||
         report.mood ||
         report.energy_level ||
@@ -339,6 +317,27 @@ function ReportDetailContent({ navigation, route }: Props) {
             </Surface>
           </>
         ) : null}
+        {/* ── Mục Tiêu Đã Học — load độc lập với report header ─── */}
+        {objectivesLoading && (report.objective_ids?.length ?? 0) > 0 ? (
+          <ReportObjectivesSkeleton
+            count={Math.min(report.objective_ids?.length ?? 2, 3)}
+          />
+        ) : objectives.length > 0 ? (
+          <>
+            <SectionLabel
+              icon="target"
+              title={`Mục Tiêu Đã Học (${objectives.length})`}
+              theme={theme}
+            />
+            {objectives.map((obj) => (
+              <ObjectiveCard
+                key={obj.id}
+                objective={obj}
+                onPress={handleObjectivePress}
+              />
+            ))}
+          </>
+        ) : null}
         {/* ── Ảnh Báo Cáo — load độc lập với report header ─── */}
         {report.photo_ids && report.photo_ids.length > 0 ? (
           photosLoading ? (
@@ -346,72 +345,79 @@ function ReportDetailContent({ navigation, route }: Props) {
               count={Math.min(report.photo_ids.length, 6)}
             />
           ) : (
-          <>
-            <SectionLabel
-              icon="image-multiple-outline"
-              title={`Hình ảnh (${report.photo_ids.length})`}
-              theme={theme}
-            />
-            <Surface
-              style={[
-                styles.infoCard,
-                { paddingVertical: 12, backgroundColor: theme.colors.surface },
-              ]}
-              elevation={1}
-            >
-              <View style={styles.photoGrid}>
-                {(photoUrls ?? []).map((uri, idx) => (
+            <>
+              <SectionLabel
+                icon="image-multiple-outline"
+                title={`Hình ảnh (${report.photo_ids.length})`}
+                theme={theme}
+              />
+              <Surface
+                style={[
+                  styles.infoCard,
+                  {
+                    paddingVertical: 12,
+                    backgroundColor: theme.colors.surface,
+                  },
+                ]}
+                elevation={1}
+              >
+                <View style={styles.photoGrid}>
+                  {(photoUrls ?? []).map((uri, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => setLightboxIndex(idx)}
+                      activeOpacity={0.85}
+                    >
+                      <Image
+                        source={{ uri }}
+                        style={styles.photoThumb}
+                        resizeMode="cover"
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </Surface>
+              <Modal
+                visible={lightboxIndex !== null}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setLightboxIndex(null)}
+              >
+                <View style={styles.lightboxOverlay}>
                   <TouchableOpacity
-                    key={idx}
-                    onPress={() => setLightboxIndex(idx)}
-                    activeOpacity={0.85}
+                    style={styles.lightboxClose}
+                    onPress={() => setLightboxIndex(null)}
                   >
-                    <Image
-                      source={{ uri }}
-                      style={styles.photoThumb}
-                      resizeMode="cover"
+                    <MaterialCommunityIcons
+                      name="close"
+                      size={28}
+                      color="#fff"
                     />
                   </TouchableOpacity>
-                ))}
-              </View>
-            </Surface>
-            <Modal
-              visible={lightboxIndex !== null}
-              transparent
-              animationType="fade"
-              onRequestClose={() => setLightboxIndex(null)}
-            >
-              <View style={styles.lightboxOverlay}>
-                <TouchableOpacity
-                  style={styles.lightboxClose}
-                  onPress={() => setLightboxIndex(null)}
-                >
-                  <MaterialCommunityIcons name="close" size={28} color="#fff" />
-                </TouchableOpacity>
-                {lightboxIndex !== null && (
-                  <Carousel
-                    ref={carouselRef}
-                    key={lightboxIndex}
-                    width={SCREEN_WIDTH}
-                    height={SCREEN_WIDTH}
-                    data={photoUrls ?? []}
-                    defaultIndex={lightboxIndex}
-                    onSnapToItem={setLightboxCurrentIndex}
-                    renderItem={({ item }) => (
-                      <Image
-                        source={{ uri: item as string }}
-                        style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-                        resizeMode="contain"
-                      />
-                    )}
-                  />
-                )}
-                <Text style={styles.lightboxCounter}>
-                  {lightboxCurrentIndex + 1} / {(photoUrls ?? []).length}
-                </Text>
-              </View>
-            </Modal>
-          </>
+                  {lightboxIndex !== null && (
+                    <Carousel
+                      ref={carouselRef}
+                      key={lightboxIndex}
+                      width={SCREEN_WIDTH}
+                      height={SCREEN_WIDTH}
+                      data={photoUrls ?? []}
+                      defaultIndex={lightboxIndex}
+                      onSnapToItem={setLightboxCurrentIndex}
+                      renderItem={({ item }) => (
+                        <Image
+                          source={{ uri: item as string }}
+                          style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+                          resizeMode="contain"
+                        />
+                      )}
+                    />
+                  )}
+                  <Text style={styles.lightboxCounter}>
+                    {lightboxCurrentIndex + 1} / {(photoUrls ?? []).length}
+                  </Text>
+                </View>
+              </Modal>
+            </>
           )
         ) : null}
         {REPORT_FIELDS.map((field) => {

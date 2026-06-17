@@ -3,19 +3,19 @@
     <data noupdate="1">
         <!-- Hoc sinh 1: Dang hoc, Tu ky, Canh bao y te -->
         <record id="student_demo_01" model="educare.student">
-            <field name="name">Michael Nguyen</field>
-            <field name="nickname">Mikey</field>
+            <field name="name">Phạm Đức Minh</field>
+            <field name="nickname">Minh</field>
             <field name="date_of_birth">2021-03-15</field>
             <field name="gender">male</field>
             <field name="enrollment_date">2025-01-10</field>
             <field name="status">active</field>
             <field name="primary_diagnosis">autism</field>
             <field name="diagnosis_detail">ASD mức độ 1, giao tiếp cụm từ</field>
-            <field name="parent_name">An Nguyen</field>
+            <field name="parent_name">Phạm Văn Đức</field>
             <field name="parent_relation">father</field>
             <field name="parent_phone">0912345001</field>
-            <field name="parent_email">nvan@example.com</field>
-            <field name="emergency_contact_name">Binh Tran</field>
+            <field name="parent_email">pvduc@example.com</field>
+            <field name="emergency_contact_name">Nguyễn Thị Bình</field>
             <field name="emergency_contact_phone">0912345002</field>
             <field name="emergency_contact_relation">Mẹ</field>
             <field name="communication_level">phrase</field>
@@ -27,7 +27,7 @@
             <field name="center_id" ref="educare_base.center_hcm" />
             <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_01" />
             <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
-            <field name="parent_user_id" ref="educare_security.user_educare_parent_01" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_02" />
         </record>
 
         <!-- Hoc sinh 2: Dang hoc, ADHD -->
@@ -105,7 +105,7 @@
 
         <!-- Hoc sinh 5: Dang hoc, Hoi chung Down, muc do 3 -->
         <record id="student_demo_05" model="educare.student">
-            <field name="name">Bao Hoang</field>
+            <field name="name">Hoàng Quốc Bảo</field>
             <field name="nickname">Bảo</field>
             <field name="date_of_birth">2018-05-20</field>
             <field name="gender">male</field>
@@ -146,7 +146,7 @@
             <field name="center_id" ref="educare_base.center_hcm" />
             <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_01" />
             <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hcm" />
-            <field name="parent_user_id" ref="educare_security.user_educare_parent_01" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_04" />
             <field name="assessment_cycle">monthly</field>
             <field name="referral_source">Bệnh viện Nhi đồng 1</field>
         </record>
@@ -257,7 +257,7 @@
             <field name="assessment_cycle">quarterly</field>
         </record>
 
-        <!-- Hoc sinh 9: Dang hoc, ADHD + Cham noi (dong mac) -->
+        <!-- Hoc sinh 9: Dang hoc, ADHD + Cham noi (dong mac) — chuyen sang phu huynh 03 -->
         <record id="student_demo_09" model="educare.student">
             <field name="name">Lý Minh Tài</field>
             <field name="date_of_birth">2021-11-25</field>
@@ -292,7 +292,7 @@
             <field name="center_id" ref="educare_base.center_hanoi" />
             <field name="assigned_teacher_id" ref="educare_security.user_educare_teacher_04" />
             <field name="supervisor_id" ref="educare_security.user_educare_supervisor_hanoi" />
-            <field name="parent_user_id" ref="educare_security.user_educare_parent_01" />
+            <field name="parent_user_id" ref="educare_security.user_educare_parent_03" />
             <field name="assessment_cycle">monthly</field>
         </record>
 
@@ -344,6 +344,7 @@
         </record>
 
         <!-- ══ BAN GHI DANH GIA MAU ══ -->
+
         <record id="assessment_demo_01" model="educare.assessment">
             <field name="student_id" ref="student_demo_01" />
             <field name="assessment_date">2025-02-01</field>

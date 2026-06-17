@@ -95,9 +95,14 @@ function invalidateAfterReportMutation(
   if (reportId !== undefined) {
     qc.invalidateQueries({ queryKey: queryKeys.reports.detail(reportId) });
   }
+  // Use the broad prefix (no trailing uid): `availableForReport(undefined)`
+  // produces `[..., undefined]`, which is NOT a prefix of `[..., <uid>]`, so it
+  // would never match — leaving the "sessions without a report" list stale.
   qc.invalidateQueries({
-    queryKey: queryKeys.sessions.availableForReport(undefined),
+    queryKey: queryKeys.sessions.availableForReportAll(),
   });
+  // The "no report" filter overlays on the my-sessions lists too.
+  qc.invalidateQueries({ queryKey: queryKeys.sessions.myAll() });
   // Broad invalidation of pending-count across users — uid prefix matches.
   qc.invalidateQueries({ queryKey: queryKeys.reports.pendingCountAll() });
 }

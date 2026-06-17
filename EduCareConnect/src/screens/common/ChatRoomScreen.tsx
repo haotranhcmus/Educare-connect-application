@@ -41,7 +41,8 @@ type ChatRoomRouteProp = RouteProp<{ ChatRoom: ChatRoomParams }, "ChatRoom">;
  */
 type ChatRow =
   | { kind: "message"; message: ChatMessage }
-  | { kind: "divider"; key: string; label: string };
+  | { kind: "divider"; key: string; label: string }
+  | { kind: "pending"; tempId: string; content: string };
 
 function buildRows(messages: ChatMessage[]): ChatRow[] {
   const rows: ChatRow[] = [];
@@ -85,6 +86,9 @@ export function ChatRoomScreen() {
 
   const listRef = useRef<FlatList<ChatRow>>(null);
   const [input, setInput] = useState("");
+  const [pendingMessages, setPendingMessages] = useState<
+    Array<{ tempId: string; content: string }>
+  >([]);
 
   const { data: messages = [], isLoading } = useMessages(conversationId);
   const send = useSendMessage(conversationId);
@@ -130,7 +134,15 @@ export function ChatRoomScreen() {
   // Auto-scroll to bottom whenever message count changes — or when the
   // keyboard opens (the visible viewport shrinks; the user expects the
   // latest message to remain in view).
-  const rows = React.useMemo(() => buildRows(messages), [messages]);
+  const rows = React.useMemo(() => {
+    const base = buildRows(messages);
+    const pending: ChatRow[] = pendingMessages.map((p) => ({
+      kind: "pending" as const,
+      tempId: p.tempId,
+      content: p.content,
+    }));
+    return [...base, ...pending];
+  }, [messages, pendingMessages]);
   useEffect(() => {
     if (rows.length === 0) return;
     requestAnimationFrame(() => {
@@ -151,10 +163,15 @@ export function ChatRoomScreen() {
     const trimmed = input.trim();
     if (!trimmed || !conversationId || send.isPending) return;
     requireOnline(() => {
+      const tempId = `pending-${Date.now()}`;
       setInput("");
+      setPendingMessages((prev) => [...prev, { tempId, content: trimmed }]);
       send.mutate(trimmed, {
+        onSuccess: () => {
+          setPendingMessages((prev) => prev.filter((p) => p.tempId !== tempId));
+        },
         onError: () => {
-          // Restore the input so the user doesn't lose what they typed.
+          setPendingMessages((prev) => prev.filter((p) => p.tempId !== tempId));
           setInput(trimmed);
         },
       });
@@ -184,12 +201,18 @@ export function ChatRoomScreen() {
           ref={listRef}
           data={rows}
           keyExtractor={(row) =>
-            row.kind === "divider" ? row.key : `m-${row.message.id}`
+            row.kind === "divider"
+              ? row.key
+              : row.kind === "pending"
+                ? row.tempId
+                : `m-${row.message.id}`
           }
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) =>
             item.kind === "divider" ? (
               <DayDivider label={item.label} />
+            ) : item.kind === "pending" ? (
+              <PendingBubble content={item.content} />
             ) : (
               <MessageBubble message={item.message} />
             )
@@ -291,6 +314,32 @@ function DayDivider({ label }: { label: string }) {
   );
 }
 
+function PendingBubble({ content }: { content: string }) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.bubbleRow, { justifyContent: "flex-end" }]}>
+      <View
+        style={[
+          styles.bubble,
+          {
+            backgroundColor: theme.colors.primary,
+            borderBottomRightRadius: 4,
+            opacity: 0.6,
+          },
+        ]}
+      >
+        <Text style={{ color: "#fff", fontSize: 15, lineHeight: 20 }}>
+          {content}
+        </Text>
+        <View style={styles.pendingFooter}>
+          <ActivityIndicator size={10} color="rgba(255,255,255,0.8)" />
+          <Text style={styles.pendingLabel}>Đang gửi…</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 function MessageBubble({ message }: { message: ChatMessage }) {
   const theme = useTheme();
   const mine = message.from_me;
@@ -372,6 +421,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 16,
+  },
+  pendingFooter: {
+    flexDirection: "row",
+    alignSelf: "flex-end",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 4,
+  },
+  pendingLabel: {
+    color: "rgba(255,255,255,0.75)",
+    fontSize: 10,
   },
 
   composer: {

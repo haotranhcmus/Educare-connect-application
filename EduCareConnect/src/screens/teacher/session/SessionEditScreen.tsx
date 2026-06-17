@@ -15,7 +15,6 @@ import {
   useStudentActiveObjectives,
 } from "@hooks/useSessions";
 import {
-  LOCATION_LABELS,
   SESSION_TYPE_LABELS,
   SESSION_PURPOSE_LABELS,
   toPickerOptions,
@@ -25,7 +24,6 @@ import type { SessionStackParamList } from "@navigation/types";
 
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionEdit">;
 
-const LOCATION_OPTIONS = toPickerOptions(LOCATION_LABELS);
 const TYPE_OPTIONS = toPickerOptions(SESSION_TYPE_LABELS);
 const PURPOSE_OPTIONS = toPickerOptions(SESSION_PURPOSE_LABELS);
 
@@ -45,7 +43,6 @@ export function SessionEditScreen({ route, navigation }: Props) {
     session_date: "",
     start_time: { hours: 8, minutes: 0 },
     end_time: { hours: 9, minutes: 0 },
-    location: "",
     session_type: "",
     session_purpose: "",
   });
@@ -62,7 +59,6 @@ export function SessionEditScreen({ route, navigation }: Props) {
         session_date: session.session_date || "",
         start_time: floatToTime(session.start_time || 8),
         end_time: floatToTime(session.end_time || 9),
-        location: session.location || "center",
         session_type: session.session_type || "individual",
         session_purpose: session.session_purpose || "intervention",
       });
@@ -94,7 +90,6 @@ export function SessionEditScreen({ route, navigation }: Props) {
           session_date: form.session_date,
           start_time: toFloat(form.start_time),
           end_time: toFloat(form.end_time),
-          location: form.location,
           session_type: form.session_type,
           session_purpose: form.session_purpose,
           objective_ids: [[6, 0, Array.from(selectedObjIds)]],
@@ -137,12 +132,6 @@ export function SessionEditScreen({ route, navigation }: Props) {
           onChange={(v) => updateField("end_time", v)}
         />
       </View>
-      <Picker
-        label="Địa điểm"
-        value={form.location}
-        options={LOCATION_OPTIONS}
-        onChange={(v) => updateField("location", v)}
-      />
       <Picker
         label="Loại buổi học"
         value={form.session_type}

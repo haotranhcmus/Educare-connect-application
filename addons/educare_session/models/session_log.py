@@ -9,7 +9,6 @@ from ..constants import (
     CANCEL_TYPES,
     TEACHER_CANCEL_TYPES,
     PARENT_CANCEL_TYPES,
-    LOCATIONS,
     SESSION_TYPES,
     SESSION_PURPOSES,
 )
@@ -105,12 +104,6 @@ class EducareSessionLog(models.Model):
         string="Calendar Label",
         compute="_compute_calendar_label",
         store=False,
-    )
-    location = fields.Selection(
-        LOCATIONS,
-        string="Location",
-        default="center",
-        required=True,
     )
     session_type = fields.Selection(
         SESSION_TYPES,
@@ -354,17 +347,15 @@ class EducareSessionLog(models.Model):
             else:
                 rec.objectives_summary = ""
 
-    @api.depends("name", "student_id", "start_time", "end_time", "location")
+    @api.depends("name", "student_id", "start_time", "end_time")
     def _compute_calendar_label(self):
-        location_labels = dict(LOCATIONS)
         for rec in self:
             h_s, m_s = rec._float_to_hm(rec.start_time)
             h_e, m_e = rec._float_to_hm(rec.end_time)
             time_str = f"{h_s:02d}:{m_s:02d}–{h_e:02d}:{m_e:02d}"
             student = rec.student_id.name or ""
-            loc = location_labels.get(rec.location, rec.location or "")
             if student:
-                rec.calendar_label = f"{student}  {time_str}  {loc}".strip()
+                rec.calendar_label = f"{student}  {time_str}".strip()
             else:
                 rec.calendar_label = rec.name
 
@@ -490,12 +481,16 @@ class EducareSessionLog(models.Model):
             self.env["educare.session.result"].with_context(
                 auto_populate_session_results=True,
             ).create(vals_list)
-        # Remove result lines for de-selected objectives
+        # Remove result lines for de-selected objectives.
+        # Uses sudo() because this is internal housekeeping — the ACL restricts
+        # teachers from directly deleting result rows (to protect audit data),
+        # but removing auto-generated empty lines when objectives are deselected
+        # is a system operation, not a user-facing delete.
         removed = self.result_line_ids.filtered(
             lambda r: r.objective_id not in self.objective_ids
         )
         if removed:
-            removed.unlink()
+            removed.sudo().unlink()
 
     # ── Workflow Actions ──────────────────────────────────────────
 

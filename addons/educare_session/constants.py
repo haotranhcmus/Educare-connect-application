@@ -85,13 +85,6 @@ SESSION_STATUS = [
     ("cancelled", "Đã hủy"),
 ]
 
-LOCATIONS = [
-    ("center", "Tại trung tâm"),
-    ("home", "Tại nhà"),
-    ("school", "Tại trường"),
-    ("online", "Trực tuyến"),
-]
-
 SESSION_TYPES = [
     ("individual", "Cá nhân (1:1)"),
     ("small_group", "Nhóm nhỏ (2-4 học viên)"),

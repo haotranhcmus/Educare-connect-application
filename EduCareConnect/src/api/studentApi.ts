@@ -4,9 +4,11 @@ import type { StudentListItem, StudentDetail } from "@t";
 type StudentListRaw = StudentListItem & { avatar?: string | false };
 type StudentDetailRaw = StudentDetail & { avatar?: string | false };
 
-function toAvatarUrl(avatar?: string | false): string | undefined {
+/** Detect JPEG (/9j/) vs PNG (iVBOR) from base64 prefix and return a proper data URI. */
+export function toAvatarUrl(avatar?: string | false | null): string | undefined {
   if (!avatar) return undefined;
-  return `data:image/png;base64,${avatar}`;
+  const mime = avatar.startsWith("/9j/") ? "image/jpeg" : "image/png";
+  return `data:${mime};base64,${avatar}`;
 }
 
 const STUDENT_LIST_FIELDS = [

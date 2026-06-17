@@ -520,16 +520,18 @@ const styles = StyleSheet.create({
   /* Stats */
   statsRow: {
     flexDirection: "row",
+    alignItems: "stretch",
     borderRadius: 8,
     overflow: "hidden",
     marginBottom: 10,
+    minHeight: 58,
   },
   statCell: {
     flex: 1,
     paddingVertical: 8,
     paddingHorizontal: 6,
     alignItems: "center",
-    gap: 2,
+    justifyContent: "space-between",
   },
   statDivider: {
     width: 0.5,

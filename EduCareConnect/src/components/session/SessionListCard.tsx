@@ -9,7 +9,6 @@ import { formatFloatTime } from "@utils/formatters";
 import {
   SESSION_PURPOSE_LABELS,
   SESSION_TYPE_SHORT_LABELS,
-  LOCATION_LABELS,
 } from "@utils/labels";
 import type { SessionListItem } from "@t";
 import { STATUS_COLORS } from "@theme/statusColors";
@@ -25,7 +24,6 @@ interface SessionListCardProps {
 // Icon mapping for each meta dimension
 const PURPOSE_ICON = "flag-outline";
 const TYPE_ICON = "account-group-outline";
-const LOCATION_ICON = "map-marker-outline";
 
 type MetaTag = { icon: string; label: string };
 
@@ -63,10 +61,6 @@ function SessionListCardImpl({
       icon: TYPE_ICON,
       label:
         SESSION_TYPE_SHORT_LABELS[session.session_type] || session.session_type,
-    },
-    {
-      icon: LOCATION_ICON,
-      label: LOCATION_LABELS[session.location] || session.location,
     },
   ].filter((t) => Boolean(t.label));
 

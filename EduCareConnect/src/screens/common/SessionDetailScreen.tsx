@@ -34,7 +34,6 @@ import {
 import { useReportForSession } from "@hooks/useReports";
 import { formatDate, formatFloatTime } from "@utils/formatters";
 import {
-  LOCATION_LABELS,
   SESSION_TYPE_SHORT_LABELS,
   SESSION_PURPOSE_LABELS,
   CANCEL_TYPE_LABELS,
@@ -74,7 +73,9 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
   const queryClient = useQueryClient();
   const isParent = mode === "parent";
 
-  const cancelOptions = isParent ? PARENT_CANCEL_OPTIONS : TEACHER_CANCEL_OPTIONS;
+  const cancelOptions = isParent
+    ? PARENT_CANCEL_OPTIONS
+    : TEACHER_CANCEL_OPTIONS;
   const defaultCancelType = cancelOptions[0].value;
 
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -86,7 +87,9 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
   const [cancelError, setCancelError] = useState("");
   const [snackMessage, setSnackMessage] = useState("");
   const [snackVisible, setSnackVisible] = useState(false);
-  const [scheduleErrorModal, setScheduleErrorModal] = useState<string | null>(null);
+  const [scheduleErrorModal, setScheduleErrorModal] = useState<string | null>(
+    null,
+  );
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
 
   const showSnack = (msg: string) => {
@@ -117,7 +120,9 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
 
   // Teacher-only capabilities
   const canSchedule = !isParent && isDraft;
-  const canEval = !isParent && (session.status === "scheduled" || session.status === "completed");
+  const canEval =
+    !isParent &&
+    (session.status === "scheduled" || session.status === "completed");
   const canEdit = !isParent && (isDraft || session.status === "scheduled");
   const canDelete = !isParent && isDraft;
   const canReport = !isParent && isDone;
@@ -126,7 +131,9 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
     setIsScheduling(true);
     try {
       await scheduleSession(sessionId);
-      await queryClient.invalidateQueries({ queryKey: queryKeys.sessions.detail(sessionId) });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.sessions.detail(sessionId),
+      });
       await queryClient.invalidateQueries({ queryKey: queryKeys.sessions.all });
       refetch();
       showSnack("Đã lên lịch buổi học thành công");
@@ -190,10 +197,14 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={refetch} />
+        }
       >
         {/* ── SESSION INFO CARD ─────────────────────────────── */}
-        <View style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}>
+        <View
+          style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+        >
           <LinearGradient
             colors={[G1, G2]}
             start={{ x: 0, y: 0 }}
@@ -232,16 +243,25 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.studentName, { color: theme.colors.onSurface }]}>
+              <Text
+                style={[styles.studentName, { color: theme.colors.onSurface }]}
+              >
                 {studentName}
               </Text>
-              <Text style={[styles.studentSub, { color: theme.colors.outline }]}>
+              <Text
+                style={[styles.studentSub, { color: theme.colors.outline }]}
+              >
                 Học sinh
               </Text>
             </View>
           </View>
 
-          <View style={[styles.divider, { backgroundColor: theme.colors.outlineVariant }]} />
+          <View
+            style={[
+              styles.divider,
+              { backgroundColor: theme.colors.outlineVariant },
+            ]}
+          />
 
           <View style={styles.infoRows}>
             <View style={styles.infoRowGrid}>
@@ -255,25 +275,22 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
               </View>
               <View style={styles.infoRowCol}>
                 <InfoRow
-                  icon="map-marker-outline"
-                  label="Địa điểm"
-                  value={LOCATION_LABELS[session.location ?? ""] || "—"}
+                  icon="shape-outline"
+                  label="Loại buổi"
+                  value={
+                    SESSION_TYPE_SHORT_LABELS[session.session_type ?? ""] || "—"
+                  }
                 />
               </View>
             </View>
             <View style={styles.infoRowGrid}>
               <View style={styles.infoRowCol}>
                 <InfoRow
-                  icon="shape-outline"
-                  label="Loại buổi"
-                  value={SESSION_TYPE_SHORT_LABELS[session.session_type ?? ""] || "—"}
-                />
-              </View>
-              <View style={styles.infoRowCol}>
-                <InfoRow
                   icon="flag-outline"
                   label="Mục đích"
-                  value={SESSION_PURPOSE_LABELS[session.session_purpose ?? ""] || "—"}
+                  value={
+                    SESSION_PURPOSE_LABELS[session.session_purpose ?? ""] || "—"
+                  }
                 />
               </View>
             </View>
@@ -282,14 +299,31 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
           {/* Cancelled banner */}
           {isCancelled && (
             <>
-              <View style={[styles.divider, { backgroundColor: theme.colors.outlineVariant }]} />
               <View
-                style={[styles.cancelBanner, { backgroundColor: theme.colors.errorContainer }]}
+                style={[
+                  styles.divider,
+                  { backgroundColor: theme.colors.outlineVariant },
+                ]}
+              />
+              <View
+                style={[
+                  styles.cancelBanner,
+                  { backgroundColor: theme.colors.errorContainer },
+                ]}
               >
-                <MaterialCommunityIcons name="cancel" size={16} color={theme.colors.error} />
+                <MaterialCommunityIcons
+                  name="cancel"
+                  size={16}
+                  color={theme.colors.error}
+                />
                 <Text
                   variant="labelMedium"
-                  style={{ color: theme.colors.onErrorContainer, marginLeft: 8, flex: 1, fontWeight: "700" }}
+                  style={{
+                    color: theme.colors.onErrorContainer,
+                    marginLeft: 8,
+                    flex: 1,
+                    fontWeight: "700",
+                  }}
                 >
                   Buổi học đã bị hủy
                 </Text>
@@ -314,10 +348,15 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
 
         {/* ── Objectives ─────────────────────────────────────── */}
         {objectivesLoading && (session.objective_ids?.length ?? 0) > 0 ? (
-          <SessionObjectivesSkeleton count={Math.min(session.objective_ids?.length ?? 2, 3)} />
+          <SessionObjectivesSkeleton
+            count={Math.min(session.objective_ids?.length ?? 2, 3)}
+          />
         ) : sessionObjectives.length > 0 ? (
           <>
-            <SectionHeader icon="target" title={`Mục Tiêu Buổi Học (${sessionObjectives.length})`} />
+            <SectionHeader
+              icon="target"
+              title={`Mục Tiêu Buổi Học (${sessionObjectives.length})`}
+            />
             {sessionObjectives.map((obj) => (
               <ObjectiveDetailCard key={obj.id} objective={obj} />
             ))}
@@ -329,10 +368,19 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
           <SessionResultsSkeleton count={2} />
         ) : !isParent && isDone && results.length > 0 ? (
           <>
-            <SectionHeader icon="chart-bar" title={`Kết Quả Đánh Giá (${results.length})`} />
-            <View style={[styles.avgCard, { backgroundColor: theme.colors.primaryContainer }]}>
+            <SectionHeader
+              icon="chart-bar"
+              title={`Kết Quả Đánh Giá (${results.length})`}
+            />
+            <View
+              style={[
+                styles.avgCard,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
+            >
               <Text variant="bodyMedium">
-                Trung bình: {Math.round(session.avg_accuracy || 0)}% · {results.length} mục tiêu
+                Trung bình: {Math.round(session.avg_accuracy || 0)}% ·{" "}
+                {results.length} mục tiêu
               </Text>
             </View>
             {results.map((r: SessionResult) => (
@@ -349,13 +397,24 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
           onRequestClose={() => setCancelModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
-            <View style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
-              <Text variant="titleMedium" style={{ fontWeight: "700", marginBottom: 12 }}>
+            <View
+              style={[
+                styles.modalCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
+            >
+              <Text
+                variant="titleMedium"
+                style={{ fontWeight: "700", marginBottom: 12 }}
+              >
                 Hủy buổi học
               </Text>
               <Text
                 variant="bodySmall"
-                style={{ color: theme.colors.onSurfaceVariant, marginBottom: 16 }}
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  marginBottom: 16,
+                }}
               >
                 Chọn lý do hủy buổi học:
               </Text>
@@ -372,7 +431,11 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
               </RadioButton.Group>
               <Text
                 variant="labelSmall"
-                style={{ color: theme.colors.outline, marginTop: 12, marginBottom: 4 }}
+                style={{
+                  color: theme.colors.outline,
+                  marginTop: 12,
+                  marginBottom: 4,
+                }}
               >
                 Ghi chú (không bắt buộc)
               </Text>
@@ -393,14 +456,20 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
                 ]}
               />
               {cancelError ? (
-                <Text variant="labelSmall" style={{ color: theme.colors.error, marginTop: 8 }}>
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.error, marginTop: 8 }}
+                >
                   {cancelError}
                 </Text>
               ) : null}
               <View style={styles.modalActions}>
                 <Button
                   mode="outlined"
-                  onPress={() => { setCancelModalVisible(false); setCancelError(""); }}
+                  onPress={() => {
+                    setCancelModalVisible(false);
+                    setCancelError("");
+                  }}
                   style={{ flex: 1 }}
                   disabled={isCancelling}
                 >
@@ -434,23 +503,45 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
             onRequestClose={() => setScheduleErrorModal(null)}
           >
             <View style={styles.modalOverlay}>
-              <View style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
+              <View
+                style={[
+                  styles.modalCard,
+                  { backgroundColor: theme.colors.surface },
+                ]}
+              >
                 <View style={styles.errorModalIcon}>
-                  <MaterialCommunityIcons name="calendar-alert" size={36} color={theme.colors.error} />
+                  <MaterialCommunityIcons
+                    name="calendar-alert"
+                    size={36}
+                    color={theme.colors.error}
+                  />
                 </View>
                 <Text
                   variant="titleMedium"
-                  style={{ fontWeight: "700", textAlign: "center", marginBottom: 8 }}
+                  style={{
+                    fontWeight: "700",
+                    textAlign: "center",
+                    marginBottom: 8,
+                  }}
                 >
                   Không thể lên lịch
                 </Text>
                 <Text
                   variant="bodySmall"
-                  style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginBottom: 20, lineHeight: 20 }}
+                  style={{
+                    color: theme.colors.onSurfaceVariant,
+                    textAlign: "center",
+                    marginBottom: 20,
+                    lineHeight: 20,
+                  }}
                 >
                   {scheduleErrorModal}
                 </Text>
-                <Button mode="contained" onPress={() => setScheduleErrorModal(null)} style={{ width: "100%" }}>
+                <Button
+                  mode="contained"
+                  onPress={() => setScheduleErrorModal(null)}
+                  style={{ width: "100%" }}
+                >
                   Đã hiểu
                 </Button>
               </View>
@@ -467,21 +558,40 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
             onRequestClose={() => setDeleteConfirmVisible(false)}
           >
             <View style={styles.modalOverlay}>
-              <View style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
+              <View
+                style={[
+                  styles.modalCard,
+                  { backgroundColor: theme.colors.surface },
+                ]}
+              >
                 <View style={styles.errorModalIcon}>
-                  <MaterialCommunityIcons name="delete-alert-outline" size={36} color={theme.colors.error} />
+                  <MaterialCommunityIcons
+                    name="delete-alert-outline"
+                    size={36}
+                    color={theme.colors.error}
+                  />
                 </View>
                 <Text
                   variant="titleMedium"
-                  style={{ fontWeight: "700", textAlign: "center", marginBottom: 8 }}
+                  style={{
+                    fontWeight: "700",
+                    textAlign: "center",
+                    marginBottom: 8,
+                  }}
                 >
                   Xóa buổi học?
                 </Text>
                 <Text
                   variant="bodySmall"
-                  style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginBottom: 20, lineHeight: 20 }}
+                  style={{
+                    color: theme.colors.onSurfaceVariant,
+                    textAlign: "center",
+                    marginBottom: 20,
+                    lineHeight: 20,
+                  }}
                 >
-                  Bạn có chắc muốn xóa buổi học này không? Thao tác này không thể hoàn tác.
+                  Bạn có chắc muốn xóa buổi học này không? Thao tác này không
+                  thể hoàn tác.
                 </Text>
                 <View style={styles.modalActions}>
                   <Button
@@ -501,7 +611,10 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
                     icon={isDeleting ? undefined : "delete"}
                   >
                     {isDeleting ? (
-                      <ActivityIndicator size={16} color={theme.colors.onError} />
+                      <ActivityIndicator
+                        size={16}
+                        color={theme.colors.onError}
+                      />
                     ) : (
                       "Xóa"
                     )}
@@ -531,7 +644,9 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
               icon="clipboard-edit-outline"
               onPress={() => nav.toEval?.(sessionId)}
             >
-              {session.status === "completed" ? "Tiếp tục nhập kết quả" : "Nhập kết quả buổi học"}
+              {session.status === "completed"
+                ? "Tiếp tục nhập kết quả"
+                : "Nhập kết quả buổi học"}
             </Button>
           )}
           {canEdit && (
@@ -550,7 +665,10 @@ function SessionDetailContent({ sessionId, mode, nav }: Props) {
               icon="cancel"
               textColor={theme.colors.error}
               style={{ marginTop: 8, borderColor: theme.colors.error }}
-              onPress={() => { setCancelError(""); setCancelModalVisible(true); }}
+              onPress={() => {
+                setCancelError("");
+                setCancelModalVisible(true);
+              }}
             >
               Hủy buổi học
             </Button>
@@ -636,8 +754,12 @@ function InfoRow({
         />
       </View>
       <View style={styles.infoRowContent}>
-        <Text style={[styles.infoLabel, { color: theme.colors.outline }]}>{label}</Text>
-        <Text style={[styles.infoValue, { color: theme.colors.onSurface }]}>{value}</Text>
+        <Text style={[styles.infoLabel, { color: theme.colors.outline }]}>
+          {label}
+        </Text>
+        <Text style={[styles.infoValue, { color: theme.colors.onSurface }]}>
+          {value}
+        </Text>
       </View>
     </View>
   );
@@ -655,8 +777,18 @@ const styles = StyleSheet.create({
     }),
   },
   cardHeader: { paddingHorizontal: 16, paddingVertical: 14, gap: 8 },
-  timeBlock: { flexDirection: "row", alignItems: "center", gap: 7, justifyContent: "space-between" },
-  timeText: { fontSize: 22, fontWeight: "800", color: "#fff", letterSpacing: 0.4 },
+  timeBlock: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    justifyContent: "space-between",
+  },
+  timeText: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#fff",
+    letterSpacing: 0.4,
+  },
   timeSep: { fontSize: 20, fontWeight: "300", color: "rgba(255,255,255,0.65)" },
   durationPill: {
     backgroundColor: "rgba(255,255,255,0.22)",
@@ -666,11 +798,31 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   durationText: { fontSize: 12, fontWeight: "700", color: "#fff" },
-  headerMeta: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  sessionCode: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.80)", letterSpacing: 0.4 },
+  headerMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  sessionCode: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.80)",
+    letterSpacing: 0.4,
+  },
 
-  studentRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 14 },
-  avatarRing: { borderRadius: 24, borderWidth: 2, borderColor: G_LIGHT, overflow: "hidden" },
+  studentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  avatarRing: {
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: G_LIGHT,
+    overflow: "hidden",
+  },
   studentName: { fontSize: 15, fontWeight: "700", letterSpacing: 0.1 },
   studentSub: { fontSize: 11, fontWeight: "500", marginTop: 1 },
 
@@ -680,19 +832,49 @@ const styles = StyleSheet.create({
   infoRowGrid: { flexDirection: "row", gap: 8 },
   infoRowCol: { flex: 1 },
   infoRowNew: { flexDirection: "row", alignItems: "center", gap: 10 },
-  infoIconWrap: { width: 30, height: 30, borderRadius: 9, alignItems: "center", justifyContent: "center" },
+  infoIconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   infoRowContent: { flex: 1 },
-  infoLabel: { fontSize: 10, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 1 },
+  infoLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 1,
+  },
   infoValue: { fontSize: 13, fontWeight: "500" },
 
-  cancelBanner: { flexDirection: "row", alignItems: "center", borderRadius: 8, padding: 10, marginHorizontal: 14, marginTop: 12, marginBottom: 4 },
+  cancelBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 8,
+    padding: 10,
+    marginHorizontal: 14,
+    marginTop: 12,
+    marginBottom: 4,
+  },
 
   avgCard: { padding: 12, borderRadius: 10, marginBottom: 8 },
 
   actions: { marginBottom: 24 },
 
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
-  modalCard: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40, elevation: 8 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalCard: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    paddingBottom: 40,
+    elevation: 8,
+  },
   radioRow: { flexDirection: "row", alignItems: "center", marginVertical: 2 },
   reasonInput: {
     borderWidth: 1,

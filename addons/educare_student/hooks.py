@@ -6,13 +6,7 @@ _logger = logging.getLogger(__name__)
 
 _AVATAR_DIR = os.path.join(os.path.dirname(__file__), "static", "img", "avatar")
 
-_STUDENT_FILES = [
-    "student1.png",
-    "student2.png",
-    "student3.png",
-    "student4.png",
-    "student5.png",
-]
+_STUDENT_FILES = [f"student_{i:02d}.jpg" for i in range(1, 10)]  # student_01..09
 
 
 def _load(filename):
@@ -69,10 +63,15 @@ def _fix_parent_avatars(env):
     on their linked student record (mother → mom.png, others → father.png).
     First matched student per parent wins; each parent is processed once.
     """
-    father_img = _load("father.png")
-    mom_img = _load("mom.png")
+    father_imgs = [img for img in (_load(f) for f in ["father_01.jpg", "father_02.jpg"]) if img]
+    mother_imgs = [img for img in (_load(f) for f in ["mother_01.jpg", "mother_02.jpg", "mother_03.jpg"]) if img]
+    # Fallback to legacy pngs
+    if not father_imgs:
+        father_imgs = [img for img in [_load("father.png")] if img]
+    if not mother_imgs:
+        mother_imgs = [img for img in [_load("mom.png")] if img]
 
-    if not father_img and not mom_img:
+    if not father_imgs and not mother_imgs:
         return
 
     students = (
@@ -87,6 +86,8 @@ def _fix_parent_avatars(env):
     )
 
     seen_parent_ids = set()
+    father_counter = 0
+    mother_counter = 0
     updated = 0
     for student in students:
         parent_user = student.parent_user_id
@@ -94,10 +95,16 @@ def _fix_parent_avatars(env):
             continue
         seen_parent_ids.add(parent_user.id)
 
-        img = mom_img if student.parent_relation == "mother" else father_img
-        if img:
-            parent_user.sudo().write({"image_1920": img})
-            updated += 1
+        if student.parent_relation == "mother":
+            if mother_imgs:
+                parent_user.sudo().write({"image_1920": mother_imgs[mother_counter % len(mother_imgs)]})
+                mother_counter += 1
+                updated += 1
+        else:
+            if father_imgs:
+                parent_user.sudo().write({"image_1920": father_imgs[father_counter % len(father_imgs)]})
+                father_counter += 1
+                updated += 1
 
     _logger.info(
         "educare_student post_init_hook: fixed parent avatars for %d user(s)", updated

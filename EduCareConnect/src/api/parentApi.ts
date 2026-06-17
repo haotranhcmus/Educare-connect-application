@@ -170,7 +170,7 @@ export async function fetchLatestSession(
       ["student_id", "=", studentId],
       ["status", "=", "done"],
     ],
-    ["id", "session_date", "start_time", "end_time", "location", "status"],
+    ["id", "session_date", "start_time", "end_time", "status"],
     { limit: 1, order: "session_date desc" },
   );
   return result[0] ?? null;
@@ -275,7 +275,6 @@ export async function fetchStudentTimetable(
       "start_time",
       "end_time",
       "duration",
-      "location",
       "session_type",
       "session_purpose",
       "status",

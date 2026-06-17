@@ -7,7 +7,6 @@ import { formatFloatTime } from "@utils/formatters";
 import {
   SESSION_PURPOSE_LABELS,
   SESSION_TYPE_SHORT_LABELS,
-  LOCATION_LABELS,
 } from "@utils/labels";
 import type { SessionListItem } from "@t";
 
@@ -87,15 +86,6 @@ export function TodaySessionCard({ session, onPress, hasReport }: Props) {
         {/* ── Bottom row ── */}
         <View style={styles.bottomRow}>
           <View style={styles.metaRow}>
-            <MaterialCommunityIcons
-              name="map-marker-outline"
-              size={12}
-              color="rgba(255,255,255,0.7)"
-            />
-            <Text style={styles.metaText}>
-              {LOCATION_LABELS[session.location] || session.location}
-            </Text>
-            <Text style={styles.metaDot}>·</Text>
             <Text style={styles.metaText} numberOfLines={1}>
               {SESSION_PURPOSE_LABELS[session.session_purpose] ||
                 session.session_purpose}

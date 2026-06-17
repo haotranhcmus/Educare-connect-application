@@ -83,9 +83,9 @@ const ENERGY_CHIPS = [
 ] as const;
 
 const ENGAGEMENT_CHIPS = [
-  { value: "disengaged", label: "Phân tâm", img: ENGAGE_BORED },
+  { value: "disengaged", label: "Mất tập trung", img: ENGAGE_BORED },
   { value: "somewhat_engaged", label: "Khá tập trung", img: ENGAGE_SLIGHT },
-  { value: "engaged", label: "Tham gia", img: ENGAGE_LIKE },
+  { value: "engaged", label: "Tập trung", img: ENGAGE_LIKE },
   { value: "highly_engaged", label: "Rất tập trung", img: ENGAGE_COOL },
 ] as const;
 
@@ -616,7 +616,7 @@ export function ReportCreateScreen({ navigation, route }: Props) {
 
           {/* Mức tập trung */}
           <ObsRow icon="target" label="Mức tập trung" theme={theme}>
-            <View style={[styles.chipRow, { flexWrap: "wrap" }]}>
+            <View style={styles.moodRow}>
               {ENGAGEMENT_CHIPS.map((opt) => {
                 const sel = obs.engagement_level === opt.value;
                 return (
@@ -626,26 +626,34 @@ export function ReportCreateScreen({ navigation, route }: Props) {
                       setObs((p) => ({ ...p, engagement_level: opt.value }))
                     }
                     style={[
-                      styles.chip,
-                      { marginBottom: 6 },
+                      styles.engagementChip,
                       sel
-                        ? { backgroundColor: theme.colors.primary }
+                        ? {
+                            borderColor: theme.colors.primary,
+                            borderWidth: 2,
+                            backgroundColor: theme.colors.primaryContainer,
+                          }
                         : {
-                            backgroundColor: "transparent",
-                            borderColor: theme.colors.outline,
+                            borderColor: theme.colors.outlineVariant,
+                            borderWidth: 1,
                           },
                     ]}
                   >
                     <Image
                       source={opt.img}
-                      style={[styles.engagementImg, !sel && { opacity: 0.7 }]}
+                      style={[styles.engagementImg, !sel && { opacity: 0.65 }]}
                       resizeMode="contain"
                     />
                     <Text
                       variant="labelSmall"
+                      numberOfLines={2}
                       style={{
-                        color: sel ? "#fff" : theme.colors.onSurface,
-                        marginLeft: 4,
+                        color: sel
+                          ? theme.colors.primary
+                          : theme.colors.onSurface,
+                        marginTop: 3,
+                        textAlign: "center",
+                        fontSize: 10,
                       }}
                     >
                       {opt.label}
@@ -1163,9 +1171,17 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+  engagementChip: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 7,
+    paddingHorizontal: 4,
+    borderRadius: 10,
+  },
   engagementImg: {
-    width: 18,
-    height: 18,
+    width: 28,
+    height: 28,
   },
 
   // Photo section

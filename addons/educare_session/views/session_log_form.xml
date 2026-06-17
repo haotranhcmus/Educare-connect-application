@@ -57,8 +57,6 @@
                             <field name="end_time" widget="float_time"
                                 readonly="status not in ('draft', 'scheduled')" />
                             <field name="duration" widget="float_time" />
-                            <field name="location"
-                                readonly="status not in ('draft', 'scheduled')" />
                         </group>
                     </group>
                     <notebook>

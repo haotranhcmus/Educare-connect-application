@@ -160,7 +160,6 @@ class EducareDemoBuilder:
             "session_date": date,
             "start_time": start_h,
             "end_time": end_h,
-            "location": "center",
             "session_type": "individual",
             "objective_ids": [(6, 0, [o.id for o, _ in obj_raw_pairs])],
         })
@@ -186,7 +185,6 @@ class EducareDemoBuilder:
             "session_date": date,
             "start_time": start_h,
             "end_time": end_h,
-            "location": "center",
             "session_type": "individual",
             "objective_ids": [(6, 0, objectives.ids)],
         })

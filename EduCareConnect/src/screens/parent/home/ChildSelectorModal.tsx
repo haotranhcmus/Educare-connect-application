@@ -15,6 +15,7 @@ import { AvatarLabel } from "@components/common/AvatarLabel";
 import { StatusBadge } from "@components/common/StatusBadge";
 import { useMyStudents } from "@hooks/useParent";
 import { useParentStore } from "@store/parentStore";
+import { toAvatarUrl } from "@api/studentApi";
 
 interface ChildSelectorModalProps {
   visible: boolean;
@@ -145,11 +146,7 @@ export function ChildSelectorModal({
                       ]}
                     >
                       <AvatarLabel
-                        uri={
-                          item.avatar
-                            ? `data:image/png;base64,${item.avatar}`
-                            : undefined
-                        }
+                        uri={toAvatarUrl(item.avatar)}
                         name={item.name}
                         size={44}
                       />
@@ -172,7 +169,7 @@ export function ChildSelectorModal({
                         >
                           {item.name}
                         </Text>
-                        <StatusBadge status={item.status} size="small" />
+                        {/* <StatusBadge status={item.status} size="small" /> */}
                       </View>
 
                       {/* Sub info row */}

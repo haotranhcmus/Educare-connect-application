@@ -42,8 +42,6 @@
                         context="{'group_by': 'teacher_id'}" />
                     <filter name="group_date" string="Date"
                         context="{'group_by': 'session_date:week'}" />
-                    <filter name="group_location" string="Location"
-                        context="{'group_by': 'location'}" />
                     <filter name="group_purpose" string="Session Purpose"
                         context="{'group_by': 'session_purpose'}" />
                 </group>

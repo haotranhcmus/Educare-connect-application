@@ -21,6 +21,8 @@
                 <field name="end_date" />
                 <field name="goal_count" optional="show" />
                 <field name="supervisor_approved" widget="boolean" optional="show" />
+                <field name="next_review_date" optional="show" />
+                <field name="last_reviewed_date" optional="hide" />
                 <field name="status" widget="badge"
                     decoration-warning="status == 'draft'"
                     decoration-info="status == 'ready_review'"
@@ -107,6 +109,12 @@
                         class="btn-primary"
                         invisible="status != 'ready_review' or supervisor_approved"
                         groups="educare_security.group_supervisor,educare_security.group_admin" />
+                    <button name="action_mark_reviewed"
+                        string="Đánh giá định kỳ"
+                        type="object"
+                        class="btn-primary"
+                        invisible="status != 'active'"
+                        groups="educare_security.group_supervisor,educare_security.group_admin" />
                     <button name="action_open_reject_wizard"
                         string="Reject"
                         type="object"
@@ -159,6 +167,12 @@
                                 readonly="1"
                                 placeholder="E.g.: 2026-H1 or 2026 Semester 1" />
                         </h1>
+                        <!-- Overdue review badge -->
+                        <div invisible="not is_review_overdue">
+                            <span class="badge rounded-pill text-bg-warning">
+                                ⚠️ Quá hạn đánh giá — cần thực hiện đánh giá định kỳ
+                            </span>
+                        </div>
                     </div>
 
                     <group>
@@ -169,8 +183,11 @@
                             <field name="supervisor_id" invisible="1" />
                             <field name="start_date" readonly="status != 'draft'" />
                             <field name="end_date" readonly="status != 'draft'" />
-                            <field name="review_frequency" readonly="status != 'draft'" />
+                            <field name="review_frequency" readonly="status not in ['draft', 'active']" />
+                            <field name="last_reviewed_date" readonly="1"
+                                invisible="not last_reviewed_date" />
                             <field name="next_review_date" readonly="1" />
+                            <field name="is_review_overdue" invisible="1" />
                         </group>
 
                         <group string="Version Information" invisible="status == 'draft'">

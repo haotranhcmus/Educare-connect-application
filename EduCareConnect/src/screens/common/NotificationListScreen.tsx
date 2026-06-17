@@ -183,12 +183,29 @@ function NotificationRow({
   // icon circle. Backend serializes icon_avatar (data URI) and icon_name
   // (used as initials fallback). For any other type, fall through to the icon.
   const isChat = item.type === "new_chat_message";
+  const unread = !item.is_read;
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={[styles.row, { backgroundColor: theme.colors.surface }]}
+      style={[
+        styles.row,
+        {
+          backgroundColor: unread
+            ? theme.colors.primaryContainer
+            : theme.colors.surface,
+        },
+      ]}
     >
+      {/* Unread dot — 8px circle pinned to left edge */}
+      <View style={styles.dotWrap}>
+        {unread && (
+          <View
+            style={[styles.dot, { backgroundColor: theme.colors.primary }]}
+          />
+        )}
+      </View>
+
       {isChat ? (
         <View style={styles.avatarWrap}>
           <AvatarLabel
@@ -198,8 +215,21 @@ function NotificationRow({
           />
         </View>
       ) : (
-        <View style={[styles.iconWrap, { backgroundColor: ICON_BG }]}>
-          <MaterialCommunityIcons name={iconName} size={22} color={ICON_FG} />
+        <View
+          style={[
+            styles.iconWrap,
+            {
+              backgroundColor: unread
+                ? theme.colors.primary + "22"
+                : ICON_BG,
+            },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name={iconName}
+            size={22}
+            color={unread ? theme.colors.primary : ICON_FG}
+          />
         </View>
       )}
       <View style={styles.body}>
@@ -207,7 +237,15 @@ function NotificationRow({
           <Text
             variant="bodyMedium"
             numberOfLines={1}
-            style={[styles.title, { fontWeight: item.is_read ? "500" : "700" }]}
+            style={[
+              styles.title,
+              {
+                fontWeight: unread ? "700" : "500",
+                color: unread
+                  ? theme.colors.onPrimaryContainer
+                  : theme.colors.onSurface,
+              },
+            ]}
           >
             {item.title}
           </Text>
@@ -221,7 +259,12 @@ function NotificationRow({
         <Text
           variant="bodySmall"
           numberOfLines={2}
-          style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}
+          style={{
+            color: unread
+              ? theme.colors.onPrimaryContainer
+              : theme.colors.onSurfaceVariant,
+            marginTop: 4,
+          }}
         >
           {item.body}
         </Text>
@@ -242,10 +285,23 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "flex-start",
-    paddingHorizontal: 16,
+    paddingRight: 16,
+    paddingLeft: 8,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#E0E0E0",
+  },
+  dotWrap: {
+    width: 14,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingTop: 12,
+    marginRight: 4,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   iconWrap: {
     width: 40,

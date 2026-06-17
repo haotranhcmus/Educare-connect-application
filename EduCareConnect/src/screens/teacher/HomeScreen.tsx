@@ -34,9 +34,9 @@ import { formatFloatTime } from "@utils/formatters";
 import {
   SESSION_PURPOSE_LABELS,
   SESSION_TYPE_SHORT_LABELS,
-  LOCATION_LABELS,
 } from "@utils/labels";
 import LottieView from "lottie-react-native";
+import { HomeScreenSkeleton } from "@screens/teacher/HomeScreenSkeleton";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TODAY_CARD_H = 162;
@@ -58,7 +58,8 @@ export function HomeScreen({ navigation }: any) {
   const { userName, centerName } = useAuthStore();
   const uid = useAuthStore((s) => s.uid);
   const queryClient = useQueryClient();
-  const { data: todaySessions = [] } = useTodaySessions();
+  const { data: todaySessions = [], isFetching: sessionsFetching } = useTodaySessions();
+  const [showSkeleton, setShowSkeleton] = useState(true);
   const { data: unreadCount = 0 } = useUnreadCount();
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselIndexRef = useRef(0);
@@ -122,8 +123,7 @@ export function HomeScreen({ navigation }: any) {
     pauseTimerRef.current = setTimeout(() => setAutoScrollPaused(false), 5000);
   }, []);
 
-  // Invalidate today's sessions every time HomeScreen comes into focus
-  // to ensure edits made in detail/edit screens are reflected immediately.
+  // Background-refresh on focus; skeleton only shows on first load (initial state = true).
   useFocusEffect(
     useCallback(() => {
       queryClient.invalidateQueries({
@@ -131,6 +131,10 @@ export function HomeScreen({ navigation }: any) {
       });
     }, [queryClient, uid]),
   );
+
+  useEffect(() => {
+    if (!sessionsFetching) setShowSkeleton(false);
+  }, [sessionsFetching]);
   const { data: noReportSessions = [] } = useSessionsForReport();
   const noReportIds = React.useMemo(
     () => new Set(noReportSessions.map((s) => s.id)),
@@ -200,6 +204,8 @@ export function HomeScreen({ navigation }: any) {
   // "Sắp bắt đầu" khi upcoming chưa có ongoing và còn ≤15 phút
   const isStartingSoon =
     !ongoingSession && minsUntilStart !== null && minsUntilStart <= 15;
+
+  if (showSkeleton) return <HomeScreenSkeleton />;
 
   return (
     <View
@@ -348,12 +354,6 @@ export function HomeScreen({ navigation }: any) {
                         ongoingSession.session_type}
                     </Text>
                   </View>
-                  <View style={styles.upcomingBadge}>
-                    <Text style={styles.upcomingBadgeText}>
-                      {LOCATION_LABELS[ongoingSession.location] ||
-                        ongoingSession.location}
-                    </Text>
-                  </View>
                 </View>
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -454,12 +454,6 @@ export function HomeScreen({ navigation }: any) {
                       ] || upcomingSession.session_type}
                     </Text>
                   </View>
-                  <View style={styles.upcomingBadge}>
-                    <Text style={styles.upcomingBadgeText}>
-                      {LOCATION_LABELS[upcomingSession.location] ||
-                        upcomingSession.location}
-                    </Text>
-                  </View>
                 </View>
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -484,7 +478,7 @@ export function HomeScreen({ navigation }: any) {
                 style={{ fontWeight: "700", color: "#5D4037" }}
               >
                 {weekCount > 0
-                  ? `${weekCount} buổi đã dạy tuần này 🎉`
+                  ? `${weekCount} buổi trong tuần này 🎉`
                   : "Bắt đầu một ngày tuyệt vời!"}
               </Text>
               <Text

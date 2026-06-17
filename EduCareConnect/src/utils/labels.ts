@@ -1,9 +1,3 @@
-export const LOCATION_LABELS: Record<string, string> = {
-  center: "Tại trung tâm",
-  home: "Tại nhà",
-  school: "Tại trường",
-  online: "Online",
-};
 
 export const SESSION_TYPE_LABELS: Record<string, string> = {
   individual: "1:1 Cá nhân",
@@ -52,18 +46,24 @@ export const PROMPT_LEVEL_WEIGHTS: Record<string, number> = {
 };
 
 /**
- * Map a 0–100 score into the prompt level whose support band it falls into.
- * Bands use a "floor" convention (each band represents the level the learner
- * has fully reached): pct=0 → no_response, (0,25] → physical, (25,50] →
- * verbal, (50,75] → gestural_visual, (75,100] → independent. Mirrors the
- * weights in PROMPT_LEVEL_WEIGHTS so band edges match mastery thresholds.
+ * Map a 0–100 score into the highest prompt level the learner has reached.
+ * "Reached" means score >= that level's weight threshold. A score of 63%
+ * means the learner has reached "verbal" (50) but NOT yet "gestural_visual"
+ * (75), so the function returns "verbal".
+ *
+ * Thresholds mirror PROMPT_LEVEL_WEIGHTS:
+ *   [0,25)  → no_response  (0)
+ *   [25,50) → physical     (25)
+ *   [50,75) → verbal       (50)
+ *   [75,100)→ gestural_visual (75)
+ *   [100,∞) → independent  (100)
  */
 export function pctToPromptLevel(pct: number): string {
-  if (pct <= 0) return "no_response";
-  if (pct <= 25) return "physical";
-  if (pct <= 50) return "verbal";
-  if (pct <= 75) return "gestural_visual";
-  return "independent";
+  if (pct >= 100) return "independent";
+  if (pct >= 75) return "gestural_visual";
+  if (pct >= 50) return "verbal";
+  if (pct >= 25) return "physical";
+  return "no_response";
 }
 
 export const MEASUREMENT_TYPE_LABELS: Record<string, string> = {
@@ -97,9 +97,9 @@ export const ENERGY_LABELS: Record<string, string> = {
 
 export const ENGAGEMENT_LABELS: Record<string, string> = {
   highly_engaged: "Rất tập trung",
-  engaged: "Tham gia",
+  engaged: "Tập trung",
   somewhat_engaged: "Khá tập trung",
-  disengaged: "Phân tâm",
+  disengaged: "Mất tập trung",
 };
 
 export const PERFORMANCE_LABELS: Record<string, string> = {

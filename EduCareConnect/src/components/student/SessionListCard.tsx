@@ -4,7 +4,7 @@ import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBadge } from "@components/common/StatusBadge";
 import { formatFloatTime } from "@utils/formatters";
-import { SESSION_PURPOSE_LABELS, LOCATION_LABELS } from "@utils/labels";
+import { SESSION_PURPOSE_LABELS } from "@utils/labels";
 import { NO_REPORT_BADGE } from "@theme/decorativeColors";
 import { STATUS_COLORS } from "@theme/statusColors";
 import { useAuthStore } from "@store/authStore";
@@ -52,10 +52,6 @@ function SessionListCardImpl({
           label:
             SESSION_PURPOSE_LABELS[session.session_purpose] ||
             session.session_purpose,
-        },
-        {
-          icon: "map-marker-outline",
-          label: LOCATION_LABELS[session.location] || session.location,
         },
       ].filter((t) => Boolean(t.label));
 

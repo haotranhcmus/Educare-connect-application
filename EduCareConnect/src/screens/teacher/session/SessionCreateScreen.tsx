@@ -52,11 +52,7 @@ import {
   TimePickerField,
   type TimeValue,
 } from "@components/form/TimePickerField";
-import {
-  LOCATION_LABELS,
-  SESSION_TYPE_LABELS,
-  toPickerOptions,
-} from "@utils/labels";
+import { SESSION_TYPE_LABELS, toPickerOptions } from "@utils/labels";
 import type { IepGoal, StudentListItem } from "@t";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SessionStackParamList } from "@navigation/types";
@@ -64,7 +60,6 @@ import type { SessionStackParamList } from "@navigation/types";
 type Props = NativeStackScreenProps<SessionStackParamList, "SessionCreate">;
 
 const STEPS = ["Thông tin", "Mục tiêu & Xác nhận"];
-const LOCATION_OPTIONS = toPickerOptions(LOCATION_LABELS);
 const TYPE_OPTIONS = toPickerOptions(SESSION_TYPE_LABELS);
 
 // ── Data helpers ──────────────────────────────────────────────────
@@ -262,11 +257,6 @@ function SelectGoalCard({
                   selected={selectedObjIds.has(obj.id)}
                   onSelect={onToggleObj}
                 />
-                {obj.status === "mastered" && (
-                  <View style={gcStyles.masteredBadge}>
-                    <Text style={gcStyles.masteredBadgeText}>✓ Duy trì</Text>
-                  </View>
-                )}
               </View>
             ))}
           </View>
@@ -900,7 +890,6 @@ interface FormData {
   session_date: string;
   start_time: TimeValue;
   end_time: TimeValue;
-  location: string;
   session_type: string;
 }
 
@@ -935,7 +924,6 @@ export function SessionCreateScreen({ route, navigation }: Props) {
     session_date: new Date().toISOString().split("T")[0],
     start_time: { hours: 8, minutes: 0 },
     end_time: { hours: 9, minutes: 0 },
-    location: "center",
     session_type: "individual",
   });
 
@@ -1089,7 +1077,6 @@ export function SessionCreateScreen({ route, navigation }: Props) {
         session_date: form.session_date,
         start_time: toFloat(form.start_time),
         end_time: toFloat(form.end_time),
-        location: form.location,
         session_type: form.session_type,
         objective_ids: [[6, 0, Array.from(selectedObjIds)]],
       });
@@ -1205,12 +1192,6 @@ export function SessionCreateScreen({ route, navigation }: Props) {
               </Text>
             </View>
           )}
-          <Picker
-            label="Địa điểm"
-            value={form.location}
-            options={LOCATION_OPTIONS}
-            onChange={(v) => updateForm("location", v)}
-          />
           <Picker
             label="Loại buổi học"
             value={form.session_type}

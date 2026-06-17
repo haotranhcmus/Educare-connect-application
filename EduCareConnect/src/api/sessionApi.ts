@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { read, searchRead, write, create, callKw } from "@api/odooClient";
 import { logger } from "@utils/logger";
 import type {
@@ -69,7 +70,6 @@ const SESSION_LIST_FIELDS = [
   "start_time",
   "end_time",
   "duration",
-  "location",
   "session_type",
   "session_purpose",
   "status",
@@ -109,7 +109,10 @@ export async function fetchStudentSessions(
 export async function fetchTodaySessions(
   teacherUid: number,
 ): Promise<SessionListItem[]> {
-  const today = new Date().toISOString().split("T")[0];
+  // Use the device's LOCAL date — `toISOString()` returns UTC, which in
+  // UTC+7 (Vietnam) rolls over to "tomorrow" late evening and would query the
+  // wrong day. Must match the local-date logic used by useWeekMonthStats.
+  const today = dayjs().format("YYYY-MM-DD");
   logger.session("fetchTodaySessions", "start", { teacherUid, today });
   try {
     const records = await searchRead<any>(
@@ -117,6 +120,7 @@ export async function fetchTodaySessions(
       [
         ["session_date", "=", today],
         ["teacher_id", "=", teacherUid],
+        ["status", "!=", "cancelled"],
       ],
       SESSION_LIST_FIELDS,
       { order: "start_time asc" },
@@ -229,7 +233,6 @@ export async function createSession(vals: {
   session_date: string;
   start_time: number;
   end_time: number;
-  location: string;
   session_type: string;
   objective_ids?: [number, number, number[]][];
 }): Promise<number> {

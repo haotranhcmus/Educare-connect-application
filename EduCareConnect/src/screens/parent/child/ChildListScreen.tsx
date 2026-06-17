@@ -10,6 +10,7 @@ import { EmptyState } from "@components/common/EmptyState";
 // import StudentPlaceholder from "@assets/placeholder/svg/student-placeholder.svg";
 import StudentPlaceholderJson from "@assets/placeholder/json/student-placeholder.json";
 import { useMyStudents } from "@hooks/useParent";
+import { toAvatarUrl } from "@api/studentApi";
 import { useParentStore } from "@store/parentStore";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { ParentChildStackParamList } from "@navigation/types";
@@ -73,11 +74,7 @@ export function ChildListScreen({ navigation }: Props) {
             >
               <View style={styles.cardMain}>
                 <AvatarLabel
-                  uri={
-                    item.avatar
-                      ? `data:image/png;base64,${item.avatar}`
-                      : undefined
-                  }
+                  uri={toAvatarUrl(item.avatar)}
                   name={item.name}
                   size={56}
                 />

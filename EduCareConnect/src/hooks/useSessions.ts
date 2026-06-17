@@ -44,7 +44,7 @@ export function useMySessions(filters?: {
   });
 }
 
-/** Returns { week, month } completed session counts for the teacher. */
+/** Returns { week, month } session counts (all statuses except cancelled). */
 export function useWeekMonthStats() {
   const uid = useAuthStore((s) => s.uid);
   // dayjs().startOf("week") defaults to Sunday (US convention).
@@ -64,9 +64,7 @@ export function useWeekMonthStats() {
     queryFn: () =>
       fetchMySessions(uid!, { dateFrom: weekFrom, dateTo: todayStr }),
     enabled: !!uid,
-    select: (data) =>
-      data.filter((s) => s.status === "done" || s.status === "completed")
-        .length,
+    select: (data) => data.filter((s) => s.status !== "cancelled").length,
   });
 
   const monthQ = useQuery({
@@ -77,9 +75,7 @@ export function useWeekMonthStats() {
     queryFn: () =>
       fetchMySessions(uid!, { dateFrom: monthFrom, dateTo: todayStr }),
     enabled: !!uid,
-    select: (data) =>
-      data.filter((s) => s.status === "done" || s.status === "completed")
-        .length,
+    select: (data) => data.filter((s) => s.status !== "cancelled").length,
   });
 
   return { week: weekQ.data ?? 0, month: monthQ.data ?? 0 };

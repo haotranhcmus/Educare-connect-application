@@ -8,6 +8,7 @@ import { AvatarLabel } from "@components/common/AvatarLabel";
 import { ChildSelectorModal } from "@screens/parent/home/ChildSelectorModal";
 import { useMyStudents } from "@hooks/useParent";
 import { useParentStore } from "@store/parentStore";
+import { toAvatarUrl } from "@api/studentApi";
 
 const G1 = "#2E7D32";
 const G2 = "#43A047";
@@ -97,11 +98,7 @@ export function StickyParallaxChildHeader({
           >
             <View style={styles.avatarRing}>
               <AvatarLabel
-                uri={
-                  selectedStudent.avatar
-                    ? `data:image/png;base64,${selectedStudent.avatar}`
-                    : undefined
-                }
+                uri={toAvatarUrl(selectedStudent.avatar)}
                 name={selectedStudent.name}
                 size={32}
               />
